@@ -1,0 +1,88 @@
+---
+name: diff
+description: Reconcile a converted/built web page against its source prototype with two complementary probes — a PIXEL/layout diff (stretched images, dropped wraps, blank renders, colour flips) and a STRUCTURAL content+typography diff (dropped/mis-slotted headings, eyebrows, CTAs; rendered-face font forks). Stack-agnostic via profiles (eds | generic). Use after converting a prototype to EDS/AEM (the stardust:deploy Step 10), or for any prototype↔build fidelity check; invocable as stardust:diff and from workflows.
+license: Apache-2.0
+---
+
+# stardust:diff — prototype ↔ build reconcile
+
+Two probes that compare a **source** prototype against a **built** page. They catch
+**disjoint** failure classes — run BOTH; either alone gives a false "looks fine".
+
+Both are framework-agnostic Playwright probes that compare two rendered URLs by
+**computed style + DOM** (not pixels). All stack-specific language lives in a
+**profile** (`--profile eds|generic`); the comparison logic is generic.
+
+## When to use
+
+- After converting a prototype to EDS (the `stardust:deploy` skill's Step 10) — use `--profile eds`.
+- Any "does the build match the design?" check between two rendered URLs (a Figma export vs a React build, a legacy page vs a rebuild) — use `--profile generic`.
+- Inside a conversion/QA workflow as the validation gate (see *Workflow use*).
+
+Not for: a single static file with no JS decoration (use the build/harness URL so components are decorated — a raw `.plain.html` has no roles to classify).
+
+## The two probes
+
+| Probe | Script | Sees | Blind to |
+|---|---|---|---|
+| **Pixel / layout** | `skills/diff/scripts/visual-diff.mjs` | stretched images, dropped max-width wraps, blank renders, surface/ground colour flips, image-count gaps | "right text, wrong slot"; a dropped CTA (full pixels, plausible colours → no flag) |
+| **Structural content + type** | `skills/diff/scripts/content-diff.mjs` | MISSING / ROLE-SWAPPED headings·eyebrows·CTAs, invented/dropped body copy, rendered-FACE font forks (width probe) | geometry / layout regressions |
+
+`content-diff` extracts an ordered, role-classified inventory (`heading` / `eyebrow` /
+`cta`+href / `body`) from each `<main>`, classifying by **computed style + tag** so the
+prototype's DOM and the built DOM compare symmetrically, then diffs them.
+
+## Run it
+
+```bash
+# Prereq: a RENDERABLE source. Static → serve from its own dir (python3 -m http.server).
+# The build URL must be the DECORATED page (live/preview or a local harness), not raw markup.
+PROTO="http://localhost:8791/<prototype>.html"
+BUILD="https://<branch>--<repo>--<owner>.aem.page/<path>"   # or http://localhost:3000/<harness>
+
+# 1. PIXEL/layout
+node skills/diff/scripts/visual-diff.mjs   "$PROTO" "$BUILD" --profile eds --sections ".hero"
+
+# 2. STRUCTURAL content + type
+node skills/diff/scripts/content-diff.mjs  "$PROTO" "$BUILD" --profile eds   # --json dumps both inventories
+```
+
+Flags (both tools): `--profile eds|generic` (default `eds`), `--width <px>` (default 1280).
+`visual-diff` also: `--out <dir>`, `--sections a,b` (per-section screenshots).
+`content-diff` also: `--main <selector>` (content root; default from profile).
+
+## Reading content-diff
+
+- 🔴 **MISSING CTA / HEADING / EYEBROW** — real dropped content. FIX. A missing eyebrow is most often a segmentation drop where the eyebrow precedes its heading; a missing CTA means the component never rendered the link. These are exactly what the pixel probe cannot see.
+- 🔴 **ROLE SWAP** — same text under a different role (body painted as eyebrow, eyebrow folded into a teaser). FIX the component's node segmentation.
+- 🟡 **MISSING BODY / EXTRA** — body prose dropped, or build copy with no source. Usually a placeholder→real-copy rewrite. CONFIRM intended; don't blindly "fix".
+- 🟠 **FONT FORK** — matched lines whose rendered FACE differs (width probe, never `document.fonts.check`). `source X→sys` means the prototype named font X but never loaded it and fell back to system — the build self-hosting the intended fallback is then CORRECT, not a bug. All forked lines are grouped into one advisory.
+
+**Pass bar:** visual red flags none/justified **AND** content-diff **0 structural 🔴** (🟡/🟠 confirmed intended). Re-run BOTH after each fix.
+
+## Profiles
+
+`skills/diff/scripts/diff-profiles.mjs` holds them. A profile supplies the source/target **labels**,
+per-flag **remediation hints**, the **font-delta** threshold, the default content-root
+**selector**, and the **eyebrow** classifier thresholds. The engines carry no stack
+strings.
+
+- **`eds`** (default) — Edge Delivery / DA remediation language + `stardust:deploy` finding numbers.
+- **`generic`** — neutral source/build language for any stack.
+
+Add a profile by copying `generic` in `diff-profiles.mjs` and editing `hints`.
+
+## Workflow use
+
+Call both scripts in a validation phase and gate on the output. The
+`stardust:deploy` conversion workflow's Validate phase runs both after building
+a local harness; mirror that:
+
+1. Build/serve the decorated build page (e.g. a local QA harness, or the branch preview).
+2. `visual-diff … --profile eds` → fix STRETCHED/FLUSH-LEFT/SURFACE-GROUND/GAP flags (unless justified).
+3. `content-diff … --profile eds` → fix every 🔴; confirm 🟡/🟠.
+4. Loop until visual none/justified AND content-diff 0 structural 🔴.
+
+> Naming note: this skill ships in the `stardust` plugin and is invoked as
+> `stardust:diff`. It pairs with `stardust:deploy`, whose Step 10 runs both probes
+> as its Validate gate.

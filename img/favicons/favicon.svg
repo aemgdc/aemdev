@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="TAD">
-  <rect width="512" height="512" rx="72" fill="#ff6a00"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="GDC">
+  <rect width="512" height="512" rx="72" fill="#c8102e"/>
   <text
     x="50%"
     y="50%"
     fill="#ffffff"
     font-family="Arial Black, Impact, sans-serif"
-    font-size="230"
+    font-size="175"
     font-weight="900"
-    letter-spacing="6"
+    letter-spacing="0"
     text-anchor="middle"
     dominant-baseline="middle"
-  >TAD</text>
+  >GDC</text>
 </svg>

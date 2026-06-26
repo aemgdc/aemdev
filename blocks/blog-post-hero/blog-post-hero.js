@@ -50,16 +50,15 @@ export default function decorate(block) {
   const wordCount = document.body.textContent.split(/\s+/).filter(Boolean).length;
 
   // Build the layered hero
-  if (heroImg) {
-    const bg = document.createElement('div');
-    bg.className = 'bph-bg';
-    bg.style.backgroundImage = `url("${heroImg}")`;
-    section.prepend(bg);
-    const overlay = document.createElement('div');
-    overlay.className = 'bph-overlay';
-    section.prepend(overlay);
-    section.classList.add('has-bph-bg');
-  }
+  const bg = document.createElement('div');
+  bg.className = 'bph-bg';
+  if (heroImg) bg.style.backgroundImage = `url("${heroImg}")`;
+  section.prepend(bg);
+  const overlay = document.createElement('div');
+  overlay.className = 'bph-overlay';
+  section.prepend(overlay);
+  section.classList.add('has-bph-bg');
+  if (heroImg) section.classList.add('has-bph-image');
 
   const tags = tagsRaw.split(',').map((t) => t.trim()).filter(Boolean);
 
@@ -67,21 +66,11 @@ export default function decorate(block) {
   const inner = document.createElement('div');
   inner.className = 'bph-inner';
 
-  const crumb = document.createElement('div');
-  crumb.className = 'bph-breadcrumb';
-  crumb.innerHTML = `<a href="/en/insights">Insights</a> / ${category}`;
-  inner.append(crumb);
-
-  if (tags.length) {
-    const tagRow = document.createElement('div');
-    tagRow.className = 'bph-tags';
-    tags.forEach((t, i) => {
-      const span = document.createElement('span');
-      span.className = i === 0 ? 'bph-tag' : 'bph-tag bph-tag-ghost';
-      span.textContent = t;
-      tagRow.append(span);
-    });
-    inner.append(tagRow);
+  if (category) {
+    const cat = document.createElement('p');
+    cat.className = 'bph-category';
+    cat.textContent = category;
+    inner.append(cat);
   }
 
   const h1 = document.createElement('h1');
@@ -98,13 +87,14 @@ export default function decorate(block) {
 
   const byline = document.createElement('div');
   byline.className = 'bph-byline';
-  byline.innerHTML = `
-    <a class="bph-avatar" href="/en/about-me">${avatarFor(author)}</a>
-    <div>
-      <div class="bph-byline-name"><a href="/en/about-me">${author}</a></div>
-      <div class="bph-byline-meta">// ${fmtDate(date)}${date ? ' · ' : ''}${readTime(wordCount)}</div>
-    </div>
-  `;
+  const metaParts = [];
+  if (author) metaParts.push(author);
+  if (date) metaParts.push(fmtDate(date));
+  metaParts.push(readTime(wordCount));
+  const metaEl = document.createElement('div');
+  metaEl.className = 'bph-byline-meta';
+  metaEl.textContent = metaParts.join(' · ');
+  byline.append(metaEl);
   inner.append(byline);
 
   block.append(inner);

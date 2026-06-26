@@ -1,104 +1,120 @@
-/* crafted under the full moons gaze by yo boy frank */
+/* Author Rows — dark carbon speaker/author bio section. */
 
 .author-rows-container {
-    padding: 2rem 0;
-  }
+  background: var(--carbon);
+  padding: 64px 0;
+}
 
-.author-rows-container .author-rows h2 {
-    font-family: var(--heading-font-family);
-    font-size: 2.25rem;
-    font-weight: 700;
-    letter-spacing: -1px;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    -webkit-hyphens: auto;
-    -ms-hyphens: auto;
-    hyphens: auto;
-    line-height: 1.2;
-  }
-  
-  .author-rows {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 3rem 1rem;
-  }
-  
+.author-rows {
+  max-width: var(--grid-content-width);
+  margin: 0 auto;
+  padding: 0 clamp(24px, 5vw, 64px);
+}
+
+.author-rows h2 {
+  font-family: var(--mono-font-family);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--aem-red);
+  margin: 0 0 40px;
+}
+
+.author-rows > div {
+  display: flex;
+  gap: 32px;
+  padding: 40px 0;
+  border-top: 1px solid var(--carbon-3);
+}
+
+.author-rows > div:last-child {
+  border-bottom: 1px solid var(--carbon-3);
+}
+
+.author-rows > div > div:first-child {
+  flex: 0 0 80px;
+}
+
+.author-rows > div > div:first-child img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+}
+
+/* Initials avatar fallback when no photo */
+.author-rows > div > div:first-child:not(:has(img)) {
+  width: 80px;
+  height: 80px;
+  background: var(--carbon-3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--display-font-family);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--aem-red);
+  flex-shrink: 0;
+}
+
+.author-rows > div > div:last-child {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.author-rows p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  color: #4b5563;
+}
+
+.author-rows p strong {
+  font-family: var(--display-font-family);
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #f4f4f4;
+  letter-spacing: -0.01em;
+}
+
+.author-rows p:nth-child(2) {
+  font-family: var(--mono-font-family);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--aem-red);
+  font-weight: 700;
+}
+
+.author-rows .button-container {
+  margin-top: 12px;
+}
+
+.author-rows .button {
+  display: inline-block;
+  font-family: var(--mono-font-family);
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #9ca3af;
+  border: 1px solid var(--carbon-3);
+  padding: 8px 14px;
+  text-decoration: none;
+  transition: color 0.12s, border-color 0.12s;
+  border-radius: 0;
+  background: transparent;
+}
+
+.author-rows .button:hover {
+  color: #f4f4f4;
+  border-color: #4b5563;
+}
+
+@media (width <= 600px) {
   .author-rows > div {
-    display: flex;
-    gap: 2rem;
-    margin-bottom: 2rem;
-  }
-  
-  .author-rows > div > div:first-child {
-    flex: 0 0 25%;
-    min-width: 200px;
-    align-self: center;
-  }
-  
-  .author-rows > div > div:first-child img {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-  }
-  
-  .author-rows > div > div:last-child {
-    flex: 1;
-    display: flex;
     flex-direction: column;
-    justify-content: center;
   }
-  
-  .author-rows p {
-    margin: 0.25rem 0;
-    font-size: 1.25rem;
-  }
-  
-  .author-rows p strong{
-      font-family: var(--heading-font-family);
-      font-size: 2rem;
-  }
-  
-  .author-rows p:nth-child(2){
-      font-family: var(--heading-font-family);
-      font-size: 1.5rem;
-      font-weight: 500;
-      color: #62a814;
-  }
-  
-  .author-rows .button-container {
-    margin-top: 0.5rem;
-  }
-  
-  .author-rows .button {
-    display: inline-block;
-    padding: 0.75rem 1.5rem;
-    background-color: #406E0C !important;
-    color: white !important;
-    font-family: var(--heading-font-family);
-    text-transform: uppercase;
-    font-size: 1rem;
-    text-decoration: none;
-    border-radius: 1rem;
-    transition: background-color 0.3s ease;
-  }
-  
-  .author-rows .button:hover {
-    background-color: #62a814!important;
-  }
-  
-  @media (max-width: 768px) {
-    .author-rows > div {
-      flex-direction: column;
-      text-align: center;
-    }
-  
-    .author-rows > div > div:first-child {
-      flex: 0 0 auto;
-      max-width: 300px;
-      margin: 0 auto;
-    }
-    .author-rows-container .author-rows h2 {
-      font-size: 2rem;
-      text-align: center;
-    }
-  }
+}

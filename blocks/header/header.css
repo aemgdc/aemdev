@@ -126,14 +126,14 @@ header {
   .main-nav-link {
     display: block;
     padding: 14px 4px;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 500;
-    color: #cdd6da;
-    transition: color 0.15s ease;
+    color: #9ca3af;
+    transition: color 0.12s ease;
   }
 
   .main-nav-link:hover {
-    color: var(--white);
+    color: #f4f4f4;
   }
 
   /* ACTIONS SECTION (right on desktop, inside drawer on mobile) */
@@ -157,26 +157,26 @@ header {
     max-width: none;
   }
 
-  /* The "Hard Problems →" CTA button styled directly */
+  /* Join the community CTA */
   .actions-section .btn-accent {
     display: inline-flex;
     align-items: center;
     font-family: var(--mono-font-family);
     font-weight: 700;
-    font-size: 0.78rem;
-    letter-spacing: 0.14em;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    background: var(--teal-dk);
-    color: var(--white);
+    background: transparent;
+    color: var(--aem-red);
     padding: var(--header-cta-padding);
-    border: 2px solid var(--teal-dk);
+    border: 2px solid var(--aem-red);
     white-space: nowrap;
     transition: background-color 0.15s ease, color 0.15s ease;
   }
 
   .actions-section .btn-accent:hover {
-    background: transparent;
-    color: var(--teal-dk);
+    background: var(--aem-red);
+    color: var(--white);
   }
 
   /* Action widgets (scheme, language) when present — small icon buttons */

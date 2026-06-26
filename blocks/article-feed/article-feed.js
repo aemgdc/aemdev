@@ -1,264 +1,214 @@
 /**
- * Article Feed block — fetches posts from the query index and renders cards.
+ * Article Feed block — card grid with section header.
  *
- * Configuration via block content:
- * - Row 1: query index path (e.g. /opsinventor-en.json)
- * - Row 2 (optional): limit (default 10)
+ * Two rendering modes (auto-detected from content model):
  *
- * The locale-specific index path makes this block reusable across locales:
- *   /opsinventor-en.json, /opsinventor-de.json, etc.
+ * Static mode (when block has card-N-* rows):
+ *   | badge           | // Technical Writing |
+ *   | title           | Latest from the community. |
+ *   | cta             | <a href="/en/articles/">All articles</a> |
+ *   | card-1-category | AEM EDS |
+ *   | card-1-title    | AEM EDS Content Modeling: A Deep Dive |
+ *   | card-1-dek      | A field guide... |
+ *   | card-1-url      | /en/articles/aem-eds-content-modeling-deep-dive/ |
+ *   | card-1-date     | Jun 25, 2026 |
+ *   | card-1-author   | Tad Reeves |
  *
- * Index `date` fields are ISO `yyyy-mm-dd`; see scripts/utils/date.js.
+ * Dynamic mode (falls back to index fetch when no card rows present):
+ *   | index | /en/articles/query-index.json |
+ *   | limit | 4 |
+ *   | badge | ... |
+ *   | title | ... |
+ *   | cta   | ... |
  */
 
 import { formatDate, dateValue } from '../../scripts/utils/date.js';
 
-function createCard(article, featured = false) {
-  const card = document.createElement('article');
-  card.className = featured ? 'feed-card feed-card-featured' : 'feed-card';
+function parseRows(block) {
+  const config = {
+    badge: '',
+    title: '',
+    cta: null,
+    indexPath: '',
+    limit: 4,
+    cards: [],
+  };
 
-  const link = document.createElement('a');
-  link.href = article.path;
-  link.className = 'feed-card-link';
+  const cardMap = {};
 
-  if (article.image) {
-    const imgWrap = document.createElement('div');
-    imgWrap.className = 'feed-card-image';
-    const img = document.createElement('img');
-    img.src = article.image;
-    img.alt = article.title || '';
-    img.loading = 'lazy';
-    imgWrap.append(img);
-    link.append(imgWrap);
+  const rows = [...block.querySelectorAll(':scope > div')];
+  rows.forEach((row) => {
+    const cells = [...row.children];
+    if (cells.length < 2) return;
+    const key = (cells[0].textContent || '').trim().toLowerCase();
+    const valueCell = cells[1];
+    const value = (valueCell.textContent || '').trim();
+
+    const cardMatch = key.match(/^card-(\d+)-(.+)$/);
+    if (cardMatch) {
+      const num = cardMatch[1];
+      const field = cardMatch[2];
+      if (!cardMap[num]) cardMap[num] = {};
+      if (field === 'url') {
+        const link = valueCell.querySelector('a[href]');
+        cardMap[num].url = link ? link.getAttribute('href') : value;
+      } else {
+        cardMap[num][field] = value;
+      }
+      return;
+    }
+
+    switch (key) {
+      case 'badge': config.badge = value; break;
+      case 'title': config.title = value; break;
+      case 'index':
+      case 'index path': config.indexPath = value; break;
+      case 'limit': config.limit = parseInt(value, 10) || 4; break;
+      case 'cta':
+      case 'link': {
+        const link = valueCell.querySelector('a[href]');
+        if (link) config.cta = { label: link.textContent.trim(), href: link.getAttribute('href') };
+        break;
+      }
+      default: break;
+    }
+  });
+
+  if (Object.keys(cardMap).length) {
+    config.cards = Object.keys(cardMap)
+      .sort((a, b) => parseInt(a, 10) - parseInt(b, 10))
+      .map((num) => cardMap[num]);
   }
 
-  const content = document.createElement('div');
-  content.className = 'feed-card-content';
+  return config;
+}
 
-  if (article.tags) {
-    const tags = document.createElement('div');
-    tags.className = 'feed-card-tags';
-    tags.textContent = article.tags;
-    content.append(tags);
+function buildSectionHeader(config) {
+  const header = document.createElement('div');
+  header.className = 'feed-section-header';
+
+  const left = document.createElement('div');
+  if (config.badge) {
+    const badge = document.createElement('p');
+    badge.className = 'feed-section-badge';
+    badge.textContent = config.badge;
+    left.append(badge);
+  }
+  if (config.title) {
+    const title = document.createElement('h2');
+    title.className = 'feed-section-title';
+    title.textContent = config.title;
+    left.append(title);
+  }
+  header.append(left);
+
+  if (config.cta) {
+    const cta = document.createElement('a');
+    cta.className = 'feed-section-cta';
+    cta.href = config.cta.href;
+    cta.textContent = config.cta.label;
+    header.append(cta);
+  }
+
+  return header;
+}
+
+function buildCard(card) {
+  const a = document.createElement('a');
+  a.className = 'feed-card-item';
+  a.href = card.url || '#';
+
+  if (card.category) {
+    const cat = document.createElement('p');
+    cat.className = 'feed-card-category';
+    cat.textContent = card.category;
+    a.append(cat);
   }
 
   const title = document.createElement('h3');
-  title.textContent = article.title || '';
-  content.append(title);
+  title.className = 'feed-card-title';
+  title.textContent = card.title || '';
+  a.append(title);
+
+  if (card.dek) {
+    const dek = document.createElement('p');
+    dek.className = 'feed-card-dek';
+    dek.textContent = card.dek;
+    a.append(dek);
+  }
 
   const meta = document.createElement('div');
   meta.className = 'feed-card-meta';
   const parts = [];
-  if (article.date) parts.push(formatDate(article.date));
-  if (article.author) parts.push(article.author);
-  meta.textContent = parts.join(' · ');
-  content.append(meta);
+  if (card.date) parts.push(card.date);
+  if (card.author) parts.push(card.author);
+  if (parts.length) meta.textContent = parts.join(' · ');
+  a.append(meta);
 
-  if (article.description) {
-    const desc = document.createElement('p');
-    desc.className = 'feed-card-description';
-    desc.textContent = article.description;
-    content.append(desc);
-  }
-
-  link.append(content);
-  card.append(link);
-  return card;
+  return a;
 }
 
-/**
- * Fetch, filter (blog posts only) and date-sort the article index.
- * @returns {Promise<Array>} newest-first list of articles
- */
+function buildGrid(cards) {
+  const grid = document.createElement('div');
+  grid.className = 'feed-card-grid';
+  cards.forEach((card) => grid.append(buildCard(card)));
+  return grid;
+}
+
 async function loadArticles(indexPath) {
   const resp = await fetch(indexPath);
   if (!resp.ok) throw new Error(`Failed to fetch ${indexPath}`);
   const json = await resp.json();
-
   const articles = (json.data || [])
     .filter((a) => a.pagetype !== 'page' && !a.path.endsWith('/index'));
-
   articles.sort((a, b) => dateValue(b.date) - dateValue(a.date));
-
   return articles;
 }
 
-/**
- * Read key/value config rows for the rapid-drop variant.
- * Falls back to positional rows (index, limit) for back-compat.
- */
-function parseRapidConfig(rows) {
-  const config = {
-    indexPath: '/opsinventor-en.json',
-    limit: 4,
-    badge: '// Featured Reads',
-    title: 'Latest drops.',
-    cta: null,
+function articleToCard(article) {
+  return {
+    category: article.tags || article.category || '',
+    title: article.title || '',
+    dek: article.description || '',
+    url: article.path || '#',
+    date: article.date ? formatDate(article.date) : '',
+    author: article.author || '',
   };
-
-  rows.forEach((row, idx) => {
-    const cells = [...row.children];
-    const keyCell = cells[0];
-    const valueCell = cells[1] || cells[0];
-    const key = keyCell?.textContent?.trim().toLowerCase();
-    const value = valueCell?.textContent?.trim() || '';
-
-    switch (key) {
-      case 'index':
-      case 'index path':
-        config.indexPath = value || config.indexPath;
-        break;
-      case 'limit':
-        config.limit = parseInt(value, 10) || config.limit;
-        break;
-      case 'badge':
-        config.badge = value;
-        break;
-      case 'title':
-        config.title = value;
-        break;
-      case 'cta':
-      case 'link': {
-        const link = valueCell?.querySelector('a[href]');
-        if (link) config.cta = { label: link.textContent.trim(), href: link.getAttribute('href') };
-        break;
-      }
-      default:
-        // Positional fallback: single-cell rows (no key/value pair).
-        if (cells.length === 1) {
-          if (idx === 0 && value) config.indexPath = value;
-          if (idx === 1 && parseInt(value, 10)) config.limit = parseInt(value, 10);
-        }
-        break;
-    }
-  });
-
-  // Hard cap: never more than 4 featured articles.
-  config.limit = Math.min(Math.max(config.limit, 1), 4);
-  return config;
-}
-
-/**
- * Rapid Drop variant: compact, orange-panel feed of up to 4 featured articles.
- * Designed to drop into the home-hero right column (keeps the .rapid-drop hook).
- */
-async function renderRapidDrop(el) {
-  const rows = [...el.querySelectorAll(':scope > div')];
-  const config = parseRapidConfig(rows);
-
-  el.innerHTML = '';
-
-  if (config.badge) {
-    const badge = document.createElement('div');
-    badge.className = 'feed-drop-badge';
-    badge.textContent = config.badge;
-    el.append(badge);
-  }
-
-  if (config.title) {
-    const title = document.createElement('h2');
-    title.className = 'feed-drop-title';
-    title.textContent = config.title;
-    el.append(title);
-  }
-
-  const list = document.createElement('ul');
-  list.className = 'feed-drop-list';
-  el.append(list);
-
-  try {
-    const articles = (await loadArticles(config.indexPath))
-      .filter((a) => !a.path.includes('/drafts/'))
-      .slice(0, config.limit);
-    if (articles.length === 0) {
-      list.remove();
-      const empty = document.createElement('p');
-      empty.className = 'feed-drop-empty';
-      empty.textContent = 'No articles yet.';
-      el.append(empty);
-    } else {
-      articles.forEach((article) => {
-        const item = document.createElement('li');
-        item.className = 'feed-drop-item';
-
-        const link = document.createElement('a');
-        link.className = 'feed-drop-link';
-        link.href = article.path;
-
-        const itemTitle = document.createElement('span');
-        itemTitle.className = 'feed-drop-item-title';
-        itemTitle.textContent = article.title || '';
-        link.append(itemTitle);
-
-        const meta = document.createElement('span');
-        meta.className = 'feed-drop-item-meta';
-        const parts = [];
-        if (article.date) parts.push(formatDate(article.date));
-        if (article.categories) parts.push(article.categories);
-        else if (article.author) parts.push(article.author);
-        meta.textContent = parts.join(' · ');
-        link.append(meta);
-
-        item.append(link);
-        list.append(item);
-      });
-    }
-  } catch (e) {
-    list.remove();
-    const err = document.createElement('p');
-    err.className = 'feed-drop-empty';
-    err.textContent = 'Unable to load articles.';
-    el.append(err);
-  }
-
-  if (config.cta) {
-    const cta = document.createElement('a');
-    cta.className = 'feed-drop-cta';
-    cta.href = config.cta.href;
-    cta.textContent = config.cta.label;
-    el.append(cta);
-  }
 }
 
 export default async function init(el) {
-  if (el.classList.contains('rapid-drop')) {
-    await renderRapidDrop(el);
-    return;
-  }
-
-  const rows = el.querySelectorAll(':scope > div');
-  const indexPath = rows[0]?.textContent?.trim() || '/opsinventor-en.json';
-  const limit = parseInt(rows[1]?.textContent?.trim(), 10) || 0;
-
+  const config = parseRows(el);
   el.innerHTML = '';
 
-  try {
-    let articles = await loadArticles(indexPath);
+  const inner = document.createElement('div');
+  inner.className = 'article-feed-inner';
 
-    if (limit > 0) articles = articles.slice(0, limit);
-
-    if (articles.length === 0) {
-      el.textContent = 'No articles found.';
-      return;
-    }
-
-    // Featured section: top 5
-    const featured = articles.slice(0, 5);
-    const rest = articles.slice(5);
-
-    const featuredSection = document.createElement('div');
-    featuredSection.className = 'feed-featured';
-    featured.forEach((a) => featuredSection.append(createCard(a, true)));
-    el.append(featuredSection);
-
-    // Remaining articles
-    if (rest.length > 0) {
-      const listSection = document.createElement('div');
-      listSection.className = 'feed-list';
-      rest.forEach((a) => listSection.append(createCard(a)));
-      el.append(listSection);
-    }
-  } catch (e) {
-    el.textContent = 'Unable to load articles.';
+  if (config.badge || config.title || config.cta) {
+    inner.append(buildSectionHeader(config));
   }
+
+  if (config.cards.length > 0) {
+    inner.append(buildGrid(config.cards));
+  } else if (config.indexPath) {
+    try {
+      const articles = (await loadArticles(config.indexPath))
+        .slice(0, config.limit)
+        .map(articleToCard);
+      if (articles.length) {
+        inner.append(buildGrid(articles));
+      } else {
+        const empty = document.createElement('p');
+        empty.className = 'feed-empty';
+        empty.textContent = 'No articles yet.';
+        inner.append(empty);
+      }
+    } catch {
+      const err = document.createElement('p');
+      err.className = 'feed-empty';
+      err.textContent = 'Unable to load articles.';
+      inner.append(err);
+    }
+  }
+
+  el.append(inner);
 }

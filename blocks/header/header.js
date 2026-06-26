@@ -193,29 +193,16 @@ function decorateBrandSection(section) {
     }
   }
 
-  const [, text] = brandLink.childNodes;
   const span = document.createElement('span');
   span.className = 'brand-text';
-  if (text) {
-    span.append(text);
-  } else {
-    span.textContent = brandLink.textContent.trim();
-    brandLink.textContent = '';
-  }
+  span.textContent = brandLink.textContent.trim();
+  brandLink.textContent = '';
   brandLink.append(span);
 
-  // "TAD REEVES" links to the about page; the "// OPSINVENTOR" imprint links home.
-  // The imprint was a CSS ::after pseudo on .brand-text; make it a real anchor so
-  // it can carry its own href, then wrap both in a lockup to preserve the layout.
-  brandLink.setAttribute('href', '/en/about-me');
-  const imprint = document.createElement('a');
-  imprint.className = 'brand-imprint';
-  imprint.href = '/';
-  imprint.textContent = '// OPSINVENTOR';
   const lockup = document.createElement('span');
   lockup.className = 'brand-lockup';
   brandLink.replaceWith(lockup);
-  lockup.append(brandLink, imprint);
+  lockup.append(brandLink);
 }
 
 function decorateNavSection(section) {

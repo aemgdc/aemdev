@@ -168,3 +168,59 @@
     grid-template-columns: repeat(var(--grid-size), 1fr);
   }
 }
+
+/* ── CTA Band — Adobe Red full-width section ── */
+.section.cta-band {
+  background: var(--aem-red);
+  padding: 72px 0;
+}
+
+.section.cta-band .default-content {
+  max-width: var(--grid-content-width);
+  margin: 0 auto;
+  padding: 0 clamp(24px, 4vw, 48px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 48px;
+  flex-wrap: wrap;
+}
+
+.section.cta-band h2 {
+  font-family: var(--display-font-family);
+  font-size: clamp(1.5rem, 2.5vw, 2rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  color: #f4f4f4;
+  margin: 0 0 16px;
+}
+
+.section.cta-band p {
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: rgb(255 255 255 / 82%);
+  margin: 0;
+  max-width: 600px;
+}
+
+.section.cta-band a {
+  display: inline-block;
+  flex-shrink: 0;
+  font-family: var(--mono-font-family);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: #f4f4f4;
+  border: 2px solid rgb(255 255 255 / 65%);
+  padding: 14px 30px;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.section.cta-band a:hover {
+  border-color: #f4f4f4;
+  background: rgb(255 255 255 / 12%);
+}

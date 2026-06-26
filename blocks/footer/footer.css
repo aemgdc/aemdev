@@ -1,19 +1,19 @@
 footer {
   display: block;
-  background-color: var(--ink);
-  color: #9bafb6;
-  border-top: 4px solid var(--orange);
+  background-color: var(--carbon);
+  color: #4b5563;
+  border-top: 1px solid var(--carbon-3);
   padding: 64px var(--grid-gutter-width) 28px;
 }
 
 footer a {
   text-decoration: none;
   color: inherit;
-  transition: color 0.15s ease;
+  transition: color 0.12s ease;
 }
 
 footer a:hover {
-  color: var(--orange);
+  color: #9ca3af;
 }
 
 footer ul {
@@ -46,44 +46,36 @@ footer .footer-content .section .default-content {
 
 /* Brand block */
 footer .footer-brand p {
-  margin: 0 0 14px;
-  color: #9bafb6;
-  font-size: 0.92rem;
+  margin: 0 0 12px;
+  color: #4b5563;
+  font-size: 0.875rem;
+  line-height: 1.65;
   max-width: 320px;
 }
 
 footer .footer-brand p:first-child {
   font-family: var(--display-font-family);
-  font-size: 1.4rem;
-  letter-spacing: -0.02em;
-  color: var(--white);
-  margin-bottom: 14px;
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #f4f4f4;
+  margin-bottom: 12px;
   white-space: nowrap;
 }
 
 footer .footer-brand p:first-child strong {
-  color: var(--white);
-  font-weight: normal;
-}
-
-footer .footer-brand p:first-child::after {
-  content: " // OPSINVENTOR";
-  font-family: var(--mono-font-family);
-  font-weight: 700;
-  font-size: 0.78rem;
-  letter-spacing: 0.2em;
-  color: var(--orange);
-  margin-left: 6px;
-  text-transform: uppercase;
+  color: #f4f4f4;
+  font-weight: 800;
 }
 
 /* Column lists */
 footer .footer-col h4 {
   font-family: var(--mono-font-family);
-  font-size: 0.74rem;
-  letter-spacing: 0.2em;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--white);
+  color: #374151;
   margin: 0 0 16px;
   font-weight: 700;
 }
@@ -92,17 +84,16 @@ footer .footer-col ul {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  font-size: 0.92rem;
-  color: #cdd6da;
+  font-size: 0.875rem;
 }
 
 footer .footer-col a {
-  color: #cdd6da;
+  color: #4b5563;
 }
 
 /* Bottom row */
 footer .footer-bottom {
-  border-top: 1px solid #21343c;
+  border-top: 1px solid var(--carbon-3);
   padding-top: 22px;
   margin-top: 8px;
   display: flex;
@@ -110,10 +101,9 @@ footer .footer-bottom {
   flex-wrap: wrap;
   gap: 16px;
   font-family: var(--mono-font-family);
-  font-size: 0.72rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #6e8189;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  color: #374151;
 }
 
 footer .footer-bottom p {
@@ -122,7 +112,7 @@ footer .footer-bottom p {
 
 @media (width >= 720px) {
   footer .footer-content {
-    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr;
   }
 
   footer .footer-bottom {

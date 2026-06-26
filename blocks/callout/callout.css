@@ -1,11 +1,11 @@
 /* Callout — ink-bg with orange "!" pill */
 
 .callout {
-  background: var(--ink);
-  color: var(--white);
+  background: rgb(235 16 0 / 4%);
+  color: var(--text);
   padding: 32px clamp(24px, 4vw, 40px);
   margin: 48px 0;
-  border-left: 6px solid var(--orange);
+  border: 2px solid var(--aem-red);
   position: relative;
 }
 
@@ -14,7 +14,7 @@
   font-size: 0.72rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--orange);
+  color: var(--aem-red);
   margin-bottom: 12px;
   font-weight: 700;
   display: flex;
@@ -25,8 +25,8 @@
 .callout-tag::before {
   content: "!";
   font-family: var(--display-font-family);
-  background: var(--orange);
-  color: var(--ink);
+  background: var(--aem-red);
+  color: #f4f4f4;
   width: 22px;
   height: 22px;
   display: inline-flex;
@@ -40,13 +40,13 @@
   font-size: clamp(1.2rem, 2vw, 1.5rem);
   line-height: 1.1;
   letter-spacing: -0.02em;
-  color: var(--white);
+  color: var(--text);
   margin: 0 0 16px;
-  font-weight: 400;
+  font-weight: 700;
 }
 
 .callout p {
-  color: #cfd9de;
+  color: var(--text);
   font-size: 1rem;
   line-height: 1.7;
   margin-bottom: 14px;
@@ -65,7 +65,7 @@
 .callout ul li {
   position: relative;
   padding-left: 24px;
-  color: #cfd9de;
+  color: var(--text);
   margin-bottom: 10px;
   line-height: 1.65;
 }
@@ -74,14 +74,14 @@
   content: "▸";
   position: absolute;
   left: 0;
-  color: var(--orange);
+  color: var(--aem-red);
   font-weight: 700;
 }
 
 .callout ul li strong {
-  color: var(--white);
+  color: var(--text);
 }
 
 .callout a {
-  color: var(--orange);
+  color: var(--aem-red-dk);
 }

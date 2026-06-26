@@ -1,4 +1,14 @@
-# Author Kit
+# aemdev.org
+
+This is a community project of the [AEM Global Development Collective](https://www.aemdev.org). Contributions are welcome!
+
+It is an [Author Kit](#author-kit) site driving [www.aemdev.org](https://www.aemdev.org).
+
+**Site owners:** Tad Reeves - contact on Linkedin or Slack 
+
+---
+
+## Author Kit
 For projects that want a few more batteries. Built by the team who brought you da.live and adobe.com.
 
 ## Getting started

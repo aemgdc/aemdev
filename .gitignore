@@ -9,3 +9,11 @@ helix-importer-ui
 .idea
 .wrangler
 .claude
+
+# Content lives in DA — local plain HTML files are working copies only
+en/
+fragments/
+blog/
+templates/
+config/
+index.plain.html

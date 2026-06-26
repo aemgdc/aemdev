@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tailing and Viewing Adobe Cloud Manager Build Logs for AEM Cloud and AMS</title>
+  <link rel="canonical" href="https://www.opsinventor.com/tailing-and-viewing-adobe-cloud-manager-build-logs/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Tailing and Viewing Adobe Cloud Manager Build Logs for AEM Cloud and AMS</h1>
+      <time datetime="2022-03-09T01:26:37.000Z">3/8/2022, 5:26:37 PM</time>
+    </header>
+    <section class="content">
+      
+<p>If you are using Adobe Experience Manager on Adobe's AEM Managed Services infrastructure, or are using Adobe's AEM as a Cloud Service offering, in both cases all software releases as well as web-tier configuration updates go through Adobe's Cloud Manager CI/CD solution.  </p>
+
+
+
+<h2>Why Would You Want This?</h2>
+
+
+
+<figure class="wp-block-image size-full"><a href="https://www.opsinventor.com/wp-content/uploads/2022/03/image-1.png"><img src="https://www.opsinventor.com/wp-content/uploads/2022/03/image-1.png" alt="" class="wp-image-1877"/></a><figcaption><em>This is what Cloud Manager looks like while deploying code.  </em></figcaption></figure>
+
+
+
+<p>When deploying, Cloud Manager does give you some limited feedback to let you know generally what build step it is on, but many times, especially in lower environments where you're more likely to run into a build problem, <strong>you want MORE feedback, and faster</strong>.  And the way to get that is by tailing the build logs on Cloud Manager.  </p>
+
+
+
+<p> So, here are the steps to go through to tail logs on an AEM as a Cloud Service environment: </p>
+
+
+
+<h3>Step 1: Adobe IO Access for Cloud Manager</h3>
+
+
+
+<p>The first step you'll want to check is to make sure your Adobe account is provisioned with access to create a service integration on Adobe IO with Cloud Manager.  If you go to <a href="https://console.adobe.io">https://console.adobe.io</a> with your Adobe ID and create a new project, select "Add an API".  You should see "Cloud Manager" under Experience Cloud in the list of integrations available to you. </p>
+
+
+
+<figure class="wp-block-image size-large"><img src="https://i1.wp.com/www.jetteroheller.com/wp-content/uploads/2020/06/image-2.png?fit=1024%2C298" alt="" class="wp-image-1503"/><figcaption><em>What the Adobe IO console should look like if you have Cloud Manager access</em></figcaption></figure>
+
+
+
+<p>If you don't see Cloud Manager in there (like I didn't, at first) send an email either to your Adobe Sales rep or to SPP Help (in the case of a Sandbox instance)  who can get you sorted. </p>
+
+
+
+<h3>Step 2: Create an Adobe IO Project for your Cloud Manager (and logs) Access</h3>
+
+
+
+<p>You'll then need to create a public/private keypair which generates a new service account (JWT) credential, which you'll use later on to make your Adobe IO console authenticate to your Cloud Manager env as you.   Make sure to save this public/private keypair on your local, as you will need it shortly. </p>
+
+
+
+<p>Then, tell the integration what services it will get access to:</p>
+
+
+
+<figure class="wp-block-image size-large"><img src="https://i0.wp.com/www.jetteroheller.com/wp-content/uploads/2020/06/image-3.png?fit=1024%2C293" alt="" class="wp-image-1504"/></figure>
+
+
+
+<p></p>
+
+
+
+<p> And then hit "SAVE CONFIGURED API".  </p>
+
+
+
+<h3>Step 3: Install the Adobe IO Runtime</h3>
+
+
+
+<p><a href="https://github.com/adobe/aio-cli">This page</a> gives the full installation instructions for installing the Adobe IO runtime.  But in short, after installing NodeJS on your workstation, you: </p>
+
+
+
+<pre class="wp-block-code"><code class="">$ npm install -g @adobe/aio-cli</code></pre>
+
+
+
+<p>Post install, you should see: </p>
+
+
+
+<pre class="wp-block-code"><code class="">$ aio -v
+@adobe/aio-cli/3.5.0 win32-x64 node-v12.18.0</code></pre>
+
+
+
+<h3>Step 4: Install &amp; Configure the Adobe IO Cloud Manager CLI Plugin</h3>
+
+
+
+<p>The full install instructions are <a href="https://github.com/adobe/aio-cli-plugin-cloudmanager">here</a>, but in short, run:</p>
+
+
+
+<pre class="wp-block-code"><code class="">$ aio plugins:install @adobe/aio-cli-plugin-cloudmanager</code></pre>
+
+
+
+<p>Then, after that is installed, you'll need to get the elements from the Adobe IO integration you created, and paste them into a config.json file which you can use to configure cloud manager. It will consist of:</p>
+
+
+
+<pre class="wp-block-code"><code class="">//config.json 
+{
+  "client_id": "value from your CLI integration (String)",
+  "client_secret": "value from your CLI integration (String)",
+  "jwt_payload": { value from your CLI integration (JSON Object Literal) },
+  "token_exchange_url": "https://ims-na1.adobelogin.com/ims/exchange/jwt"
+}</code></pre>
+
+
+
+<p>Put that file on your workstation, then run the following to configure the credentials: </p>
+
+
+
+<pre class="wp-block-code"><code class="">aio config:set jwt-auth PATH_TO_CONFIG_JSON_FILE --file --json</code></pre>
+
+
+
+<p>Then tell it about your private certificate which you saved from Adobe IO above:</p>
+
+
+
+<pre class="wp-block-code"><code class="">aio config:set jwt-auth.jwt_private_key PATH_TO_PRIVATE_KEY_FILE --file</code></pre>
+
+
+
+<h3>Step 5: Tell AIO what your Default Program Is</h3>
+
+
+
+<p>Next, tell the Adobe IO runtime what your "Default Program" is.  In AEM as a Cloud Service, the "Program" is the collection of environments that make up a single web property.  Navigating to my.cloudmanager.adobe.com, you'll see a URL after logging in like "https://experience.adobe.com/#/@the_cool_name_of_my_company/cloud-manager/home.html/program/{PROGRAM_NUMBER}"</p>
+
+
+
+<p>That number at the end is your program number, and you can tell AIO about it like this (assuming "1234" is your program ID): </p>
+
+
+
+<pre class="wp-block-code"><code class="">$ aio config:set cloudmanager_programid 1234</code></pre>
+
+
+
+<h3>Step 6: Start Your Build from AIO &amp; Copy Build ID</h3>
+
+
+
+<p>View a list of available pipelines by using the <strong>aio cloudmanager:program:list-pipelines</strong> command: </p>
+
+
+
+<pre class="wp-block-code"><code class="">tad@tad-Precision-7750:~/OneDrive/ICF/aio/config$ aio cloudmanager:program:list-pipelines
+ Pipeline Id Name                                     Status 
+ ─────────── ──────────────────────────────────────── ────── 
+ 7239327     Web-Tier Only                            BUSY   
+ 4042555     Non-Production Pipeline                  IDLE   
+ 1023673     Non-Prod Code Only- DEV                  IDLE   
+ 299672      Non-Production Code Quality Pipeline[PT] IDLE   
+ 298825      Production Pipeline                      IDLE   
+ 298163      Non-Production Pipeline                  IDLE </code></pre>
+
+
+
+<p>Let's say you're going to want to tail the build log of your full-stack non-prod pipeline.  In this case, the pipeline ID is "4042555" in the list above. </p>
+
+
+
+<p>You can then start that pipeline by using the <strong>aio cloudmanager:pipeline:create-execution </strong>command:</p>
+
+
+
+<pre class="wp-block-code"><code class="">tad@tad-Precision-7750:~/OneDrive/ICF/aio/config$ aio cloudmanager:pipeline:create-execution 4042555
+starting execution... started execution ID 4042555</code></pre>
+
+
+
+<p>Then, you can see that the execution is started with the <strong>aio cloudmanager:program:list-current-executions</strong> command: </p>
+
+
+
+<pre class="wp-block-code"><code class="">tad@tad-Precision-7750:~/OneDrive/ICF/aio/config$ aio cloudmanager:program:list-current-executions
+ Pipeline Id Execution Id Started At            Execution Status Trigger Current Step Action Current Step Status 
+ ─────────── ──────────── ───────────────────── ──────────────── ─────── ─────────────────── ─────────────────── 
+ 4042555     198305      March 8, 2022 3:50 PM RUNNING          MANUAL  Build               RUNNING      </code></pre>
+
+
+
+<h3>Step 7: Tail your build log with AIO</h3>
+
+
+
+<p>Then, once the execution has started, you can use the command <strong>aio cloudmanager:execution:tail-step-log </strong> with the build ID to tail your build logs:</p>
+
+
+
+<pre class="wp-block-code"><code class="">tad@tad-Precision-7750:~/OneDrive/ICF/aio/config$ aio cloudmanager:execution:tail-step-log 4042555
+2022-03-09T00:15:38+0000 The following build artifacts were reused from the prior execution 1132597 of pipeline 4043554 which used commit 38xxxfe09abc93e08073fa1735924f164:
+2022-03-09T00:15:38+0000 * build/mycorp.all-1.0.0-SNAPSHOT.zip (content-package)
+2022-03-09T00:15:38+0000 * build/core-components-accelerator.all-1.0.0-SNAPSHOT.zip (content-package)
+2022-03-09T00:15:38+0000 * build/mycorp.it.tests-1.0.0-SNAPSHOT-jar-with-dependencies.jar (functional-tests)
+</code></pre>
+
+
+
+<h2>IMPORTANT: Logging Caveats &amp; Limitations</h2>
+
+
+
+<p>There are currently a few caveats &amp; limitations (subject to change of course) to tailing the build logs with Adobe I/O: </p>
+
+
+
+<ul><li><strong>You can only tail the "Build &amp; Unit Testing" Step: </strong> The only execution log that you can tail is the "Build &amp; Unit Testing" step where your code is checked out, built &amp; tested.  This applies also to the "web-tier" pipeline.  This means that you can't get a step-by-step tail of the code quality testing step, or output if it fails &amp; is waiting for user interaction.  Additionally, the step where the code is actually <strong>deployed</strong> and put onto your servers is not able to be tailed on the cloud service, despite this being a sometimes 45-minute-long execution step.  </li><li><strong>Logs Not Included in Splunk</strong>: These logs that you tail are not included in the Splunk output that you get should you opt to <a href="https://www.opsinventor.com/using-splunk-for-log-search-monitoring-on-aem-as-a-cloud-service/" data-type="post" data-id="1814">send your AEM Cloud Service logs to Splunk</a> (see article for details).  This means that until we figure out a way to pipe AIO logs tailing directly into Splunk, there is no way to correlate timestamps to log output should you want to see how one build compared to another build, etc.  </li></ul>
+
+
+
+<p><strong>About the Cover Photo:</strong>  This was taken at the Sandy Ridge Mountain Bike Park in Mt. Hood National Forest on an early-morning mountain bike ride.  Being in the woods at sunrise is a downright spiritual experience, I think.  </p>
+
+
+
+<figure class="wp-block-embed is-type-photo is-provider-flickr wp-block-embed-flickr"><div class="wp-block-embed__wrapper">
+https://www.flickr.com/photos/tadnkat/51728004838/
+</div></figure>
+
+    </section>
+    <footer><p>Categories: Adobe, adobe experience manager, adobe i/o, AEM, AEM / CQ, aemaacs, aio, cloud service, devops</p></footer>
+  </article>
+</body>
+</html>

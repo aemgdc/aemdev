@@ -1,0 +1,55 @@
+/* MTB card — teal-accent cover-photo motif card */
+
+.mtb-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 6px solid var(--teal);
+  margin: 48px 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 5fr 7fr;
+  gap: 0;
+  overflow: hidden;
+}
+
+.mtb-photo {
+  background-size: cover;
+  background-position: center;
+  min-height: 200px;
+}
+
+.mtb-copy {
+  padding: 28px 30px;
+}
+
+.mtb-eyebrow {
+  color: var(--teal-dk);
+  margin-bottom: 10px;
+}
+
+.mtb-copy h4 {
+  font-family: var(--display-font-family);
+  font-size: 1.2rem;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  margin: 0 0 12px;
+  line-height: 1.15;
+  font-weight: 400;
+}
+
+.mtb-copy p {
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.65;
+  margin-bottom: 0;
+}
+
+@media (width <= 700px) {
+  .mtb-card {
+    grid-template-columns: 1fr;
+  }
+
+  .mtb-photo {
+    min-height: 180px;
+  }
+}

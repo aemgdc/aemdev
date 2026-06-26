@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Package Share Discontinued on AEM 6.5.5.0 (AEM 6.5 SP5)</title>
+  <link rel="canonical" href="https://www.opsinventor.com/package-share-discontinued-on-aem-6-5-5-0-aem-6-5-sp5/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Package Share Discontinued on AEM 6.5.5.0 (AEM 6.5 SP5)</h1>
+      <time datetime="2020-06-11T16:06:13.000Z">6/11/2020, 9:06:13 AM</time>
+    </header>
+    <section class="content">
+      
+<p>The tools in /crx/ have been around in AEM/CQ land since well before Adobe acquired it, and had most of its current feature set as of 10 years ago on CQ 5.2.  </p>
+
+
+
+<p>Adobe is finally retiring one of those tools, the "Package Share" utility at /crx/packageshare which we've all used on our pre-production environments (or embarrassingly in some cases on production) to download service packs, hotfixes, cumulative fix packs, and other pieces of functionality from Adobe.</p>
+
+
+
+<figure class="wp-block-image size-large"><img src="https://i1.wp.com/www.jetteroheller.com/wp-content/uploads/2020/06/image-7.png?fit=1024%2C778" alt="" class="wp-image-1515"/></figure>
+
+
+
+<p>AEM 6.5.5.0 (Service Pack  5) will be the last service pack you ever get from Package Share.  <a href="https://docs.adobe.com/content/help/en/experience-manager-65/release-notes/service-pack/new-features-latest-service-pack.html">As of service Pack 5, the Package Share will now be disabled</a>.  From this point forward, you'll be able to download new releases via <a href="https://experience.adobe.com/">https://experience.adobe.com/</a> where you'll see a "<strong>Software Distribution</strong>" link on your home page:</p>
+
+
+
+<figure class="wp-block-image size-large"><img src="http://www.jetteroheller.com/wp-content/uploads/2020/06/image-8.png" alt="" class="wp-image-1516"/><figcaption><br></figcaption></figure>
+
+
+
+<p>As of this writing, Adobe has not onboarded on-premise customers into this portal (planned for next week), so if you install Service Pack 5 onto an AEM instance, you'll not be able to get back into package share to download additional service packs or releases. </p>
+
+
+
+<figure class="wp-block-embed-twitter wp-block-embed is-type-rich is-provider-twitter"><div class="wp-block-embed__wrapper">
+https://twitter.com/PeterKlassen/status/1270013154186199040
+</div></figure>
+
+
+
+<p>Additionally, one feature that seems to have been lost on this, is the functionality to download a service pack directly into your AEM environment.  Previously, in Package Share, one could select a service pack or hotfix and it would be downloaded directly from Adobe's repo into your AEM environment, prepped for install.  This was handy if you were working from, say, a coffee shop with crappy Internet or were otherwise not able to upload a large package directly to an instance.  Now, with the new Software Distribution portal, you have to download the release to your local machine, and then upload it back into the instance you want via package manager. </p>
+
+
+
+<p>Just as an FYI in case you install the latest Service Pack and wonder where your package share link went!</p>
+
+
+
+<p>I'll update this again once the functionality for on-premise customers goes live so we can see how that flow goes. </p>
+
+    </section>
+    <footer><p>Categories: 6.5, AEM, AEM / CQ, cq, distribution, download, hotfix, on-premise, package share, service pack</p></footer>
+  </article>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<body>
+  <header></header>
+  <main><div><div class="blog-post-hero"><div><div></div></div></div></div><div><p>// Key takeaways</p><ul><li>Configuring AEM to use SSL</li><li>Adding Truststore to the JVM</li></ul><div class="section-metadata"><div><div><p>Style</p></div><div><p>key-points</p></div></div></div></div><div><p>As I noted in <a href="http://www.jetteroheller.com/implementing-ssl-on-aem/">my other post on setting up AEM for server-to-server SSL</a>, doing full SSL on AEM 6.3 and 6.4 can be done fairly simply these days using a relatively easy-to-use UI for the most part, with the SSL keys themselves stored in the repository. AEM 6.1 and 6.2 however required one to use a Java Keystore with the keys stored on-disk, a paradigm which still works for AEM 6.3/6.4 as well, though it’s somewhat deprecated and also significantly more difficult.</p><p>Most of the steps are in the <a href="https://docs.adobe.com/docs/en/aem/6-2/deploy/configuring/config-ssl.html">official Adobe docs</a>, though there are a few gotchas which I’ll document here to make it easier, should you need to set this up or debug it.</p><h2 id="generating-ssl-certificates--importing-into-java-keystore">Generating SSL Certificates &amp; Importing into Java Keystore</h2><p>First, I’ll assume here that you’re going to need to generate SSL certificates that need to be signed by an external cert signing authority. Self-signed certs will work in AEM as well, but let’s just assume for the purposes of the docs here that you’re doing this for PRD and are required to use externally-valid SSL certs.</p><p>First, generate your cert-signing request (CSR) which will also create a JKS file and embed the private key for the SSL cert into the JKS file:</p><pre><code>keytool -genkey -alias aem-author-test -keyalg RSA -keysize 2048 -keystore AEM_author_dev.jks -dname "CN=aem-author-dev.test.com, O=Companyname, L=CityName, ST=, C=US" &amp;&amp; keytool -certreq -alias aem-author-test -file AEM_author_dev.csr -keystore AEM_author_dev.jks
+</code></pre><p>Then, once you get the signed certs back from your certificate authority, you may first need to install their intermediate certs or root certs into your JKS file, presuming their intermediate certs aren’t embedded in the JDK. This is a vital step if your organization runs its own cert authority.</p><pre><code>#import the Root cert into the keystore
+keytool -importcert -trustcacerts -file rootcert.pem -keystore AEM_author_dev.jks -alias "Root CA Cert"
+ 
+#import the intermediate cert into the keystore, ensuring the alias is correct (you can import into a browser to check)
+keytool -importcert -trustcacerts -file intermediatecert.pem -keystore AEM_author_dev.jks -alias "Intermediate Cert"
+</code></pre><p>After this, you’ll want to import your signed cert back into the JKS file. First, make sure you have the alias correct for the cert you’re importing (important if you’re doing this for many servers). To see the certs which are loaded in a given JKS file use:</p><pre><code>[me@localhost ssl]$ keytool -list -keystore aem-author-test.jks
+Enter keystore password:  
+Keystore type: JKS
+Keystore provider: SUN
+
+Your keystore contains 3 entries
+
+test root ca, Nov 14, 2017, trustedCertEntry, 
+Certificate fingerprint (SHA1): E6:45:FF:B1:C6:27:FA:A4:5C:06:1E:C7:5D:53:8C:86:37:93:C2:33
+aem-author-test, Nov 14, 2017, PrivateKeyEntry, 
+Certificate fingerprint (SHA1): 66:5F:F2:F3:E2:F3:FF:82:6D:15:FB:F3:F1:F0:AD:A9:D8:4D:4B:9D
+test intermediate ca, Nov 14, 2017, trustedCertEntry, Certificate fingerprint (SHA1): E6:45:FF:B1:C6:27:FA:A4:5C:06:1E:C7:5D:53:8C:86:37:93:C2:33
+</code></pre><p>In this case, the ‘alias’ you would use for your import command would be ‘aem-author-test’. The alias is just a key to the entries in the JKS database. It’s an arbitrary name and can be anything you want.</p><p>(<strong>Important Note</strong>: have not tested this alias with ¯\_(ツ)_/¯ emoji, so perhaps not <em>anything</em> you want)</p><p>Import the signed cert back in with:</p><pre><code>#import the signed cert into the keystore, using the same alias as you used above
+keytool -importcert -trustcacerts -file my-signed-cert.der -keystore AEM_author_dev.jks -alias "aem-author-test"
+</code></pre><p>Assuming the alias names line up between the CSR and the imported signed cert, you’ll see:</p><pre><code>Enter keystore password:  
+Certificate reply was installed in keystore
+</code></pre><p>When you import the cert.</p><h2 id="configuring-aem-to-use-ssl">Configuring AEM to use SSL</h2><p>To get AEM to run on SSL using the certificate you’ve just created, you’ll need to do the following:</p><ol>
+<li>
+<p>Open CRXDE Lite and select the /apps folder. Click  <strong>Create</strong>  &gt;  <strong>Create Folder</strong>  to create a folder named system (<a href="http://localhost:4502/crx/de">http://localhost:4502/crx/de</a>).</p>
+</li>
+<li>
+<p>Below the system folder create a folder named <strong>config.author</strong> (or  <strong>config.publish</strong> if this is a publisher)</p>
+</li>
+<li>
+<p>Select the /apps/system/config.author node.</p>
+</li>
+<li>
+<p>Click  <strong>Create</strong> &gt;  <strong>Create Node</strong>  and enter the following properties:</p>
+<ol>
+<li><strong>Name</strong>: org.apache.felix.http</li>
+<li><strong>Type</strong>: sling:OsgiConfig</li>
+</ol>
+</li>
+<li>
+<p>Add properties to the node according to the following table:</p>
+</li>
+</ol><div class="name"><div><div>org.apache.felix.https.enable</div><div>Boolean</div><div>true</div></div><div><div>org.osgi.service.http.port.secure</div><div>Long</div><div>5443 (what you want as your AEM SSL port)</div></div><div><div>org.apache.felix.https.nio</div><div>Boolean</div><div>true</div></div><div><div>org.apache.felix.https.keystore</div><div>String</div><div><em>/opt/aem/ssl/AEM_author_dev.jks<br> (or wherever you’ve put this keystore)</em></div></div><div><div>org.apache.felix.https.keystore.password</div><div>String</div><div>The keystore password</div></div><div><div>org.apache.felix.https.keystore.key</div><div>String</div><div>The SSL key alias noted above (i.e. aem-author-test)</div></div><div><div>(optional) org.apache.felix.https.keystore.key.password</div><div>String</div><div>JKS files support a password on individual certificate entries in addition to the keystore password. If your key has one, put the password here.  Otherwise, do not include this value.</div></div><div><div>(optional) org.apache.felix.https.truststore</div><div>String</div><div>Path to truststore.  If you use a 3rd-party cert signing authority, you may need to create a separate truststore which includes the 3rd-party intermedia/root certs.  If so, add this truststore path here.</div></div><div><div>(optional) org.apache.felix.https.truststore.password</div><div>String</div><div>Truststore password.</div></div><div><div>(Optional) org.apache.felix.https.clientcertificate</div><div>String</div><div>Defaults to none</div></div></div><p>After you’ve added these nodes, click <strong>Save All</strong> in crxde. If you’re tailing the log, you’ll see a number of org.apache.felix entries streaming past, and you may see SSL attempt to be enabled. Once Felix finishes refreshing, restart the entire AEM instance.</p><p>Once AEM restarts, you should see an entry like this in the logs, indicating that it’s listening on the HTTPS port:</p><pre><code>17.07.2018 22:04:01.142 *INFO* [CM Configuration Updater (ManagedService Update: pid=[org.apache.felix.http])] org.apache.felix.http.jetty Started Jetty 9.2.19.v20160908 at port(s) HTTP:4503 HTTPS:6443 on context path / [minThreads=8,maxThreads=200,acceptors=1,selectors=1]
+</code></pre><h2 id="adding-truststore-to-the-jvm">Adding Truststore to the JVM</h2><p>Some features of AEM, when making outbound calls, originate from within Felix and will use the org.apache.felix.https.truststore value you set up above for the truststore. However, some other calls (replication, flush agent requests) are made directly by the JDK, and require that the truststore you added be loaded into the JDK as well.</p><p>To do this, you will need to add an extra argument into your AEM start script to add a truststore to the JVM as well:</p><pre><code>-Djavax.net.ssl.trustStore=/opt/aem/ssl/prd_truststore.jks
+</code></pre></div><div><p>// Related reading</p><ul><li><p><em>Field Experiment · LLM</em></p><p><a href="/en/testing-geo-seo-with-adobe-llm-optimizer">Testing GEO/SEO with Adobe LLM Optimizer</a></p><p>Read the experiment →</p></li><li><p><em>Field Notes · DevOps</em></p><p><a href="/en/tailing-and-viewing-adobe-cloud-manager-build-logs">Tailing and viewing Adobe Cloud Manager build logs</a></p><p>Read the runbook →</p></li></ul><div class="section-metadata"><div><div><p>Style</p></div><div><p>related</p></div></div></div></div><div><p><a href="/en/fragments/cta-band">CTA Band</a></p></div><div><div class="metadata"><div><div><p>title</p></div><div><p>AEM SSL Setup: AEM 6.1/6.2 &amp; Java Keystore Based SSL Configuration</p></div></div><div><div><p>description</p></div><div><p>As I noted in my other post on setting up AEM for server-to-server SSL, doing full SSL on AEM 6.3 and 6.4 can be done fairly simply these days using a relatively easy-to-use UI for the most part, with...</p></div></div><div><div><p>image</p></div><div><p>https://content.da.live/treeves/opsinventor-eds/en/.aem-ssl-setup-aem-6-1-6-2-java-keystore-based-ssl-configuration/img426d12c8e1c2.png</p></div></div><div><div><p>template</p></div><div><p>blog</p></div></div><div><div><p>author</p></div><div><p>Tad Reeves</p></div></div><div><div><p>date</p></div><div><p>2018-07-18</p></div></div><div><div><p>category</p></div><div><p>AEM</p></div></div><div><div><p>tags</p></div><div><p>AEM / CQ, adobe experience manager, AEM, howto, instructions, jks, setup, ssl</p></div></div></div></div></main>
+  <footer></footer>
+</body>

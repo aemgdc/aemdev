@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Using the Apache Worker MPM vs Prefork on Java App Servers</title>
+  <link rel="canonical" href="https://www.opsinventor.com/using-the-apache-worker-mpm-vs-prefork-on-java-app-servers/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Using the Apache Worker MPM vs Prefork on Java App Servers</h1>
+      <time datetime="2012-04-04T19:21:16.000Z">4/4/2012, 12:21:16 PM</time>
+    </header>
+    <section class="content">
+      After suffering some major performance problems on an Apache system that's fronting two different Java web apps (via mod_jk and mod_dispatcher) I'm looking into implementing the Worker MPM vs. the stock Prefork MPM that comes on Redhat systems.   Following are my own notes on such, mostly as a personal placeholder.  Hopefully some others have had experience with this.
+<h2><strong>Why move to Worker?</strong></h2>
+Per the Apache documentation on multiprocess modules:
+<blockquote><strong>The <code><a href="http://httpd.apache.org/docs/2.0/mod/worker.html">worker</a></code> MPM uses multiple child processes with many threads each. Each thread handles one connection at a time. Worker generally is a good choice for high-traffic servers because it has a smaller memory footprint than the prefork MPM.</strong>
+
+<strong>The <code><a href="http://httpd.apache.org/docs/2.0/mod/prefork.html">prefork</a></code> MPM uses multiple child processes with one thread each. Each process handles one connection at a time. On many systems, prefork is comparable in speed to worker, but it uses more memory. Prefork's threadless design has advantages over worker in some situations: it can be used with non-thread-safe third-party modules, and it is easier to debug on platforms with poor thread debugging support.</strong></blockquote>
+ref: <a href="http://httpd.apache.org/docs/2.0/misc/perf-tuning.html">http://httpd.apache.org/docs/2.0/misc/perf-tuning.html</a> - Section "Choosing an MPM"
+
+I didn't find many performance comparisons of prefork vs worker for folks using Apache in front of JBoss or other app servers (mostly just Ruby / PHP / Python) though all reported a higher average throughput (req/sec) with about half the memory utilization.    Very curious how it will perform with our Java apps.
+<h3><strong>Changes Required on a Redhat (RHEL) System</strong></h3>
+It looks like the changes that would need to be made, configuration-wise, to implement Worker are as follows:
+<ul>
+	<li>Edit /etc/sysconfig/httpd and uncomment the line that reads "<strong>#HTTPD=/usr/sbin/httpd.worker</strong>"</li>
+	<li>Worker requires a threadsafe version of mod_cgi called <strong>mod_cgid.so</strong> which is presently NOT included on our RHEL machines.</li>
+</ul>
+Anyone else have performance data or other experience with using the Worker MPM with Tomcat / JBoss / Jetty / Glassfish or with a JCR-type CMS?
+    </section>
+    <footer><p>Categories: apache, cq, day, glassfish, httpd, jboss, mpm, prefork, technology, worker</p></footer>
+  </article>
+</body>
+</html>

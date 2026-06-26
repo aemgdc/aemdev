@@ -1,57 +1,131 @@
 footer {
-  a {
-    text-decoration: none;
-  }
-
-  .footer-content {
-    max-width: var(--grid-container-width);
-    margin: 48px auto;
-    font-size: 14px;
-  }
-
-  .section-legal ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  .section-copyright p {
-    margin: 0;
-  }
-
-  .section {
-    .default-content {
-      max-width: initial;
-      margin: initial;
-    }
-  }
+  display: block;
+  background-color: var(--ink);
+  color: #9bafb6;
+  border-top: 4px solid var(--orange);
+  padding: 64px var(--grid-gutter-width) 28px;
 }
 
-@media (width >= 900px) {
-  footer {
-    margin: 0;
+footer a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.15s ease;
+}
 
-    .section-legal {
-      display: flex;
-      justify-content: end;
-      gap: var(--spacing-xl);
-      margin-bottom: 24px;
+footer a:hover {
+  color: var(--orange);
+}
 
-      ul {
-        display: flex;
-        justify-content: end;
-        gap: var(--spacing-xl);
-      }
+footer ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 
-      li {
-        margin: 0;
-      }
-    }
+footer li {
+  margin: 0;
+}
 
-    .section-copyright {
-      display: flex;
-      justify-content: end;
-      gap: var(--spacing-xl);
-    }
+footer .footer-content {
+  max-width: var(--grid-content-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+}
+
+footer .footer-content .section {
+  width: 100%;
+}
+
+footer .footer-content .section .default-content {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+}
+
+/* Brand block */
+footer .footer-brand p {
+  margin: 0 0 14px;
+  color: #9bafb6;
+  font-size: 0.92rem;
+  max-width: 320px;
+}
+
+footer .footer-brand p:first-child {
+  font-family: var(--display-font-family);
+  font-size: 1.4rem;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  margin-bottom: 14px;
+  white-space: nowrap;
+}
+
+footer .footer-brand p:first-child strong {
+  color: var(--white);
+  font-weight: normal;
+}
+
+footer .footer-brand p:first-child::after {
+  content: " // OPSINVENTOR";
+  font-family: var(--mono-font-family);
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  color: var(--orange);
+  margin-left: 6px;
+  text-transform: uppercase;
+}
+
+/* Column lists */
+footer .footer-col h4 {
+  font-family: var(--mono-font-family);
+  font-size: 0.74rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--white);
+  margin: 0 0 16px;
+  font-weight: 700;
+}
+
+footer .footer-col ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.92rem;
+  color: #cdd6da;
+}
+
+footer .footer-col a {
+  color: #cdd6da;
+}
+
+/* Bottom row */
+footer .footer-bottom {
+  border-top: 1px solid #21343c;
+  padding-top: 22px;
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-family: var(--mono-font-family);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6e8189;
+}
+
+footer .footer-bottom p {
+  margin: 0;
+}
+
+@media (width >= 720px) {
+  footer .footer-content {
+    grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  }
+
+  footer .footer-bottom {
+    grid-column: 1 / -1;
   }
 }

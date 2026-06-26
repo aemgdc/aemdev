@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Importing an SSL Cert from PKCS12 to JKS</title>
+  <link rel="canonical" href="https://www.opsinventor.com/importing-an-ssl-cert-from-pkcs12-to-jks/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Importing an SSL Cert from PKCS12 to JKS</h1>
+      <time datetime="2018-09-26T00:14:40.000Z">9/25/2018, 5:14:40 PM</time>
+    </header>
+    <section class="content">
+      When you're working with a java app like AEM, generally I've <a href="http://www.jetteroheller.com/aem-ssl-setup-aem-6-1-6-2-java-keystore-based-ssl-configuration/">used this process to set up SSL</a>, where you first generate your CSR with the keytool command which embeds the private key into a JKS file, then get the cert signed and import the signed cert back into the JKS file.
+
+However, what happens when you've got a PKCS12 key &amp; certificate chain that has been generated for you which you then need to import into your java keystore?  I've had trouble with this before, as attempts to import keys with a command like this:
+<pre class="lang:default decode:true">keytool -importkeystore -deststorepass ThePassw0rd -destkeystore test.jks -srckeystore ~my-signed-certificate-file.p12 -srcstoretype PKCS12</pre>
+gave an error like this
+<pre class="lang:default decode:true ">keytool error: java.lang.StringIndexOutOfBoundsException: String index out of range: 0</pre>
+I didn't know how to get around this impasse for a while until finally realizing that the certificate provider did not have an alias in the PKCS12 file, and for Java Keystores, Aliases are REQUIRED elements so that you can select what key you want your application to use.
+
+On the source P12 file I was using, I saw this:
+<pre class="lang:default decode:true ">[tad@localhost ssl]$ keytool -list -keystore my-signed-cert.p12
+Enter keystore password:  
+Keystore type: jks
+Keystore provider: SUN
+
+Your keystore contains 1 entry
+
+, Sep 25, 2018, PrivateKeyEntry, 
+Certificate fingerprint (SHA1): 22:0D:0F:C0:F0:3F:9D:2C:7C:A2:72:1C:88:53:5B:68:6E:73:21:82
+</pre>
+The problem, of course, is that the key has no name.  Without an alias though, you can't reference it, you can't convert it, but critically - in keytool, you can't rename it either - as you can't say
+<pre class="lang:default decode:true ">-alias=""</pre>
+The solution comes in the form of a little tool called Keystore Explorer, which is a gui tool that lets you import a p12 key, and then select &amp; rename keys in the keystore <em>even if those keys have no name.  </em>
+
+After using that, I was able to run the first command above with my newly-renamed p12 file, and it worked like a charm.
+<pre class="lang:default decode:true ">[tad@localhost ssl]$ keytool -importkeystore -deststorepass thePassw0rd -destkeystore test.jks -srckeystore test.p12 -srcstoretype PKCS12 -alias theServerName 
+Importing keystore test.p12 to test.jks...
+</pre>
+Hope that helps anyone else that has been in the same predicament.
+    </section>
+    <footer><p>Categories: AEM, AEM / CQ, convert, error, export, import, jks, keytool, pkcs12, ssl</p></footer>
+  </article>
+</body>
+</html>

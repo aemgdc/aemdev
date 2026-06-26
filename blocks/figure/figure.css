@@ -1,0 +1,46 @@
+/* Figure — bordered image with FIG-labelled mono caption */
+
+.figure {
+  margin: 40px 0;
+  background: var(--ink);
+  padding: 4px;
+  border-left: 5px solid var(--orange);
+  position: relative;
+}
+
+.figure img,
+.figure picture {
+  width: 100%;
+  display: block;
+  background: var(--white);
+}
+
+.figure figcaption {
+  font-family: var(--mono-font-family);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8eafb8;
+  padding: 14px 20px 12px;
+  background: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.figure figcaption::before {
+  content: "FIG";
+  font-weight: 700;
+  color: var(--orange);
+  letter-spacing: 0.16em;
+}
+
+.figure figcaption .num {
+  color: var(--orange);
+  font-weight: 700;
+}
+
+.figure.wide {
+  margin-inline: calc(min(820px, 92vw) / 2 - 50vw + clamp(24px, 5vw, 60px));
+  max-width: none;
+}

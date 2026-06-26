@@ -1,0 +1,87 @@
+/* Callout — ink-bg with orange "!" pill */
+
+.callout {
+  background: var(--ink);
+  color: var(--white);
+  padding: 32px clamp(24px, 4vw, 40px);
+  margin: 48px 0;
+  border-left: 6px solid var(--orange);
+  position: relative;
+}
+
+.callout-tag {
+  font-family: var(--mono-font-family);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 12px;
+  font-weight: 700;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.callout-tag::before {
+  content: "!";
+  font-family: var(--display-font-family);
+  background: var(--orange);
+  color: var(--ink);
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.callout h3 {
+  font-family: var(--display-font-family);
+  font-size: clamp(1.2rem, 2vw, 1.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  margin: 0 0 16px;
+  font-weight: 400;
+}
+
+.callout p {
+  color: #cfd9de;
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 14px;
+}
+
+.callout p:last-child {
+  margin-bottom: 0;
+}
+
+.callout ul {
+  margin-top: 14px;
+  padding-left: 0;
+  list-style: none;
+}
+
+.callout ul li {
+  position: relative;
+  padding-left: 24px;
+  color: #cfd9de;
+  margin-bottom: 10px;
+  line-height: 1.65;
+}
+
+.callout ul li::before {
+  content: "▸";
+  position: absolute;
+  left: 0;
+  color: var(--orange);
+  font-weight: 700;
+}
+
+.callout ul li strong {
+  color: var(--white);
+}
+
+.callout a {
+  color: var(--orange);
+}

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Useful AEM-related Splunk Searches for Author / Publish / Dispatcher</title>
+  <link rel="canonical" href="https://www.opsinventor.com/useful-aem-related-splunk-searches-for-author-publish-dispatcher/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Useful AEM-related Splunk Searches for Author / Publish / Dispatcher</h1>
+      <time datetime="2018-11-01T22:20:47.000Z">11/1/2018, 3:20:47 PM</time>
+    </header>
+    <section class="content">
+      I noted in an earlier mega-post on <a href="http://www.jetteroheller.com/visualizing-the-perfect-aem-code-deployment-process/">Adobe Experience Manager deployment best practices</a> that one should make up a massive dashboard with your APM and log aggregator toolset with everything that could potentially affect system performance.  On this page I'm going to start cataloging some of those searches that one can use in Splunk to visualize and track down issues with AEM.
+<h3>Searching AEM Request Logs &amp; Grouping the Request with the Response</h3>
+AEM request logs are always a pain to view sequentially, as AEM logs the request and the response seperately.  There's a fairly simple search using the Splunk <strong>transaction</strong> command to group the request with its response using the request id that gets logged with each to group them.
+<pre title="Searching AEM Request Logs &amp; Grouping the request with the response" class="lang:default decode:true">sourcetype=aem_request_log | transaction maxpause=10m keepevicted=true requestid maxevents=true</pre>
+To make this search above work, however, you'll need a few things configured first:
+<ul>
+ 	<li><strong>Create a sourcetype for the AEM request log:</strong> this you'll likely need admin rights for, to set up your Splunk forwarders to forward crx-quickstart/logs/request.log* into Splunk as a aem_request_log sourcetype.</li>
+ 	<li>Create a field extraction for the Request ID: You'll then want to use the interactive field extraction wizard in Splunk to extract out the request ID as its own field (which I named <em>requestid</em> above)</li>
+</ul>
+An example AEM author/publish request log entry for a request &amp; response is:
+<pre class="lang:default decode:true">01/Nov/2018:11:58:57 -0700 [3158] -&gt; GET /content/dam/test/Whitefish%20Mountain%20Biking.mp4/jcr%3acontent/renditions/cq5dam.thumbnail.319.319.png?ch_ck=1541096749000 HTTP/1.1
+01/Nov/2018:11:58:57 -0700 [3158] &lt;- 304 - 3ms</pre>
+In the example above, I have the sourcetype set up to extract as:
+<ul>
+ 	<li>"3158" gets extracted as "requestid"</li>
+ 	<li>Further extractions of "/content/dam/test..." as the requestpath, and the numerical "3" in "3ms" extracted as the responsetime.  Make sure to extract just the number from the responsetime so that you can do mathmatical functions like averages, most/least/etc against the responsetime.</li>
+</ul>
+<h3>Graph of Author/Publish Average Response Time</h3>
+<pre class="lang:default decode:true">#Splunk Search
+sourcetype=aem_request_log | timechart avg(responsetime)span=5m by host
+
+</pre>
+When Response time is being extracted from your request logs, use the above to get a chart of average response times by host for the publish tier.
+<h3>Graphing Dispatcher Cache Hit Ratio</h3>
+An easy way to get a running graph of your cache hit ratio on the AEM Dispatcher / Publisher tier is to analyze your dispatcher.log to find out how many requests the dispatcher serves out of cache vs the number of requests that it serves after requesting the resource from the backend publisher.
+<pre class="wrap:true lang:default decode:true ">(index=aem source=/var/log/httpd/dispatcher.log host=aem-prd*) 0ms 
+| timechart count as Uncached 
+| appendcols [search(index=aem source=/var/log/httpd/dispatcher.log host=aem-prd*) NOT 0ms 
+| timechart count as Cached]</pre>
+This is a fairly inefficient search (I'll get around to improving it) but it gets the job done.  Anything with a response time logged as "0ms" in the dispatcher.log was served from cache, whilst anything else would have been served from the publish backend.
+
+<strong>Note: </strong> the above search will not work at Log Level 3, as there will be too much other noise in the log, so you'll have to get some more specificity about what constitutes an uncached request.
+    </section>
+    <footer><p>Categories: access.log, adobe experience manager, AEM, AEM / CQ, analysis, CQ5, error.log, example, log aggregation, request, request.log, response, splunk</p></footer>
+  </article>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<body>
+  <header></header>
+  <main><div><div class="blog-post-hero"><div><div></div></div></div></div><div><p>// Key takeaways</p><ul><li>technology</li><li>2012</li><li>benchmarking</li><li>mysql</li></ul><div class="section-metadata"><div><div><p>Style</p></div><div><p>key-points</p></div></div></div></div><div><p><a href="http://www.flickr.com/photos/tadnkat/7444214100/" title="Baron Schwartz giving an Epic Talk on Benchmarking"><img src="https://content.da.live/treeves/opsinventor-eds/en/.baron-schwartz-giving-an-epic-talk-on-benchmarking/img3237e7361c7f.jpg" alt="Baron Schwartz giving an Epic Talk on Benchmarking by tadnkat"></a><br>
+<a href="http://www.flickr.com/photos/tadnkat/7444214100/">Baron Schwartz giving an Epic Talk on Benchmarking</a>, a photo by <a href="http://www.flickr.com/photos/tadnkat/">tadnkat</a> on Flickr.</p><p><a href="http://www.xaprb.com/blog/">Baron Schwartz</a> from <a href="http://www.percona.com/">Percona</a> gave an amazing talk on Benchmarking. As someone who’s always loved <em>reading about</em> benchmarks, but having been pretty terrible at producing them myself, I found this talk fascinating — especially after my recent experience with attempting to run a bunch of inconclusive benchmarks on JBoss 4.2 vs JBoss 5.1 performance.</p><p>Put simply, <strong>Baron Schwartz is a benchmarking GOD.</strong> Listen to what he says. <a href="http://www.xaprb.com/blog/">Read his blog.</a> This guy is benchmarking sanity personified.</p><p>Bullets from his talk:</p><ul>
+<li>
+<p>It’s important to establish goals for a benchmark, reasons why, legend, distribution, response time, etc – not just throughput</p>
+</li>
+<li>
+<p>One needs a lot of info to think clearly about a benchmark</p>
+</li>
+<li>
+<p>Ideal benchmark report:</p>
+<ul>
+<li>
+<p>Clear benchmark goals:</p>
+<ul>
+<li>Validating hardware config (disk / cpu / etc) – see if it matches expectations</li>
+<li>Compare two systems</li>
+<li>Checking for regressions</li>
+<li>Capacity planning (how will it perform at higher load than you have?)</li>
+<li>Reproduce bad behaviour to solve it
+<ul>
+<li>Most systems you don’t want to push it as far as it’s max throughput, as at that point you’re beyond its threshhold of “good behaviour”.</li>
+</ul>
+</li>
+<li>Stress test to find bottlenecks</li>
+</ul>
+</li>
+<li>
+<p>Get specs:</p>
+<ul>
+<li>Get specs for CPU, disk, memory, network, including makes/models/etc.</li>
+<li>SSDs are EXTREMELY tricky to benchmark</li>
+<li>Versions of all software</li>
+<li>RAID controller / filesystem</li>
+<li>Disk queue scheduler –
+<ul>
+<li>a lot of Linux defaults have tons of desktop software shoved in there.  CFQ is standard disk scheduler (desktop – perf sucks) instead of noop or others</li>
+</ul>
+</li>
+<li>Generate some plots to summarize</li>
+</ul>
+</li>
+<li>
+<p>Better Aggregate Measurement:</p>
+<ul>
+<li>Average / Percentiles</li>
+<li>Observation duration</li>
+<li>95th percentile = you can throw away the worst 1/20 of your day.  Means  you can throw away more than an hour of data per day.  I.e. your system can be rock bottom performing for an hour a day.  Not so good for establishing an SLA or SLO (objective).</li>
+<li>Scatter graphs can be much more telling than a single point – as you can see if your performance is all over the map or if it returns a stable figure.   i.e. SSDs have performance all over the map, and have very different performance characteristics when empty / full or at start/end of the benchmark.</li>
+</ul>
+</li>
+<li>
+<p>Performance:</p>
+<ul>
+<li>Two metrics:  Thoughput and Response time (tasks per time or time per task)</li>
+<li>They are not reciprocals</li>
+<li>Resource consumption is NOT a good measure of performance – i.e. CPU% / Load Avg / etc.  These are indicators.  They are not the goal.</li>
+<li>Be very careful with tools that report utilization.  At 100% utilization many systems are not actually saturated.</li>
+<li>try ptdiskstats from perconia</li>
+</ul>
+</li>
+<li>
+<p>What is a system’s actual capacity?</p>
+<ul>
+<li>Max throughput at max achievable concurrency while being given acceptable performance (response time).</li>
+</ul>
+</li>
+<li>
+<p>Recap:</p>
+<ul>
+<li>Most benchmarks reveal little</li>
+</ul>
+</li>
+<li>
+<p>if 1/20 is serialized, you’ll never get more than a 20x speedup from going parallel.</p>
+</li>
+<li>
+<p>Isolating bottlenecks or iteratively optimizing them is one way – but don’t optimize things that don’t matter.  Don’t try to optimize little things.</p>
+</li>
+<li>
+<p>Little’s law:  concurrency = throughput * response time</p>
+<ul>
+<li>This holds regardless of queuing, arrival rate distribution, response time distribution, etc.</li>
+</ul>
+</li>
+<li>
+<p>Utilization law:</p>
+<ul>
+<li>Utilization = service time * throughput</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul></div><div><p>// Related reading</p><ul><li><p><em>Field Experiment · LLM</em></p><p><a href="/en/testing-geo-seo-with-adobe-llm-optimizer">Testing GEO/SEO with Adobe LLM Optimizer</a></p><p>Read the experiment →</p></li><li><p><em>Field Notes · DevOps</em></p><p><a href="/en/tailing-and-viewing-adobe-cloud-manager-build-logs">Tailing and viewing Adobe Cloud Manager build logs</a></p><p>Read the runbook →</p></li></ul><div class="section-metadata"><div><div><p>Style</p></div><div><p>related</p></div></div></div></div><div><p><a href="/en/fragments/cta-band">CTA Band</a></p></div><div><div class="metadata"><div><div><p>title</p></div><div><p>Baron Schwartz giving an Epic Talk on Benchmarking</p></div></div><div><div><p>description</p></div><div><p>Baron Schwartz from Percona gave an amazing talk on Benchmarking. As someone who’s always loved reading about benchmarks, but having been pretty terrible at producing them myself, I found this talk f...</p></div></div><div><div><p>image</p></div><div><p>https://content.da.live/treeves/opsinventor-eds/en/.baron-schwartz-giving-an-epic-talk-on-benchmarking/img8e048fe113d8.jpg</p></div></div><div><div><p>template</p></div><div><p>blog</p></div></div><div><div><p>author</p></div><div><p>Tad Reeves</p></div></div><div><div><p>date</p></div><div><p>2012-06-26</p></div></div><div><div><p>category</p></div><div><p>Technology</p></div></div><div><div><p>tags</p></div><div><p>technology, 2012, benchmarking, mysql, numbers, percona, statistics, velocity, velocityconf</p></div></div></div></div></main>
+  <footer></footer>
+</body>

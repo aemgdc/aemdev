@@ -1,0 +1,142 @@
+<body>
+  <header></header>
+  <main><div><div class="blog-post-hero"><div><div></div></div></div></div><div><p>// Key takeaways</p><ul><li>New Relic Logs: The Basics</li><li>Steps for Consuming AEM Logs with FluentD</li><li>How it Works:</li><li>What Doesn’t Work Yet</li></ul><div class="section-metadata"><div><div><p>Style</p></div><div><p>key-points</p></div></div></div></div><div><p>This fall, New Relic rolled out a new log analysis product called <a href="https://newrelic.com/products/logs">New Relic Logs</a>, in order to further make it possible to have an all-in-one observability solution for your infrastructure. Traditionally, when instrumenting something like Adobe Experience Manager, one has needed to have separate platforms for log aggregation and for APM (application performance monitoring), meaning you’d need to run something like Splunk or Elastic (ELK) or Loggly for logs, and then something like New Relic or Dynatrace or Appdynamics for APM. But now, New Relic’s product promises the ability to move you one step closer to just having a single product for all of those observability needs.</p><p><img src="https://content.da.live/treeves/opsinventor-eds/en/.consuming-aem-logs-into-new-relic-with-fluentd/imgdca54a30b805.jpg" alt=""></p><h2 id="new-relic-logs-the-basics">New Relic Logs: The Basics</h2><p>As a few things to know about New Relic’s logging product:</p><ul>
+<li>New Relic Logs is not really designed as a full-scale replacement for an all-in logging solution like Splunk. However, if you’re moving up from, say, not having a log aggregator at all – it may definitely suit your needs.</li>
+<li>It allows Logging and APM alerting to be configured using the same Alerting profiles. So, if you have your alerts already set up in New Relic, you can use logging events to power the same set of alerts, if you want.</li>
+<li>New Relic did not author a standalone logging collector (like FileBeat or the Splunk Forwarder) along with the Logs product. Instead, if you’re deploying this newly, New Relic suggests that you use FluentD as a log collector, which is a lightweight and relatively easy-to-configure log shipper, for which New Relic has written a plugin to simplify things.</li>
+</ul><h2 id="steps-for-consuming-aem-logs-with-fluentd">Steps for Consuming AEM Logs with FluentD</h2><p>Here are the basic steps for getting AEM logs into New Relic, using FluentD, which at this writing is New Relic’s recommended method for shipping logs.</p><h4 id="provision-your-new-relic-account-with-logs-access">Provision your New Relic Account with Logs Access:</h4><p>At this point in time, you’ll need to separately request to get your New Relic account set up for Logs access. Once you’ve got it set up, you’ll be able to click on it from the main New Relic One screen like you see here:</p><p><img src="https://content.da.live/treeves/opsinventor-eds/en/.consuming-aem-logs-into-new-relic-with-fluentd/imgaf2058c2e998.png" alt=""></p><p><strong>NOTE:</strong> Now, if your logs are already going to LogStash or are on AWS and are already going to Cloudwatch, you’ll want to go here: <a href="https://docs.newrelic.com/docs/logs/enable-logs/enable-logs/enable-new-relic-logs">https://docs.newrelic.com/docs/logs/enable-logs/enable-logs/enable-new-relic-logs</a> – as the steps I’m writing below are assuming that you’ve got AEM logs on disk in the /crx-quickstart/logs/ directory that you’re going to need to aggregate and ship off to New Relic.</p><h4 id="install-td-agent-on-your-aem-hosts">Install td-agent on your AEM Hosts</h4><p>FluentD is packaged by an outfit called Treasure Data into an easily-installable agent called td-agent, which works well on RHEL/CENTOS, Ubuntu, OSX, etc. It comes with init scripts, config files, loggers, etc that make the setup easy. Go to <a href="https://www.fluentd.org/download">https://www.fluentd.org/download</a> and grab the version of td-agent for the OS your AEM systems are running.</p><h4 id="install-the-new-relic-plugin-on-td-agent">Install the New Relic Plugin on td-agent</h4><p>Once you’ve got td-agent installed, you need the New Relic plugin which will know how to take data from td-agent and forward it properly into New Relic. You do that with:</p><pre><code>td-agent-gem install fluent-plugin-newrelic
+</code></pre><h4 id="install-the-grok-plugin-for-fluentd">Install the Grok plugin for FluentD</h4><p>In order to be able to extract fields out of your logs and report them properly to New Relic (i.e. if you want to be able to extract things like a <em>hostname</em> or <em>clientip</em> or <em>loglevel</em> or something like this out of your logs), you’ll nee to be able to define these using a <a href="https://github.com/fluent/fluent-plugin-grok-parser">simple macro markup called <em>Grok</em></a> which – if you’ve done any Logstash work, will be fairly familiar to you. Install this for td-agent with:</p><pre><code>td-agent-gem install fluent-plugin-grok-parser
+</code></pre><h4 id="configure-td-agent-to-grab-your-aem-logs">Configure td-agent to grab your AEM logs</h4><p>The td-agent process is configured with /etc/td-agent/td-agent.conf.</p><p>Below is a sample configuration which (basically) works, with a few current caveats that I am working through with the New Relic folks still.</p><pre><code class="language-plane">
+## PUBLISH INSTANCE
+
+  @type tail
+  
+    @type grok
+    
+      pattern %{IPORHOST:clientip} %{USER:ident} %{USER:auth} %{HTTPDATE:timestamp} "(?:%{WORD:method} %{NOTSPACE:request}(?: HTTP/%{NUMBER:httpversion})?|%{DATA:rawrequest})" %{NUMBER:response} (?:%{NUMBER:bytes}|-) %{QS:referrer} %{QS:agent}
+    
+  
+  path /opt/aem/publish1/crx-quickstart/logs/access.log
+  pos_file /var/log/td-agent/aem.access_log.pos
+  tag publish1.access
+
+  @type record_transformer
+  
+    service_name ${tag}
+    hostname "#{Socket.gethostname}"
+  
+
+  @type tail
+  path /opt/aem/publish1/crx-quickstart/logs/error.log
+  pos_file /var/log/td-agent/aem.error_log.pos
+  
+    @type grok
+ 
+  pattern %{GREEDYDATA:date} %{TIME} \*%{LOGLEVEL:loglevel}\* %{GREEDYDATA:message}
+ 
+  
+  tag publish1.error
+
+  @type record_transformer
+  
+    service_name ${tag}
+    hostname "#{Socket.gethostname}"
+  
+
+  @type tail
+  path /opt/aem/publish1/crx-quickstart/logs/request.log
+  pos_file /var/log/td-agent/aem.request_log.pos
+  
+    @type none
+  
+  tag publish1.request
+
+  @type record_transformer
+  
+    service_name ${tag}
+    hostname "#{Socket.gethostname}"
+  
+
+  @type tail
+  path /opt/aem/publish1/crx-quickstart/logs/stdout.log
+  pos_file /var/log/td-agent/aem.stdout_log.pos
+  
+    @type none
+  
+  tag publish1.stdout
+
+  @type record_transformer
+  
+    service_name ${tag}
+    hostname "#{Socket.gethostname}"
+  
+
+## AUTHOR INSTANCE
+
+  @type tail
+  
+    @type grok
+    
+      pattern %{IPORHOST:clientip} %{USER:ident} %{USER:auth} %{HTTPDATE:timestamp} "(?:%{WORD:method} %{NOTSPACE:request}(?: HTTP/%{NUMBER:httpversion})?|%{DATA:rawrequest})" %{NUMBER:response} (?:%{NUMBER:bytes}|-) %{QS:referrer} %{QS:agent}
+    
+  
+  path /opt/aem/author1/crx-quickstart/logs/access.log
+  pos_file /var/log/td-agent/author.access_log.pos
+  tag author1.access
+
+  @type record_transformer
+  
+    service_name ${tag}
+    hostname "#{Socket.gethostname}"
+  
+
+  @type tail
+  path /opt/aem/publish1/crx-quickstart/logs/error.log
+  pos_file /var/log/td-agent/author.error_log.pos
+  
+    @type grok
+ 
+  pattern %{GREEDYDATA:date} %{TIME} \*%{LOGLEVEL:loglevel}\* %{GREEDYDATA:message}
+ 
+  
+  tag author1.error
+
+  @type record_transformer
+  
+    service_name ${tag}
+    hostname "#{Socket.gethostname}"
+  
+
+  @type tail
+  path /opt/aem/author1/crx-quickstart/logs/request.log
+  pos_file /var/log/td-agent/author.request_log.pos
+  
+    @type none
+  
+  tag author1.request
+
+  @type record_transformer
+  
+    service_name ${tag}
+    hostname "#{Socket.gethostname}"
+  
+
+  @type tail
+  path /opt/aem/author1/crx-quickstart/logs/stdout.log
+  pos_file /var/log/td-agent/author.stdout_log.pos
+  
+    @type none
+  
+  tag author1.stdout
+
+  @type record_transformer
+  
+    service_name ${tag}
+    hostname "#{Socket.gethostname}"
+  
+
+@type newrelic
+license_key [INSERT YOUR NEW RELIC LICENSE KEY HERE]
+</code></pre><h2 id="how-it-works">How it Works:</h2><p>Basic searches work exactly as expected in New Relic Logs using the above configuration.</p><p><img src="https://content.da.live/treeves/opsinventor-eds/en/.consuming-aem-logs-into-new-relic-with-fluentd/img43dc4c837455.png" alt=""></p><p>One can do faceted search based on any fields that you have coming through from FluentD. For example, I can easily click and constrain searches by hostname, or by service (i.e. the log file, which in this case is named by author or publisher).</p><p>Also, if you’ve taken the time to make sure your pre-parsing works with Grok filters as above, you’ll be able to facet your searches into fields, like the LOGLEVEL field in the AEM error log:</p><p><img src="https://content.da.live/treeves/opsinventor-eds/en/.consuming-aem-logs-into-new-relic-with-fluentd/img8a81f3fabb7e.png" alt=""></p><p>Or break out all of the request stats from your AEM Access logs, and be able to search &amp; create alerts based on clientip or response codes etc:</p><p><img src="https://content.da.live/treeves/opsinventor-eds/en/.consuming-aem-logs-into-new-relic-with-fluentd/img99f3eef5f861.png" alt=""></p><p>Alerting also works easily in this case, as clicking the [+] next to the “QUERY LOGS” button will allow you to create an alert based on the search you’ve created, which does work great. It basically translates your logs search to NRQL (the New Relic Insights query language) and lets you assign that to any one of your current New Relic Alert Policies.</p><p><img src="https://content.da.live/treeves/opsinventor-eds/en/.consuming-aem-logs-into-new-relic-with-fluentd/img021c400e100e.png" alt=""></p><p>Which can then fire you an email or alert you in Slack or Jedi Mind Trick you into logging into the offending server, or whatever you want.</p><h2 id="what-doesnt-work-yet">What Doesn’t Work Yet</h2><h3 id="logging-in-context">Logging In-Context</h3><p>The holy-grail feature of New Relic Logs that I haven’t gotten to work as yet with AEM is <a href="https://docs.newrelic.com/docs/logs/enable-logs/logs-context-agent-apis/annotate-logs-logs-context-using-apm-agent-apis">Logging In-Context</a>, which would allow log statements from AEM to be married up on the backend with APM data and infrastructure data, so that you could see in one view in New Relic any metrics or logs which would correspond to a given application at a given point of time.</p><p>This would be huge, as right now – even though New Relic does aggregate and allow searching of log data in Insights right alongside other data, you have to provide yourself the data to marry up what servers make what logs so that you can correlate their data with data from your app.</p><p>Enabling Logging In-Context (presently a beta feature anyhow) would require annotating AEM logs with data that New Relic can use on the backend to tie everything together.</p><p>Better Log Parsing</p><p>There’s a lot more I intend to do with the FluentD config above, as there are a few things I WANT to be able to pick out of the logs. Things like being able to easily marry-up the request &amp; response lines from the AEM request log by parsing out the request ID, and also being able to properly parse multi-line stack traces in the error log (which there IS a Grok parser for multiline stack traces, I just haven’t gotten it to work yet.)</p><p>But all told, I’m very hopeful about this product presently and hope to get a lot of use out of it in the future!</p></div><div><p>// Related reading</p><ul><li><p><em>Field Experiment · LLM</em></p><p><a href="/en/testing-geo-seo-with-adobe-llm-optimizer">Testing GEO/SEO with Adobe LLM Optimizer</a></p><p>Read the experiment →</p></li><li><p><em>Field Notes · DevOps</em></p><p><a href="/en/tailing-and-viewing-adobe-cloud-manager-build-logs">Tailing and viewing Adobe Cloud Manager build logs</a></p><p>Read the runbook →</p></li></ul><div class="section-metadata"><div><div><p>Style</p></div><div><p>related</p></div></div></div></div><div><p><a href="/en/fragments/cta-band">CTA Band</a></p></div><div><div class="metadata"><div><div><p>title</p></div><div><p>Consuming AEM Logs into New Relic with FluentD</p></div></div><div><div><p>description</p></div><div><p>This fall, New Relic rolled out a new log analysis product called New Relic Logs, in order to further make it possible to have an all-in-one observability solution for your infrastructure. Traditiona...</p></div></div><div><div><p>image</p></div><div><p>https://content.da.live/treeves/opsinventor-eds/en/.consuming-aem-logs-into-new-relic-with-fluentd/imgdf7bb955be81.png</p></div></div><div><div><p>template</p></div><div><p>blog</p></div></div><div><div><p>author</p></div><div><p>Tad Reeves</p></div></div><div><div><p>date</p></div><div><p>2019-12-22</p></div></div><div><div><p>category</p></div><div><p>AEM</p></div></div><div><div><p>tags</p></div><div><p>AEM / CQ, adobe experience manager, AEM, apm, fluentd, log aggregation, logs, monitoring, new relic</p></div></div></div></div></main>
+  <footer></footer>
+</body>

@@ -1,0 +1,219 @@
+/* ============================================================
+   Section-style variants — applied via section-metadata Style: <name>
+   ============================================================ */
+
+/* === KEY POINTS === orange band with ink rules, mono chips */
+.section.key-points {
+  background: var(--orange);
+  color: var(--white);
+  padding: 28px clamp(24px, 5vw, 60px);
+  border-top: 6px solid var(--ink);
+  border-bottom: 6px solid var(--ink);
+}
+
+.section.key-points > .default-content {
+  max-width: 820px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.section.key-points > .default-content > p:first-child {
+  font-family: var(--mono-font-family);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 80%);
+  padding-top: 6px;
+  white-space: nowrap;
+  margin: 0;
+}
+
+.section.key-points > .default-content > ul {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.section.key-points > .default-content > ul > li {
+  background: rgb(11 17 21 / 22%);
+  border: 1px solid rgb(255 255 255 / 35%);
+  color: var(--white);
+  font-family: var(--mono-font-family);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 7px 12px;
+  font-weight: 700;
+  margin: 0;
+}
+
+@media (width <= 700px) {
+  .section.key-points > .default-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* === RELATED READING === surface-tinted card grid */
+.section.related {
+  background: var(--surface);
+  border-top: 3px solid var(--ink);
+  padding: 64px clamp(24px, 5vw, 60px);
+}
+
+.section.related > .default-content {
+  max-width: 820px;
+}
+
+.section.related > .default-content > p:first-child {
+  font-family: var(--mono-font-family);
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 24px;
+  font-weight: 700;
+}
+
+.section.related .cards,
+.section.related > .default-content > ul {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  list-style: none;
+  padding: 0;
+}
+
+.section.related .cards > div,
+.section.related > .default-content > ul > li {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-top: 4px solid transparent;
+  padding: 22px;
+  transition: border-top-color 0.15s ease, transform 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section.related .cards > div:hover,
+.section.related > .default-content > ul > li:hover {
+  border-top-color: var(--orange);
+  transform: translateY(-2px);
+}
+
+@media (width <= 700px) {
+  .section.related .cards,
+  .section.related > .default-content > ul {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* === CTA BAND === orange band with MTB photo at 18% multiply */
+.section.cta-band {
+  background: var(--orange);
+  color: var(--white);
+  padding: 80px clamp(24px, 5vw, 60px);
+  border-top: 6px solid var(--ink);
+  border-bottom: 6px solid var(--ink);
+  position: relative;
+  overflow: hidden;
+}
+
+.section.cta-band::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/img/mtb-cta-bg.jpg");
+  background-size: cover;
+  background-position: center;
+  opacity: 0.18;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}
+
+.section.cta-band > * {
+  position: relative;
+}
+
+.section.cta-band > .default-content {
+  max-width: 1140px;
+}
+
+.section.cta-band h2 {
+  font-family: var(--display-font-family);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  line-height: 0.98;
+  letter-spacing: -0.025em;
+  color: var(--white);
+  margin-bottom: 14px;
+}
+
+.section.cta-band h2::before {
+  display: none;
+}
+
+/* stylelint-disable-next-line no-descending-specificity */
+.section.cta-band p {
+  font-size: 1.05rem;
+  max-width: 54ch;
+  color: rgb(255 255 255 / 94%);
+  margin-bottom: 24px;
+}
+
+.section.cta-band .btn,
+.section.cta-band a.btn {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--white);
+}
+
+.section.cta-band .btn:hover,
+.section.cta-band a.btn:hover {
+  background: var(--white);
+  color: var(--ink);
+  border-color: var(--white);
+}
+
+/* Eyebrow label: leading <em> in the first paragraph (e.g. "// Direct Line") */
+/* stylelint-disable-next-line no-descending-specificity */
+.section.cta-band > .default-content > p:first-child {
+  font-family: var(--mono-font-family);
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 18px;
+}
+
+.section.cta-band > .default-content > p:first-child em {
+  font-style: normal;
+}
+
+/* Auto-button: a paragraph containing only a link renders as a dark CTA button */
+.section.cta-band > .default-content > p:has(> a:only-child) > a {
+  display: inline-block;
+  font-family: var(--mono-font-family);
+  font-weight: 700;
+  font-size: 0.82rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  line-height: 1;
+  padding: 14px 22px;
+  border: 2px solid var(--ink);
+  background: var(--ink);
+  color: var(--white);
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.section.cta-band > .default-content > p:has(> a:only-child) > a:hover {
+  background: var(--white);
+  color: var(--ink);
+  border-color: var(--white);
+}

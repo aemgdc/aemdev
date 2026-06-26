@@ -1,0 +1,32 @@
+/* Pullquote — display-font quote, orange left rule, mono cite */
+
+.pullquote {
+  background: var(--surface);
+  border-left: 6px solid var(--orange);
+  padding: 26px 30px;
+  margin: 40px 0;
+}
+
+.pullquote p {
+  font-family: var(--display-font-family);
+  font-size: clamp(1.3rem, 2.2vw, 1.6rem);
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  margin: 0;
+}
+
+.pullquote cite {
+  display: block;
+  margin-top: 14px;
+  font-family: var(--mono-font-family);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+  font-style: normal;
+}
+
+.pullquote cite::before {
+  content: "— ";
+}

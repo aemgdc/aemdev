@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Debug/Info Logging for a Particular Java Class in Adobe CQ 5</title>
+  <link rel="canonical" href="https://www.opsinventor.com/debuginfo-logging-for-a-particular-java-class-in-adobe-cq-5/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Debug/Info Logging for a Particular Java Class in Adobe CQ 5</h1>
+      <time datetime="2014-04-04T19:57:22.000Z">4/4/2014, 12:57:22 PM</time>
+    </header>
+    <section class="content">
+      <p style="margin: 0 0 11px; padding: 0; border: 0; outline: 0; font-weight: normal; font-style: normal; font-size: 14px; font-family: Georgia, 'Times New Roman', Times, serif; vertical-align: baseline; color: #000000; font-variant: normal; letter-spacing: normal; line-height: 20px; orphans: auto; text-align: left; text-indent: 0; text-transform: none; white-space: normal; widows: auto; word-spacing: 0; background-color: #ffffff;">In Adobe CQ5, it sometimes becomes necessary to make a particular package or class spit out DEBUG level log entries in order to troubleshoot problems.</p>
+<p style="margin: 0 0 11px; padding: 0; border: 0; outline: 0; font-weight: normal; font-style: normal; font-size: 14px; font-family: Georgia, 'Times New Roman', Times, serif; vertical-align: baseline; color: #000000; font-variant: normal; letter-spacing: normal; line-height: 20px; orphans: auto; text-align: left; text-indent: 0; text-transform: none; white-space: normal; widows: auto; word-spacing: 0; background-color: #ffffff;">1) From the error.log, determine the class that you want to bump up logging on.  I.e. let's say you've got system logging turned up to Warn and you want to see the INFO level progress of your datastore Garbage Collection (com.day.crx.persistence.tar.utils.DataStoreGarbageCollector)</p>
+<p style="margin: 0 0 11px; padding: 0; border: 0; outline: 0; font-weight: normal; font-style: normal; font-size: 14px; font-family: Georgia, 'Times New Roman', Times, serif; vertical-align: baseline; color: #000000; font-variant: normal; letter-spacing: normal; line-height: 20px; orphans: auto; text-align: left; text-indent: 0; text-transform: none; white-space: normal; widows: auto; word-spacing: 0; background-color: #ffffff;">2) Add a INFO logger configuration for that class.</p>
+<p style="margin: 0 0 11px; padding: 0; border: 0; outline: 0; font-weight: normal; font-style: normal; font-size: 14px; font-family: Georgia, 'Times New Roman', Times, serif; vertical-align: baseline; color: #000000; font-variant: normal; letter-spacing: normal; line-height: 20px; orphans: auto; text-align: left; text-indent: 0; text-transform: none; white-space: normal; widows: auto; word-spacing: 0; background-color: #ffffff;">In the OSGI configuration console at /system/console/configMgr , search for “Apache Sling Logger Configuration” and click the plus sign to its right.  The class name should be in the field labelled “Logger”.  See example below.</p>
+<p style="margin: 0 0 11px; padding: 0; border: 0; outline: 0; font-weight: normal; font-style: normal; font-size: 14px; font-family: Georgia, 'Times New Roman', Times, serif; vertical-align: baseline; color: #000000; font-variant: normal; letter-spacing: normal; line-height: 20px; orphans: auto; text-align: left; text-indent: 0; text-transform: none; white-space: normal; widows: auto; word-spacing: 0; background-color: #ffffff;"><a href="http://jetteroheller.wordpress.com/2014/04/04/debuginfo-logging-for-a-particular-java-class-in-adobe-cq-5/screenshot-from-2014-04-04-155121/"><img class="aligncenter wp-image-712 size-full" src="http://jetteroheller.files.wordpress.com/2014/04/screenshot-from-2014-04-04-155121-e1396641361959.png" alt="Screenshot of updating Adobe CQ5 Logging Config" width="1520" height="488" /></a></p>
+    </section>
+    <footer><p>Categories: Adobe CQ, AEM, AEM / CQ, CQ5, debug, garbage collection, info, logger, logging, technology</p></footer>
+  </article>
+</body>
+</html>

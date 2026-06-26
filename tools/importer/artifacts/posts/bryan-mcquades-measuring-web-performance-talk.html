@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Bryan McQuade&#39;s Measuring Web Performance Talk</title>
+  <link rel="canonical" href="https://www.opsinventor.com/bryan-mcquades-measuring-web-performance-talk/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Bryan McQuade&#39;s Measuring Web Performance Talk</h1>
+      <time datetime="2012-06-25T17:43:51.000Z">6/25/2012, 10:43:51 AM</time>
+    </header>
+    <section class="content">
+      <div style="margin:0 0 10px;padding:0;font-size:.8em;line-height:1.6em;"><a title="Bryan McQuade's Measuring Web Performance talk" href="http://www.flickr.com/photos/tadnkat/7441597988/"><img alt="Bryan McQuade's Measuring Web Performance talk by tadnkat" src="http://farm8.staticflickr.com/7134/7441597988_aaf3942e07.jpg" /></a>
+<span style="margin:0;"><a href="http://www.flickr.com/photos/tadnkat/7441597988/">Bryan McQuade's Measuring Web Performance talk</a>, a photo by <a href="http://www.flickr.com/photos/tadnkat/">tadnkat</a> on Flickr.</span></div>
+A quick dash-out of my notes from the opening talk of Velocity 2012 -- Bryan McQuade's (from Google) talking about measuring web performance metrics.
+
+My first take-away -- traditionally I've thought of web performance to be mensurable by way of "page load time", which in this day of web application is a bit irrelevant. One doesn't care as much about the full load time of the page as much as making sure that the user is engaged and knows what's happening with the app. Obviously the whole experience should be snappy, but there are so many things one can pay attention to to avoid a user getting a "white screen of death" as the browser redirects over and over again, redirects to an SSL version and then hangs for 10s trying to load JS and CSS files that are not even necessary to display something useful to the user.
+
+Some key points I noticed:
+* Navigation Timing now supported in ~75% of browsers. So, one can actually get feedback on real end-user experience on many browsers.
+* Avoid redirects if possible - redirects, new DNS lookups, unexpected SSL switcheroos all result in a white screen that gives the user no feedback on what's happening - especially on high-latency connections like a crap Starbucks wifi or mobile connection.
+* Use HTML5 App caching to try to eliminate “white screen of death” to make sure user doesn’t get a huge white screen while waiting for ANY response.
+* Fascinating talk about perceived performance in HTML5 pages. Speculative processing on Chrome and other browsers to speculatively load CSS &amp; resources so that they’re ready if the browser starts blocking due to needing resources.
+* Specify content type in the header to allow IE8’s speculative loader to work.
+Remember that the renderer is single-threaded &amp; serialized. Parser blocks on external scripts.
+* Don’t put JS &amp; CSS in the early, which is terrible as whole page will block while that loads.
+* Think - what JS and CSS is needed to display something useful to the user?
+
+Useful links:
+
+http://webpagetest.org -- use the web speed index. Biases better scores on when more is shown to the user sooner, rather than overall processing time.
+
+https://developers.google.com/speed/pagespeed/insights?velocity=1 -- Critical Path explorer to show waterfall in loading serialized objects that could block and create percieved performance slows for the user.
+    </section>
+    <footer><p>Categories: 2012, css, google, js, navigation timing, operations, pagespeed, performance, technology, velocity, web, webpagetest</p></footer>
+  </article>
+</body>
+</html>

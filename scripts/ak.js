@@ -57,35 +57,24 @@ export async function loadStyle(href) {
   });
 }
 
-export async function loadExperience(el, type, name, opts) {
-  const { codeBase, log } = getConfig();
-  const path = `${codeBase}/${type}/${name}/${name}`;
-  const loading = [];
-  if (opts.decorate) {
-    loading.push(new Promise((resolve) => {
-      (async () => {
-        try {
-          await (await import(`${path}.js`)).default(el);
-        } catch (ex) { await log(ex, el); }
-        resolve();
-      })();
-    }));
-  }
-  if (opts.style) loading.push(loadStyle(`${path}.css`));
-  await Promise.all(loading);
-  return el;
-}
-
 export async function loadBlock(block) {
-  const { components } = getConfig();
+  const { codeBase, log, components } = getConfig();
   const { classList } = block;
   const name = classList[0];
   block.dataset.blockName = name;
-  const opts = {
-    decorate: true,
-    style: !components.some((cmp) => name === cmp),
-  };
-  return loadExperience(block, 'blocks', name, opts);
+  const blockPath = `${codeBase}/blocks/${name}/${name}`;
+  const loading = [new Promise((resolve) => {
+    (async () => {
+      try {
+        await (await import(`${blockPath}.js`)).default(block);
+      } catch (ex) { log(ex, block); }
+      resolve();
+    })();
+  })];
+  const isCmp = components.some((cmp) => name === cmp);
+  if (!isCmp) loading.push(loadStyle(`${blockPath}.css`));
+  await Promise.all(loading);
+  return block;
 }
 
 function loadTemplate() {
@@ -103,6 +92,11 @@ function loadTemplate() {
 function decoratePictures(el) {
   const pics = el.querySelectorAll('picture');
   for (const pic of pics) {
+    pic.querySelectorAll('source, img').forEach((child) => {
+      const attr = child.hasAttribute('srcset') ? 'srcset' : 'src';
+      const val = child.getAttribute(attr);
+      if (val?.startsWith('./media_')) child.setAttribute(attr, val.replace('./', '/'));
+    });
     const source = pic.querySelector('source');
     const clone = source.cloneNode();
     const [pathname, params] = clone.getAttribute('srcset').split('?');
@@ -255,52 +249,12 @@ function groupChildren(section) {
   return groups;
 }
 
-function toClassName(name) {
-  return typeof name === 'string'
-    ? name
-      .toLowerCase()
-      .replace(/[^0-9a-z]/gi, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '')
-    : '';
-}
-
-function decorateSection(section) {
-  // Always add section class
-  section.classList.add('section');
-
-  // Find the legacy DOM-based metadata
-  const metaEl = section.querySelector(':scope > .section-metadata');
-  if (metaEl) {
-    [...metaEl.children].forEach((row) => {
-      const key = row.children[0].textContent.trim().toLowerCase();
-      const content = row.children[1];
-      if (content) {
-        const text = content.querySelector('img')?.src ?? content.textContent.trim().toLowerCase();
-        if (key && text) {
-          if (key === 'style') {
-            const styles = text.split(',').map((style) => toClassName(style));
-            section.classList.add(...styles);
-            return;
-          }
-          section.dataset[key] = text;
-        }
-      }
-    });
-    metaEl.remove();
-  }
-
-  // Determine if the section needs section-metadata.js
-  const meta = section.classList.length > 1 || Object.keys(section.dataset).length;
-  if (meta) section.dataset.meta = meta;
-}
-
 function decorateSections(parent, isDoc) {
   const selector = isDoc ? 'main > div' : ':scope > div';
   return [...parent.querySelectorAll(selector)].map((section) => {
-    decorateSection(section);
     const groups = groupChildren(section);
     section.append(...groups);
+    section.classList.add('section');
     section.dataset.status = 'decorated';
     section.linkBlocks = decorateLinks(section);
     section.blocks = [...section.querySelectorAll('.block-content > div[class]')];
@@ -355,20 +309,12 @@ export async function loadArea({ area } = { area: document }) {
   const sections = decorateSections(area, isDoc);
   for (const [idx, section] of sections.entries()) {
     loadIcons(section);
-    // Hydrate from inside out
     await Promise.all(section.linkBlocks.map((block) => loadBlock(block)));
     await Promise.all(section.blocks.map((block) => loadBlock(block)));
-    if (section.dataset.meta) {
-      const opts = { decorate: true, style: true };
-      await loadExperience(section, 'blocks', 'section-metadata', opts);
-      delete section.dataset.meta;
-    }
-
     delete section.dataset.status;
     if (isDoc && idx === 0) {
       if (!isSession) decorateSession();
       import('./postlcp.js').then((mod) => mod.default());
-      import('../deps/rum.js');
     }
   }
   if (isDoc) import('./lazy.js');

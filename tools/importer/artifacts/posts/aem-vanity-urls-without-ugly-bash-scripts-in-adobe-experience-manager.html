@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AEM Vanity URLs without Ugly Bash Scripts in Adobe Experience Manager</title>
+  <link rel="canonical" href="https://www.opsinventor.com/aem-vanity-urls-without-ugly-bash-scripts-in-adobe-experience-manager/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>AEM Vanity URLs without Ugly Bash Scripts in Adobe Experience Manager</h1>
+      <time datetime="2016-08-10T23:05:22.000Z">8/10/2016, 4:05:22 PM</time>
+    </header>
+    <section class="content">
+      <strong>Note: </strong>Originally written for the Rackspace Blog in August 2016
+
+When migrating from one version of a site to an all new website, or when migrating from an old CMS to <a href="https://www.rackspace.com/en-us/digital/adobe-experience-manager" target="_blank" rel="noopener noreferrer">Adobe Experience Manager</a>, users often struggle with two things—rewriting legacy URL redirects and handling vanity URLs.
+
+A migration can create mountains of legacy URLs that need rewriting. You need to handle these URLs somehow, whether they’re due to an SEO-driven shift in URL patterns, legacy licensed content that you can no longer access or just old articles that need to be redirected to new locations.
+
+Tables of these URLs are usually generated when moving from one site architecture to another, and developers and operations employees are generally tasked with routing them appropriately. I’ve worked on sites with upward of <strong><em>100,000</em></strong><strong> legacy URLs</strong>. At the behest of SEO teams, these have sometimes been added to by using Splunk to cull a list of 404s that users and crawlers are making against the site, and then working out rewrite rules to route these requests to appropriate current website content.
+
+<a href="http://www.wordstream.com/blog/ws/2012/10/10/vanity-url" target="_blank" rel="noopener noreferrer">According to Wordstream</a>, a vanity URL is, “a unique web address that is branded for marketing purposes … a custom <strong>URL</strong> that exists to help users remember and find a specific page of your website.”
+
+Marketing needs are what drive these URLs, and they frequently change outside of software release cycles. Non-technical people generally specify where they want URLs to go, so getting these folks to update configuration files directly in Apache is highly undesirable, if not impossible.
+
+You can generally solve the above problems with either a 302/301 redirect or a pass-through rewrite (where the URL doesn’t change but the user gets different content on the backend). There are many different ways to handle redirects, which tends to generate an array of wild and wacky solutions to maintaining and updating them all.
+
+<strong>Handling Bulk Legacy Rewrites</strong>
+For the most part, legacy URLs are best handled within Apache, and you can generally use <a href="https://httpd.apache.org/docs/current/rewrite/rewritemap.html" target="_blank" rel="noopener noreferrer">Apache RewriteMaps</a> to handle bulk rewrites for legacy URL patterns, old 404s, etc. I’ve successfully stuffed over 100,000 <a href="https://httpd.apache.org/docs/current/rewrite/rewritemap.html#dbm" target="_blank" rel="noopener noreferrer">rewrites</a> into an indexed DBM hash file, and even tiny two-CPU cloud servers were able to handle it with absolutely no problem. The basic sequence is:
+<ol>
+ 	<li>Have your marketing, content and SEO teams give you a list—preferably in Excel—of all the URL redirects they want. Have them break it up into:</li>
+</ol>
+<ul>
+ 	<li>Rewrites they want to be permanent (e.g., 301 redirect)</li>
+ 	<li>Rewrites they want to pass through (e.g., /news.htmlpulls content from /news/2016/current/index.html but still shows /news.html in the user’s browser)</li>
+</ul>
+2. Export these lists from Excel into tab-delimited text files.
+3. Store this textual map in version control, so that you can track changes to it.
+4. Encode this text map as a DBM file with:
+
+<code>httxt2dbm -i mapfile.txt -o mapfile.map</code>
+
+5. Add a directive in your HTTPD config with:
+
+<code>RewriteMap mapname "dbm:/etc/apache/mapfile.map"</code>
+
+6. Then, add in rewriteRules for each map you add, depending on how you want the URLs handled.
+
+Ideally, you’d have the <code>httxt2dbm</code> commands being run in your CI server, so that when you update your rewriteMaps, your CI server can pull the updated maps from version control, convert them to DBM, push them onto Apache and cycle the server.
+
+<strong>Handling Vanity URLs Using the AEM Dispatcher Module</strong>
+Before recent updates, there was no clean way to enable marketing teams to update vanity URLs on their own. I worked with teams that had written their own Java app to give marketing and SEO teams a UI for inputting rewrites; the output was fed automatically into Apache.
+
+Other teams tried to handle all the rewrites in Sling, but that required developers to parse and load Sling rewrite maps. Others still tried going directly to <code>/crx/de</code> in AEM and manually editing the <code>/etc/map</code> nodes on every server—a process that left considerable room for manual error and introducing differences in the DEV, STG and PRD tiers of the application.
+
+Thankfully, recent updates to the AEM Dispatcher module (since version 4.1.9 of the module) allow authors to directly control vanity URLs from within the Author UI, and these are automatically pushed out to the publishers, which then expose them to the dispatchers. This works extremely well—it takes the act of updating and maintaining rewrite rules for vanities entirely out of the hands of IT and puts it into the hands of marketing, where it belongs.
+
+<img src="https://th.bing.com/th/id/OIP.XxM8gymPXBQDCemkTDRhoQHaHk?pid=Api&amp;rs=1" alt="See the source image" />
+
+Here’s how to make this work:
+<ul>
+ 	<li>On your AEM Publish nodes, download and install the <a href="https://www.adobeaemcloud.com/content/marketplace/marketplaceProxy.html?packagePath=/content/companies/public/adobe/packages/cq600/component/vanityurls-components">VanityURLS-Components</a> package from Adobe Package Share, or pull it down and install it manually in <strong>/crx/packmgr</strong>.</li>
+ 	<li>Go to the <strong>/useradmin</strong> on your Publish instance and allow “Read” permission to <code>/libs/granite/dispatcher/content/vanityUrls</code> for the “Everyone” group. Do this by double-clicking the “Anonymous” user, Then go to “Permissions” and check the “Read” column for the above path.</li>
+ 	<li>If you don’t have an allow-all in your dispatcher configs, add a filter rule in the dispatcher to allow the vanity URL to be called on Publish instance:</li>
+</ul>
+<code>/0100 { /type "allow" /url "/libs/granite/dispatcher/content/vanityUrls.html" }</code>
+<ul>
+ 	<li>Add a caching rule to prevent caching of this URL:</li>
+</ul>
+<code>/0001 { /type "deny" /glob
+"/libs/granite/dispatcher/content/vanityUrls.html" }</code>
+<ul>
+ 	<li>Add the vanity_urls configuration to the farm:
+<pre class="lang:default decode:true ">/vanity_urls {
+    /url "/libs/granite/dispatcher/content/vanityUrls.html"
+    /file "/tmp/vanity_urls"
+    /delay 300
+}</pre>
+</li>
+</ul>
+<ul>
+ 	<li>Re-start Apache.</li>
+</ul>
+The file defined at the <code>/file</code> setting is not automatically created/updated at the time interval set at <code>/delay</code>, but only when a request is made that fails the <code>/filter</code> rules of your dispatcher. On fail, it checks to see if the file is there — if not, it will generate and use it by pulling <code>/libs/granite/dispatcher/content/vanityUrls.html</code> from the publisher. If it is there, and not older than <code>/delay</code> seconds, it will use it. Finally, if it is older than <code>/delay</code> seconds, it will update it from the Publish instance and use it.
+    </section>
+    <footer><p>Categories: AEM, AEM / CQ, bash, diagram, dispatcher, how-to, java, module, vanity url</p></footer>
+  </article>
+</body>
+</html>

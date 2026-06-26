@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>What&#39;s the Difference between AMD64 and Intel EM64T?</title>
+  <link rel="canonical" href="https://www.opsinventor.com/whats-the-difference-between-amd64-and-intel-em64t/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>What&#39;s the Difference between AMD64 and Intel EM64T?</h1>
+      <time datetime="2007-03-09T00:22:11.000Z">3/8/2007, 4:22:11 PM</time>
+    </header>
+    <section class="content">
+      I just had a <a href="http://www.scientologyhandbook.org/CHAPTER1.HTM">Misunderstood word</a> to clear up -- what in the heck is the difference between the AMD x64 implementation (AMD64) and the Intel implementation (EM64T).  A friend just asked me, I tried to sound important and tell him, but in the end I realized I didn't know jack either.  So there you go.  Serves me right for not applying my <a href="http://www.volunteerministers.org/store/pubs/technology-of-study.html">LRH Study Tech</a>.
+
+Here's the answer from <a href="http://www.answers.com/">Answers</a>:
+
+<font color="#000000"><strong>
+</strong></font>
+
+<font color="#000000"><strong>Extended Memory 64-bit Technology</strong> (<strong>EM64T</strong>) is <a href="http://www.answers.com/topic/intel" target="_top" class="ilnk">Intel</a>'s implementation
+of <a href="http://www.answers.com/topic/advanced-micro-devices" target="_top" class="ilnk">AMD</a>'s AMD64.</font>
+
+<font color="#000000">During much of AMD's history, they have produced processors patterned after Intel's, but, in an ironic twist of computing history, AMD64 has been adopted (under the name EM64T or IA-32e) by Intel—the original creators of the x86 processor line—in newer versions of its <a href="http://www.answers.com/topic/pentium-4" target="_top" class="ilnk">Pentium 4</a>, <a href="http://www.answers.com/topic/pentium-d" target="_top" class="ilnk">Pentium D</a>, <a href="http://www.answers.com/topic/pentium-d" target="_top" class="ilnk">Pentium Extreme Edition</a>, <a href="http://www.answers.com/topic/celeron" target="_top" class="ilnk">Celeron D</a>, <a href="http://www.answers.com/topic/xeon" target="_top" class="ilnk">Xeon</a>, and <a href="http://www.answers.com/topic/intel-core-2" target="_top" class="ilnk">Core 2</a> processors.</font>
+
+<font color="#000000"><a title="History" name="History"></a></font>
+<h3><font color="#000000">History</font></h3>
+<font color="#000000">The EM64T project began with the codename <strong>Yamhill</strong>, named after the <a href="http://www.answers.com/topic/yamhill-river" target="_top" class="ilnk">Yamhill River</a> in <a href="http://www.answers.com/topic/oregon" target="_top" class="ilnk">Oregon</a>'s <a href="http://www.answers.com/topic/willamette-valley-vineyard" target="_top" class="ilnk">Willamette Valley</a>. After several years of denying that this project existed, Intel eventually admitted it existed in early 2004, and gave it the codename <strong>CT </strong>(<strong>Clackamas Technology</strong>), also named after an Oregon river, <a href="http://www.answers.com/topic/clackamas-river" target="_top" class="ilnk">the Clackamas</a>. Then within the space of weeks of the CT announcement, Intel gave it several new names. After the spring 2004 <a href="http://www.answers.com/topic/intel-developer-forum" target="_top" class="ilnk">IDF</a>, Intel named it IA-32E (<a href="http://www.answers.com/topic/ia-32" target="_top" class="ilnk">IA-32</a> Extensions) and a few weeks later devised the name EM64T. Intel's chairman at the time, <a href="http://www.answers.com/topic/craig-barrett-intel-chairman" target="_top" class="ilnk">Craig Barrett</a>, admitted that this was one of their worst kept secrets.<sup><a href="http://www.answers.com/topic/x86-64#wp-_note-0">[2]</a></sup><sup><a href="http://www.answers.com/topic/x86-64#wp-_note-1">[3]</a></sup> A recent white paper
+discussing <a href="http://www.answers.com/topic/sse4-1" target="_top" class="ilnk">SSE4</a> and future extensions<sup><a href="http://www.answers.com/topic/x86-64#wp-_note-ewmppa">[1]</a></sup> refers to the instruction set as "Intel64".</font>
+
+<font color="#000000"><a title="Summary_from_the_Intel_website" name="Summary_from_the_Intel_website"></a></font>
+<h3><font color="#000000">Summary from the Intel website</font></h3>
+<font color="#000000">Intel EM64T improves performance by allowing the system to address more than 4 GiB of both virtual and physical memory. Intel EM64T provides support for: <sup><a href="http://www.answers.com/topic/x86-64#wp-_note-2">[4]</a></sup></font>
+<ul> <font color="#000000">
+	<li>64-bit flat virtual address space</li>
+	<li>64-bit pointers</li>
+	<li>64-bit wide general purpose registers</li>
+	<li>64-bit integer support</li>
+	<li>Up to 1 <a href="http://www.answers.com/topic/tebibyte-1" target="_top" class="ilnk">tebibyte (TiB)</a> of platform address space</li>
+</font></ul>
+<font color="#000000"><a title="Intel_implementations" name="Intel_implementations"></a></font>
+<h3><font color="#000000">Intel implementations</font></h3>
+<font color="#000000">EM64T was originally implemented on the E revision (Prescott) of Pentium 4 line of microprocessors, which were supported by i915P (Grantsdale) and i925X (Alderwood) chipsets in June 2004. EM64T's implementation was largely due to the competitive pressure of <a href="http://www.answers.com/topic/advanced-micro-devices" target="_top" class="ilnk">AMD</a>'s AMD64 technology implemented on <a href="http://www.answers.com/topic/opteron" target="_top" class="ilnk">Opteron</a> and <a href="http://www.answers.com/topic/athlon-64-fx" target="_top" class="ilnk">Athlon64</a> lines of microprocessing units, otherwise known as the K8 core, one year earlier in 2003; and the technology was largely built compatible to AMD64, and the then announced <a href="http://www.answers.com/topic/windows-xp-professional-x64-edition" target="_top" class="ilnk">Windows XP Professional x64 Edition</a> supporting AMD64 technology. Intel's first processor to activate the EM64T technology was the multi-socket processor <a href="http://www.answers.com/topic/xeon" target="_top" class="ilnk">Xeon</a>
+codenamed <em>Nocona</em>. Since the Nocona Xeon itself is directly based on Intel's desktop processor, the <a href="http://www.answers.com/topic/pentium-4" target="_top" class="ilnk">Pentium 4</a>, the Pentium 4 also has EM64T technology built in, although as with <a href="http://www.answers.com/topic/hyper-threading" target="_top" class="ilnk">Hyper-Threading</a>, this feature was not initially enabled on the then-new <a href="http://www.answers.com/topic/pentium-4" target="_top" class="ilnk">Prescott</a>
+design, likely because enabling EM64T did not coincide with Intel's stance on x86-64 extensions at that particular time. Intel has since begun selling EM64T enabled Pentium 4s using the E0 revision of the Prescott core, being sold on the market as the Pentium 4, model F. However, the revision F core was targeted at workstations. Intel's official launch of EM64T to desktop was the N0 Stepping Prescott-2M. The E0 revision also adds eXecute Disable(XD) support to EM64T, Intel's name for the <a href="http://www.answers.com/topic/nx-bit" target="_top" class="ilnk">NX bit</a>, and has been included in the current Xeon codenamed <em>Irwindale</em>. All 9xx/8xx/6xx/5x6/5x1/3x6/3x1 series CPUs have EM64T enabled, as do the <a href="http://www.answers.com/topic/intel-core-2" target="_top" class="ilnk">Core 2</a> CPUs, and as will all future Intel CPUs. EM64T is also present in the last members of the <a href="http://www.answers.com/topic/celeron" target="_top" class="ilnk">Celeron D</a> line.</font>
+
+<font color="#000000">The first Intel <a href="http://www.answers.com/topic/mobile-processor" target="_top" class="ilnk">mobile processor</a> supporting EM64T is the <a href="http://www.answers.com/topic/intel-core-2" target="_top" class="ilnk">Merom</a> version of the <a href="http://www.answers.com/topic/intel-core-2" target="_top" class="ilnk">Core 2</a> processor, which was released on
+<a href="http://www.answers.com/topic/july-27" target="_top" class="ilnk">27 July</a> <a href="http://www.answers.com/topic/2006" target="_top" class="ilnk">2006</a>. None of Intel's earlier notebook CPUs (<a href="http://www.answers.com/topic/intel-core" target="_top" class="ilnk">Core Duo</a>, <a href="http://www.answers.com/topic/pentium-m" target="_top" class="ilnk">Pentium M</a>, <a href="http://www.answers.com/topic/celeron" target="_top" class="ilnk">Celeron M</a>, <a href="http://www.answers.com/topic/pentium-4" target="_top" class="ilnk">Mobile Pentium 4</a>) support EM64T.</font>
+
+<font color="#000000"><a title="Differences_between_AMD64_and_EM64T" name="Differences_between_AMD64_and_EM64T"></a></font>
+<h2><font color="#000000">Differences between AMD64 and EM64T</font></h2>
+<font color="#000000">There are a small number of differences between each instruction set. Compilers generally produce binaries that target both AMD64 and EM64T, making the differences mainly of interest to compiler developers and operating system developers.</font>
+
+<font color="#000000"><a title="Currently" name="Currently"></a></font>
+<h3><font color="#000000">Currently</font></h3>
+<ul> <font color="#000000">
+	<li>EM64T's BSF and BSR instructions act differently when the source is 0 and the operand size is 32 bits. The processor sets the
+zero flag and leaves the upper 32 bits of the destination undefined.</li>
+</font></ul>
+<ul> <font color="#000000">
+	<li>AMD64 supports <a href="http://www.answers.com/topic/3dnow" target="_top" class="ilnk">3DNow!</a> instructions. This includes prefetch with the opcode <strong>0x0F 0x0D</strong> and PREFETCHW, which are useful for hiding <a href="http://www.answers.com/topic/sdram-latency" target="_top" class="ilnk">memory latency</a>.</li>
+</font></ul>
+<ul> <font color="#000000">
+	<li>EM64T lacks the ability to save and restore a reduced (and thus faster) version of the <a href="http://www.answers.com/topic/floating-point" target="_top" class="ilnk">floating-point</a> state (involving the FXSAVE and FXRSTOR instructions).</li>
+</font></ul>
+<ul> <font color="#000000">
+	<li>EM64T lacks some model-specific registers that are considered architectural to AMD64. These include SYSCFG, TOP_MEM, and TOP_MEM2.</li>
+</font></ul>
+<ul> <font color="#000000">
+	<li>EM64T supports <a href="http://www.answers.com/topic/microcode-1" target="_top" class="ilnk">microcode</a> update as in 32-bit mode, whereas AMD64 processors use a different microcode update format and control MSRs.</li>
+</font></ul>
+<ul> <font color="#000000">
+	<li>EM64T's <a href="http://www.answers.com/topic/cpuid" target="_top" class="ilnk">CPUID</a> instruction is very vendor-specific, as is normal for x86-style processors.</li>
+</font></ul>
+<ul> <font color="#000000">
+	<li>EM64T supports the MONITOR and MWAIT instructions, used by operating systems to better deal with <a href="http://www.answers.com/topic/hyper-threading" target="_top" class="ilnk">Hyper-threading</a>.</li>
+</font></ul>
+<ul> <font color="#000000">
+	<li>AMD64 systems allow the use of the AGP aperture as an IO-MMU. Operating systems can take advantage of this to let normal PCI devices DMA to memory above 4 GiB. EM64T systems require the use of bounce buffers, which are slower.</li>
+</font></ul>
+<ul> <font color="#000000">
+	<li>SYSCALL and SYSRET are also only supported in IA-32e mode (not in compatibility mode) on EM64T. SYSENTER and SYSEXIT are supported in both modes.</li>
+</font></ul>
+<ul> <font color="#000000">
+	<li>Near branches with the <strong>0x66</strong> (operand size) prefix behave differently. One type of CPU clears only the top 32 bits,
+while the other type clears the top 48 bits.</li>
+</font></ul>
+<font color="#000000"><a title="Previously" name="Previously"></a></font>
+<h3><font color="#000000">Previously</font></h3>
+<ul> <font color="#000000">
+	<li>Early AMD64 processors lacked the CMPXCHG16B instruction, which is an extension of the CMPXCHG8B instruction present on most post-<a href="http://www.answers.com/topic/486sx" target="_top" class="ilnk">486</a> processors. Similar to CMPXCHG8B, CMPXCHG16B allows for <a href="http://www.answers.com/topic/atomic-operation" target="_top" class="ilnk">atomic operations</a>
+on 128-bit double quadword (or oword) data types. This is useful for high resolution counters that could be updated by multiple processors (or cores). Without CMPXCHG16B the only way to perform such an operation is
+by using a <a href="http://www.answers.com/topic/critical-section" target="_top" class="ilnk">critical section</a>.</li>
+</font></ul>
+<ul> <font color="#000000">
+	<li>Early Intel CPUs with EM64T lacked LAHF and SAHF instructions supported by AMD64 until introduction of Pentium 4 G1
+step in December 2005. LAHF and SAHF are load and store instructions, respectively, for certain status flags. These instructions are used for virtualization and floating-point condition handling.</li>
+</font></ul>
+<ul> <font color="#000000">
+	<li>Early Intel CPUs with EM64T also lack the <a href="http://www.answers.com/topic/nx-bit" target="_top" class="ilnk">NX bit</a> (No Execute bit) of the AMD64 architecture. The NX bit marks memory pages as non-executable, allowing protection against many types of malicious code.</li>
+</font></ul>
+<ul> <font color="#000000">
+	<li>Originally EM64T hardware allowed access only to 2<sup>36</sup> bytes of memory, while AMD64 systems can handle up to 2<sup>40</sup> bytes (with planned expansion to 2<sup>56</sup> bytes). However, as of recent publications, EM64T now provides 2<sup>40</sup> bytes of memory access.</li>
+</font></ul>
+<!-- technorati tags begin -->
+<p style="font-size:10px;text-align:right;">technorati tags:<a href="http://technorati.com/tag/amd64" rel="tag">amd64</a>, <a href="http://technorati.com/tag/em64T" rel="tag">em64T</a>, <a href="http://technorati.com/tag/intel" rel="tag">intel</a>, <a href="http://technorati.com/tag/amd" rel="tag">amd</a>, <a href="http://technorati.com/tag/x64" rel="tag">x64</a></p>
+<!-- technorati tags end -->
+<p style="text-align:right;font-size:8px;">Blogged with <a href="http://www.flock.com/blogged-with-flock" title="Flock" target="_new">Flock</a></p>
+    </section>
+    <footer><p>Categories: Uncategorized</p></footer>
+  </article>
+</body>
+</html>

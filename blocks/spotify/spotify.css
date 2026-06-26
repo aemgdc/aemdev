@@ -1,0 +1,21 @@
+.spotify-embed {
+  width: 100%;
+  position: relative;
+  margin: 1rem 0;
+
+  /* Default height for tracks/albums */
+  height: 152px;
+
+  &[data-src*="/episode/"] {
+    /* Taller height for podcast episodes */
+    height: 232px;
+  }
+
+  iframe {
+    border: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+    box-shadow: 0 1.25rem 3rem rgb(0 0 0 / 28%);
+  }
+}

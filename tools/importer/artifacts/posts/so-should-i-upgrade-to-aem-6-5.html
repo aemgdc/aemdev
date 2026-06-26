@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>So, Should I Upgrade to AEM 6.5?</title>
+  <link rel="canonical" href="https://www.opsinventor.com/so-should-i-upgrade-to-aem-6-5/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>So, Should I Upgrade to AEM 6.5?</h1>
+      <time datetime="2019-04-11T05:01:12.000Z">4/10/2019, 10:01:12 PM</time>
+    </header>
+    <section class="content">
+      
+<p><strong>Warning:</strong> I'm going to write some things that <em>may not</em> agree entirely with the "official recommendation" of Adobe.  If any Adobe engineers are reading this, please realize I hold you in the highest regard, and am open to change my tune entirely if I say something that's out &amp; out wrong.  </p>
+
+
+
+<p>I get asked all the time: "Should I bother with upgrading to the latest AEM or just go with the one I've got?"  After hearing it from 3 different customers today alone, I figured I'd write something about this subject, especially since today marks the <a href="https://forums.adobe.com/thread/2595064">general availability of Adobe Experience Manager 6.5</a>. </p>
+
+
+
+<p>For context to the uninitiated, upgrading a CQ/AEM installation has long been one of the most <em><strong>utterly painful</strong></em> parts of running a site based on AEM/CQ.  The <a href="https://helpx.adobe.com/experience-manager/6-5/sites/deploying/using/upgrade.html#what-has-changed">official Adobe documentation says</a>, <strong><em>"Upgrading AEM is a multi-step, sometimes multi-month process."</em></strong>  I would have to say though, that prior to the last release or so, it's ALWAYS been a multi-month process, and some sites I've worked on have taken anywhere from 6 months to nearly a <em>full year</em> to complete their AEM upgrade projects, especially for big version jumps like upgrading AEM 5.6.1 to AEM 6.x or upgrading AEM 6.0 to - well, <strong>ANYTHING</strong>.  For one customer that I worked on for around 3 years, over half of the time was spent in the middle of either a 6.2 -&gt; 6.3 or a 6.3 -&gt; 6.4 upgrade.  </p>
+
+
+
+<figure class="wp-block-image"><img src="https://i1.wp.com/www.jetteroheller.com/wp-content/uploads/2019/04/47476562651_6086c8b138_o.jpg?fit=1024%2C576" alt="" class="wp-image-1225"/><figcaption><em>This image, shared at Adobe Summit 2019 in a session on the improvements made to AEM 6.5 upgradability illustrate how many organizations, a </em><strong><em>full year</em></strong><em> after AEM 6.4 was released, are still on older versions.  </em></figcaption></figure>
+
+
+
+<p>I'm not actually trying to scare you, just provide context to the decision to upgrade.  It does require discussion too, because the features, fixes and stability/performance enhancements provided in 6.4 and 6.5 are <em>very compelling</em> - entirely game-changing in some cases.  </p>
+
+
+
+<div class="wp-block-image"><figure class="aligncenter"><img src="http://www.jetteroheller.com/wp-content/uploads/2019/04/RecklessBoldCat-size_restricted.gif" alt="Upgrading AEM has been known to take time" class="wp-image-1224"/><figcaption>Upgrading AEM has been known to take time</figcaption></figure></div>
+
+
+
+<h2>The rapid list of super-compelling AEM 6.5 Features</h2>
+
+
+
+<p>Here are the most noteworthy new AEM 6.5 features that were announced at the Adobe Summit: </p>
+
+
+
+<ul><li> <strong>Single Page Application editor</strong>: This is the most-touted feature in AEM 6.5, and for good reason.  They were slowly rolling out SPA support in 6.4.2, but it's vastly improved and given front-and-center attention in 6.5.  The main value-add is to applications developed in frameworks like Angular or React to have their content be easily edited by content editors in a familiar AEM UI as opposed to having to go to developers to edit application content.  It would allow one to develop immersive and quick-responding gmail-eque marketing experiences while maintaining the editability of a normal multipage-based AEM site.  </li><li><strong>Major Updates to AEM Assets: </strong>Assets continues to get a stream of really compelling updates, including: <ul><li><strong>Connected Remote Assets Servers:</strong> This is a feature that so many of us have wanted for YEARS, which allows one to segregate your Sites and Assets environments, but still have your Sites environment be able to remotely search, retrieve and display digital assets from the remote server as if they were local.  This will be a major boon for platform-focused engineers like me, as it allows one to build a lean and fast Sites environment, and then a purpose-built heavy-storage Assets environment, and have the two talk to each other as one - as opposed to having to spec a single, monolithic Author for both.  </li><li><strong>EDIT on Connected Assets: </strong><a href="https://helpx.adobe.com/experience-manager/6-5/assets/using/use-assets-across-connected-assets-instances.html#OverviewofConnectedAssets">after reading the documentation</a> that's rolling out on Connected Assets, apparently this feature is <em>only available when talking to an AMS-hosted AEM Assets Server</em>.  After talking to Adobe, this is confirmed.  Connected Assets utilizes Adobe Identification Management System (IMS) to authenticate between the AEM Sites instance and connected AEM Assets instance, and IMS <em>only</em> used on Adobe Managed Services.  Per a source in Adobe, this feature is presently NOT planned to be rolled-out to self-hosted AEM instances.  So, if this is a feature you would want to use, please email your Adobe contacts and let them know.  </li><li>Major improvements to search &amp; discovery of assets with dynamic search facets</li><li><strong>Visual search</strong> to use an image as a facet to have Adobe Sensei AI find other similar or related assets</li><li><strong>Greatly enhanced brand portal</strong> for surfacing approved assets to agencies and fostering collab with them</li><li><strong>Direct sharing of assets</strong> from the AEM Assets site straight out two Twitter / Instagram / Facebook / etc.  </li><li><strong>VIDEO SMART CROP:</strong> This Sensei-enabled feature is a huge boon for taking a single video asset like a video advert, and without having to re-edit it, have Sensei smartly and continually crop the video so that it can fit all of the relevant content into a square or portrait-aspect video window.  This feature isn't available at first GA, but should be in 6.5.1 or 6.5.2 (i.e. either mid-summer or mid-fall.)'</li><li><strong>Sensei-enabled Smart Tags for Video</strong> allows one to upload the video and have it automatically tag the video appropriately for later search &amp; discovery.</li><li><strong>AEM Desktop App rebuilt from the ground up</strong> to allow a much-improved Mac Finder search, ability to check-out/check-in assets, handle versioning, as well as handle bulk operations <strong>vastly</strong> better. </li></ul></li></ul>
+
+
+
+<p>There were a number of other big new features, including much better-integrated commerce support now that Adobe has acquired Magento, but I'll let you read the official Adobe releases for that.  </p>
+
+
+
+<p>Additionally, for full details about what else has changed in other recent AEM versions (in the case that you're looking to upgrade from AEM 6.3 or earlier releases), see the complete Adobe release notes here:</p>
+
+
+
+<ul><li><a href="https://helpx.adobe.com/experience-manager/6-2/release-notes.html">https://helpx.adobe.com/experience-manager/6-2/release-notes.html</a></li><li><a href="https://helpx.adobe.com/experience-manager/6-3/release-notes.html">https://helpx.adobe.com/experience-manager/6-3/release-notes.html</a></li><li><a href="https://helpx.adobe.com/experience-manager/6-4/release-notes.html">https://helpx.adobe.com/experience-manager/6-4/release-notes.html</a></li><li><a href="https://helpx.adobe.com/experience-manager/6-5/release-notes.html">https://helpx.adobe.com/experience-manager/6-5/release-notes.html</a></li></ul>
+
+
+
+<h2>But What about the Scary AEM Upgrade Stuff?</h2>
+
+
+
+<p>It has not been lost at all on Adobe's engineering teams that AEM upgrades are completely terrifying.  As such, Adobe has made it an engineering priority over the last few years to make the activity of upgrading AEM more "frictionless."  I put that in scare quotes though, as much of their efforts on creating nearly push-button AEM upgrades only apply if you are an Adobe Managed Services customer, and have them host your entire AEM installation in the cloud.  </p>
+
+
+
+<p>Don't ask me just now what I think of Adobe Managed Services, as that's another blog post entirely that I'm very overdue writing.  For now, let's just say that there are some customers that are an ideal use case to have their infra managed for them by Adobe, i.e. brands that don't already have technical &amp; ops teams, don't have a lot of connectivity needs, don't have complex CI processes already, don't have custom security or high availability needs, or don't have aggressive SLAs that they need to be held to.   Most others, however, are never going to be on a managed platform like that, and will need to confront upgrading to AEM 6.5 on either their own datacenter's gear, or on their own self-managed AWS/Azure/GCP/etc cloud infrastructure.</p>
+
+
+
+<div class="wp-block-image"><figure class="aligncenter"><img src="https://www.adobe.io/content/dam/udp/language-masters/en/apis/experiencecloud/cloud-manager/cloudmanager_hero.png.img.png" alt=""/></figure></div>
+
+
+
+<p>If you <em>are</em> an Adobe Managed Services customer, Adobe did put <strong>considerable </strong>work into their Cloud Manager web application, to have it guide you through the upgrade process, including running the <em><a href="https://helpx.adobe.com/experience-manager/6-4/sites/deploying/using/pattern-detector.html">Pattern Detector</a></em> for you, displaying a great overview of things you'll need to fix, branching your code, deploying new infra for the upgrade, and then on a "blue-green deployment" sort of basis, upgrade your existing equipment from its current AEM version to the latest one. </p>
+
+
+
+<p>It handles most parts of this seemingly well, although it seems to be best-suited to smaller less-frequently-updated sites as the go-live portion of this blue-green deployment setup does not take into account the content delta which would accrue on your "Blue" environment while the "Green" environment is being spun up on the new version.  (<a href="http://www.jetteroheller.com/blue-green-deployment-on-adobe-experience-manager/">See my article on Blue-Green Deployment in AEM for an illustration of this</a>)   </p>
+
+
+
+<p>Granted, they've been making monthly updates to Cloud Manager over the last year, so it's only a matter of time before they've got this solved, as the sales &amp; marketing direction of Adobe is definitely leaning toward getting EVERYBODY onto their managed services (sometimes regardless of suitability).  </p>
+
+
+
+<p>However, if you're reading this far, you probably aren't on Adobe Managed Services (or you're an Adobe employee who's about to type me an emotionally-charged email), so you'll need to upgrade it yourself.  On that note, here's the basic sum-up of the upgrade process: </p>
+
+
+
+<ul><li> <strong>If you're already on 6.4, upgrading to 6.5 should be a snoozer.</strong> It should theoretically be only marginally harder than a major service pack upgrade.   </li><li><strong>If you're on 6.3</strong>, <strong>you <em>should </em>be able to do an in-place upgrade to 6.5 </strong>without a repository migration, although you'll likely still have significant code upgrades to make.  <a href="https://helpx.adobe.com/experience-manager/6-4/release-notes/wcm-platform.html">AEM 6.3 introduced the new Oak Segment Tar microkernel</a> (the storage backend used for all of AEM's content and metadata), a backend which is shared by AEM 6.4 and 6.5.  The main thing you'll have to confront is the <a href="https://helpx.adobe.com/experience-manager/6-5/sites/deploying/using/repository-restructuring.html">repository restructure which was introduced in AEM 6.4</a>.   I'd definitely recommend reading the article linked here, as it also explains in-depth what changes you'll need to make before going to 6.5, which ones you&nbsp;should make, and which you can defer.  </li><li><strong>If you're on AEM 6.0 or 6.1</strong>, I don't know how else to put it, your upgrade will likely be a major effort.  I will say this, though.  Even though executing an in-place upgrade is still usually the Adobe-recommended practice for an AEM 6.0 or 6.1 installation, I have 0% of the time seen a 6.0 -&gt; 6.3+ in-place upgrade work.  </li></ul>
+
+
+
+<div class="wp-block-image"><figure class="aligncenter"><img src="http://www.jetteroheller.com/wp-content/uploads/2019/04/BigLoneJavalina-size_restricted.gif" alt="" class="wp-image-1230"/><figcaption>^-- basically every in-place upgrade of a an AEM 6.0 installation I've ever tried.</figcaption></figure></div>
+
+
+
+<p>If you're on 6.1 or 6.0 (or even potentially 6.2), it may end up being more prudent to set up a parallel infrastructure on a fresh install of AEM 6.5, and then do a content move of what you want to keep with <a href="https://helpx.adobe.com/experience-manager/6-4/sites/deploying/using/using-crx2oak.html">crx2oak</a> or the <a href="https://adobe-consulting-services.github.io/acs-aem-tools/features/vlt-rcp/index.html">VLT-RCP UI</a> (depending on whether or not it's required that you keep content versions).  Then, you can separately deploy your 6.5-capable codebase, and not have to worry about traversing a corrupt 6.0 repository or bringing over 3-year-old stale workflows and the like.  </p>
+
+
+
+<h2>  The "Yes, but is it stable" question </h2>
+
+
+
+<p>My short answer to this is that AEM 6.5 is built off of (primarily) much of the same bones as 6.4.  AEM 6.4 was already dramatically better out of the gate than 6.3 was (6.3 had major issues especially with internationalization until after a few service packs) and both were loads better than 6.2.  6.0 was basically like a pre-beta that should have had a LOT more massaging before release.</p>
+
+
+
+<p>So, I do like my odds at this point of rolling with 6.5 as a target for anyone who's trying to select whether or not to go with 6.4 or 6.5 right now.  </p>
+
+
+
+<p>Usually the maxim has been to not go live with a new AEM version until after at least the first service pack.  But if you're starting your upgrade plans now, AEM 6.5.1 (SP1) will be out mid-summer, and you'll still have time to incorporate that before you go live.  </p>
+
+
+
+<p>These are my initial thoughts though, all before getting through a single 6.5 upgrade, as all I've gotten to do so far is play with the beta and download the GA release.  If any of you readers have any other assenting or contrasting opinions, please do <a href="https://www.linkedin.com/in/thaddeusreeves/">let me know</a>! </p>
+
+    </section>
+    <footer><p>Categories: 6.5, adobe esperience manager, AEM, AEM / CQ, oak, problems, recommendation, technology, upgrade</p></footer>
+  </article>
+</body>
+</html>

@@ -1,0 +1,303 @@
+<div>
+  <div class="blog-post-hero">
+    <div>
+      <div></div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <p>// What you'll learn</p>
+  <ul>
+    <li>aio-cli setup</li>
+    <li>JWT auth config</li>
+    <li>Pipeline + execution IDs</li>
+    <li>Live log tail</li>
+  </ul>
+  <div class="section-metadata">
+    <div>
+      <div>Style</div>
+      <div>key-points</div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <p>If you're using Adobe Experience Manager on Adobe's AEM Managed Services infrastructure — or on AEM as a Cloud Service — all software releases and web-tier configuration updates flow through Adobe's Cloud Manager CI/CD pipeline. The UI is fine for the happy path. But when you need to actually <em>see</em> what your build is doing in real time — or pull logs that are no longer in the dashboard — you reach for <code>aio-cli</code>.</p>
+
+  <h2>Why would you want this?</h2>
+  <p>Two reasons, mostly:</p>
+  <ul>
+    <li><strong>Logs older than the most-recent few builds disappear from the UI.</strong> If you want to compare today's failing build against one from three weeks ago, the CLI is your only path.</li>
+    <li><strong>The UI doesn't show live output.</strong> Tailing the build step in your terminal gets you faster feedback when something is wrong, instead of refreshing a dashboard.</li>
+  </ul>
+
+  <div class="step">
+    <div>
+      <div>01</div>
+      <div>Install aio-cli</div>
+    </div>
+  </div>
+  <p>Install the Adobe I/O CLI globally via npm:</p>
+  <div class="code">
+    <div>
+      <div>bash · install</div>
+      <div>shell</div>
+    </div>
+    <div>
+      <div><pre><code>$ npm install -g @adobe/aio-cli</code></pre></div>
+    </div>
+  </div>
+  <p>Confirm the install:</p>
+  <div class="code">
+    <div>
+      <div>bash · version check</div>
+      <div>shell</div>
+    </div>
+    <div>
+      <div><pre><code>$ aio -v
+@adobe/aio-cli/3.5.0 win32-x64 node-v12.18.0</code></pre></div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div>
+      <div>02</div>
+      <div>Create a Cloud Manager API integration</div>
+    </div>
+  </div>
+  <p>In the Adobe I/O Developer Console, create a new project (or use an existing one) and add the <strong>Cloud Manager</strong> API with a JWT credential. Adobe's docs cover this end-to-end — what you need on the way out is a downloaded <code>config.json</code> plus a private key. Stash both somewhere you can reference by absolute path.</p>
+
+  <div class="step">
+    <div>
+      <div>03</div>
+      <div>Configure aio-cli with your credentials</div>
+    </div>
+  </div>
+  <p>The <code>config.json</code> from the console should look something like this:</p>
+  <div class="code">
+    <div>
+      <div>config.json · jwt credentials</div>
+      <div>json</div>
+    </div>
+    <div>
+      <div><pre><code>{
+  "client_id": "value from your CLI integration (String)",
+  "client_secret": "value from your CLI integration (String)",
+  "jwt_payload": { value from your CLI integration (JSON Object Literal) },
+  "token_exchange_url": "https://ims-na1.adobelogin.com/ims/exchange/jwt"
+}</code></pre></div>
+    </div>
+  </div>
+  <p>Load it into aio-cli's config under the <code>jwt-auth</code> namespace:</p>
+  <div class="code">
+    <div>
+      <div>bash · load jwt config</div>
+      <div>shell</div>
+    </div>
+    <div>
+      <div><pre><code>$ aio config:set jwt-auth PATH_TO_CONFIG_JSON_FILE --file --json</code></pre></div>
+    </div>
+  </div>
+  <p>Then load the private key:</p>
+  <div class="code">
+    <div>
+      <div>bash · load private key</div>
+      <div>shell</div>
+    </div>
+    <div>
+      <div><pre><code>$ aio config:set jwt-auth.jwt_private_key PATH_TO_PRIVATE_KEY_FILE --file</code></pre></div>
+    </div>
+  </div>
+
+  <div class="step">
+    <div>
+      <div>04</div>
+      <div>Set your Cloud Manager program ID</div>
+    </div>
+  </div>
+  <p>Find your program ID in Cloud Manager (it's the numeric ID in the URL when you're inside a program) and set it as a default:</p>
+  <div class="code">
+    <div>
+      <div>bash · set program id</div>
+      <div>shell</div>
+    </div>
+    <div>
+      <div><pre><code>$ aio config:set cloudmanager_programid 1234</code></pre></div>
+    </div>
+  </div>
+  <p>You only set this once per shell session (or persistently, with <code>--global</code>).</p>
+
+  <div class="step">
+    <div>
+      <div>05</div>
+      <div>List your pipelines</div>
+    </div>
+  </div>
+  <p>List every pipeline in the program so you can pick the one you want to monitor:</p>
+  <div class="code">
+    <div>
+      <div>bash · list pipelines</div>
+      <div>cloudmanager</div>
+    </div>
+    <div>
+      <div><pre><code>$ aio cloudmanager:program:list-pipelines
+ Pipeline Id   Name                                       Status
+ ───────────   ────────────────────────────────────────   ──────
+ 7239327       Web-Tier Only                              BUSY
+ 4042555       Non-Production Pipeline                    IDLE
+ 3984112       Production Pipeline                        IDLE</code></pre></div>
+    </div>
+  </div>
+  <p>Grab the pipeline ID you care about — you'll feed it to the next two commands.</p>
+
+  <div class="step">
+    <div>
+      <div>06</div>
+      <div>Kick off (or attach to) an execution</div>
+    </div>
+  </div>
+  <p>To start a new execution:</p>
+  <div class="code">
+    <div>
+      <div>bash · create execution</div>
+      <div>cloudmanager</div>
+    </div>
+    <div>
+      <div><pre><code>$ aio cloudmanager:pipeline:create-execution 4042555
+starting execution... started execution ID 4042555</code></pre></div>
+    </div>
+  </div>
+  <p>If you already kicked off a build from the Cloud Manager UI, skip this — just grab the execution ID from the dashboard.</p>
+
+  <div class="step">
+    <div>
+      <div>07</div>
+      <div>Tail the build log</div>
+    </div>
+  </div>
+  <p>The payoff. Tail the live build output:</p>
+  <div class="code">
+    <div>
+      <div>bash · tail live build log</div>
+      <div>cloudmanager</div>
+    </div>
+    <div>
+      <div><pre><code>$ aio cloudmanager:pipeline:tail-build-log 4042555
+2022-03-09T00:15:38+0000 The following build artifacts were reused from the prior execution 1132597
+2022-03-09T00:15:38+0000 [INFO]   - all
+2022-03-09T00:15:38+0000 [INFO]   - core
+2022-03-09T00:15:38+0000 [INFO]   - ui.apps
+2022-03-09T00:15:38+0000 [INFO]   - ui.content
+2022-03-09T00:15:38+0000 [INFO]   - ui.tests
+2022-03-09T00:15:38+0000 Running additional tests...
+2022-03-09T00:16:02+0000 [INFO] BUILD SUCCESS</code></pre></div>
+    </div>
+  </div>
+  <p>And that's the loop: terminal feedback, no dashboard polling, full history available later via <code>aio cloudmanager:pipeline:list-executions</code>.</p>
+
+  <div class="callout">
+    <div>
+      <div>Important · Logging caveats &amp; limitations</div>
+    </div>
+    <div>
+      <div>Two things to know before you live in this command</div>
+    </div>
+    <div>
+      <div>
+        <ul>
+          <li><strong>You can only tail the "Build &amp; Unit Testing" step.</strong> The CLI surfaces Maven/build output. Deploy, security scans, and the rest of the pipeline aren't tail-able — you check those separately.</li>
+          <li><strong>Logs aren't shipped to Splunk.</strong> If your org's centralized log search is the source of truth, you won't find Cloud Manager build logs there. Pull them through <code>aio</code> or download via the dashboard while they're still hot.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <h2>About the cover photo</h2>
+  <div class="mtb-card">
+    <div>
+      <div><img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&amp;fit=crop&amp;w=1200&amp;q=80" alt="Mountain bike trail in Mt. Hood National Forest at sunrise"></div>
+    </div>
+    <div>
+      <div>Sandy Ridge · Mt. Hood</div>
+    </div>
+    <div>
+      <div>Being in the woods at sunrise is a downright spiritual experience.</div>
+    </div>
+    <div>
+      <div>This was taken at the Sandy Ridge Mountain Bike Park in Mt. Hood National Forest on an early-morning ride. There's a reason a lot of the hardest problems I've solved got worked out on the trail — your brain unsticks once your hands are busy.</div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <p>// Related reading</p>
+  <ul>
+    <li>
+      <p><em>Field Experiment · LLM</em></p>
+      <p><a href="/en/testing-geo-seo-with-adobe-llm-optimizer">Testing GEO/SEO with Adobe LLM Optimizer</a></p>
+      <p>Read the experiment →</p>
+    </li>
+    <li>
+      <p><em>Interview · AEMaaCS</em></p>
+      <p><a href="/en/aem-infrastructure-and-personnel-strategy-a-talk-with-tom-johnson-of-hirobe">AEM infrastructure and personnel strategy — a talk with Tom Johnson of Hirobe</a></p>
+      <p>Read the conversation →</p>
+    </li>
+  </ul>
+  <div class="section-metadata">
+    <div>
+      <div>Style</div>
+      <div>related</div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <p><em>// Direct Line</em></p>
+  <h2>Got a build pipeline that won't behave?</h2>
+  <p>Bring me the hard part. I do scoped advisory engagements for engineering leaders who need a real answer — not a slide deck, not discovery theater.</p>
+  <p><a href="mailto:tad@opsinventor.com">Start a conversation →</a></p>
+  <div class="section-metadata">
+    <div>
+      <div>Style</div>
+      <div>cta-band</div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div class="metadata">
+    <div>
+      <div>title</div>
+      <div>Tailing Cloud Manager Build Logs</div>
+    </div>
+    <div>
+      <div>description</div>
+      <div>Get faster, deeper feedback from Adobe Cloud Manager builds on AEMaaCS and AMS — straight from your terminal, no UI polling, no waiting on the dashboard to catch up.</div>
+    </div>
+    <div>
+      <div>image</div>
+      <div>https://images.unsplash.com/photo-1517022812141-23620dba5c23?auto=format&amp;fit=crop&amp;w=1800&amp;q=80</div>
+    </div>
+    <div>
+      <div>template</div>
+      <div>blog</div>
+    </div>
+    <div>
+      <div>author</div>
+      <div>Tad Reeves</div>
+    </div>
+    <div>
+      <div>date</div>
+      <div>2022-03-09</div>
+    </div>
+    <div>
+      <div>category</div>
+      <div>Field Notes</div>
+    </div>
+    <div>
+      <div>tags</div>
+      <div>Runbook, AEMaaCS, Cloud Manager, DevOps</div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Speeding up AEM Cloud Service Deployment: The Dispatcher-Only Pipeline</title>
+  <link rel="canonical" href="https://www.opsinventor.com/speeding-up-aem-cloud-service-deployment-the-dispatcher-only-pipeline/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Speeding up AEM Cloud Service Deployment: The Dispatcher-Only Pipeline</h1>
+      <time datetime="2022-02-24T20:56:16.000Z">2/24/2022, 12:56:16 PM</time>
+    </header>
+    <section class="content">
+      
+<p>Adobe just introduced a new feature for Cloud Manager, their CI/CD platform for AEM as a Cloud Service, to allow Apache/Dispatcher configurations to be deployed separately as their own pipeline - decoupled from deployment of the rest of the codebase. </p>
+
+
+
+<p>There are a few reasons why this is an important feature, and a big deal.  </p>
+
+
+
+<h3><strong>Apache/Dispatcher "web tier" configuration updates typically happen much more often than full code releases</strong>. </h3>
+
+
+
+<p>The "web tier" here refers to all of the Apache configurations, which include rewrite rules, vhost configs, caching configurations, security filters, IP-level restrictions, Vanity URL configurations, and the like. And while there are many cases where a caching configuration in the Dispatcher has to go live at the same time as a code release, many other times there's just a simple rewrite rule that needs to be added for the business, and it has nothing to do with the current release schedule.  Decoupling the software release schedule from these configurations gives AEM teams the flexibility they need to get rapid day-by-day changes done while they keep on with established software delivery cadences.  </p>
+
+
+
+<h3>The Current "Full Stack" Cloud Manager Deployment Process Takes Forever</h3>
+
+
+
+<p>A stumbling block that has been one of the major issues that teams migrating to AEM as a Cloud Service have had to deal with is the painfully-slow deployment times in Cloud Manager.  Adobe's Cloud Manager CI/CD solution is the only way to get code and configuration into AEM Cloud, and although it makes for easy single-click deployments that involve very little in the way of configuration to set up, the low-config / all-inclusive nature of the deployment means it can take a <strong>VERY long time </strong>to get your code out. </p>
+
+
+
+<p>On Development environments, code deployments can take as little as 20 minutes (best case scenario) for very lightweight deployments, and as long as a few hours for heavier deployments.  <strong>That means that for some deployments, you may only have enough time for <em>one or two dev deployment</em>s in a workday. </strong></p>
+
+
+
+<p> Decomposing our most recent deployment to our sandbox Cloud Service environment, here were the timings involved: </p>
+
+
+
+<ul><li>Validation - &lt;1 minute</li><li>Build &amp; Unit Testing: 1 minute (re-used previous artifacts)</li><li>Code Scanning: 3 hours 48 minutes (note: this time includes an unspecified time not recorded in the build logs waiting for someone to acknowledge/bypass the quality gates)</li><li>Build Images for deployment: 24 minutes</li><li>Deploy to Dev: 25 minutes</li></ul>
+
+
+
+<p>Or another Dev Deployment where there was more code flux and artifacts couldn't be re-used:</p>
+
+
+
+<ul><li>Validation: &lt;1 minute</li><li>Build &amp; Unit Testing: 14 minutes</li><li>Code Scanning: 4 hours 40 minutes (note: this time includes an unspecified time not recorded in the build logs waiting for someone to acknowledge/bypass the quality gates)</li><li>Build Images for deployment: 20 minutes</li><li>Deploy to Dev: 13 minutes</li></ul>
+
+
+
+<p>As you can imagine, this is already a fairly unacceptable time frame (mostly when compared to a lightweight in-house CI/CD process that one could create on AEM 6.5), but it's significantly worse when you're not even affecting the codebase with your change - i.e. let's just say you're adding a simple rewrite rule in Apache, or telling JPEG files that they can have a longer cache lifetime.  For those simple configuration changes, there's now the web-tier only pipeline that does significantly speed things up for this class of change. </p>
+
+
+
+<h3>The Web-Tier (Dispatcher/Apache Configuration) Pipeline</h3>
+
+
+
+<p>There are a few restrictions and technical prerequisites to using the web-tier-only or dispatcher-only pipeline. These, <a href="https://experienceleague.adobe.com/docs/experience-manager-cloud-service/content/implementing/using-cloud-manager/cicd-pipelines/introduction-ci-cd-pipelines.html?lang=en#web-tier-config-pipelines">from the Adobe Documentation</a>: </p>
+
+
+
+<ul><li>You must be on AEM version <code>2021.12.6151.20211217T120950Z</code> or newer to leverage web-tier config pipelines.</li><li>You must <a href="https://experienceleague.adobe.com/docs/experience-manager-cloud-service/content/implementing/content-delivery/disp-overview.html?lang=en#validation-debug">opt in to the flexible mode of the dispatcher tools</a> to leverage web-tier config pipelines.</li><li>A user must be logged with the <strong>Deployment Manager</strong> role in order to configure or run pipelines.</li><li>At any time, there can only be one web tier config pipeline per environment.</li><li>The user can not configure a web tier config pipeline when its corresponding full-stack pipeline is running.</li><li>The web tier structure must adhere to the flexible mode structure, as defined in the document <a href="https://experienceleague.adobe.com/docs/experience-manager-cloud-service/content/implementing/content-delivery/disp-overview.html?lang=en#validation-debug">Dispatcher in the Cloud.</a></li></ul>
+
+
+
+<p> In addition, be aware of how the <a href="https://experienceleague.adobe.com/docs/experience-manager-cloud-service/content/implementing/using-cloud-manager/cicd-pipelines/introduction-ci-cd-pipelines.html?lang=en#full-stack-pipeline">full stack pipeline</a> will behave when introducing a web tier pipeline.</p>
+
+
+
+<ul><li>If a web tier config pipeline has not been configured for an environment, the user can make a selection while configuring its corresponding full-stack pipeline to include or ignore the Dispatcher configuration during execution and deployment.</li><li>Once a web tier config pipeline has been configured for an environment, <strong>its corresponding full-stack pipeline (if one exists) will ignore the dispatcher configuration during execution and deployment</strong>.</li></ul>
+
+
+
+<figure class="wp-block-image"><img src="https://experienceleague.adobe.com/docs/experience-manager-cloud-service/assets/cm-setup.png?lang=en" alt="Cloud Manager pipeline configurations"/></figure>
+
+
+
+<p>In practice, the web tier deployment is indeed significantly faster than a full-stack deployment, though still somewhat variable in speed and sometimes still significantly longer than one would like.  </p>
+
+
+
+<p>As you can see below, the "Non-Production Pipeline" that deploys the full stack to Dev takes generally 1 hour to deploy.  Note: The outliers (4 hours+) are including time spent waiting for one to override the quality gates to get the build to Dev, so that's human wait time  not actual build time. </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2022/02/cm-build.png"><img src="https://www.opsinventor.com/wp-content/uploads/2022/02/cm-build-1024x512.png" alt="" class="wp-image-1859"/></a></figure>
+
+
+
+<p>What it appears (from the build log) that the web-tier pipeline does is: </p>
+
+
+
+<ul><li>Check out your dispatcher configs and see if anything has changed</li><li>Make a zipfile of all of the /conf.d, /conf.dispatcher.d, and /opt-in configs</li><li>Run a scan of code quality rules against the dispatcher</li><li>Test &amp; validate the dispatcher configs with a mock service (example of some of that below)</li></ul>
+
+
+
+<div class="hcb_wrap"><pre class="prism undefined-numbers lang-plain"><code>Dispatcher is ready
+Running tests against dispatcher on 127.0.0.1:80
+End stage: wait for dispatcher
+Begin stage: integration-test
+Running [go test -v]...
+2022/02/24 19:15:35 Expecting dispatcher to run at: http://127.0.0.1:80
+=== RUN   TestMock
+=== RUN   TestMock/Call_Mock_directly
+--- PASS: TestMock (0.00s)
+    --- PASS: TestMock/Call_Mock_directly (0.00s)
+=== RUN   TestSystemReadyAccess
+--- PASS: TestSystemReadyAccess (0.00s)
+=== RUN   TestCommerceAccess
+--- PASS: TestCommerceAccess (0.00s)
+=== RUN   TestCRXAccess
+    main_test.go:188: Skipping CRXAccess test. The proxyPass directive is not activated for ENVIRONMENT_TYPE &#39;prod&#39;
+--- SKIP: TestCRXAccess (0.00s)
+=== RUN   TestCacheInvalidation
+--- PASS: TestCacheInvalidation (0.00s)
+PASS
+ok  	backend-mock	0.012s</code></pre></div>
+
+
+
+<p>(A number of other mock tests are performed, including testing cache flushing, testing Commerce pass-through, testing virtual hosts, etc)</p>
+
+
+
+<ul><li>Once tests pass, deploy out to Dispatchers</li></ul>
+
+
+
+<p>While there's still room for improvement here, this is a huge new feature that I'm sure teams will appreciate. What I'm curious about is: for any of you with an existing AEM as a Cloud Service deployment, how does this change your team's operation?  Have you been doing your own internal validation and testing before code gets to Cloud Manager to limit some of the iterative deployment you have to do once the code is pushed to Adobe?</p>
+
+
+
+<p></p>
+
+    </section>
+    <footer><p>Categories: Adobe, adobe experience manager, AEM, AEM / CQ, aemaacs, apache, ci/cd, cloud, devops, dispatcher</p></footer>
+  </article>
+</body>
+</html>

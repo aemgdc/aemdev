@@ -1,0 +1,316 @@
+main .carousel {
+  margin: 32px 0;
+  color: var(--text);
+}
+
+main .carousel .carousel-shell {
+  border-top: 3px solid var(--ink);
+  border-bottom: 1px solid var(--border);
+  padding: 18px 0 10px;
+}
+
+main .carousel .carousel-item {
+  margin: 0;
+}
+
+main .carousel .carousel-media-button {
+  display: block;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  line-height: 0;
+}
+
+main .carousel .carousel-media-button picture,
+main .carousel .carousel-media-button img {
+  display: block;
+  width: 100%;
+}
+
+main .carousel .carousel-media-button img {
+  object-fit: cover;
+}
+
+main .carousel .carousel-caption {
+  margin-top: 8px;
+  font-size: var(--body-font-size-xs);
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+main .carousel .carousel-caption :is(p, ul, ol) {
+  margin: 0;
+}
+
+main .carousel .carousel-caption a {
+  color: var(--teal-dk);
+}
+
+main .carousel:not(.collage) .carousel-shell {
+  padding-top: 0;
+}
+
+main .carousel:not(.collage) .carousel-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+main .carousel:not(.collage) .carousel-nav-button {
+  margin: 0;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--white);
+  font-family: var(--mono-font-family);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  min-width: 112px;
+}
+
+main .carousel:not(.collage) .carousel-nav-button:hover,
+main .carousel:not(.collage) .carousel-nav-button:focus-visible {
+  background: transparent;
+  color: var(--ink);
+}
+
+main .carousel:not(.collage) .carousel-rail {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+}
+
+main .carousel:not(.collage) .carousel-rail::-webkit-scrollbar {
+  display: none;
+}
+
+main .carousel:not(.collage) .carousel-slide-wrap {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  padding-right: 16px;
+  box-sizing: border-box;
+}
+
+main .carousel:not(.collage) .carousel-slide picture,
+main .carousel:not(.collage) .carousel-slide img {
+  width: 100%;
+  height: auto;
+}
+
+main .carousel:not(.collage) .carousel-indicators {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+main .carousel:not(.collage) .carousel-indicator {
+  width: 24px;
+  height: 4px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: rgb(13 20 24 / 25%);
+}
+
+main .carousel:not(.collage) .carousel-indicator[aria-current='true'] {
+  background: var(--orange);
+}
+
+main .carousel.collage .carousel-collage {
+  columns: 1;
+  column-gap: 5px;
+}
+
+main .carousel.collage .carousel-collage > .carousel-item {
+  break-inside: avoid;
+  margin-bottom: 5px;
+  display: inline-block;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+main .carousel.collage .carousel-media-button {
+  overflow: hidden;
+  background: var(--ink);
+}
+
+main .carousel.collage .carousel-media-button picture,
+main .carousel.collage .carousel-media-button img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+main .carousel.collage .carousel-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 52px 14px 14px;
+  background: linear-gradient(transparent, rgb(11 17 21 / 78%) 30%, rgb(11 17 21 / 96%));
+  color: var(--white);
+  font-size: var(--body-font-size-xs);
+  line-height: 1.5;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 1;
+}
+
+main .carousel.collage .carousel-item:hover .carousel-caption,
+main .carousel.collage .carousel-item:focus-within .carousel-caption {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (width >= 700px) {
+  main .carousel.collage .carousel-collage {
+    columns: 2;
+  }
+}
+
+@media (width >= 1024px) {
+  main .carousel.collage .carousel-collage {
+    columns: 3;
+  }
+}
+
+body.carousel-lightbox-open {
+  overflow: hidden;
+}
+
+.carousel-lightbox {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: hidden;
+  margin: 0;
+}
+
+.carousel-lightbox::backdrop {
+  background: rgb(11 17 21 / 92%);
+  backdrop-filter: blur(8px);
+}
+
+.carousel-lightbox-shell {
+  display: grid;
+  grid-template-rows: auto auto 1fr auto auto;
+  gap: 12px;
+  padding: 16px 24px 24px;
+  height: 100dvh;
+  max-height: 100dvh;
+  background: transparent;
+  color: var(--white);
+  border: none;
+  box-shadow: none;
+  box-sizing: border-box;
+}
+
+.carousel-lightbox-close,
+.carousel-lightbox-nav {
+  margin: 0;
+  border: 1px solid rgb(255 255 255 / 22%);
+  background: rgb(11 17 21 / 65%);
+  backdrop-filter: blur(8px);
+  color: var(--white);
+  font-family: var(--mono-font-family);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+}
+
+.carousel-lightbox-close {
+  justify-self: end;
+}
+
+.carousel-lightbox-close:hover,
+.carousel-lightbox-close:focus-visible,
+.carousel-lightbox-nav:hover,
+.carousel-lightbox-nav:focus-visible {
+  background: var(--white);
+  color: var(--ink);
+  border-color: var(--white);
+}
+
+.carousel-lightbox-counter {
+  font-family: var(--mono-font-family);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 72%);
+  justify-self: center;
+}
+
+.carousel-lightbox-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  overflow: visible;
+}
+
+.carousel-lightbox-image picture {
+  display: block;
+  max-height: calc(100dvh - 220px);
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 8%), 0 12px 48px rgb(0 0 0 / 72%), 0 0 32px rgb(255 255 255 / 5%);
+}
+
+.carousel-lightbox-image picture,
+.carousel-lightbox-image img {
+  display: block;
+  max-width: min(100%, 1100px);
+  max-height: calc(100dvh - 220px);
+  width: auto;
+  height: auto;
+  border-radius: 6px;
+}
+
+.carousel-lightbox-image img {
+  object-fit: contain;
+}
+
+.carousel-lightbox-caption {
+  font-size: var(--body-font-size-s);
+  line-height: 1.6;
+  color: #d8e1e5;
+}
+
+.carousel-lightbox-caption :is(p, ul, ol) {
+  margin: 0;
+}
+
+.carousel-lightbox-navs {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-self: end;
+}
+
+@media (width >= 900px) {
+  main .carousel:not(.collage) .carousel-nav-button {
+    min-width: 136px;
+  }
+
+  .carousel-lightbox-navs {
+    justify-content: center;
+  }
+}

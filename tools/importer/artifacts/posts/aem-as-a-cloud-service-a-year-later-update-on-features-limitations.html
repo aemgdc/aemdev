@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AEM as a Cloud Service a Year Later - Update on Features &amp; Limitations</title>
+  <link rel="canonical" href="https://www.opsinventor.com/aem-as-a-cloud-service-a-year-later-update-on-features-limitations/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>AEM as a Cloud Service a Year Later - Update on Features &amp; Limitations</h1>
+      <time datetime="2021-02-13T00:55:19.000Z">2/12/2021, 4:55:19 PM</time>
+    </header>
+    <section class="content">
+      
+<p>Approximately a year ago, I made an <a href="https://www.opsinventor.com/introducing-aem-as-a-cloud-service/" data-type="post" data-id="1397">ill-timed blog post</a> when, in browsing Adobe documentation, I discovered that <a href="https://www.opsinventor.com/introducing-aem-as-a-cloud-service/" data-type="post" data-id="1397">AEM as a Cloud Service had been released</a>.  Only <strong><em>slight </em></strong>problem was that I'd <em><strong>preempted the official Adobe release</strong></em>, and had to retract my blog post for a week or two until the official unveil. (oops) I didn't make a lot of friends in Adobe PR that day.</p>
+
+
+
+<p>But fast forward through the last year and the big question has always remained is not "is AEM as a Cloud Service an amazing technical achievement?" because it <em>is</em>.  But instead the question is whether or not it will support the workload that you're looking to put on it with the requirements of your organization. So now, a year later, I wanted to quickly take stock of what's changed in AEM as a Cloud Service, and which feature-gap showstoppers have been addressed by Adobe and which may no longer be showstoppers for your projects.  </p>
+
+
+
+<h2>AEM as a Cloud Service - New Features in 2020/2021</h2>
+
+
+
+<p>With major releases coming out once every month (see release notes here), there have been countless new minor &amp; major features added and bugfixes addressed over the last year.  I wanted to focus in on a handful of the big ones though, as they have addresses a number of the major gaps that (as noted here) existed in the initial rollout of the AEM Cloud Service offering.</p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/02/aem-as-a-service-diagram-v3-2.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/02/aem-as-a-service-diagram-v3-2.png" alt="" class="wp-image-1655"/></a><figcaption><em>Diagram of a full AEM Cloud Service Deployment, including AEM Screens, AEM Forms and AEM Commerce</em></figcaption></figure>
+
+
+
+<h3><strong>AEM Screens as a Cloud Service</strong></h3>
+
+
+
+<p> Just announced at the <em>Adobe Developers Live</em> event this past week, Adobe is rolling out now with a beta of a new AEM Screens Cloud Service.  AEM Screens is an extension of AEM's capabilities as an all-powerful hub for all of your multichannel experiences you're looking to drive.  AEM Screens allows one to take digital assets and experiences that you house in AEM, and radiate them out to digital displays like the ones you see in metro stations, hotels, restaurants and city squares.  <br><br>Up until now, Screens was supported only in self-hosted AEM or in AEM hosted by Adobe Managed Services.  However, the Screens product has now been fully re-engineered as a true cloud service that doesn't actually reside (mostly) in an AEM container at all.  I'll be doing a separate blog post on this product once I've gotten my hands on it (I only first heard of it a few days ago) but it opens exciting new doors for scalability of a solution one could use to power anything from a single hotel's displays, to the digital displays at tens of thousands of retail stores.  <br>  </p>
+
+
+
+<h3><strong>AEM Forms as a Cloud Service</strong></h3>
+
+
+
+<p> AEM Forms is a <em>ye olde</em> product that was earlier the "Adobe LiveCycle server" product which then later was a server-within-a-server product that shoehorned massive amounts of adaptive forms, PDF generation and document-of-record functions, as well as a whole host of supporting open source OS packages onto a very capable, very complicated product that was NOT "cloud-ready" by any stretch of the imagination.  Whether running as an OSGI service inside of AEM or inside of JBoss, AEM Forms has always created its own unique brand of fun for DevOps folks. <br><br>It's been entirely re-thought as a Cloud Service, and cloud-native functionality is being rolled-out piece-by-piece as it's ready for primetime.  Right now the main features are <a href="https://experienceleague.adobe.com/docs/experience-manager-learn/forms/overview.html?lang=en">AEM Adaptive Forms</a>, Adobe Sign integration and Forms Data model, with other key features (PDF Generation, Output Service, etc) coming at a later time.  <br></p>
+
+
+
+<h3>AEM Commerce as a Cloud Service</h3>
+
+
+
+<p>AEM Commerce wasn't a part of the initial AEM as a Cloud Service rollout, but it followed a few months after.  Commerce has very quickly moved from being a "nifty beta integration" into a first-class citizen in AEM world, making integrating in compelling commerce capabilities into your AEM site a reality.  The <a href="https://experienceleague.adobe.com/docs/experience-manager-cloud-service/commerce/getting-started.html?lang=en">AEM CIF (Commerce Integration Framework)</a> supports connecting to both cloud-hosted as well as self-hosted Magento infrastructure, making AEM Cloud Service a versatile option for "owning the glass" on a content-heavy site with commerce capabilities. <br></p>
+
+
+
+<h3><strong>Integration with InDesign Server</strong></h3>
+
+
+
+<p> AEM Assets as a Cloud Service now works with InDesign Server, so long as that InDesign Server is hosted at Adobe Managed Services (AMS).  This is another gap that had existed between the self-managed AEM and the Cloud Service, as this now allows  brands that have specialized Asset workflows with InDesign file uploads (translations, PDF Output, etc) to be accomodated on the Cloud Service. <br></p>
+
+
+
+<h3><strong>Huge Investments in Migration Tooling</strong></h3>
+
+
+
+<p> Adobe has put tons of engineering muscle behind creating tooling to make it straightforward as possible for brands to move their workloads to the Cloud Service.  Some rather notable examples are: </p>
+
+
+
+<p><strong><a href="https://experienceleague.adobe.com/docs/experience-manager-cloud-service/moving/cloud-migration/content-transfer-tool/overview-content-transfer-tool.html?lang=en#cloud-migration">Content Transfer Tool</a>:</strong> This tool can run in your self-hosted or AMS-hosted AEM environment and can be set to clone and migrate any or all content from your existing AEM environment to the Cloud Service.  It supports delta transfers as well, so as to support content moves and go-lives without having to create iterations of massive multi-gigabyte content packages, or to set up brittle VLT-RCP content transfers yourself.  </p>
+
+
+
+<p><strong><a href="https://experienceleague.adobe.com/docs/experience-manager-cloud-service/moving/cloud-migration/content-transfer-tool/using-user-mapping-tool.html?lang=en#cloud-migration">User Mapping Tool</a>:</strong> A major change to AEM as a Cloud Service is the fully integrated use of Adobe IDs for accessing the author tier.&nbsp; So, this user mapping tool allows one to migrate users from your existing AEM setup to ones with valid Adobe IDs.  </p>
+
+
+
+<p><strong>Bulk Uploader</strong>: This <a href="https://experienceleague.adobe.com/docs/experience-manager-cloud-service/assets/manage/add-assets.html?lang=en#asset-bulk-ingestor">Asset Bulk Ingestion Tool</a> allows one to upload assets directly from an S3 bucket or Azure blob store location directly into AEM Assets, along with a separate metadata track which allows for exponentially-faster Asset migrations, especially when you're talking about a many-TB Asset store that you're migrating. </p>
+
+
+
+<p><strong>Self-Service <a href="https://experienceleague.adobe.com/docs/experience-manager-cloud-service/implementing/using-cloud-manager/ip-allow-lists/introduction.html?lang=en">IP Whitelisting</a>, <a href="https://experienceleague.adobe.com/docs/experience-manager-cloud-service/implementing/using-cloud-manager/manage-ssl-certificates/introduction.html?lang=en">SSL Certs</a> &amp; <a href="https://experienceleague.adobe.com/docs/experience-manager-cloud-service/implementing/using-cloud-manager/custom-domain-names/introduction.html?lang=en">Custom Domain Names</a>: </strong>Adobe has rolled-out functionality to allow you to self-service manage your IP whitelisting to backend AEM resources (i.e. locking down your Author tier to only a specific IP range, but opening up access to necessary 3rd-party hardware like a search cluster), to manage your SSL certificates, and to allow for custom domain names on resources.  </p>
+
+
+
+<h3><strong>Splunk Logging</strong> for AEM Cloud Service Environments</h3>
+
+
+
+<p>This is a feature I'd been asking for since day 0, as running a complicated application server without the ability to do historical searches, look for error trends, create dashboards, etc is frustrating in the extreme.  Prior to this past month, the only way to get at your logs was via an <a href="https://www.opsinventor.com/tailing-logs-on-aem-as-a-cloud-service/">Adobe IO integration (blog post here)</a> Adobe now allows you to forward your logs to a bring-your-own Splunk indexer, so that you can do your own slicing and searching of machine data out of your author, publish and dispatcher instances.  I'm working on setting this up now, so once I have some of my favorite Splunk dashboard ported over to AEM as a Cloud Service, I'll make sure to do up another post. </p>
+
+
+
+<h2>Gaps &amp; Limitations</h2>
+
+
+
+<p>There are still a number of gaps and growing pains that face adopters of AEM as a Cloud Service, which companies should be aware of when planning whether or not to launch your next project on a self-hosted AEM AEM platform, or take the leap onto the Cloud Service. </p>
+
+
+
+<h3><strong>Data Residency</strong></h3>
+
+
+
+<p>At this writing, if you've got data residency restrictions, the Cloud Service may be a non-starter.  Given that the AEM Cloud Service <s>is only deployed in 3 Azure regions at the moment (US and UK)</s>. <strong>Update 16 Feb 2021:</strong>  When I'd written this, I had just finished talking with two different folks at Adobe about an EU project we were pursuing, and I'd been told AEMaaCS only was available in 3 regions.  HOWEVER, I just got an update from two OTHER folks at Adobe that there are actually a number of other regions that are available for the Cloud Service.  </p>
+
+
+
+<p>Quoth my Adobe source: <br></p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/02/aemaacs-screenshot-regions.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/02/aemaacs-screenshot-regions.png" alt="" class="wp-image-1662"/></a><figcaption><em>Screenshot of the "add environment" dialog from AEM Cloud Manager when setting up an AEMaaCS environment, showing available regions.</em></figcaption></figure>
+
+
+
+<blockquote class="wp-block-quote"><p>The following datacenters are now live and available in Cloud Manager when creating a new environment:</p><p>- US-West<br>- US-East<br>- EMEA-West-Europe<br>- EMEA-Great Britain<br>- APAC-Australia<br>- APAC-Japan<br><br>Canada is coming in the next few days. Then we’ll add Singapore in Q2, Germany in Q3 and India in Q4. I know there’s a couple of “old” references in our public documentation to 3 regions only – but we are getting them corrected.<br><br>Also I would be great to note that independently from the “region” where the AEM Cloud Service is operating from, all are served globally with more than 70 CDN POPs</p></blockquote>
+
+
+
+<p><br>As noted above, AEMaaCS comes built-in with a Fast.ly CDN which enables out-of-the-box acceleration of all resources from those 70 CDN POPs.  One would just need to take the above into account when considering one's global footprint, user base, and data residency requirements.</p>
+
+
+
+<figure class="wp-block-image size-large is-style-default"><a href="https://www.opsinventor.com/wp-content/uploads/2020/07/self-hosted-aem-still-a-thing-not-tad-1.jpg"><img src="https://www.opsinventor.com/wp-content/uploads/2020/07/self-hosted-aem-still-a-thing-not-tad-1.jpg" alt="" class="wp-image-1541"/></a><figcaption><a href="https://www.opsinventor.com/adobe-certifying-aem-to-work-on-redhat-openshift-containers/">Adobe Certifying AEM to work on Redhat OpenShift Containers – OpsInventor</a></figcaption></figure>
+
+
+
+<p>Note that this is such a challenge that Adobe does have a <a href="https://www.opsinventor.com/adobe-certifying-aem-to-work-on-redhat-openshift-containers/" data-type="post" data-id="1536">separate product that they've been working on with IBM and Redhat</a> to deploy a containerized <a href="https://www.opsinventor.com/adobe-certifying-aem-to-work-on-redhat-openshift-containers/" data-type="post" data-id="1536">AEM on OpenShift</a> for regulated environments like financial services. </p>
+
+
+
+<h3>Only on Azure, AWS on the Way</h3>
+
+
+
+<p>There are eventual plans to be able to port AEMaaCS to AWS, as well as to bring it to more individual regions, <s>but at this writing the AEM Cloud Service is only deployed in 3 Azure regions</s>, (<strong>UPDATE: SEE ABOVE)</strong> which may make it challenging to leverage if you, say, have low-latency connections you need to maintain to resources you have hosted in AWS. </p>
+
+
+
+<p>Again, Adobe's boffins are busy working on opening up more regions, but this is a limitation at this time.  </p>
+
+
+
+<h3>AEM Forms Cloud Service Limitations</h3>
+
+
+
+<p>As noted above, the new AEM Forms cloud service is only launching with a subset of the full AEM Forms functionality.  So, for example, if you use the PDF Generation &amp; Output services in your AEM Forms implementation, you'll need to continue to soldier on using the self-hosted or AMS-hosted versions of AEM Forms for now.</p>
+
+
+
+<h3>No AEM Communities support</h3>
+
+
+
+<p>It is still yet to be publicly announce what form AEM Communities will take when it moves to the Cloud, but right now AEM Communities is not supported on the Cloud Service.  </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2020/05/AEM-communities-mongo-writes-v1-e1590036820769.png"><img src="https://www.opsinventor.com/wp-content/uploads/2020/05/AEM-communities-mongo-writes-v1-e1590036820769-1024x917.png" alt="" class="wp-image-1479"/></a><figcaption>Diagram of AEM's UGC infrastructure, <a href="https://www.opsinventor.com/diagrams-of-how-aem-solr-mongo-ugc-msrp-works/" data-type="post" data-id="1475">more details here</a>.</figcaption></figure>
+
+
+
+<p>As you can see from <a href="https://www.opsinventor.com/diagrams-of-how-aem-solr-mongo-ugc-msrp-works/" data-type="post" data-id="1475">this diagram of the AEM Communities infrastructure</a>, getting this right in the cloud service will be significant re-engineering effort to make it cloud-native and scalable. </p>
+
+
+
+<h3>Lack of Application Performance Monitoring (APM) Support</h3>
+
+
+
+<p>Adobe internally uses a massive host of various tools to monitor the health and performance of the AEM Cloud Service infrastructure.  However, at this time, there is no way to get APM Metrics from New Relic (or any other APM) from the Cloud Service for your own pages.  This can make it somewhat trying to be able to debug performance issues within the product.</p>
+
+
+
+<h2>Should I Move to the AEM Cloud Service?</h2>
+
+
+
+<p>All told though, it's impressive how much muscle Adobe has put behind making the Cloud Service a viable platform to move workloads to.  On the one hand, the always-on, always-at-scale and always-updated aspects of the cloud service make it very compelling, especially if one's had to deal with hardware being a limiting factor on previous Experience Manager deployments. </p>
+
+
+
+<p>Does it mean that the Cloud Service is right for your planned deployment? <a href="https://www.linkedin.com/in/thaddeusreeves/">Hit me up on LinkedIn</a>, I'd be happy to chat about it!</p>
+
+
+
+<p></p>
+
+    </section>
+    <footer><p>Categories: Adobe, AEM, aemaacs, cloud service, commerce, devops, forms, screens, technology</p></footer>
+  </article>
+</body>
+</html>

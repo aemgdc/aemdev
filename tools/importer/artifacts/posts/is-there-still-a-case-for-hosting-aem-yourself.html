@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Is There Still a Case for Hosting AEM Yourself?</title>
+  <link rel="canonical" href="https://www.opsinventor.com/is-there-still-a-case-for-hosting-aem-yourself/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Is There Still a Case for Hosting AEM Yourself?</h1>
+      <time datetime="2022-05-06T00:33:59.000Z">5/5/2022, 5:33:59 PM</time>
+    </header>
+    <section class="content">
+      
+<p>Is there?  </p>
+
+
+
+<p>At Adobe Summit, I had a "Braindate" with a number of other experienced AEM engineers, discussing this very question.  Is there still a case for self-hosting AEM, or provisioning new AEM 6.5 service?   </p>
+
+
+
+<h3>First: A History Lesson on AEM &amp; What It's Made Of</h3>
+
+
+
+<p>Adobe Experience Manager (AEM) is Adobe's do-everything content management and digital experience platform. If you're new to the Adobe world, please see <a href="https://www.opsinventor.com/video-podcast-the-future-of-aem-in-the-cloud/">this video</a>, specifically about 4 mins in, for an overview of the platform and what it does.)  </p>
+
+
+
+<figure class="wp-block-embed is-type-wp-embed is-provider-wistia-inc wp-block-embed-wistia-inc"><div class="wp-block-embed__wrapper">
+https://fast.wistia.net/embed/iframe/79fja4n639?wtime=4m13s
+</div></figure>
+
+
+
+<p>For nearly two decades, the primary way that AEM (and its previous life as "Day Communique" or "CQ" for short) has been deployed has been via individually-licensed, large, cumbersome, difficult-to-scale servers that were set up by eccentric sysadmins like me.  AEM has always had an amazing feature set, but when it comes to scalability, resiliency, and ability to make use of the flexible and service-oriented nature of the cloud, it was commonly the major portion of companies' marketing technology stacks which couldn't be externalized into a platform-as-a-service / software-as-a-service model.  This meant that AEM would commonly need special handling, specialist (i.e. impossible-to-hire) engineers, and lengthy licensing discussions with Adobe whenever it came time to attempt to scale up for a major marketing project.  </p>
+
+
+
+<p>If you want more details of what that infrastructure looks like and why it's required special handling, I <a href="https://www.opsinventor.com/introducing-aem-as-a-cloud-service/">have a bunch of AEM diagrams in this article here</a>, as well as in the video linked above. </p>
+
+
+
+<h3>AEM as a Cloud Service: The Promise of a Cloud-Native Future</h3>
+
+
+
+<p>In January 2020, Adobe released what was the culmination of years of behind-the-scenes engineering work - a complete re-thinking of the AEM stack to bring it in-line with modern expectations of a "cloud service".  This meant a service which would had the goals of being:</p>
+
+
+
+<ol><li>Nearly-infinitely scalable</li><li>Always up-to-date, thus reducing costly software update cycles</li><li>Self-maintaining and always online, eliminating downtime due to maintenance</li></ol>
+
+
+
+<p>Those were all extremely exciting goals, and the implementation of that platform and the technology behind it left a lot of us pretty slack-jawed.  </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/07/aem-as-a-service-with-splunk-v1.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/07/aem-as-a-service-with-splunk-v1-1024x626.png" alt="" class="wp-image-1815"/></a><figcaption><em><sub>A diagram of the basic layout of the AEM as a Cloud Service Infrastructure, along with observability tooling (Splunk) illustrated</sub></em></figcaption></figure>
+
+
+
+<p>However, at the time AEM as a Cloud Service was released, it was more of a "minimum viable product" type release, rather than a full-featured, drop-in replacement for the standalone AEM product, and had a number of limitations, drawbacks and use cases that it could not provide for - leaving it really only suitable for net-new AEM customers.   </p>
+
+
+
+<p>A fairly nervous-about-the-future me <a href="https://www.opsinventor.com/aem-as-a-cloud-service-tech-qa-and-should-you-migrate-now/">outlined a number of these drawbacks in an article here</a> back in January 2020, when parallel communications had come from Adobe Sales asserting that the marching orders were to get "all" on-premise AEM installations moved to AEM as a Cloud Service that year.  </p>
+
+
+
+<p><strong>However</strong> - there were enough moderating and pragmatic influencers within Adobe who realized that the migration period to the Cloud Service would be a long road, and many customers had hard-stop and implacable reasons that they could not move off of their own hardware onto Adobe's cloud service.  Adobe responded by <a href="https://helpx.adobe.com/support/programs/eol-matrix.html">eliminating the end-of-life for AEM 6.5</a>, and creating a never-ending quarterly service pack cadence for updating AEM 6.5. </p>
+
+
+
+<p>All the while, as well, Adobe has been <strong><em>extremely aggressive</em></strong> in rolling out new features and capabilities to the AEM Cloud Service platform.  Their engineering staff has been rather engaged with the community, and I've been fortunate enough to have a number of detailed talks with Adobe engineering on the roadmap and new developments of AEM as a Cloud Service.  Adobe has thrown massive amounts of talent at remedying holes in the service and reasons why customers have not been able to migrate, and have put more effort than I've ever seen into migration tooling to make it easier for on-premise customers to migrate to the cloud. </p>
+
+
+
+<p>This has resulted in a situation now, unlike 2 years ago, where <strong>nearly all AEM projects should be considered as candidates for moving to AEM as a Cloud Service</strong>.  </p>
+
+
+
+<p>That being said, which of the concerns we've all had have been addressed, and which still remain as valid reasons why one could not run their company's marketing presence off of AEM as a Cloud Service?  </p>
+
+
+
+<p>Let's talk through them one at a time, and PLEASE PLEASE comment on this article or hit me up on Twitter if you find something here you disagree with or feel I could take a different stance on. </p>
+
+
+
+<h3>The Big List of Reasons You Possibly Can't Migrate to the AEM Cloud Service (and if they're handled)</h3>
+
+
+
+<p>I'm going to list here every reason I know of, including reasons I've previously brought up (which may now be addressed) as to why a company may consider to continue to run AEM 6.5 vs running AEM as a Cloud Service.  And yes, I <strong>do intend to update this as these get addressed.</strong> </p>
+
+
+
+<h4>Deploying to Mainland China</h4>
+
+
+
+<p>Right now, though AEM as a Cloud Service has a number of options for <a href="https://www.opsinventor.com/tips-for-aem-sites-in-china-licensing-hosting-choices/" data-type="post" data-id="1774">creating a near-China AEM infrastructure</a> (which I outlined a few options for <a href="https://www.opsinventor.com/tips-for-aem-sites-in-china-licensing-hosting-choices/" data-type="post" data-id="1774">here</a>), there is presently no way (nor any way on the roadmap) to deploy an AEM Cloud Service infrastructure within the boundaries of mainland China.  For brands looking to do transactional e-commerce in China, this may be a non-starter, as one has to be physically hosted inside China in order to sell products in China.  Please <a href="https://www.opsinventor.com/tips-for-aem-sites-in-china-licensing-hosting-choices/" data-type="post" data-id="1774">read this article</a> for a further discussion on this topic.  </p>
+
+
+
+<h4>Data Residency (only extreme cases not fixed)</h4>
+
+
+
+<p>Originally, when AEM as a Cloud Service first launched it was only available in 3 Azure regions in the US and UK.  However, Adobe has been aggressive in rolling out new regions for the service - a trick given that not all Azure regions support all of the functionality that the AEM Cloud Service makes use of.   </p>
+
+
+
+<figure class="wp-block-image size-full"><a href="https://www.opsinventor.com/wp-content/uploads/2022/05/image-1.png"><img src="https://www.opsinventor.com/wp-content/uploads/2022/05/image-1.png" alt="" class="wp-image-1904"/></a><figcaption><em>The "Add New Environment" dialog in AEM as a Cloud Service - showing the current list of cloud regions you can select from</em></figcaption></figure>
+
+
+
+<p>Adobe also announced at Adobe Summit this year that they were working to add additional regions by the end of the year, including Switzerland - which should be a big deal for certain Swiss financial institutions which have strict data residency requirements.  </p>
+
+
+
+<p>Adobe still may or may not be able to meet your country (or government entity's) data residency requirements if they have strict requirements that zero data from the site makes it to the USA due to the myriad of services that are used behind the scenes.  Definitely check on this first if your project may have such requirements. </p>
+
+
+
+<h4>Connectivity to Internal Corporate Networks (resolved for many use cases)</h4>
+
+
+
+<p>A big reason why many organizations need to keep their AEM infrastructure in-house comes down to networking.  AEM is rarely just an island unto itself; it almost always has multitudinous connections to all manner of internal systems such as identity management, search, databases, email, etc.  Additionally, the front end of the AEM Authoring environment frequently needs to be locked-down in order to have only internal users able to log on to it.   Network Security execs will commonly nix cloud-based infrastructure purely on this basis as well. </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/02/aem-as-a-cloud-service-VPN-v1.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/02/aem-as-a-cloud-service-VPN-v1-1024x618.png" alt="" class="wp-image-1692"/></a></figure>
+
+
+
+<p>However, last year <a href="https://www.opsinventor.com/aem-as-a-cloud-service-now-supports-vpn-connectivity/" data-type="post" data-id="1690">Adobe quietly added VPN support to AEM as a Cloud Service</a>, allowing for (on a case-by-case-basis and with help from Adobe engineers) VPN appliances &amp; routing gear to be deployed inside the AEM Cloud Service infrastructure. This allowed AEM to both be able to hit backend supporting resources, as well as participate on the network on the front end so that an internal-only domain &amp; IP can be assigned to AEM. </p>
+
+
+
+<p>So, while previously one would have to run only on-premise AEM hardware when running something like a corporate intranet, you can now run this with AEM as a Cloud Service for most of your internal routing needs.   </p>
+
+
+
+<p>If you're evaluating AEM as a Cloud Service and have backend/frontent connectivity issues that may NOT be resolved with this, <a href="https://www.linkedin.com/in/thaddeusreeves/">please let me know</a>!</p>
+
+
+
+<h4>Persistent Licensing &amp; Cost Concerns with migrating </h4>
+
+
+
+<p>For years, AEM has been licensed on a per-server basis, with licensing fees being assessed based on how many author &amp; publish instances you have, as well as how many users use your authoring instance, among other things (like Assets, Forms and other skus).  Licensing terms from customer-to-customer are notoriously different, to the degree that there is no published list pricing at all for AEM from Adobe, and even Adobe Partners are not allowed to talk specifics of pricing deals with Adobe customers - leaving such discussions to Adobe Sales.  </p>
+
+
+
+<p>That being said, one thing that MANY on-premise AEM customers possess is a perpetual license for their AEM servers.  This means that with the exception of ongoing support, they have a <strong>massive</strong> up-front investment that they have made in AEM licensing which allows them to continue to use AEM 6.5 for as long as it remains viable for them.  </p>
+
+
+
+<p>For customers who <strong>very much</strong> need the auto-scaling capabilities of the AEM cloud service, it's a no-brainer to move over to Adobe's new pricing model where one pays based on API calls &amp; resource requests rather than the number of servers deployed.  </p>
+
+
+
+<p>However, there are a number of customers who I've worked with who have a relatively stable volume of traffic to the website, and a steady and manageable volume of users to their authoring environment.  For such customers, especially those who can leverage an internal datacenter or corporate cloud hosting footprint, there is little financial incentive to move to the Cloud Service.  </p>
+
+
+
+<div class="wp-block-image is-style-default"><figure class="alignright size-large is-resized"><a href="https://www.opsinventor.com/wp-content/uploads/2022/05/image.png"><img src="https://www.opsinventor.com/wp-content/uploads/2022/05/image-1024x667.png" alt="" class="wp-image-1900" width="360" height="234"/></a><figcaption><em><sup>Veteran AEM operations engineers at one of the Braindates I attended at this year's Adobe Summit, sharing war stories about their various on-premise Adobe infrastructure experiences.  </sup></em></figcaption></figure></div>
+
+
+
+<p>For net-new customers to AEM, the pricing can very much work out in your favor to go to the Cloud Service, especially if you don't have a dedicated Operations team, don't already have a CI/CD solution, and are trying to get up and running as fast as possible.  </p>
+
+
+
+<p>The story gets more complicated, however, the more-established one is in the AEM space, especially if one already has a proven and advanced deployment pipeline, perpetual licensing, little in the way of scaling difficulties, and a staff Ops team to fall back on. </p>
+
+
+
+<h4>CI/CD is Slow and Limited (partially fixed)</h4>
+
+
+
+<p>As discussed in this article on the <a href="https://www.opsinventor.com/speeding-up-aem-cloud-service-deployment-the-dispatcher-only-pipeline/" data-type="post" data-id="1846">new improvements to the AEM Cloud Service's Cloud Manager deployment tool</a>, AEM as a Cloud Service has only a single way to get code changes into the system: Adobe's Cloud Manager.  Cloud Manager wears a fair number of hats behind the scenes, orchestrating code releases, taking backups before deployment, auto-restoring after failed deployments, automatically providing for a <a href="https://www.opsinventor.com/blue-green-deployment-on-adobe-experience-manager/" data-type="post" data-id="1128">blue-green release </a>(something that took CONSIDERABLE configuration before), and allowing for other environmental variables, SSL certificates, and other configuration. Never mind that Cloud Manager also automatically orchestrates Sonarqube code-quality testing, load testing, and other analysis and gating.</p>
+
+
+
+<p>It does <strong>a lot</strong>. </p>
+
+
+
+<p>For teams that are coming in fresh to AEM and don't already have an automated deployment pipeline on their existing AEM releases, Cloud Manager is a GODSEND.  It takes what normally would be a vast number of human-error-prone manual release tasks, and automatically and REPEATABLY performs them in a safe fashion.  If the code is good and passes tests, deployment can be a push-button affair, which is the holy grail for many home-grown deployment systems that generally take years to massage out and make repeatable and safe.  </p>
+
+
+
+<p>The demerits though are twofold: SPEED (or lack thereof) and lack of choice.  </p>
+
+
+
+<p>On speed, on a development AEM as a Cloud Service environment, it typically takes <strong>45-60 minutes</strong> for a deployment to complete successfully.  It's a design goal this year for a number of major improvements to Cloud Manager to reduce this down to 30 minutes for dev deployments.  However, this does come in stark contrast to what many on-premise customers are used-to for their development environments, where Dev &amp; Integration servers can commonly be deployed-to in a <strong>few minutes</strong>.  </p>
+
+
+
+<p>Now, granted, most of these deployments only see code being built using persistent build servers that can cache internal objects, and many of those servers can then also only build single modules (as opposed to rebuilding and deploying the ENTIRE PROJECT.  Still, many development teams I've worked with are used to being able to iterate VERY quickly on their development environments, even pushing deployments in the middle of a group UAT huddle ("oh it's broken, quick let me fix it...there, now check it out...").  A build that takes an hour precludes such fixes of course.</p>
+
+
+
+<p>This leads into the next point though, in that many of the decisions that went into building Cloud Manager were predicated on having a common deployment framework that would be safe and repeatable for ALL AEM USERS, whereas many organizations build their CI/CD framework around their specific team size, release cadence, and development style.  </p>
+
+
+
+<p>One customer that I spoke to had to back away from an AEM as a Cloud Service deployment <em>purely</em> because of this deployment framework.  </p>
+
+
+
+<p>So, this is something to evaluate in earnest when you're looking at moving to the cloud, and to also understand in detail the changes to the deployment paradigm that moving to the cloud presents.  <a href="https://www.linkedin.com/in/thaddeusreeves/">Please hit me up</a> if you want to chat about this!</p>
+
+
+
+<h4>Shared Infrastructure is a Non-Starter for Financial Services</h4>
+
+
+
+<p>This is one issue that I've run into in the past, though (truth be told) do not have any current customer contacts that have this as a problem.  In the past, Network Security and Physical Security VP's at some financial services institutions have been staunchly against deploying mission-critical applications on shared hardware.  </p>
+
+
+
+<p>Hardware that I worked on deploying for these customers had strict requirements to (a) be entirely on their own physical gear, (b) be owned entirely by the customer and (c) be able to be retrieved by the customer and inspected if need be.   For customers like this, deploying at a co-located facility like Rackspace or Equinix would be required, so that these concerns could be properly addressed.  </p>
+
+
+
+<p>For customers with more stringent regulatory requirements, they co-developed a solution with <a href="https://www.opsinventor.com/adobe-certifying-aem-to-work-on-redhat-openshift-containers/" data-type="post" data-id="1536">IBM/Redhat to deploy AEM on a containerized infrastructure on IBM Cloud</a>.  This is a specific solution for regulated industries, and if you're not in a position to run AEM yourself, may be a viable option to use instead of going to the Cloud Service.  </p>
+
+
+
+<p>As noted in the above article, there was originally some speculation that this Adobe/IBM partnership might result in a container-friendly version of AEM 6.5 that self-hosted AEM shops might use for their non-cloud-friendly deployments, but that did not come to pass.   </p>
+
+
+
+<h4>Log Aggregation and Application Performance Monitoring (fixed)</h4>
+
+
+
+<p>Monitoring and Log Aggregation is a soapbox I will stand up and talk about ALL DAY LONG if you let me, so don't get me started.  There's almost no single technology, I feel, which enables a Dev &amp; Ops team, or a distributed development team to work together more than a great set of dashboards and graphs.  </p>
+
+
+
+<p>Previously, when AEM as a Cloud Service was first released, this was a major hole.  One could only download whole logs (or tail individual container logs using Adobe IO) and neither allowed for observability or date/time-correlation to deployments.  Adobe also hadn't provided a means for hooking into Application Performance Monitoring to track page rendering speed and other backend metrics so as to improve site &amp; service performance. </p>
+
+
+
+<p>Fortunately, those problems have both been fixed!  So, if you've read any of my earlier rantings, please know - they're now ameliorated, provided you do the work to enable the data you need. </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/08/image-2.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/08/image-2-1024x471.png" alt="" class="wp-image-1823"/></a><figcaption>A sample POC Splunk dashboard for an AEM as a Cloud Service environment I put together</figcaption></figure>
+
+
+
+<p>Log Aggregation is now <a href="https://www.opsinventor.com/using-splunk-for-log-search-monitoring-on-aem-as-a-cloud-service/" data-type="post" data-id="1814">provided with Splunk, as detailed in this how-to article here</a>.  Additionally, as of Adobe Summit this year, you can now also <a href="https://experienceleague.adobe.com/docs/experience-manager-cloud-service/content/implementing/using-cloud-manager/user-access-new-relic.html?lang=en">enable New Relic APM support</a> and get detailed metrics from your AEM environments. </p>
+
+
+
+<h4>AEM Communities / User-Generated Content Support</h4>
+
+
+
+<p>For those of you using AEM Communities for your user-generated content (blogs, comments, likes, activity streams, subscriptions, etc), there is bad news - <a href="https://www.opsinventor.com/whats-the-future-of-aem-communities/" data-type="post" data-id="1672">AEM as a Cloud Service does not support and will not support AEM Communities</a>. </p>
+
+
+
+<h3>Summary</h3>
+
+
+
+<p>I certainly did not list all of the reasons to move or not move to AEM as a Cloud Service, and your team may have malleable requirements or showstopper pitfalls that would prevent a Cloud Service migration. </p>
+
+
+
+<p>Please reach out to me if you either (a) want to argue about any of my reasoning above, or (b) have anything to add! </p>
+
+    </section>
+    <footer><p>Categories: Adobe, adobe experience manager, AEM, AEM / CQ, aemaacs, AMS, cloud service, datacenter, devops, on-premise, self-host</p></footer>
+  </article>
+</body>
+</html>

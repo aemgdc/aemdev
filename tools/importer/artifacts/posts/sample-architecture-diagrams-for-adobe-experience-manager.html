@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Sample Architecture Diagrams for Adobe Experience Manager</title>
+  <link rel="canonical" href="https://www.opsinventor.com/sample-architecture-diagrams-for-adobe-experience-manager/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Sample Architecture Diagrams for Adobe Experience Manager</h1>
+      <time datetime="2016-09-10T23:01:29.000Z">9/10/2016, 4:01:29 PM</time>
+    </header>
+    <section class="content">
+      
+<p><strong>Note:</strong><em> Originally posted on the <a href="https://blog.rackspace.com/author/tadreeves">Rackspace Blog</a> in September 2016, updated in April 2018 with a sample AEM 6.4 architecture diagram.  I was an AEM Engineer at Rackspace for some time, supporting AEM deployments of all shapes &amp; sizes. </em></p>
+
+
+
+<p>I was recently asked by a customer why I think Rackspace is the best place to&nbsp;host an Adobe Experience Manager site. After working on a number of wildly different AEM/CQ installations&nbsp;hosted on both VMware and Bare Metal at customer data centers, co-located&nbsp;Bare Metal, ISP-managed VMWare, AWS and OpenStack, I can say the biggest reason I recommend Rackspace for AEM is simple: Rackspace has the hosting industry’s deepest toolbox.</p>
+
+
+
+<p>AEM,&nbsp;more so than many CMS frameworks, can have some intense CPU and I/O requirements. But it can also vary widely on how it needs to be deployed, depending on a vast number of factors. Things like spikiness of traffic, predictability of the traffic spikes, how cache-able the site is, the volume of published content, the presence of social features and user-generated content, authoring volume, number of concurrent authors and durability of the authoring environment (among other things) can drastically change what the “ideal” architecture is for an AEM environment.</p>
+
+
+
+<p>Some AEM environments are deployed, and then once pushed out, never need to change their sizing. Two publishers, two dispatchers and an author are able to handle all of the site’s traffic spikes without a&nbsp;need for scaling. Sites like these sometimes lend themselves very well to a static private cloud environment, which is provisioned once and then basically left as-is.</p>
+
+
+
+<p>Other environments have heavy usage on the author tier which, unfortunately, have always had the&nbsp;crippling&nbsp;limitation of an inability to scale horizontally. If you’ve got hundreds of&nbsp;AEM authoring users, or&nbsp;otherwise don’t have the ability to shard your author/DAM workflows to separate servers, your only option is to make the Author server as powerful as possible.</p>
+
+
+
+<p>This type of requirement (not at all unusual for heavy digital asset management users or sites with a lot of authors) lends itself to an author hosted on Bare Metal, running on a dedicated multi-socket server with high-end CPUs, and its own dedicated, high-speed storage.</p>
+
+
+
+<p>Other sites&nbsp;have widely varying traffic patterns and need to be able to expand relatively quickly from a handful of publish nodes up to 15, 20 or 30 publishers, to be able to handle traffic. Such sites pretty much require being deployed in an AWS or OpenStack type cloud, where you can quickly clone existing publish nodes, create replication queues on the fly and cut and paste until the site is performing well.</p>
+
+
+
+<p>My point here is that there is absolutely no “one size fits all” for AEM sites, and it’s nice to be well-supported by expert sysadmins on&nbsp;<em>whatever</em>&nbsp;architecture makes sense for your setup. Rackspace&nbsp;has not only a crew of deeply-experienced AEM engineers and architects, but also&nbsp;literally thousands of customer-facing engineers who are available 24×7×365 to handle Linux, networking, security, load balancer and any other type of platform issue that might come up — regardless of what platform or symphony of platforms you happen to be deploying onto.</p>
+
+
+
+<h3><strong>Sample AEM architecture diagrams</strong></h3>
+
+
+
+<p>The above being said, I wanted to share a few basic AEM architecture diagrams, which highlight some of the various ways AEM can and has been deployed at Rackspace, depending on customer and business requirements.</p>
+
+
+
+<p><strong>Adobe Experience Manager 6.4 architecture</strong></p>
+
+
+
+<p>Adobe Experience Manager 6.4 introduced several compelling new features (see&nbsp;<a href="https://blog.rackspace.com/10-reasons-upgrade-aem-6-4-rackspace-application-services" target="_blank" rel="noopener">“10 Reasons to Upgrade to Adobe Experience Manager 6.4”</a>) including groundbreaking new machine learning and artificial intelligence features powered by Adobe’s Sensei AI.</p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/03/aem-6.4-sensei.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/03/aem-6.4-sensei-1024x669.png" alt="" class="wp-image-1711"/></a></figure>
+
+
+
+<p>These features require connectivity between your author instance and Adobe Marketing Cloud to work, as illustrated in the architecture diagram here.</p>
+
+
+
+<p>Image-based features, such as Smart Crop or Smart Tag, will send thumbnails of your DAM assets to Adobe Sensei for analysis, so as to automatically determine contents of the image for tagging (auto-tagging products, themes, image elements like trees, clouds, etc).&nbsp; &nbsp;Smart Layout, a feature which will automatically determine the best-performing layout for a page with multiple items on it, additionally requires connectivity with an Adobe Target and Adobe Analytics account so as to provide Sensei with the telemetry it requires to automatically generate the best layout.</p>
+
+
+
+<p>In each case, the only instance which requires connectivity to Sensei is the Author instance.</p>
+
+
+
+<p>These new features using Adobe Sensei can be deployed on a wide variety of infrastructures, including single-tenant bare-metal or virtualized infrastructures, as well as public clouds like Amazon Web Services or Microsoft Azure, each of which can be fully-managed by the Rackspace Application Services AEM Team.</p>
+
+
+
+<h3><strong>Hybrid AEM deployment with Rackspace Private Cloud, separate Bare Metal authors for content and asset management</strong></h3>
+
+
+
+<div class="wp-block-image"><figure class="aligncenter size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/03/aem-offload-author-v1.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/03/aem-offload-author-v1-1024x906.png" alt="" class="wp-image-1713"/></a></figure></div>
+
+
+
+<p>The architecture depicted above assumes a relatively constant load against publishers (or one where spikes are mitigated/swallowed by dispatcher cache and Akamai) so publishers can be statically deployed with VMware private cloud virtual machines. On the author tier, some companies find that there are two entirely separate activities that put load on the author —Digital Asset Management or DAM uploading (with all of the CPU-intensive activity that goes along with it, in terms of transcoding, image rendering, PDF resizing, etc), and separately, content authoring. In such a scenario, it makes sense to separate the DAM onto a separate AEM author server, so heavy uploads that max out all available CPUs don’t then make for an intolerably slow authoring experience.</p>
+
+
+
+<h3><strong>AEM architecture diagram: sharded author with cloud publishers</strong></h3>
+
+
+
+<p>The below diagram represents site with heavy authoring requirements so that it makes sense to shard out individual sites onto their own physical authoring environments.&nbsp;A Solr Cloud cluster plugs into the authors for indexing DAM assets and assisting with the custom authoring UI. The publish tier is served by Rackspace public cloud servers (OpenStack) which can easily be cloned and scaled up and down to meet load demands.</p>
+
+
+
+<div class="wp-block-image"><figure class="aligncenter size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/03/Sharded-Author.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/03/Sharded-Author-1024x695.png" alt="" class="wp-image-1714"/></a></figure></div>
+
+
+
+<p>There are a vast number of other architecture diagrams I’d like to share (once anonymized and such!) including those for Rackspace’s new Managed Cloud AEM service which provides on-demand cloud instances for AEM at the click of a button, and others which are maintained and supported 24×7×365 by a team of experienced AEM, Linux, Cloud and Network Security folks.</p>
+
+
+
+<p>Overall, I hope the above was a helpful introduction to just a few of the AEM deployments we specialize in at Rackspace, and a reflection of the deep set of tools we possess when it comes to optimizing AEM environments.</p>
+
+    </section>
+    <footer><p>Categories: AEM, AEM / CQ, architecture, aws, cloud, clustering, diagram, vmware</p></footer>
+  </article>
+</body>
+</html>

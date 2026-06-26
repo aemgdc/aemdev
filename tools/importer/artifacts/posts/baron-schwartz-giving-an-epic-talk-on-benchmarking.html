@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Baron Schwartz giving an Epic Talk on Benchmarking</title>
+  <link rel="canonical" href="https://www.opsinventor.com/baron-schwartz-giving-an-epic-talk-on-benchmarking/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Baron Schwartz giving an Epic Talk on Benchmarking</h1>
+      <time datetime="2012-06-26T00:15:51.000Z">6/25/2012, 5:15:51 PM</time>
+    </header>
+    <section class="content">
+      <div style="margin:0 0 10px;padding:0;font-size:.8em;line-height:1.6em;"><a title="Baron Schwartz giving an Epic Talk on Benchmarking" href="http://www.flickr.com/photos/tadnkat/7444214100/"><img alt="Baron Schwartz giving an Epic Talk on Benchmarking by tadnkat" src="http://farm8.staticflickr.com/7123/7444214100_dce69b651b.jpg" /></a>
+<span style="margin:0;"><a href="http://www.flickr.com/photos/tadnkat/7444214100/">Baron Schwartz giving an Epic Talk on Benchmarking</a>, a photo by <a href="http://www.flickr.com/photos/tadnkat/">tadnkat</a> on Flickr.</span></div>
+<a href="http://www.xaprb.com/blog/">Baron Schwartz</a> from <a href="http://www.percona.com/">Percona</a> gave an amazing talk on Benchmarking.  As someone who's always loved <em>reading about</em> benchmarks, but having been pretty terrible at producing them myself, I found this talk fascinating -- especially after my recent experience with attempting to run a bunch of inconclusive benchmarks on JBoss 4.2 vs JBoss 5.1 performance.
+
+Put simply, <strong>Baron Schwartz is a benchmarking GOD. </strong>Listen to what he says. <a href="http://www.xaprb.com/blog/"> Read his blog.</a>  This guy is benchmarking sanity personified.
+
+Bullets from his talk:
+<ul>
+	<li>It’s important to establish goals for a benchmark, reasons why, legend, distribution, response time, etc - not just throughput</li>
+	<li>One needs a lot of info to think clearly about a benchmark</li>
+	<li>Ideal benchmark report:
+<ul>
+	<li>Clear benchmark goals:
+<ul>
+	<li>Validating hardware config (disk / cpu / etc) - see if it matches expectations</li>
+	<li>Compare two systems</li>
+	<li>Checking for regressions</li>
+	<li>Capacity planning (how will it perform at higher load than you have?)</li>
+	<li>Reproduce bad behaviour to solve it
+<ul>
+	<li>Most systems you don’t want to push it as far as it’s max throughput, as at that point you’re beyond its threshhold of “good behaviour”.</li>
+</ul>
+</li>
+	<li>Stress test to find bottlenecks</li>
+</ul>
+</li>
+	<li>Get specs:
+<ul>
+	<li>Get specs for CPU, disk, memory, network, including makes/models/etc.</li>
+	<li>SSDs are EXTREMELY tricky to benchmark</li>
+	<li>Versions of all software</li>
+	<li>RAID controller / filesystem</li>
+	<li>Disk queue scheduler -
+<ul>
+	<li>a lot of Linux defaults have tons of desktop software shoved in there.  CFQ is standard disk scheduler (desktop - perf sucks) instead of noop or others</li>
+</ul>
+</li>
+	<li>Generate some plots to summarize</li>
+</ul>
+</li>
+	<li>Better Aggregate Measurement:
+<ul>
+	<li>Average / Percentiles</li>
+	<li>Observation duration</li>
+	<li>95th percentile = you can throw away the worst 1/20 of your day.  Means  you can throw away more than an hour of data per day.  I.e. your system can be rock bottom performing for an hour a day.  Not so good for establishing an SLA or SLO (objective).</li>
+	<li>Scatter graphs can be much more telling than a single point - as you can see if your performance is all over the map or if it returns a stable figure.   i.e. SSDs have performance all over the map, and have very different performance characteristics when empty / full or at start/end of the benchmark.</li>
+</ul>
+</li>
+	<li>Performance:
+<ul>
+	<li>Two metrics:  Thoughput and Response time (tasks per time or time per task)</li>
+	<li>They are not reciprocals</li>
+	<li>Resource consumption is NOT a good measure of performance - i.e. CPU% / Load Avg / etc.  These are indicators.  They are not the goal.</li>
+	<li>Be very careful with tools that report utilization.  At 100% utilization many systems are not actually saturated.</li>
+	<li>try ptdiskstats from perconia</li>
+</ul>
+</li>
+	<li>What is a system’s actual capacity?
+<ul>
+	<li>Max throughput at max achievable concurrency while being given acceptable performance (response time).</li>
+</ul>
+</li>
+	<li>Recap:
+<ul>
+	<li>Most benchmarks reveal little</li>
+</ul>
+</li>
+	<li>if 1/20 is serialized, you’ll never get more than a 20x speedup from going parallel.</li>
+	<li>Isolating bottlenecks or iteratively optimizing them is one way - but don’t optimize things that don’t matter.  Don’t try to optimize little things.</li>
+	<li>Little’s law:  concurrency = throughput * response time
+<ul>
+	<li>This holds regardless of queuing, arrival rate distribution, response time distribution, etc.</li>
+</ul>
+</li>
+	<li>Utilization law:
+<ul>
+	<li>Utilization = service time * throughput</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+    </section>
+    <footer><p>Categories: 2012, benchmarking, mysql, numbers, percona, statistics, technology, velocity, velocityconf</p></footer>
+  </article>
+</body>
+</html>

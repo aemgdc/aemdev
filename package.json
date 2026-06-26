@@ -11,7 +11,9 @@
     "test:watch": "npm test -- --watch",
     "test:file": "wtr --node-resolve --port=2000 --coverage",
     "test:file:watch": "wtr --config ./web-test-runner.config.mjs --node-resolve --port=2000 --coverage --watch",
-    "build:lit": "esbuild --format=esm --minify ./deps/lit/src/index.js --bundle --outfile=./deps/lit/dist/index.js"
+    "build:lit": "esbuild --format=esm --minify ./deps/lit/src/index.js --bundle --outfile=./deps/lit/dist/index.js",
+    "popular:generate": "node tools/analytics/generate-popular-articles.mjs",
+    "popular:publish": "node tools/da/push-popular-articles.js"
   },
   "repository": {
     "type": "git",
@@ -34,12 +36,17 @@
     "eslint-plugin-chai-friendly": "^1.1.0",
     "eslint-plugin-import": "^2.32.0",
     "globals": "^16.0.0",
+    "jsdom": "^29.1.1",
     "sinon": "^21.0.1",
     "stylelint": "^17.1.0",
     "stylelint-config-standard": "^40.0.0"
   },
   "dependencies": {
     "esbuild": "^0.25.10",
-    "lit": "^3.3.1"
+    "form-data": "^4.0.5",
+    "lit": "^3.3.1",
+    "node-fetch": "^2.7.0",
+    "playwright": "^1.58.2",
+    "sharp": "^0.34.5"
   }
 }

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AEM as a Cloud Service Now Supports VPN Connectivity</title>
+  <link rel="canonical" href="https://www.opsinventor.com/aem-as-a-cloud-service-now-supports-vpn-connectivity/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>AEM as a Cloud Service Now Supports VPN Connectivity</h1>
+      <time datetime="2021-02-26T02:39:51.000Z">2/25/2021, 6:39:51 PM</time>
+    </header>
+    <section class="content">
+      
+<p>Adobe just quietly rolled out another capability of the AEM as a Cloud Service product in that it is now able to be configured with full VPN connectivity to a corporate network.  </p>
+
+
+
+<p>Previously, if you wanted to secure access to your AEM Cloud Service implementation from your company's network, your only avenues were to use IP allow/deny lists (<a href="https://www.opsinventor.com/aem-as-a-cloud-service-a-year-later-update-on-features-limitations/#Huge_Investments_in_Migration_Tooling">which are at least now self-service</a>).  However, there are many use cases this simply doesn't satisfy (as many times it can be entirely impractical to secure access to an enterprise asset (or an environment) by IP address only. </p>
+
+
+
+<p>Adobe recognized this and now offers a full VPN appliance which can be set up with the assistance of Adobe Customer Care.  </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/02/aem-as-a-cloud-service-VPN-v1.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/02/aem-as-a-cloud-service-VPN-v1-1024x618.png" alt="diagram of AEM as a cloud service plus VPN" class="wp-image-1692"/></a><figcaption><em>An intentionally comically-oversimplified diagram of AEM as a Cloud Service and VPN connectivity</em></figcaption></figure>
+
+
+
+<p>The full documentation and diagram of this is available to customers under NDA, so I don't have any docs to link to from Adobe right now, so the above diagram is a simplified version of the VPN schematic that I got OK from Adobe to publish.  Essentially, though, it will allow a mutual TLS tunnel to exist between the customer site and the edge of Adobe's managed cloud network in Azure, from which point it can take advantage of a nearby Fast.ly POP for caching, and directly connect to the Kubernetes environments running your AEM gear.  </p>
+
+
+
+<p>This would allow for a number of use cases which were previously going to be a tough sell for your friendly neighborhood security guys, and now have a better chance of working.  Use cases like: </p>
+
+
+
+<ul><li><strong>Fully-Internal AEM Environments:</strong> There are a number of companies that I've worked with that utilize Adobe Experience Manager as the platform for their internal corporate intranet (I know I'm not supposed to use that dated word anymore).  If AEM has to be able to authenticate back to an internal corporate Active Directory, or to work with other internal resources (internal Sharepoint, search or legacy systems), this would require an AEM environment placed with 100% VPN access only.  </li><li><strong>Environments with sensitive lower environment data:</strong> In some cases, AEM lower environments have data that you want to make sure doesn't leak to the public until a formal deployment event, and as such one wants to ensure they're entirely isolated behind a VPN.</li><li><strong>Public Sites Accessing Private Resources:</strong> There are many cases where fully-public AEM sites have integrations with legacy on-premise systems which cannot be moved to the cloud or made public.  This would solve for this use case as well.  </li></ul>
+
+
+
+<p>There may be other cases that the VPN setup in this case will or won't solve for, with respect to ticking all of the security boxes you come up with in evaluating whether a cloud deployment is right for you. </p>
+
+
+
+<p>I'd definitely recommend <a href="https://www.linkedin.com/in/thaddeusreeves/">reaching out</a> or talking to your Adobe partner if you think this might be something you'd want to investigate.  </p>
+
+
+
+<hr class="wp-block-separator"/>
+
+
+
+<p><strong>Cover photo:</strong> Just an afternoon out at the Willamette River at sunset with my kids, just a 5-minute roll down the bike trail from my house.  <a href="https://www.flickr.com/photos/tadnkat/29571776200/">Sunset Sunrays on the Willamette | Tad Reeves | Flickr</a></p>
+
+
+
+<figure class="wp-block-embed is-type-photo is-provider-flickr wp-block-embed-flickr"><div class="wp-block-embed__wrapper">
+https://www.flickr.com/photos/tadnkat/29571776200/
+</div></figure>
+
+
+
+<p></p>
+
+    </section>
+    <footer><p>Categories: adobe experience manager, AEM, AEM / CQ, aemaacs, cloud service, internal, intranet, security, VPN</p></footer>
+  </article>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Implementing SSL on AEM</title>
+  <link rel="canonical" href="https://www.opsinventor.com/implementing-ssl-on-aem/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Implementing SSL on AEM</h1>
+      <time datetime="2018-07-17T00:11:47.000Z">7/16/2018, 5:11:47 PM</time>
+    </header>
+    <section class="content">
+      By default, server-to-server communication on AEM is all in plaintext HTTP.  As these connections are usually all on the backend, this generally isn't much of a security concern aside from the fact that the user that is used to replicate content between AEM Author &amp; Publish instances generally has sufficient permissions to create &amp; replicate content throughout the entire site.  So, anyone sniffing traffic momentarily on the network would see the masses of repl events between servers, and thus you have yourselves a compromised site.
+<h2>SSL in AEM 6.3, 6.4 and Later</h2>
+Though there is definitely a performance hit for running SSL on AEM, most of why most implementations I've seen tend to go all-http instead of all-SSL is complexity.  SSL on AEM 6.2 and earlier was a nightmare.  However, Adobe implemented a vastly simplified scheme to implement SSL on Adobe Experience Manager 6.3.  The following instructions work to get SSL up between AEM instances, using self-signed certs:
+
+<span class="ng-scope"><strong>1) First create the keys you'll need for AEM.  Below are the steps for generating a self-signed certificate.</strong>
+</span>
+<pre class="lang:default decode:true">### Create Private Key
+$ openssl genrsa -aes256 -out localhostprivate.key 4096
+  
+### Generate Certificate Signing Request using private key
+$ openssl req -sha256 -new -key localhostprivate.key -out localhost.csr -subj '/CN=localhost'
+  
+### Generate the SSL certificate and sign with the private key, will expire one year from now
+$ openssl x509 -req -days 365 -in localhost.csr -signkey localhostprivate.key -out localhost.crt
+  
+### Convert Private Key to DER format - SSL wizard requires key to be in DER format
+$ openssl pkcs8 -topk8 -inform PEM -outform DER -in localhostprivate.key -out localhostprivate.der -nocrypt</pre>
+<span class="ng-scope"><strong>1a) Generate a separate unencrypted private key to use for Apache</strong>
+</span>
+<pre class="lang:default decode:true">[me@localhost ssl]$ openssl rsa -in localhostprivate.key -out localhost_apache.key
+Enter pass phrase for localhostprivate.key:
+writing RSA key</pre>
+<span class="ng-scope"><strong>1b) Create a new file that has the key on top and the crt below it</strong>, to be used on the apache servers. You'll put it at </span>/etc/pki/tls/certs/.
+
+<strong><span class="ng-scope">2) On the Author or publisher, go into <a class="external-link" href="http://localhost:4502/libs/granite/security/content/sslConfig.html" rel="nofollow">http://localhost:4502/libs/granite/security/content/sslConfig.html</a> to configure SSL.   </span></strong><span class="ng-scope">Upload the .der file generate above as the key, and the .crt file as the certificate</span>
+
+<span class="ng-scope"><strong>3) AEM will then fire up on SSL without a restart</strong>.  I like to restart it anyhow after SSL is instantiated, but it will in-fact work on the SSL port that you've configured without an AEM restart. </span>
+
+Further info on this is on Adobe's site here:
+<ul>
+ 	<li><a href="https://helpx.adobe.com/experience-manager/kt/platform-repository/using/ssl-wizard-technical-video-use.html">https://helpx.adobe.com/experience-manager/kt/platform-repository/using/ssl-wizard-technical-video-use.html</a></li>
+ 	<li><a href="https://helpx.adobe.com/experience-manager/6-3/sites/administering/using/ssl-by-default.html">https://helpx.adobe.com/experience-manager/6-3/sites/administering/using/ssl-by-default.html</a></li>
+</ul>
+<h2>AEM SSL Keystore Location in the new 6.3+ way vs the old way</h2>
+It's worth noting that AEM stores the SSL certificates in different locations on pre-6.3 releases, than it now does currently.  Up through AEM 6.2, SSL was configured by creating <em>org.apache.felix.https</em> configurations directly, and then storing the SSL truststore and keystores on-disk in a Java keystore (JKS) file.
+
+With AEM 6.3 and later (it's unchanged in 6.4 and 6.5), AEM now stores the keystore in the JCR, under <strong>/home/users/system/security/ssl-service/keystore/store.p12</strong>, and the truststore is in <strong>/etc/truststore/truststore.p12</strong>.
+<h2>Problems when Upgrading from an earlier SSL implementation into AEM 6.3/6.4/6.5</h2>
+When I've done in-place upgrades of an SSL-enabled AEM 6.2 instance to AEM 6.3 or 6.4, the legacy org.apache.felix.https configurations were migrated over with the upgrade, and SSL continued to work as before.
+
+However, don't try to then update SSL using the new SSL wizard, as the configurations will then get into a fight and won't work.  You'll have to use one or the other.
+<h2 id="SiemensFAWSSSLImplementation-StepsforSSLinstallationontheDispatcher"><span class="ng-scope">Steps for SSL installation on the Dispatcher</span></h2>
+These are the steps I've done to get SSL working both for inbound HTTP requests, as well as for the backend SSL requests that are then made to the publishers.
+<ol>
+ 	<li>Install mod_ssl (command below is for mod_ssl on Apache 2.4 for CentOS 7)
+<pre class="lang:default decode:true">yum install httpd24u-mod_ssl
+</pre>
+</li>
+ 	<li>Make a new vhost_ssl.conf file in /etc/httpd/vhosts/ (assuming you're using such) which will take the *:443 requests:
+<pre class="lang:default decode:true">&lt;VirtualHost *:443&gt;
+        ServerName ThisFrickingServerName
+        DocumentRoot /var/www/html/
+        DocumentRoot /var/www/html
+        ErrorLog logs/ssl_error_log
+        TransferLog logs/ssl_access_log
+        LogLevel warn
+        SSLEngine on
+  
+        SSLProtocol all -SSLv3
+        SSLProxyProtocol all -SSLv3
+  
+        SSLHonorCipherOrder on
+  
+        SSLCipherSuite HIGH:MEDIUM:!MD5:!RC4
+        SSLProxyCipherSuite HIGH:MEDIUM:!MD5:!RC4
+  
+        SSLCertificateFile /etc/pki/tls/certs/environment_name.crt
+        &lt;Directory /var/www/html/&gt;
+           &lt;IfModule mod_deflate.c&gt;
+           # Enable gzip compression
+           SetOutputFilter DEFLATE
+           # Don't compress binaries
+           SetEnvIfNoCase Request_URI .(?:exe|t?gz|zip|iso|tar|bz2|sit|rar) no-gzip dont-vary
+           # Don't compress images
+           SetEnvIfNoCase Request_URI .(?:gif|jpe?g|jpg|ico|png)  no-gzip dont-vary
+           # Don't compress PDFs
+           SetEnvIfNoCase Request_URI .pdf no-gzip dont-vary
+           # Don't compress flash files
+           SetEnvIfNoCase Request_URI .flv no-gzip dont-vary
+           # Netscape 4.X has some problems
+           BrowserMatch ^Mozilla/4 gzip-only-text/html
+           # Netscape 4.06-4.08 have some more problems
+           BrowserMatch ^Mozilla/4.0[678] no-gzip
+           # MSIE masquerades as Netscape, but it is fine
+           BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+           # Make sure proxies don't deliver the wrong content
+           Header append Vary User-Agent env=!dont-vary
+           &lt;/IfModule&gt;
+                &lt;IfModule disp_apache2.c&gt;
+                        SetHandler dispatcher-handler
+                        ModMimeUsePathInfo On
+                        DirectorySlash Off
+                &lt;/IfModule&gt;
+                Options FollowSymLinks
+                AllowOverride None
+        &lt;/Directory&gt;
+&lt;/VirtualHost&gt;</pre>
+For the SSLCertificateFile  listed above, paste in the name you saved your new cert as.</li>
+ 	<li>Update Dispatcher module in /etc/httpd/modules to at least 4.2.3 from <a class="external-link" href="https://www.adobeaemcloud.com/content/companies/public/adobe/dispatcher/dispatcher.html" rel="nofollow">https://www.adobeaemcloud.com/content/companies/public/adobe/dispatcher/dispatcher.html</a> and ln -s /etc/httpd/modules/<a class="external-link" href="http://mod_dispatcher.so/" rel="nofollow">mod_dispatcher.so</a> to this new version. <strong>NOTE: </strong>The AWS boxes we've been using have come with OpenSSL 1.0.2k which <strong>does not work</strong> with Dispatcher 4.2.2 and earlier.  It will work on the front side, but will not make SSL backend connections and you'll get errors.  Make sure that it is the SSL version of the dispatcher as well. If the file is already there, remove it and download this version of it.</li>
+ 	<li>Change your dispatcher.any to point at the SSL port on the backend author or publisher:
+<pre class="lang:default decode:true ">/renders
+  {
+   /ThisFrickingRenderName
+    {
+    /hostname "127.0.0.1"
+    /port "5443" #put in your ssl port here
+    /timeout "0"
+    /secure "1" #this enables SSL on the dispatcher
+    }
+        }</pre>
+</li>
+ 	<li>Restart Apache</li>
+</ol>
+I'll make a separate post on how to do SSL on AEM 6.2 and earlier, as with those you have to keep your SSL keys in a Java keystore (.jks file) on-disk, and manage your SSL inside of those JKS files.  Also, there are a number of OSGI console configs you have to make (difficult to automate generically).
+
+Hope this works well for you!
+    </section>
+    <footer><p>Categories: 6.3, 6.4, adobe experience manager, AEM, AEM / CQ, apache, cq, self-signed, ssl</p></footer>
+  </article>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Cowie from Etsy - Cooking with Chef</title>
+  <link rel="canonical" href="https://www.opsinventor.com/cowie-from-etsy-cooking-with-chef/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Cowie from Etsy - Cooking with Chef</h1>
+      <time datetime="2012-06-25T19:09:40.000Z">6/25/2012, 12:09:40 PM</time>
+    </header>
+    <section class="content">
+      <div style="margin:0 0 10px;padding:0;font-size:.8em;line-height:1.6em;"><a title="Cowie from Etsy - Cooking with Chef" href="http://www.flickr.com/photos/tadnkat/7441972388/"><img src="http://farm8.staticflickr.com/7251/7441972388_20e3550aa4.jpg" alt="Cowie from Etsy - Cooking with Chef by tadnkat" /></a>
+<span style="margin:0;"><a href="http://www.flickr.com/photos/tadnkat/7441972388/">Cowie from Etsy - Cooking with Chef</a>, a photo by <a href="http://www.flickr.com/photos/tadnkat/">tadnkat</a> on Flickr.</span></div>
+John Cowie from Etsy gave insight on how they use Chef at Etsy. This is a turbo-overview of his talk and my impressions.
+
+First, as a note, <strong>Etsy prefers running on bare metal</strong> as opposed to the cloud.  There are cases where working in cloud is better, but not EVERY case as some techno-pundits seem to evangelize.   Not that some managers I've dealt with have this idea, but just know that the ENTIRE WORLD IS NOT MOVING TO AMAZON.  They've got around 800 servers and they're real servers - not VMs and not AMIs.
+
+Some rules of thumb for dealing with Chef they've got:
+<ul>
+	<li>Never test chef in production</li>
+	<li>Keep things as simple as possible</li>
+	<li>For metrics - they use Chef handler to send data to graphite (in github.com/etsy/chef-handlers.git</li>
+	<li>They push their chef failures to IRC.</li>
+</ul>
+With respect to handling of <strong>Failures</strong>:
+<ul>
+	<li>Use “knife node lastrun &lt;&lt;hostname&gt;&gt; to get what happened on the last run</li>
+	<li>gem install knife-lastrun, then install on client.rb to get this data.</li>
+	<li>Try to keep conditions simple if possible - not huge regexes, try to keep to simplicities if possible to help your readability at 3am.</li>
+</ul>
+<strong>Standards in Chef:</strong>
+<ul>
+	<li>Foodcritic: This is a tool for enforcing rules &amp; standards on Chef, and it sounds FULLY RAD.  <a href="http://acrmp.github.com/foodcritic/">http://acrmp.github.com/foodcritic/</a>
+<ul>
+	<li>Foodcritic integrates with Jenkins (!!)</li>
+	<li>Supports custom rules</li>
+</ul>
+</li>
+	<li>Etsy standards (guidelines)
+<ul>
+	<li>Never have chef auto-upgrade packages</li>
+	<li>If you want to send an action:restart -- RELOAD instead of restart</li>
+	<li>(foodcritic can enforce)</li>
+</ul>
+</li>
+</ul>
+<ul>
+	<li>Some more rules of thumb:
+<ul>
+	<li>Don’t take Opscode’s word for it - if it doesn’t work for you, change it.</li>
+	<li>41 people have Chef access, most have keys to push to prod</li>
+	<li>There is an unconstrained Test env.  NEVER test in prod</li>
+	<li>They tweaked the “environments” workflow with some tooling
+<ul>
+	<li>SPORK!  (knife-spork)</li>
+	<li>knife-spork is a wrapper around environments
+<ul>
+	<li>check / bump / upload / promote</li>
+	<li><a href="https://github.com/jonlives/knife-spork">https://github.com/jonlives/knife-spork</a></li>
+	<li>Spork has a bunch of safety checks</li>
+	<li>Spork now does chat notifications, git support, default environments, etc</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+    </section>
+    <footer><p>Categories: 2012, chef, knife-spork, opscode, technology, velocity, velocityconf</p></footer>
+  </article>
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AEM 6.5 - New Features Guide for Platform Architects &amp; Ops</title>
+  <link rel="canonical" href="https://www.opsinventor.com/aem-6-5-new-features-guide-for-platform-architects-ops/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>AEM 6.5 - New Features Guide for Platform Architects &amp; Ops</h1>
+      <time datetime="2019-04-16T00:31:59.000Z">4/15/2019, 5:31:59 PM</time>
+    </header>
+    <section class="content">
+      
+<p>Most articles you'll find on the new Adobe Experience Manager 6.5 will focus on the great new features that AEM Sites and AEM Assets now provide, which are - truth be told - quite compelling.  But from the people who will be executing an upgrade to AEM 6.5 from an platform architecture and operational standpoint, I wanted to call out a few changes from earlier versions that you may or may not be aware of.  </p>
+
+
+
+<h3>Connected Remote AEM Assets Instances</h3>
+
+
+
+<p>This <em>was</em> going to be my new favorite feature of AEM 6.5, as I've been trying to make this topology a "thing" for a number of different clients.   What this feature is meant to bring is to allow authors working on an AEM 6.5 Sites Author server to discover, browse and embed Assets from a separate AEM Assets instance.  Why would you want to do this?  The main problem in designing AEM infrastructure is that the AEM Author has always been notoriously difficult to scale.  It has never taken well to horizontal clustering, so in many cases your only hope to scale up an AEM installation that has (a) a lot of content authors and (b) a lot of assets is to make two separate Authors - one for site authoring, the other for a DAM.  </p>
+
+
+
+<p>The only problem though, is that if you stick your Assets instance on another server, you have to go onto that server separately from your Sites author, find the asset you want, download it, and then upload it to your AEM Sites instance to use it.   This Connected Remote Assets feature is, then, just what the doctor ordered to solve this.  </p>
+
+
+
+<figure class="wp-block-image"><img src="https://i1.wp.com/www.jetteroheller.com/wp-content/uploads/2019/04/aem-6.5-connected-assets.png?fit=1024%2C669" alt="" class="wp-image-1245"/><figcaption><em>Simplified diagram of AEM 6.5 Connected Assets feature, showing that to use this feature, you need to be entirely in Adobe Managed Services, or at least have your connected Assets Author instance be hosted in Adobe Managed Services.</em></figcaption></figure>
+
+
+
+<p>Or is it?  If you notice the big red detail on the diagram above, the Connected Assets feature has one catch - <a href="https://helpx.adobe.com/experience-manager/6-5/assets/using/use-assets-across-connected-assets-instances.html#OverviewofConnectedAssets">it will only work with an AEM 6.5 Assets instance that is hosted at Adobe Managed services</a>.  </p>
+
+
+
+<p>I checked with various contacts at Adobe on this after reading the documentation, and my fears were correct.  One source said that there are no plans to enable this feature for non-AMS builds, and another source said that it was possibly planned for Service Pack 1 (AEM 6.5.1).  Either way, it wasn't mentioned at Adobe Summit as an AMS-only feature, just a "feature" but there you go.  </p>
+
+
+
+<p>Evidently, the reason for it not working on a self-hosted build (i.e. at your own datacenter or AWS/Azure/Google Cloud/etc) is that the Sites Author &lt;-&gt; Assets Author authentication depends on the <a href="https://helpx.adobe.com/experience-manager/6-5/sites/administering/using/ims-config-and-admin-console.html">Adobe IMS (Identity Management Service)</a> auth service which is a protocol only used by Adobe Managed Services for remote auth. </p>
+
+
+
+<p>So there you go.  If using a Connected Assets server is something you were looking forward to doing on your own AEM instance, and you don't run at AMS, please do give your Adobe rep a ring and let him know it's a feature you want. </p>
+
+
+
+<p><strong>Edit:</strong> As a further note, if you're dead-set on running this now without Adobe Managed Services support, check out Brett Birschbach's Remote Assets plugin <a href="https://blogs.adobe.com/contentmanagement/2018/04/19/brett-birschbach-aemrockstar-2018/">that he made, and then presented at AEM Rockstar 2018</a>. That may get you where you're trying to go.  Brett just <a href="https://github.com/Adobe-Consulting-Services/acs-aem-commons/pull/1707">submitted this into ACS AEM Commons</a>, and it has quite a few more use cases than just the "remote DAM" case, like pulling assets remotely from PRD to use on lower envs, such that you don't then have to sync the ENTIRE environment down to lower envs.   </p>
+
+
+
+<p>So, if Adobe doesn't come through with making this work with non-AMS environments, give ACS AEM Commons a whirl.  </p>
+
+
+
+<h3>AEM Now Supports JDK 11</h3>
+
+
+
+<p>Previously, the only Java version that was supported for AEM 6.4 was JDK 8, but now AEM 6.5 is officially supported on JDK 11 as well.  I haven't set up a test environment on AEM 6.5 with JDK 11 as yet, so no data if there are any differences in stability or performance.  However, if you've run any tests on such, please let me know in the comments!</p>
+
+
+
+<h3>Java Updates will be Supplied by Adobe</h3>
+
+
+
+<p>Last year, <a href="http://www.jetteroheller.com/oracle-planning-to-charge-5000-core-for-the-only-java-version-that-runs-aem/">Oracle dropped the big bombshell news that it would be charging for Java</a>.  There were varying numbers being thrown around for how much Oracle was going to charge per JVM, but the cost of these was going to be <em>considerable</em>.    </p>
+
+
+
+<p>However, Adobe decided handle this with AEM customers by directly providing JDK updates for any new Java releases as the come out, to be downloaded directly from Adobe, rather than from Oracle. </p>
+
+
+
+<p>I'm still waiting for details on how exactly this is going to work, as there is installation automation many companies use to install Java when provisioning new AEM servers.  I'll update this as it becomes more clear. </p>
+
+
+
+<h3>Admin User Password Expiry</h3>
+
+
+
+<div class="wp-block-image"><figure class="alignright"><a href="https://www.google.com/url?sa=i&amp;rct=j&amp;q=&amp;esrc=s&amp;source=images&amp;cd=&amp;cad=rja&amp;uact=8&amp;ved=2ahUKEwjGu86Zq9PhAhXTvp4KHf-eCUMQjRx6BAgBEAU&amp;url=https%3A%2F%2Fgymnastics.blognook.com%2F2017%2F09%2F30%2Fthecinematographyso-the-combination-is-1-2-3-4-5bonus%2F&amp;psig=AOvVaw0eKBJQdpvnZKN1ozfw2AZ1&amp;ust=1555460238134133" target="_blank" rel="noreferrer noopener"><img src="http://68.media.tumblr.com/2dccd346e8ac031120a39b299c8b2dfb/tumblr_inline_ov63y8AE9z1tw84tb_540.gif" alt="Image result for idiot luggage"/></a></figure></div>
+
+
+
+<p>OK, show of hands: how many of you guys have been rolling with the same <strong>admin</strong> password since your AEM instances were first installed?</p>
+
+
+
+<p>Actually, never mind, I really don't want to know. </p>
+
+
+
+<p>Jackrabbit Oak has supported password expiration for some time, and now supports expiring or force-change password on the "admin" user as well. </p>
+
+
+
+<h3>New Permissions Management UI</h3>
+
+
+
+<p>Slowly but surely, the AEM Product Team has been working to phase out old ExtJS-based Classic UI pages we all know and love for new TouchUI-based interfaces that look like they were created this decade.  The latest to get that treatment in AEM 6.5 is the new Permissions Management UI. </p>
+
+
+
+<figure class="wp-block-image"><img src="https://i0.wp.com/www.jetteroheller.com/wp-content/uploads/2019/04/image.png?fit=1024%2C600" alt="" class="wp-image-1246"/><figcaption><em>The new TouchUI-based AEM permissions management interface in EM 6.5</em></figcaption></figure>
+
+
+
+<p>This allows one to modify permissions on objects without having to dive into /crx/de like one's had to do these past 10 years or so.  </p>
+
+
+
+<h3>Windows is no longer a "Supported" platform for AEM</h3>
+
+
+
+<p>I've heard of a few companies running AEM on Windows previously, and it was (as of AEM 6.4) still fully supported to run production AEM instances on Windows Server 2016.  </p>
+
+
+
+<p>However, as of AEM 6.5, <a href="https://helpx.adobe.com/experience-manager/6-5/sites/deploying/using/technical-requirements.html#SupportedPlatforms">Windows Server 2016/2019 is listed as "restricted support"</a>, and Windows Server 2016 R2 is listed as "not supported".  The only thing it's supported to run Windows on at this point, is to run it to host the AEM Forms database on MS SQL Server. </p>
+
+
+
+<p>Now, although that may not impact you at all, as you've never been one to run AEM on Windows anyhow, think of this ramification: </p>
+
+
+
+<figure class="wp-block-image"><img src="http://www.jetteroheller.com/wp-content/uploads/2019/04/image-2.png" alt="" class="wp-image-1281"/></figure>
+
+
+
+<p>I'll bet a few of you have developers doing all of their development locally on a Windows box.  Now, whilst AEM does still work off of a quickstart jar, and you can run it "just fine" on Windows, now might be a great time to re-evaluate your development pipeline, and create some Vagrant-based Linux VMs for your developers - or just on-demand create AWS/Azure instances that mimic production, so that you are always developing on and bug-fixing on a platform that looks and acts like it will in the real world.  Oh, and which is <strong>supported</strong>. &nbsp;</p>
+
+
+
+<p><strong>Edit</strong>:  I just got some clarification back from Adobe on this matter.  </p>
+
+
+
+<figure class="wp-block-embed-twitter wp-block-embed is-type-rich is-provider-twitter"><div class="wp-block-embed__wrapper">
+https://twitter.com/keepthebyte/status/1121911073144070144
+</div></figure>
+
+
+
+<p>This is from Cedric Huesler, who is the Dir Product Management at Adobe, and definitely an authority on such things.  So, that being said, sorry for being alarmist.  Hopefully we can get some clarity in these release notes as to what is and isn't fully supported (i.e. if there are any pieces of deprecated functionality on Windows), as well as what supported platforms there are for running on the desktop for development purposes. </p>
+
+
+
+<p>He then went on to clarify: </p>
+
+
+
+<figure class="wp-block-embed-twitter wp-block-embed is-type-rich is-provider-twitter"><div class="wp-block-embed__wrapper">
+https://twitter.com/keepthebyte/status/1122023627887505408
+</div></figure>
+
+
+
+<p>So, sorry for my initial alarmist reaction to the documentation.  Keep using Windows, if it suits you.  :)  </p>
+
+
+
+<p>There are a number of other great core features, but these were the ones that most impacted me.  I'd love to hear from any of you out there if you've got anything to add, or have had experience implementing these new features!</p>
+
+    </section>
+    <footer><p>Categories: 6.5, adobe experience manager, adobe managed services, AEM, AEM / CQ, assets, dam, diagram, Digital Asset Management, feature, technology</p></footer>
+  </article>
+</body>
+</html>

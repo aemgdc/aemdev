@@ -1,0 +1,191 @@
+/* Insights — dark band with 3-up article cards. */
+
+.insights-section {
+  background: var(--ink);
+  color: var(--white);
+  padding: 88px clamp(24px, 5vw, 60px) !important;
+  max-width: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+}
+
+.insights-section > .default-content {
+  max-width: 1180px;
+  margin-inline: auto;
+}
+
+.insights-section > .default-content > p:first-child {
+  font-family: var(--mono-font-family);
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #39aab5;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.insights-section > .default-content h2 {
+  font-family: var(--display-font-family);
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin: 0 0 24px;
+  color: var(--white);
+  padding-bottom: 18px;
+  border-bottom: 3px solid var(--orange);
+}
+
+.insights-section > .default-content h2::before {
+  display: none;
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  max-width: 1180px;
+  margin: 36px auto 0;
+}
+
+/* Variant: text (default) — 3-up text cards, auto-fits down to 1-up on narrow viewports */
+.insights-grid-text {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* Variant: images-small — 3-up cards with image on top */
+.insights-grid-images-small {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* Variant: images-large — 2-up cards with larger image */
+.insights-grid-images-large {
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  max-width: 1180px;
+}
+
+.insights-card {
+  background: var(--ink-2);
+  border: 1px solid var(--ink-3);
+  display: flex;
+  flex-direction: column;
+  transition: background-color 0.15s ease, border-left-color 0.15s ease;
+  border-left: 4px solid transparent;
+  text-decoration: none;
+  color: var(--white);
+  overflow: hidden;
+}
+
+.insights-card:hover {
+  border-left-color: var(--orange);
+  background: #162932;
+}
+
+.insights-card-image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #0d1c22;
+  overflow: hidden;
+}
+
+.insights-grid-images-large .insights-card-image {
+  aspect-ratio: 16 / 8;
+}
+
+.insights-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.insights-card:hover .insights-card-image img {
+  transform: scale(1.03);
+}
+
+.insights-card-image-empty {
+  background: linear-gradient(135deg, #0d1c22 0%, #162932 100%);
+}
+
+.insights-card-body {
+  padding: 28px 26px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.insights-tag {
+  font-family: var(--mono-font-family);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #39aab5;
+  margin-bottom: 14px;
+  font-weight: 700;
+}
+
+.insights-title {
+  font-family: var(--display-font-family);
+  font-size: 1.55rem;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  margin: 0 0 14px;
+  font-weight: 400;
+}
+
+.insights-grid-images-large .insights-title {
+  font-size: 1.85rem;
+}
+
+.insights-dek {
+  color: #b9c7cd;
+  font-size: 0.96rem;
+  margin-bottom: 22px;
+  flex: 1;
+  line-height: 1.55;
+}
+
+.insights-link {
+  font-family: var(--mono-font-family);
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--orange);
+  font-weight: 700;
+}
+
+.insights-more-wrap {
+  max-width: 1180px;
+  margin: 36px auto 0;
+  display: flex;
+  justify-content: center;
+}
+
+.insights-more {
+  font-family: var(--mono-font-family);
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: transparent;
+  border: 1px solid var(--orange);
+  padding: 14px 28px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.insights-more:hover {
+  background: var(--orange);
+  color: var(--ink);
+}
+
+.insights-error {
+  max-width: 1180px;
+  margin: 24px auto 0;
+  color: #b9c7cd;
+  font-family: var(--mono-font-family);
+  font-size: 0.9rem;
+}

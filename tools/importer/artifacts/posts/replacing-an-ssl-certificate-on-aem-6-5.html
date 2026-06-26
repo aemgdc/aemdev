@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Replacing an SSL Certificate on AEM 6.5</title>
+  <link rel="canonical" href="https://www.opsinventor.com/replacing-an-ssl-certificate-on-aem-6-5/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Replacing an SSL Certificate on AEM 6.5</h1>
+      <time datetime="2023-04-12T18:14:49.000Z">4/12/2023, 11:14:49 AM</time>
+    </header>
+    <section class="content">
+      
+<p>As you may have read in my other post on <a href="https://www.opsinventor.com/setting-up-ssl-on-aem-6-3-and-6-4-video-walkthrough/" data-type="post" data-id="1107">configuring SSL on AEM</a>, there are some gotchas and eccentricities on configuring SSL on AEM 6.5. Note, this post does <strong>not</strong> apply to AEM as a Cloud Service.  On <a href="https://experienceleague.adobe.com/docs/experience-manager-cloud-service/content/implementing/using-cloud-manager/manage-ssl-certificates/add-ssl-certificate.html%3Flang%3Den">AEM as a Cloud Service, SSL certs are managed in the Cloud Manager UI</a> - and I'll <a href="https://experienceleague.adobe.com/docs/experience-manager-cloud-service/content/implementing/using-cloud-manager/manage-ssl-certificates/add-ssl-certificate.html%3Flang%3Den">link the docs here </a>for that.  This is for a self-managed AEM 6.5 installation. </p>
+
+
+
+<p>For background, prior to AEM 6.3, doing SSL on AEM meant you were configuring the Felix/Jetty HTTPS service to use an SSL certificate that was stored on-disk in a Java keystore (JKS) file.  And while it still is technically possible to do that on AEM 6.5 (I have one customer like that) it's generally preferred to use the SSL config built in to AEM, which stores the SSL certificate in the JCR.  </p>
+
+
+
+<p>So if you're configuring SSL for the first time, you can <a href="https://www.opsinventor.com/setting-up-ssl-on-aem-6-3-and-6-4-video-walkthrough/" data-type="post" data-id="1107">use this how-to</a>.  </p>
+
+
+
+<h3 class="wp-block-heading">Replacing an SSL Cert </h3>
+
+
+
+<p>Most of the time, replacing an existing SSL cert should be as simple as: </p>
+
+
+
+<ol>
+<li>Back up the current SSL cert in the repo, so you have a backout plan in your production change</li>
+
+
+
+<li>Upload the new certificate in the UI</li>
+
+
+
+<li>Rinse &amp; repeat for all Publishers &amp; Authors</li>
+</ol>
+
+
+
+<p>This means that, like other SSL certs, you should have your PEM-encoded certificate, as well as a DER-encoded private key.  <a href="https://www.opsinventor.com/implementing-ssl-on-aem/" data-type="post" data-id="1081">See this post if you need help with that</a>.  </p>
+
+
+
+<p>Steps there are: </p>
+
+
+
+<h4 class="wp-block-heading">Extract &amp; back up the current certificate out of AEM</h4>
+
+
+
+<p>Go to package manager and create package for</p>
+
+
+
+<pre class="wp-block-code"><code class="">/home/users/system/security/ssl-service/keystore/store.p12</code></pre>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2023/02/image-2.png"><img src="https://www.opsinventor.com/wp-content/uploads/2023/02/image-2-1024x680.png" alt="" class="wp-image-1936"/></a></figure>
+
+
+
+<p> Once you've downloaded that package, unzip it and you'll see a "store.p12" file in there which is a PKCS12 keystore.</p>
+
+
+
+<h4 class="wp-block-heading">You May Need Your Original Private Key</h4>
+
+
+
+<p>In the case you need your original private key in order to actuate your CSR process for the new cert (and you don't have access to the files from when you did it before) here's how you extract the private key out of the certificate you got out of AEM above: </p>
+
+
+
+<p>Run the following command: </p>
+
+
+
+<pre class="wp-block-code"><code class="">openssl pkcs12 -info -in&nbsp;-nodes store.p12&nbsp; &gt;&nbsp;store.pem</code></pre>
+
+
+
+<p>This will give you a PEM-encoded certificate (ASCII and not binary) where you can go and copy/paste out the private key and certificate.  Save out the private key as a separate file so you can use it as input for your cert-signing request (CSR).  </p>
+
+
+
+<h3 class="wp-block-heading">What if I forgot my AEM Keystore Password?</h3>
+
+
+
+<p>In AEM when you go to the SSL Config page (/libs/granite/security/content/sslConfig.html) it will prompt you for the password for your AEM keystore and truststore.  But what if you've forgotten what your password is there, or have misplaced it somehow?  </p>
+
+
+
+<p>The SSL Config page won't let you configure &amp; upload a new SSL cert unless you have the previous password - but if you're just uploading a brand-new cert and private key that your certificate authority has just provided to you, you can just take a backup of this node</p>
+
+
+
+<pre class="wp-block-code"><code class="">/home/users/system/security/ssl-service/keystore/store.p12</code></pre>
+
+
+
+<p>Then, go into CRX DE and <strong>delete</strong> the whole folder of "/home/users/system/security/ssl-service/keystore/" (as the keystore password is a property in that folder).  </p>
+
+
+
+<p>Then, once you go through the SSL config on /libs/granite/security/content/sslConfig.html it will generate a new keystore and you'll be golden. </p>
+
+
+
+<h3 class="wp-block-heading">Make Sure to Use the SSL Config on your HTTP Port</h3>
+
+
+
+<p>Just remember, when you are using the SSL Config page, run this using your non-SSL port (i.e. 4502/4503) on AEM, and NOT on the SSL port.  If you're in the midst of configuring SSL, and SSL breaks or errors for any reason, you'll find yourself not able to access the system.  So make sure you're doing this on non-SSL!</p>
+
+
+
+<h3 class="wp-block-heading">Notes</h3>
+
+
+
+<p>And yes, in case you were wondering, I wrote this blog post mainly so I could document this for myself so that I don't shoot myself in the foot the next time I have to switch out certs on a 6.5 machine.  </p>
+
+
+
+<p>Featured image on this post generated by <a href="https://firefly.adobe.com/">Adobe Firefly</a> using the prompt: "<em>wise hyper_realistic steampunk bloodhound with goggles holding an official certificate, with a rack of servers in a cast-iron cage behind him, cinematic light, dramatic</em>"</p>
+
+    </section>
+    <footer><p>Categories: technology</p></footer>
+  </article>
+</body>
+</html>

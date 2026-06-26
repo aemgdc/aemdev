@@ -1,0 +1,142 @@
+/* Speaking — 4-up YouTube card grid with hover ▶ overlay. */
+
+.speaking-section {
+  padding: 88px clamp(24px, 5vw, 60px) !important;
+  max-width: none !important;
+  width: 100% !important;
+  margin: 0 !important;
+  background: var(--surface);
+}
+
+.speaking-section > .default-content {
+  max-width: 1180px;
+  margin-inline: auto;
+  margin-bottom: 36px;
+}
+
+.speaking-section > .default-content > p:first-child {
+  font-family: var(--mono-font-family);
+  font-size: 0.74rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #17828d;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.speaking-section > .default-content h2 {
+  font-family: var(--display-font-family);
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  margin: 0 0 18px;
+  color: var(--ink);
+  padding-bottom: 18px;
+  border-bottom: 3px solid var(--ink);
+}
+
+.speaking-section > .default-content h2::before {
+  display: none;
+}
+
+.speaking-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+  max-width: 1180px;
+  margin-inline: auto;
+}
+
+.speaking-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-top: 4px solid transparent;
+  transition: border-top-color 0.15s ease, transform 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.speaking-card:hover {
+  border-top-color: var(--orange);
+  transform: translateY(-2px);
+}
+
+.speaking-thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--ink);
+}
+
+.speaking-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.speaking-thumb::after {
+  content: "▶";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  font-size: 2rem;
+  background: rgb(11 17 21 / 35%);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.speaking-card:hover .speaking-thumb::after {
+  opacity: 1;
+}
+
+.speaking-body {
+  padding: 18px 20px 22px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.speaking-event {
+  font-family: var(--mono-font-family);
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.speaking-title {
+  font-weight: 700;
+  font-size: 1.02rem;
+  line-height: 1.35;
+  margin-bottom: 14px;
+  color: var(--text);
+  flex: 1;
+}
+
+.speaking-error {
+  max-width: 1180px;
+  margin: 0 auto;
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.speaking-link {
+  font-family: var(--mono-font-family);
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.speaking-card:hover .speaking-link {
+  color: var(--orange);
+}

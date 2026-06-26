@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Setting up Sonarqube to Analyze Xcode on Mac OSX</title>
+  <link rel="canonical" href="https://www.opsinventor.com/setting-up-sonarqube-to-analyze-xcode-on-mac-osx/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Setting up Sonarqube to Analyze Xcode on Mac OSX</h1>
+      <time datetime="2014-08-27T19:18:08.000Z">8/27/2014, 12:18:08 PM</time>
+    </header>
+    <section class="content">
+      <a href="http://www.jetteroheller.com/setting-up-sonarqube-to-analyze-xcode-on-mac-osx/640px-sonarqube-nemo-dashboard/" rel="attachment wp-att-881"><img class="alignnone size-full wp-image-881" src="http://www.jetteroheller.com/wp-content/uploads/2014/08/640px-Sonarqube-nemo-dashboard.png" alt="Sonarqube Nemo Analysis" width="640" height="316" /></a>
+
+Sonarqube is a web application platform, installable on Linux, Windows or OSX, which helps teams manage &amp; fix code quality issues - things like ensuring coding standards are maintained, sufficient commenting, unit test coverage, functional test coverage, etc.
+
+These were the basic steps in setting up a Mac OSX machine to run as a continuous integration agent to fire off <a href="http://www.sonarqube.org/">Sonarqube </a>(the artist formerly known as "Sonar") analysis runs against the Xcode project, using Gradle as a build mechanism.
+
+These instructions were used to install Sonar on a Mac Mini Server and a new Mac Pro, both running Mac OS X Mavericks 10.9.4.
+<ul>
+<ul>
+	<li><span style="text-decoration: underline;"><b>Sonar Setup</b>:</span>
+<ul>
+	<li><strong>Download Sonar:</strong>  I used the <a href="http://www.sonarqube.org/downloads/">Sonarqube LTS version (3.7.4)</a> rather than the latest version (4.4).  Reason being, the fact that the way to call Sonar from Gradle (its sonarRunner plugin) has <a href="https://issues.gradle.org/browse/GRADLE-3062">embedded an older version of the API than the bleeding-edge Sonarqube currently supports</a>.  So, whilst you can hack it and make it eventually work, better to go with the long-terms support version that actually works.</li>
+	<li><strong>Install Sonarqube</strong> to /opt/sonarqube-3.7.4</li>
+	<li><strong>Install Mysql</strong>: Installed MySQL 5.7 from <a class="external free" style="color: #663366;" href="http://dev.mysql.com/doc/refman/5.7/en/macosx-installation.html" target="_blank" rel="nofollow">http://dev.mysql.com/doc/refman/5.7/en/macosx-installation.html</a></li>
+	<li>Set up Sonar DB in MySQL:</li>
+</ul>
+</li>
+</ul>
+</ul>
+<pre class="lang:mysql decode:true ">CREATE DATABASE sonar CHARACTER SET utf8 COLLATE utf8_general_ci;
+CREATE USER 'sonar' IDENTIFIED BY 'sonar';
+GRANT ALL ON sonar.* TO 'sonar'@'%' IDENTIFIED BY 'sonar';
+GRANT ALL ON sonar.* TO 'sonar'@'localhost' IDENTIFIED BY 'sonar';
+FLUSH PRIVILEGES; 
+</pre>
+<ul>
+	<li>Uncomment the line in /opt/sonarqube-3.7.4/conf/sonar.properties to tell it to use the local mysql db:</li>
+</ul>
+<pre style="color: #000000;">#----- MySQL 5.x
+# Comment the embedded database and uncomment the following line to use MySQL
+sonar.jdbc.url=jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;characterEncoding=utf8&amp;rewriteBatchedStatements=true
+</pre>
+<ul>
+	<li>Download &amp; install Groovy and Objective C plugins for Sonar. Download the jar for each and put into /opt/sonarqube-4.4/extensions/plugins
+<ul>
+	<li>Groovy: <a class="external free" style="color: #663366;" href="http://docs.codehaus.org/display/SONAR/Groovy+Plugin" target="_blank" rel="nofollow">http://docs.codehaus.org/display/SONAR/Groovy+Plugin</a></li>
+	<li>Objective-C: <a class="external free" style="color: #663366;" href="http://www.sonarsource.com/products/plugins/languages/objective-c/" target="_blank" rel="nofollow">http://www.sonarsource.com/products/plugins/languages/objective-c/</a></li>
+</ul>
+</li>
+	<li><strong>NOTE:</strong>  Whilst the Groovy plugin for Sonar is free, the Objective-C/C++ plugin is positively<strong> not</strong>.  Price at this writing was about $6500, though they will let you eval it for 14 days.   You'll have to get a trial license key from their sales reps, and insert it into http://[sonarserver]:9000/settings?category=licenses</li>
+	<li><strong>Restart Sonar</strong>, and when done, plugins are visible.</li>
+</ul>
+    </section>
+    <footer><p>Categories: devops, gradle, mac, osx, sonar, sonarqube, technology, xcode</p></footer>
+  </article>
+</body>
+</html>

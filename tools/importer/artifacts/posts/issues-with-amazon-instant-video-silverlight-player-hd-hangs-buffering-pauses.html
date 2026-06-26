@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Issues with Amazon Instant Video Silverlight Player – HD Hangs &amp; Buffering Pauses</title>
+  <link rel="canonical" href="https://www.opsinventor.com/issues-with-amazon-instant-video-silverlight-player-hd-hangs-buffering-pauses/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Issues with Amazon Instant Video Silverlight Player – HD Hangs &amp; Buffering Pauses</h1>
+      <time datetime="2014-02-21T20:29:59.000Z">2/21/2014, 12:29:59 PM</time>
+    </header>
+    <section class="content">
+      I've been having issues playing video on Amazon Instant Video (Prime Video) ever since they switched their default player to Silverlight from Flash.    As my home internet connection speed is sufficiently high (~25mbit), the video will always default to it's highest available quality, and will stream a 720p HD stream down to the computer.
+
+Only issue is that there are quality / buffering issues with the player that tend to crop up throughout playback.  It won't say it's buffering, but pausing it and letting it buffer a bit always seems to help.
+
+The previous Flash-based video player had an "allow HD" button (similar to Netflix) but the Silverlight player lacks such a toggle.  So, you're stuck playing back an HD stream that hiccups and jerks around constantly during playback.
+
+I contacted Amazon support and found two solutions for such.
+<ol>
+	<li><strong>Try switching to the Flash player for a given video that your watching, to see if it improves playback.  </strong>You can switch a given video to use the Flash player instead of silverlight by putting a "?player=flash" query string into the URL.  For example:The Hunger Games:  <a href="http://www.amazon.com/gp/product/B008Y7N7JW/?player=flash">http://www.amazon.com/gp/product/B008Y7N7JW/</a>  (defaults to silverlight), but <a href="http://www.amazon.com/gp/product/B008Y7N7JW/?player=flash">http://www.amazon.com/gp/product/B008Y7N7JW/?player=flash</a> will force it to use the Flash player.  Then, you can toggle HD and see if it improves playback.</li>
+	<li><strong></strong><strong>Change the Default Player for your Account</strong><a href="http://jetteroheller.files.wordpress.com/2014/02/screenshot-from-2014-02-21-152458-e1393014532623.png"><img class="alignnone size-large wp-image-646" alt="Silverlight vs Flash Amazon Player Toggle" src="http://jetteroheller.files.wordpress.com/2014/02/screenshot-from-2014-02-21-152458-e1393014532623.png?w=547" width="547" height="165" /></a>
+
+On your Amazon Account, go to: <a href="https://www.amazon.com/gp/video/ontv/settings?ie=UTF8&amp;ref_=ya_manage_instant_video&amp;">https://www.amazon.com/gp/video/ontv/settings?ie=UTF8&amp;ref_=ya_manage_instant_video</a>That will allow you to change the default player from Silverlight to Flash.</li>
+</ol>
+    </section>
+    <footer><p>Categories: amazon, buffering, flash, instant video, playback, prime video, settings, silverlight, technology, toggler, video</p></footer>
+  </article>
+</body>
+</html>

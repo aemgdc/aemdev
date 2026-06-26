@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Ian White from Neustar - Performance Optimization &amp; Build Process</title>
+  <link rel="canonical" href="https://www.opsinventor.com/ian-white-from-neustar-performance-optimization-build-process/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Ian White from Neustar - Performance Optimization &amp; Build Process</h1>
+      <time datetime="2012-06-25T22:11:14.000Z">6/25/2012, 3:11:14 PM</time>
+    </header>
+    <section class="content">
+      <div style="margin:0 0 10px;padding:0;font-size:.8em;line-height:1.6em;"><a title="Ian White from Neustar - Performance Optimization &amp; Build Process" href="http://www.flickr.com/photos/tadnkat/7443539532/"><img alt="Ian White from Neustar - Performance Optimization &amp; Build Process by tadnkat" src="http://farm8.staticflickr.com/7280/7443539532_b2aa192dc4.jpg" /></a>
+<span style="margin:0;"><a href="http://www.flickr.com/photos/tadnkat/7443539532/">Ian White from Neustar - Performance Optimization &amp; Build Process</a>, a photo by <a href="http://www.flickr.com/photos/tadnkat/">tadnkat</a> on Flickr.</span></div>
+Ian White from Neustar gave a talk on Dev, Prod &amp; Developer environments &amp; how to organize around the goal of making web performance better without making the development lifecycle suck.
+
+Some notes:
+<ul>
+	<li>Web optimization
+<ul>
+	<li>Organize CSS&amp;JS</li>
+	<li>Multiple Domains</li>
+	<li>Gzip compression</li>
+	<li>Resource caching</li>
+	<li>Far-future expiry</li>
+	<li>Minification</li>
+	<li>Image optimization (not a lot of automated tools out there)</li>
+	<li>CSS spriting</li>
+</ul>
+</li>
+	<li>CI tools should take care of optimization, but if you put it on a different machine, they can’t test their optimizations</li>
+	<li>Use mod_pagespeed
+<ul>
+	<li>Really good for server-generated content</li>
+	<li>Take look at HTML being sent from the server and then does a whole ton of optimizations on that.  Handles multiple domains behind load balancers.</li>
+	<li>Works great on Wordpress &amp; other such stuff.  Not so good with Client-side stuff</li>
+</ul>
+</li>
+	<li>Making dev &amp; ops work well together:
+<ul>
+	<li>parameterize environments</li>
+	<li>Make it so when a dev changes something, it changes all environments or can affect all environments</li>
+</ul>
+</li>
+	<li>For static resources:
+<ul>
+	<li>Try <strong>nginx</strong> or lighttpd</li>
+	<li>Simple / fast / low overhead / gzip &amp; caching</li>
+	<li>Have it go in front of Apache &amp; reverse-proxy back for some or go direct to files for others</li>
+</ul>
+</li>
+</ul>
+[caption id="" align="alignnone" width="500"]<a title="Performance Benefits Implementing Nginx by tadnkat, on Flickr" href="http://www.flickr.com/photos/tadnkat/7443528980/"><img title="Performance Benefits Implementing Nginx" alt="Performance Benefits Implementing Nginx" src="http://farm8.staticflickr.com/7275/7443528980_4c27a9acd8.jpg" width="500" height="333" /></a> Performance Benefits Implementing Nginx[/caption]
+<ul>
+	<li>Far-future expires:
+<ul>
+	<li>consider using MD5 as the version</li>
+	<li>Only issue is lack of human readability &amp; tough to see if one is using the right version for that build.</li>
+</ul>
+</li>
+	<li>Image Opt
+<ul>
+	<li>JPEG Mini or Smooshit from Yahoo</li>
+	<li>PNGcrush, others</li>
+	<li>Look for “7 image optimiation mistakes”</li>
+	<li>See <a href="http://developer.apple.com/library/ios/#documentation/2DDrawing/Conceptual/DrawingPrintingiOS/SupportingHiResScreens/SupportingHiResScreens.html">http://developer.apple.com/library/ios/#documentation/2DDrawing/Conceptual/DrawingPrintingiOS/SupportingHiResScreens/SupportingHiResScreens.html</a> for Generating 2X res images for apple retina displays</li>
+	<li>Use Glue (github.com/jorgebastida/glue) for Sprite Manufacturing</li>
+</ul>
+</li>
+</ul>
+More text
+    </section>
+    <footer><p>Categories: 2012, dev, neustar, nginx, performance, prod, technology, velocity, velocityconf</p></footer>
+  </article>
+</body>
+</html>

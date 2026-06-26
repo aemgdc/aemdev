@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AEM Infrastructure and Personnel Strategy: A talk with Tom Johnson of Hirobe</title>
+  <link rel="canonical" href="https://www.opsinventor.com/aem-infrastructure-and-personnel-strategy-a-talk-with-tom-johnson-of-hirobe/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>AEM Infrastructure and Personnel Strategy: A talk with Tom Johnson of Hirobe</h1>
+      <time datetime="2021-03-19T19:03:23.000Z">3/19/2021, 12:03:23 PM</time>
+    </header>
+    <section class="content">
+      
+<p>I got a chance to do a fun talk with Tom Johnson, a Senior AEM Recruiter at <a href="https://www.hirobe.io/">Hirobe</a>, on the significance of personnel in the major decision points on where you take your AEM projects from an infrastructure standpoint.  Hirobe were nice enough to transcribe the talk, so if you don't have the time to watch the full video above, here's the text of it, with headings.  </p>
+
+
+
+<h2>Introduction</h2>
+
+
+
+<figure class="wp-block-embed is-type-video is-provider-youtube wp-block-embed-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio"><div class="wp-block-embed__wrapper">
+https://www.youtube.com/watch?v=G0KjGJTWYTQ&amp;feature=youtu.be
+</div></figure>
+
+
+
+<p class="has-drop-cap">Hi it’s Tom Johnson at Hirobe, welcome to our video series.  Today, we're joined by <a href="https://www.linkedin.com/in/thaddeusreeves/">Tad Reeves</a>, an AEM Architect &amp; Consultant focusing on the infrastructure and DevOps space. I invited Tad to have a quick chat following a <a href="https://www.opsinventor.com/video-podcast-the-future-of-aem-in-the-cloud/">video that I watched of him covering AEM as a cloud service</a>. He made some really interesting points which led me to want to talk to him about what AEM as a cloud service means for people and their teams. So to kick off: should every AEM environment be in the cloud?</p>
+
+
+
+<h2>Should Every AEM environment be in the cloud?</h2>
+
+
+
+<p><strong>Tad: </strong>Well, my answer to that is no, not everything should be in the cloud.</p>
+
+
+
+<p>AEM --  it's not like Zoom, it’s not a service that basically serves a single purpose and is used in an analogous way. It’s a big set of tools and frameworks and there are things that can be done, that are employed in wildly different ways, by wildly different companies, doing wildly different things. And they all they all have different requirements, different audiences, different volumes of people who they are trying to hit it and with varying times and places in the world that they're trying to hit this from. They have things that they're trying to connect to and they have things that they're not trying to connect to. There are so many different requirements that there would be no way to say everything should be done in this one way.</p>
+
+
+
+<p>Now, obviously, it behooves implementers, like myself, and the vendor, it obviously behooves Adobe to try to limit the number of ways that you try to get something done, because that makes the product easier to develop. It makes it easier to integrate when you're not having people do things a million different ways. But at the end of the day, there are a million different things that are going to get done.</p>
+
+
+
+<p>There's a huge difference between somebody who is utilizing their AEM platform as an internal intranet that only has a private audience with people authenticating via an internal SSO to be able to use it, and somebody who's using it as a commerce platform, or a headless commerce platform, or perhaps a headless content platform. You might have tons and tons of video content or assets. There are tons of different use cases. And so there's no one answer as to how everything should be hosted or executed.</p>
+
+
+
+<p>And never mind things like financial services companies that have stringent security requirements that are vastly different. So, if you take the difference between an American bank, a British bank and a Swiss bank, they'll all have really stringent security requirements, but they'll go about it in completely different ways.</p>
+
+
+
+<p>The requirements are so different that it really is a trick to be able to get down to the bottom of <strong><em>what are the actual requirements</em></strong>, and which ones are negotiable. In a lot of cases, the reason why there's so much development in the AEM space is because a lot of times the site, that the Adobe Experience manager is driving in that company, really is the great hope of the future for the company. It's the thing that's supposed to bring in the customers, it's the lifeblood of the company, or something like that.</p>
+
+
+
+<figure class="wp-block-pullquote"><blockquote><p>Sometimes you kind of have to work at it in the same way that Apple works with requirements. They don't necessarily <em>only</em> take the customer recommendations when they're making a new product, they say, "Well, what do we know the customer is trying to do? And what are the questions the customer hasn't asked themselves yet?" Then we can use our insight to try to go in and figure out how to make a better product.</p></blockquote></figure>
+
+
+
+<p>A lot of times it is a marketing site and so you’ve got to just work around those requirements. You always need to understand from the off, right what are the things that you're trying to do? And sometimes you have to work with it as a hard requirement. And sometimes you kind of have to work at it in the same way that like, Apple works with requirements, you know, they don't necessarily only take the customer recommendations when they're making a new product, they say, well, what do we know the customer is trying to do? And what are the questions the customer hasn't asked themselves yet? Then we can use our insight to try to go in and figure out how to make a better product.</p>
+
+
+
+<p>So no, not every environment should be in the cloud. <strong>A lot </strong>of environments should be in the cloud, and a lot of environments should be in AWS and cloud service - there are an increasing number of use cases that the cloud service is great for and I’d love to go into tons more detail on that subject – but not right now.</p>
+
+
+
+<p>There’s a lot of engineering talent that's working really hard at trying to make it cover more use cases. But even so, there's going to be cases where it's just not right from a requirement standpoint, but also maybe it's not right from a people standpoint. And that's kind of what we wanted to dive into.</p>
+
+
+
+<p>The main thing that AEM is driving is just a big enterprise Digital Asset Management repository, which is fine, it's a tool for the company. But where you’re going to stick that and what you're going to do with it really comes down to not only who do you have, but who are you willing to go through the work of acquiring? Because this space of designing, and programming and developing around marketing sites like this is a tough space to recruit for, and especially in the Adobe space, where it's not like, you know, make a WordPress site where anybody can download it for free, and work on it for free, and get good at it. And you know, you can take a bootcamp course at a local community college or something like that, and next thing you know, you're a good developer, and enter the workforce. It's not the same with AEM where you’ve got to be in it to get those breaks.</p>
+
+
+
+<p><strong>Tom: </strong>I totally agree and touching on that point something that was brought up recently was just how it’s very, very difficult to get access to Adobe to gain that experience. And like you said, you've got to be in that circle to get access.</p>
+
+
+
+<p>Something that I know from experience is going back to the Sitecore days - though now I solely recruit for Adobe - back in the day, I focused on the Sitecore market as well. And something that was great for them was ultimately giving anyone the access to it so anyone was able to have a really good go on it and build up the skills they needed to be successful. In doing so, it made it really accessible for companies to hire the right people, with the right experience. With Adobe, you're absolutely right in terms of that's just not an option. So, from a development standpoint it is certainly difficult to recruit.</p>
+
+
+
+<p>Continuing on this, there are obviously different options that a company would have if they were struggling to find the right talent. And I suppose Tad, from your perspective are you able to use your experience to offer insight into the different ways to go about rather staffing or working on an AEM project?</p>
+
+
+
+<h2><strong>What are the different ways to go about staffing or working on an AEM project?</strong></h2>
+
+
+
+<p><strong>Tad: </strong>So yes, it really depends on who do you need. If you've got some guys already, often they’ll make great teachers, you know that wouldn't mind taking somebody under their wing and showing them the ropes and so forth.</p>
+
+
+
+<p>My first exposure to AEM was back when it was still called CQ, I’d already been a sysadmin for years and I’d worked with other CMS’s but I'd never touched AEM before. The guy hiring me, he's like, "All right, so have you ever heard of Day Communique?" I’m like "No." He was like "Ahh - don’t worry about it. Nobody has." And that was that.</p>
+
+
+
+<p>I mean, now that it's owned by Adobe, you know, many more people have heard of it, if not touched it, but back then me not having even heard of it wasn't a big deal. The fact that I already knew how to run a load balancer and knew how to get my way around a Linux server and you know, how to fix things - when there's smoke coming out the back of it, then at least I was useful and I could just learn the rest of it.</p>
+
+
+
+<p>Years back I worked for Rackspace. It’s an amazing company that - back in the day and pre-COVID - we had a room with like, 1,000 sysadmins in it. You know, they’d taken over an old department store, an old Macy's and there's like 1,000 sysadmins sitting in a Macy's, it's like, it's amazing. And if ever you wanted to know about this or that or a specific technology, you’d just walk over and tap somebody on the shoulder and say hi. It was a great environment to be able to learn new stuff. So, you didn't necessarily need to <em>recruit</em> somebody who knew <em>everything</em> as long as you had a good learner.</p>
+
+
+
+<p>But you take another company that they've got, you know, a mission critical AEM environment that they need to get live and say it's a bank and it all needs to be hosted in-house. So then, you’ve got to get an architect, and some sysadmins, and a lead developer, and a lead back-end dev or architect who knows what they're talking about and has done this before. And then you’d also need those guys to be able to mentor the rest of your team.</p>
+
+
+
+<p>You couldn't just say, well, I'm going to have one dude and the rest of it is going to be, you know, a vendor, or Adobe. It's going to be a failed deployment, that's going to be a painful, painful deployment. And there’s going to be a lot of bad decisions, there's going to be a lot of, you know, painted-yourself-into-a-corner moments. That's going to be rough. And so, compositing that team based on your strategy and talking to somebody first about what you think your strategy is, and then figuring out how you're going to composite your team. That's important.</p>
+
+
+
+<p><strong>Tom:</strong> Exactly, and I suppose that would bring us onto the second question regarding how that changes based on your infrastructure strategy. But before we get onto that, something I want to circle back onto, and for the record, I’m not technical and I think a lot of people will realize that, in terms of how Adobe are pitching their products, do you think from a technical standpoint that AEM as a cloud service is making implementations for businesses any easier? Or if you're a company, if you have developers today, is it making it any easier for them? Because I think what I'm trying to get at is from the outside it looks like AEM as a cloud service is going to be a lot easier to actually implement.</p>
+
+
+
+<p>Is there really going to be as much need for the developers as we move towards that?</p>
+
+
+
+<h2><strong>Has AEM as a Cloud Service Lessened the Need for Quality AEM Developers?</strong></h2>
+
+
+
+<p><strong>Tad: </strong>So, the cloud service hasn't really diminished the need for an experienced AEM developer. In fact, I think it's made it more critical because in a lot of cases you've got certain ways of going about things that maybe previously would have been handled with hardware are now going to get handled with integrations and service calls.</p>
+
+
+
+<p>You've got a lot more things that are going to need to talk to each other outside of your walls, you're going to need people who have a clue about how to secure that, how to execute it, how to do things, how to measure it and how to test it. So having good AEM developers has never been more important.</p>
+
+
+
+<p>Also, the class of other supporting characters that you need is similar, but different. Because in some cases, you're offloading some of the workload onto Adobe, some of the heavy lifting. As an example, in AEM you've got a couple of different tiers of application server that will do a job. One of those jobs is the author environment, which handles things like Digital Asset Management, transcoding of inbound files and handles where people author their pages - it's where they run their workflows to say whether it should be published and things like that. This author environment is challenging. From an infrastructure perspective, it is one of these ones that's never scaled horizontally very well, and in order to scale it horizontally, the only way you could do it was to set up a whole MongoDB cluster behind it and have it all talk to it.</p>
+
+
+
+<figure class="wp-block-pullquote"><blockquote><p>"The cloud service hasn't really diminished the need for an experienced AEM developer. In fact, I think it's made it more critical because in a lot of cases you've got certain ways of going about things that maybe previously would have been handled with hardware are now going to get handled with integrations and service calls."</p></blockquote></figure>
+
+
+
+<p>So, let's say you're a big company, let's say you're something the size of Ford or Mercedes-Benz or General Motors. And let's say you've got 500 to 1,000 concurrent people who may use this thing to upload assets or to author pages, that's a lot of workload, that's all not going to fit on one computer. In order to do that, you're going to need to go and install it. But you can't just run AEM at that point, you need really good cloud architects, really good system guys, and somebody who has a team of guys who are going to run that MongoDB cluster.</p>
+
+
+
+<p>And so, it's never just one guy that you can hire, it's always more than one guy, because that guy is going to get tired. Sometimes he may want to take a day with his family. You can't just you can't just hire one guy, you know? And yes, I've been that guy before, and it's really uncomfortable. So there ends up being a big team and some of that gets offloaded to Adobe.</p>
+
+
+
+<p>It's not free, obviously, they're not giving it away for free. So, it’s not like you don't have to pay for it, you're totally paying for it. But it's not always something that you need to hire for straight away. That's where it comes full circle back to personnel.</p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/03/image.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/03/image-1024x574.png" alt="" class="wp-image-1717"/></a></figure>
+
+
+
+<p>Let's say for other applications, because AEM is not ever the only enterprise application here, most large companies have lots of applications - they have lots of databases and CRMs, and they've got the thing that manages the pipeline for the factory floor and all that other kind of stuff, they've got gear everywhere, so they’re never not going to have an IT department.</p>
+
+
+
+<p>They may already have people who do all these things, maybe they've already got a cloud centre of excellence that’s already super-good at Azure, or super-good at AWS. Maybe they've already got a whole core of Java developers and a bunch of sysadmins, and maybe a load of them have touched AEM. So, to turn around and say, hey, you don't need to have sysadmins for this anymore. Well, that’s not a cost-saving. Those guys aren't going to get fired, because they already have a million other jobs that they're already spread across, you know, they're buttered as thin as they can be buttered on other stuff. So, it's not like you can fire them and pocket the change, because now you're going to have to pay for them, plus you’ll be paying for the sysadmins that Adobe have to do their thing, right?</p>
+
+
+
+<p>Conversely, if you're let's say, your net new company, let's say you're an agency and you’re contracted to move a web property from Drupal to a net new AEM. There's nobody there who runs AEM maybe there’s a sysadmin guy who runs the backups and whatever, but that’s it. That is one of these ones that's a made in heaven type of proposition for the cloud services. You go, oh, good, I’ve just got to get the developers and somebody who's going to be my technical ops-oriented guy - because there's always going to be ops, isn't there? You can't just say, Oh, good. You're handling the apps, I don't need to think about ops because that's never the case. Because the site is always running and Adobe is going to be there whoever your partner is, if you have services from the likes of Perficient, Rackspace, Bounteous all these guys, there's always something for them to do.</p>
+
+
+
+<p>Sure, once you take your website live, the only people who really, really know what it means to be online, you know, green, up into the left, up to the right kind of thing, the only people that really know that are the product guys for the site. They’re the ones who’re like, the search has to be performing well, I need to be able to get my contact forms in this long, this such and such workflow has to happen within this timeframe or less or the SLA is broken. Like they just know all this stuff and they know what to watch out for.</p>
+
+
+
+<p>The hosting company isn't necessarily, unless you’ve got a really super good one. They're not necessarily watching all those metrics. So, you have to have somebody who's designing the dashboards, they're good with Splunk. And they can go in there and you know, log aggregation, Elasticsearch, whatever the heck they're doing, and come up with some crazy dashboards. They’re application performance monitoring, the guys who design your pipelines and make sure stuff gets deployed and doesn't take forever. You don't have to have 25 people working all weekend on a deployment every weekend kind of a thing. There's always stuff like that to do.</p>
+
+
+
+<p>So, with any of these conversations, there’s never just a canned response that you can offer to that, ever. Even if you're the one that sells it. Actually, especially if you're the one that sells it, because nobody's going to trust you afterwards, if you just give them a canned response. The thing is that each deployment will have their own specific requirements, and you’ve got to be thinking on your feet with who do you have, who do you need to hire? Because Tom you know from trying to hire people, if somebody asks for, say a Senior AEM Forms Developer? That's going to be a bit of work, right?</p>
+
+
+
+<p><strong>Tom: </strong>Yeah, we are in high demand for Forms developers, as you can imagine at the moment and it’s a tough one. As you mentioned, it's very difficult for any company and I suppose touching on that it sounds very much that if you’re a company that's going into the world without much going on, AEM as a cloud service is going to make things a lot more accessible.</p>
+
+
+
+<p><strong>Tad: </strong>That was absolutely the aim. And that's what they're running hard to try to do. And there's growing pains with it but they've got a lot of engineering talent that are working on this.</p>
+
+
+
+<p><strong>Tom: </strong>I think you made a comment in your last video, was it something like 700 engineers they’ve got going at this?</p>
+
+
+
+<h2><strong>On the Work Adobe is Putting into AEM as a Cloud Service</strong></h2>
+
+
+
+<p><strong>Tad: </strong>It's a few hundred, who knows what the number is, right? But it was a lot. These are talented guys that are spanning all kinds of things, like, as an example they are reviewing forms. Forms is an age-old product, I think it was first released just before the war of 1812, and so it's this ball of 32-bit libraries that you’ve got to install on a Linux system, plus a bunch of stuff that runs inside of AEM, plus some other stuff. It kind of makes you cringe, anytime you look at it, it's totally not cloud ready. And they have to just try to scale it. You have to purchase it based on CPUs, like an old 1984 Oracle style. And they have to figure out how to cloudify that, kind of like they did with assets.</p>
+
+
+
+<p>Cloudifying assets solved this huge problem. Take an Under Armour sized company that has mega assets everywhere, right? Just sales assets, and you’ve got a whole set of new shoes and just tonnes of assets. You can't put all that through a single computer and expect to transcode all the videos that you've got and all that, it just doesn't work like that. So, cloudifying that and making microservices that run all that is, it’s amazing. It's truly transformative.</p>
+
+
+
+<p>But again, there is going to be a process of transforming a lot of this and we're all going to have to do it. Right now is one of the most critical times of where there's the hope of so much change on the horizon and you just need to know what’s available right now, that solves our problems now.</p>
+
+
+
+<p><strong>Tom: </strong>Yes, and that’s a whole topic on its own, I don't want to cover that too much as you go deeper into that in the video that you did before.</p>
+
+
+
+<p>But yeah, I suppose building around a team and it's very similar to the original question. We've mentioned the Adobe partner programmes, there are some amazing partners out there that can support you. It feels as though with Adobe’s AEM as a cloud service, they’re getting into the implementation game - even though they've always been somewhat involved with that side, but if you’re a company how do you determine if the partner route is right, or if this is something that they need to build internally? Is there kind of a different argument for both?</p>
+
+
+
+<h2>Build your AEM Project with an Adobe Partner, or build your AEM team internally?</h2>
+
+
+
+<p><strong>Tad:</strong> Yeah, I don't know. That's a tough one. Mainly because I've seen the conversations go both ways - where a company is coming to the table with a very known set of requirements and a known set of needs but just want some staff - an extra pair of hands to speed up development. Or where they really need somebody who's going to bring in people as needed to help them out.</p>
+
+
+
+<p>And it can be difficult to navigate, especially for recruiters. Being online I get bombarded a lot with recruitment things, but a lot of times it's actually a problem for the recruiters because it's not necessarily clear what’s the difference between any of these roles in AEM, like what do they even do? And I feel that's the training course I’ve got to come up with, what does every role actually do?</p>
+
+
+
+<figure class="wp-block-pullquote"><blockquote><p>It's actually a problem <em>for the recruiters</em> because it's not necessarily clear what the difference is between any of these roles in AEM. Like what do they even do?</p></blockquote></figure>
+
+
+
+<p>Because there’s your average team of people that I work with, and as an individual, I've been focused on infrastructure for forever. And so that’s been my gig - infrastructure, DevOps, pipelines and cloud stuff, and that whole end of it.</p>
+
+
+
+<p>And when I got my certifications and became an "AEM Architect", suddenly I have this title, but an AEM architect also means like three other things that I don't do at all. And a lot of guys also who have that title don't know a single thing about hardware, or gear, or traffic, or measuring, or infrastructure or anything; but they're wizards in terms of back-end development.</p>
+
+
+
+<p>And so that's where you’ve got to get someone who can design the thing, then you've got to have a front-end developer who’s doing, you know, react or Angular or something like that. Then you get your back-end, guys and here it really disperses because then you've got guys who are just good Java developers, you've got guys who are good AEM back-end developers who can create complicated workflows or AEM forms as an example, or they're good with other integrations. Then you have other architects who are more on the information architecture end of things - especially important when you're designing a Digital Asset Management solution. And you have to have somebody who can figure that out in a way that makes sense now, and will continue to make sense in three years, because you don't want to have to pay an implementation partner again, you know, next year to re-architect your DAM again.</p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/03/image-1.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/03/image-1-1024x569.png" alt="" class="wp-image-1718"/></a></figure>
+
+
+
+<p>So, you have all that, then you have your sysadmin guys, you have DevOps guys, you have your guys who are good at making a pipeline, you have QA engineers, which is not just clickety, click, click, you know, let me test it. That's not what they do anymore. You have guys who are actual developers who can design test strategies against things and can automatically be executed by either Adobe gear or your own gear, and you've got whoever is going to be on-call. And that’s before we throw in commerce or the other connected Adobe Experience branded stuff, like Adobe Experience, Platform, or Target, or any of these kind of things that all require experts.</p>
+
+
+
+<p>What I'm saying is that as a recruiter, you've got your work cut out for you. I'm glad I don't have to do all that. I just have my head against the desk and make stuff work.</p>
+
+
+
+<p><strong>Tom: </strong>This is so true, and I think this is where being niche is crucial. I actually had a really interesting conversation about this earlier on today, so I'm a big golfer and the chap I was speaking to put what you were saying into a really succinct metaphor that worked really well for me. He said, with the role that he does and ultimately, a lot of the people in this industry, they’re a six iron. And we are ideal if you need a six iron. But if you need something different, we’re not going to be able to do that. And that's why we only specialise in Adobe, because on the face of it you might look like you can cover all these different facets of development say, but in reality, your skillset is inch-wide, mile-deep.</p>
+
+
+
+<p>I think recruitment’s complicated enough without trying to do millions of different things. And I suppose it’s the same for how an Adobe partner is. They’re the go-to, they've already got that team built, they know how everything works together, and they're great working together.</p>
+
+
+
+<p>There's obviously a lot of demand and there are various different people with the right skills. But there are a lot of people trying to get into the Adobe space and ultimately, it’s just not that easy.</p>
+
+
+
+<p>It's a very tight-knit community. And when you’re looking to hire, you almost already know who you need in the role and could probably list off a number of names. And we have companies that we will have that exact conversation with. But having people that can approach them and make it an attractive proposition for them to make the move can be difficult. There’s also a finite amount of talent, I think you mentioned this before Tad, but we need to look at how people are getting into the industry. There needs to be companies really supporting developers in this space. I know, we mentioned them before, and they won't mind me mentioning this, in fact, they'll probably cheer me for it but Bounteous is someone that I know is doing a great job in terms of bringing people in and growing them.</p>
+
+
+
+<p>And I think companies need to do that more. From our perspective as a recruiter, we can go and find people and understand their skillset as best as we can. But ultimately, we're in a tight market, there's only a limited number of people with the skills right now and it's only going to get harder as the demand grows and as the Adobe platform grows.</p>
+
+
+
+<h2>On Recruiting Experienced AEM Talent vs Training On the Job</h2>
+
+
+
+<p><strong>Tad: </strong>Well, it's just going to make it more important for the rest of us who've been in the game for a little bit to start creating more training videos for people. In a lot of cases, just recruiting somebody who's already experienced with these things is hard. In some instances, if I have a bunch of guys who support AEM, I don’t necessarily need you to hire me a guy who already knows everything about supporting AEM, but from an ops perspective, there's a certain opposite viewpoint that I need. They have to be on it when it comes to keeping something online, and they have to be passionate about that. They have to be passionate about all the minutia and forethought that goes into that. They don't necessarily need to know AEM as long as they've got that operational viewpoint of “I'm going to make this thing purr like a kitten”.</p>
+
+
+
+<p>If I can take that guy, maybe all he knows is WordPress or just basic Linux server stuff, I'll teach them AEM. I think it's very similar for developers also, like, get somebody who's a passionate developer, teach them the ins and outs of AEM and as long as he's got great communication, is willing to work with a team and willing to learn, they’ll be fine. Because you're always going to be learning. Look at what happened with AEM as a cloud service. That's only a year old and it's fundamentally changed our entire lives. So, you're going to be learning all the time regardless.</p>
+
+
+
+<p><strong>Tom: </strong>Yeah, I suppose from that side, But I think going back to 6.4 was where we really saw a real kind of structure side of it, where things have to be done a certain way. And that's obviously moving in and making it a lot easier to go into AEM as a cloud service that I suppose it needs to be a certain way so that it can work. Do you think, and this may well shoot myself in the foot as an Adobe specialised recruiter, that maybe in a few years’ time there will be a seemingly more formatted way of doing things the way Adobe wants it to be done? Making it easier to recruit people because there's, I don't want to say one way of doing things, but I suppose a more structured, uniform approach?</p>
+
+
+
+<p><strong>Tad: </strong>To an extent, but at the same time, there's going to be different things that you’re going to end up doing, as an example user-generated content (UGC). This is currently something that is not handled as AEM as a cloud service so you move in there and you’ve got a big bunch of comments, and stuff on forums and a notification bell that’s got to be in your sight. Now you’ve got to figure something out all on your own to make that run. You’ve got to talk to an external service, you’ve got to make it yourself and all of a sudden, you’ve got a requirement that needs a solution, and if the solution isn’t provided in a standardised way by the vendor, you’re making it.</p>
+
+
+
+<p>And there will be more cases of this happening as time goes on. Because AEM is not going to get more standardised in terms of the cases that it caters to. Commerce wasn’t a big part of the AEM use case before and now it is. Now you have blended content and sales sites – heck look at someone like Tesla, it was unheard of to purchase a car on your website and now you do. You’re going to have these unified experiences that have all these different touchpoints, mobile, AR, content being served up in glasses – there’s all kinds of stuff to come. Hopefully it’ll get easier to get people into the Adobe world and we’ll all do our part to try and make that the case but it’s an exciting time.</p>
+
+
+
+<p><strong>Tom: </strong>I certainly feel there is – and I know you’re amazing at doing this, but I feel there’s a huge piece around passing the torch and the Adobe world is generally pretty incredible at that. There’s a lot of exceptionally talented people that put amazing content out there and I think that’s a really great topic for us to end on.</p>
+
+
+
+<p>Thanks for your time today Tad, it’s been brilliant and I’m sure we’ll be back to discuss those roles in more detail another time.</p>
+
+    </section>
+    <footer><p>Categories: Adobe, AEM, AEM / CQ, cloud, cloud service, devops, hiring, personnel, recruiting, video</p></footer>
+  </article>
+</body>
+</html>

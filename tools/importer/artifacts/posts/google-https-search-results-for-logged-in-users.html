@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Google HTTPS Search Results for Logged-In Users</title>
+  <link rel="canonical" href="https://www.opsinventor.com/google-https-search-results-for-logged-in-users/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Google HTTPS Search Results for Logged-In Users</h1>
+      <time datetime="2011-10-19T16:54:58.000Z">10/19/2011, 9:54:58 AM</time>
+    </header>
+    <section class="content">
+      I saw this post today on <a href="http://googleblog.blogspot.com/2011/10/making-search-more-secure.html">Google switching to HTTPS search results</a>, referred from my trusty Slashdot.
+
+Obviously, I didn't like it - mostly because, from a website owner perspective, it eliminates the ability to get real-time reporting on keywords, which makes response to media events and such where mass keyword-driven traffic to your site all of the sudden requires proper response &amp; content.
+
+Curious as to whether sites would show up as "no referrer" (i.e. with referrer data totally stripped out) or if they'd show up redirected like Google+ links, I did some tests.  They do show up with a Google referrer - just one that has the search keywords obfuscated:
+<h3><strong>Clicking through a link from HTTPS Google:</strong></h3>
+I searched for "<a href="https://www.google.com/#sclient=psy-ab&amp;hl=en&amp;site=&amp;source=hp&amp;q=These+Terrible+Twos+Aren%E2%80%99t+Too+Terrible&amp;pbx=1&amp;oq=These+Terrible+Twos+Aren%E2%80%99t+Too+Terrible&amp;aq=f&amp;aqi=&amp;aql=1&amp;gs_sm=s&amp;gs_upl=699l14059l0l14813l2l1l0l0l0l0l181l181l0.1l1l0&amp;bav=on.2,or.r_gc.r_pw.,cf.osb&amp;fp=b79438a74c08cab0&amp;biw=1369&amp;bih=895">These Terrible Twos Aren’t Too Terrible</a>", clicked on the <a href="http://www.scientologyparent.com/these-terrible-twos-arent-too-terrible/">top link</a> which is from my parenting site.
+
+The log line I get resulting from this click through is:
+<pre><span style="color:#339966;"><strong>4.2.2.2 - - [19/Oct/2011:11:26:48 -0500] "GET /these-terrible-twos-arent-too-terrible/ HTTP/1.1" 200 66517 http://www.google.com/url?sa=t&amp;rct=j&amp;q=&amp;esrc=s&amp;source=web&amp;cd=1&amp;ved= 0CB0QFjAA&amp;url=http%3A%2F%2Fwww.scientologyparent.com%2Fthese-terrible-twos-arent-too- terrible%2F&amp;ei=OfqeTpH2B4Pi0QHBoI2SCQ&amp;usg=AFQjCNHBqTWXZLEY0uBUia1-l7RegVujXA" "Mozilla/5.0 (X11; Linux i686) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.202 Safari/535.1"</strong></span></pre>
+It obviously then obfuscates the search terms, but still at least tells you it was a Google organic result.  I've yet to see how Google plans to deliver these 30-day Keyword digests, but now that will obviously become another staple of daily analytics.
+
+<strong>Update:</strong>
+
+Curious as to how the rest of Google &amp; Facebook services handle HTTPS links, I ran the same test on HTTPS Gmail, Google+ and Facebook.  Results:
+<h3>Clicking through a link from HTTPS Gmail:</h3>
+<pre><span style="color:#339966;"><strong>4.2.2.2 - - [19/Oct/2011:12:01:21 -0500] "GET /these-terrible-twos-arent-too-terrible/ 
+HTTP/1.1" 200 66517 "-" "Mozilla/5.0 (X11; Linux i686) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.202 Safari/535.1"</strong></span></pre>
+<div><span class="Apple-style-span" style="font-size:15px;font-weight:bold;">Clicking through a link from HTTPS Google+:</span></div>
+<pre><span style="color:#339966;"><strong>4.2.2.2 - - [19/Oct/2011:12:01:21 -0500] "GET /these-terrible-twos-arent-too-terrible/ 
+HTTP/1.1" 200 66517 "-" "Mozilla/5.0 (X11; Linux i686) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.202 Safari/535.1"</strong></span></pre>
+I had earlier done some tests on Google+ HTTPS, and clicking through links in G+ would send you to an intermediate HTTP page which then would send you on to the target link.  This way, one could at least tell if traffic was coming to your site from Google+.  It seems they've done away with that, which is unfortunate.  I haven't seen any traffic appear in my stats from Google+ since shortly after launch -- I always attributed that to low takeup on G+ compared to my followings on Facebook &amp; such, but now it appears that it's simply because the referring info was stripped out.
+<h3>Clicking through a link from HTTPS Facebook:</h3>
+<pre><span style="color:#339966;"><strong>4.2.2.2 - - [19/Oct/2011:12:02:33 -0500] "GET /these-terrible-twos-arent-too-terrible/ 
+HTTP/1.1" 200 66517 "http://www.facebook.com/l.php?u=http%3A%2F%2Fwww.scientologyparent.com%2F
+these-terrible-twos-arent-too-terrible%2F&amp;h=tAQA11y3eAQBsxDhnT7lzULhrGsW4OkAZv30JIUOUOuUTlA" 
+"Mozilla/5.0 (X11; Linux i686) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/14.0.835.202 Safari/535.1"</strong></span></pre>
+Facebook is the only other service that actually redirects you to an intermediate HTTP page that at least discloses where the traffic came from.
+
+&nbsp;
+    </section>
+    <footer><p>Categories: google, https, keywords, login, redirect, search engine optimization, seo, seo, stripped out</p></footer>
+  </article>
+</body>
+</html>

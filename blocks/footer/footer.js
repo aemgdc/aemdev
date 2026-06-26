@@ -17,11 +17,14 @@ export default async function init(el) {
 
     const sections = [...fragment.querySelectorAll('.section')];
 
-    const copyright = sections.pop();
-    copyright.classList.add('section-copyright');
-
-    const legal = sections.pop();
-    legal.classList.add('section-legal');
+    if (sections.length) {
+      sections[0].classList.add('footer-brand');
+      const last = sections[sections.length - 1];
+      last.classList.add('footer-bottom');
+      for (let i = 1; i < sections.length - 1; i += 1) {
+        sections[i].classList.add('footer-col');
+      }
+    }
 
     el.append(fragment);
   } catch (e) {

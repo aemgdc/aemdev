@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Rebuilding the Sling Launchpad in AEM</title>
+  <link rel="canonical" href="https://www.opsinventor.com/rebuilding-the-sling-launchpad-in-aem/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Rebuilding the Sling Launchpad in AEM</h1>
+      <time datetime="2019-03-13T01:23:09.000Z">3/12/2019, 6:23:09 PM</time>
+    </header>
+    <section class="content">
+      
+<p>Sometimes, while running an AEM system, you'll one into one of a whole host of error conditions which doesn't seem to have any decent explanation. A few of them are: </p>
+
+
+
+<ul><li>On restarting AEM, some bundles come up in the "INSTALLED" state, but won't start properly, automatically. </li><li>After a deployment, upgrade, service pack release or cumulative fix pack release, AEM fails to start properly on one server, yet it works on another seemingly-identical one.  </li><li>Changing an OSGI configuration in the Felix console doesn't take effect - you make the change in, say, /system/console/slinglog, but still don't see the log you just configured.  </li><li>Other random class-loading issues, where on some servers (deployed the same way) all of the bundles start, but on one server it refuses to start at all. </li></ul>
+
+
+
+<p>If you've tried the usual suspects and still are left scratching your head, one go-to troubleshooting step I've taken (quite often in fact) is to rebuild the Launchpad.  </p>
+
+
+
+<h3><strong>How&nbsp;the&nbsp;Launchpad&nbsp;Works&nbsp;with&nbsp;your&nbsp;AEM OSGI Configurations</strong></h3>
+
+
+
+<p>Adobe Experience Manager is built off of a number of open-source projects, and one of the key components of such is <a href="https://sling.apache.org/documentation/getting-started/discover-sling-in-15-minutes.html">Apache Sling</a>.  When you start AEM for the first time, the AEM Quickstart jar file unpacks, and begins its self-configuration to start up.  One of those steps is to unpack and create the Sling Launchpad.   </p>
+
+
+
+<p>When your AEM system starts for the first time, you'll see log lines that look like this: </p>
+
+
+
+<pre class="wp-block-code"><code class="">12.03.2019 13:19:14.191 *INFO* [FelixStartLevel] org.apache.sling.settings.impl.SlingSettingsServiceImpl Read Sling ID null from file /home/tad/aem/crx-quickstart/launchpad/felix/bundle7/data/sling.id.file
+12.03.2019 13:19:14.354 *INFO* [FelixStartLevel] org.apache.sling.launchpad.installer Service [Apache Sling Launchpad Startup Listener,28, [org.apache.sling.installer.api.event.InstallationListener]] ServiceEvent REGISTERED
+12.03.2019 13:19:14.357 *INFO* [FelixStartLevel] org.apache.sling.launchpad.installer.impl.LaunchpadConfigInstaller Activating launchpad config installer, configuration path=resources/config, install path=resources/install
+</code></pre>
+
+
+
+<p>As you can see, AEM doesn't find a SlingID in a Launchpad, sees that it has to create one, and then starts populating configurations into the launchpad. </p>
+
+
+
+<pre class="wp-block-code"><code class="">12.03.2019 13:19:18.425 *INFO* [OsgiInstallerImpl] org.apache.sling.audit.osgi.installer Installed bundle com.adobe.cq.cq-deserialization-firewall [22] from resource TaskResource(url=launchpad:resources/install/1/cq-deserialization-firewall-1.0.16.jar, entity=bundle:com.adobe.cq.cq-deserialization-firewall, state=INSTALL, attributes=[org.apache.sling.installer.api.tasks.ResourceTransformer=:26:, Bundle-SymbolicName=com.adobe.cq.cq-deserialization-firewall, Bundle-Version=1.0.16], digest=1552421920000)
+</code></pre>
+
+
+
+<p>Once your first startup is completed, you'll see a launchpad that looks like this: </p>
+
+
+
+<pre class="wp-block-code"><code class="">tad@tad-ubuntubook:~/aem/crx-quickstart/launchpad$ ls -lathr
+total 828K
+-rw-r--r--   1 tad tad 769K Mar 12 13:19 org.apache.sling.launchpad.base.jar.1552421952083
+-rw-r--r--   1 tad tad 9.4K Mar 12 13:19 sling_bootstrap.txt
+drwxr-xr-x   3 tad tad 4.0K Mar 12 13:19 startup
+drwxr-xr-x   2 tad tad 4.0K Mar 12 13:19 conf
+drwxr-xr-x   7 tad tad 4.0K Mar 12 13:19 .
+drwxr-xr-x   2 tad tad 4.0K Mar 12 13:25 installer
+drwxr-xr-x 521 tad tad  20K Mar 12 13:25 felix
+drwxr-xr-x  11 tad tad 4.0K Mar 12 13:25 ..
+drwxr-xr-x   4 tad tad 4.0K Mar 12 17:07 config
+</code></pre>
+
+
+
+<p>All of the individual jar files for the bundles are in the launchpad/felix directory, and all of your individual OSGI configurations are in the launchpad/config directory. </p>
+
+
+
+<p>Now, lets say you modify (either via the OSGI console or via a REST call or via a package) an OSGI configuration - what happens then?  For example, if you were to take your newly-minted AEM server, and go to /system/console/slinglog and make a small modification to your root logger (say, change it from INFO to ERROR or something like this), you'll see that configuration persisted in a few places. </p>
+
+
+
+<p>The <strong>source&nbsp;of&nbsp;truth</strong> for that configuration is persisted into the JCR, and you'll see any of these modified OSGI configs in crxde in the <strong>/apps/system/config/</strong>, as you can see in the screenshot here:  </p>
+
+
+
+<figure class="wp-block-image"><img src="https://lh4.googleusercontent.com/tm0n0Oo2nhUZssVUX3zPIlEuavn7T_bqdgmOTqbBT-tbJNLAFEoeKVS-JIv4LLBwMpUbFzhUdzoefz8yIzs-Admk8JyficPXnNSKb9oA6_-VH4mo2o2dstA2LmHlNscdkFjSkORj" alt=""/></figure>
+
+
+
+<p>These runtime OSGI configurations are ALSO persisted <strong>on&nbsp;disk</strong> in the Launchpad, being saved into crx-quickstart/launchpad/config.  </p>
+
+
+
+<pre class="wp-block-code"><code class="">tad@tad-ubuntubook:~/aem/crx-quickstart/launchpad/config/org/apache/sling/commons/log/LogManager/factory/config$ cat 7951193d-99c1-492e-938a-1c8ddd1d0ef3.config
+org.apache.sling.commons.log.file="logs/error.log"
+org.apache.sling.commons.log.level="error"
+org.apache.sling.commons.log.names=[ \
+  "org.apache.sling.scripting.sightly.js.impl.jsapi.ProxyAsyncScriptableFactory", \
+  ]
+org.apache.sling.commons.log.pattern="{0,date,dd.MM.yyyy\ HH:mm:ss.SSS}\ *{4}*\ [{2}]\ {3}\ {5}"
+service.factoryPid="org.apache.sling.commons.log.LogManager.factory.config"
+service.pid="org.apache.sling.commons.log.LogManager.factory.config.7951193d-99c1-492e-938a-1c8ddd1d0ef3"
+</code></pre>
+
+
+
+<p>AEM will then first READ this configuration information out of the launchpad on system startup, to allow AEM to start up faster without having to re-create all of these configs out of the JCR.  </p>
+
+
+
+<p>This all generally works fine, except sometimes these configs get out of sync, and then you start running into some of the problems listed above.  I've also seen these problems come about when doing repository &amp; content syncs from one system to another where the running state of one repo doesn't precisely match the other. </p>
+
+
+
+<h3><strong>Fortunately,&nbsp;Rebuilding&nbsp;the&nbsp;Launchpad&nbsp;is&nbsp;Super&nbsp;Easy</strong></h3>
+
+
+
+<p>All you have to do to rebuild the launchpad is this: </p>
+
+
+
+<ol><li>Stop AEM</li><li>Move the current <strong>crx-quickstart/launchpad</strong> directory to a temp directory (<em><code>mv&nbsp;./crx-quickstart/launchpad&nbsp;/tmp/launchpad.backup)</code></em></li><li>Start AEM</li></ol>
+
+
+
+<p>When AEM starts back up, you'll see it re-create its sling ID, and start re-creating the launchpad, like the example here: </p>
+
+
+
+<pre class="wp-block-code"><code class="">12.03.2019 17:24:12.538 *INFO* [FelixStartLevel] org.apache.sling.settings.impl.SlingSettingsServiceImpl Read Sling ID null from file /home/tad/aem/crx-quickstart/launchpad/felix/bundle7/data/sling.id.file
+12.03.2019 17:24:12.544 *INFO* [FelixStartLevel] org.apache.sling.settings.impl.SlingSettingsServiceImpl Created new Sling ID 6012b6f2-1102-4d2c-8db1-8d04e3b6bbcb
+</code></pre>
+
+
+
+<p>So, before restoring your system from a backup, or doing other costly debugging or open-heart surgery, try this trick.  It solves more AEM problems than it should.  </p>
+
+
+
+<h3>Please make a backup first for goodness sakes</h3>
+
+
+
+<p><strong>Disclaimer:</strong>  First off, please back up the launchpad to a directory as opposed to deleting it, just in case.  I've never reverted to a launchpad I moved, but I also don't want people coming to me telling me "Tad said get rid of it and now AEM is hosed".  </p>
+
+
+
+<p>Secondly, I've tried this successfully on AEM 6.1, 6.2, 6.3 and 6.4.  Other versions of AEM may have different behavior.  </p>
+
+
+
+<p><strong>Note: </strong>As pointed out in a recent comment below, it looks like this does NOT work on AEM 6.5.  I just tried this on a relatively-vanilla 6.5.7 instance and it does indeed not like life after a launchpad rebuild, coming up with sling resolver issues after the restart. So, it could very well be that something's changed to where this is no longer possible.</p>
+
+
+
+<h3>Caveat: This Won't Work on AEM 6.3+ Requiring Shared Encryption Keys</h3>
+
+
+
+<p>A scenario I was recently reminded of, is noted in the <a href="https://helpx.adobe.com/experience-manager/6-5/sites/administering/using/security-checklist.html">AEM Security Checklist for AEM 6.3+</a>: </p>
+
+
+
+<blockquote class="wp-block-quote"><p>Whereas in older versions the replication keys were stored in the  repository, beginning with AEM 6.3 they are stored on the filesystem. Therefore, in order to replicate your keys across instances you need  to copy them from the source instance to the target instances' location  on the filesystem.</p><cite>https://helpx.adobe.com/experience-manager/6-5/sites/administering/using/security-checklist.html</cite></blockquote>
+
+
+
+<p><br>In this case, the "location on the filesystem" is in the launchpad.  So, if you ever need to rebuild your launchpad, you would need to make sure you have automation in place to deploy out your encryption keys to the rebuilt instance so that you don't break your authentication.   <br></p>
+
+
+
+<p><br></p>
+
+    </section>
+    <footer><p>Categories: AEM, AEM / CQ, configuration, devops, error, felix, launchpad, osgi, sling</p></footer>
+  </article>
+</body>
+</html>

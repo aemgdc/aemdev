@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Is Log Analysis for Web Analytics a Dead Subject?</title>
+  <link rel="canonical" href="https://www.opsinventor.com/is-log-analysis-for-web-analytics-a-dead-subject/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Is Log Analysis for Web Analytics a Dead Subject?</h1>
+      <time datetime="2009-04-01T10:54:00.000Z">4/1/2009, 3:54:00 AM</time>
+    </header>
+    <section class="content">
+      
+<p>I’ve been involved in web analytics in one capacity or another for a good while.  Back in 1998, when I was first getting started in my career &amp; working for <a href="http://blog.webtrends.com/" target="_blank" rel="noopener">Webtrends</a>, there were only two ways to go about getting stats from your website: either get a program to crunch the logs for your site (of which there were many), or pay some ridiculous sum for a tool like Aria or NetGenesis or HitList which used packet-sniffers placed in front of your web server, to track various interactions with your site.</p>
+
+
+
+<p>In either case, the entire subject of web analytics assumed that every interaction that your users were doing with your site was going to result in another page request back to the server, which you could then track via a log file.</p>
+
+
+
+<p>Wow, how times have changed.&nbsp; You can complete an hour-long stay at many websites, and still have only looked at <strong>one HTML page</strong>.&nbsp; Doesn’t make log-based analytics too entertaining, especially when your videos are hosted off-site.</p>
+
+
+
+<p>In late 2004, I did a project for for a company in Atlanta, testing out literally about 30 different web analytics solutions to work out the best one for them.&nbsp; At that point in time, out all the different packages that I reviewed, there was a pretty even split between the number of web analytics companies that were making a go at it with a shrink-wrap, software-based solution that would be hosted at the client side, and the other half were ASP’s.</p>
+
+
+
+<p>Many organizations that I was working with were not all too interested in turning to an ASP-based setup for various security reasons, as well as the fact that ASP’s aren’t too great at doing analytics for&nbsp; intranet sites, when the client can’t access the external internet.</p>
+
+
+
+<p>At that point in time, the landscape looked something like this:</p>
+
+
+
+<figure class="wp-block-table"><table><tbody><tr><td><strong>Analytics Product</strong></td><td><strong>ASP or Software</strong></td><td><strong>Analysis Type</strong></td></tr><tr><td>Webtrends</td><td>Either</td><td>Log Analysis or Page-tagging</td></tr><tr><td>Datanautics G2</td><td>Software</td><td>Log Analysis &amp; Packet Sniffer</td></tr><tr><td>DeepMetrix LiveStats xSP</td><td>Software</td><td>Log Analysis</td></tr><tr><td>Pilot HitList</td><td>Software</td><td>Log Analysis &amp; Packet Sniffer</td></tr><tr><td>Sane NetTracker</td><td>Software</td><td>Log Analysis or Page-tagging</td></tr><tr><td>Sawmill</td><td>Software</td><td>Log Analysis</td></tr><tr><td>SPSS NetGenesis</td><td>Software</td><td>Log Analysis, Page-tagging and Packet Sniffer</td></tr><tr><td>Urchin</td><td>Software or ASP</td><td>Log analysis or Page-tagging</td></tr><tr><td>Eloqua</td><td>ASP</td><td>Page-tagging</td></tr><tr><td>Elytics EAS</td><td>ASP</td><td>Page-tagging</td></tr><tr><td>Manticore Virtual Touchstone</td><td>ASP</td><td>Page-tagging</td></tr><tr><td>Omniture SiteCatalyst</td><td>ASP</td><td>Page-tagging, but they’d import your old logs for a fee</td></tr><tr><td>SageMetrics SageAnalyst</td><td>ASP</td><td>log analysis and page-tagging</td></tr><tr><td>WebSideStory HBX</td><td>ASP</td><td>Page-tagging, but they’d import your old logs for a fee</td></tr></tbody></table></figure>
+
+
+
+<p>As you can see, it was about half-and-half, with most products still clinging to log analysis, but many more progressive (and sometimes completely frightening) products going to page-tagging exclusively to be able to trap and coordinate interactions with your sites.</p>
+
+
+
+<figure class="wp-block-image size-large is-style-default"><a href="https://www.opsinventor.com/wp-content/uploads/2024/04/image.png"><img src="https://www.opsinventor.com/wp-content/uploads/2024/04/image-1024x765.png" alt="" class="wp-image-1978"/></a><figcaption class="wp-element-caption"><em>Circa 2004, giving a presentation at the end of a web analytics project.  </em></figcaption></figure>
+
+
+
+<p>But now, boy has the landscape changed.&nbsp;&nbsp; After Google bought Urchin and transformed it into a free product, countless companies have now successfully experimented with Google Analytics and found it (and with it, the whole premise of tagging pages) to be a reliable and insightful way of tracking interactions with pages.</p>
+
+
+
+<p>Also, the fact of its being free has forced a lot of companies to either (a) drop the web analytics business alltogether, or (b) dramatically change their model so as to differentiate themselves from Google Analytics and move themselves <strong>way</strong> upmarket.</p>
+
+
+
+<p>Check out how this grid looks now, 5 years later:</p>
+
+
+
+<figure class="wp-block-table"><table><tbody><tr><td><strong>Analytics Product</strong></td><td><strong>Still around?&nbsp; If so, what type of product</strong></td><td><strong>Analysis Type</strong></td></tr><tr><td><a href="http://webtrends.com" target="_blank" rel="noopener">Webtrends</a></td><td>ASP or Software</td><td>Log Analysis or Page-tagging</td></tr><tr><td>Datanautics G2</td><td>Product is discontinued</td><td></td></tr><tr><td>DeepMetrix LiveStats xSP</td><td>Bought by Microsoft, and then deep-sixed</td><td></td></tr><tr><td>Pilot HitList</td><td>Product bought by SAP and then deep-sixed</td><td></td></tr><tr><td>Sane NetTracker</td><td>Acquired by <strong>Unica</strong>, now merged in with their <a href="http://netinsight.unica.com/products/Web_Analytics.htm" target="_blank" rel="noopener">Net Insight</a> software product.</td><td>Log Analysis or Page-tagging</td></tr><tr><td><a href="http://sawmill.com" target="_blank" rel="noopener">Sawmill</a></td><td>Still Software</td><td>Log Analysis</td></tr><tr><td>SPSS NetGenesis</td><td>Toasted by SPSS?&nbsp; <a href="http://www.spss.com/Netgenesis/" target="_blank" rel="noopener">Product page is now a 404</a></td><td></td></tr><tr><td>Urchin</td><td>Bought by Google, is now <a href="http://google.com/analytics" target="_blank" rel="noopener">Google Analytics</a></td><td>Page Tagging</td></tr><tr><td><a href="http://www.eloqua.com/" target="_blank" rel="noopener">Eloqua</a></td><td>ASP</td><td>Page-tagging</td></tr><tr><td>Elytics EAS</td><td>Dead like a doornail</td><td></td></tr><tr><td><a href="http://www.manticoretechnology.com/" target="_blank" rel="noopener">Manticore Virtual Touchstone</a></td><td>ASP</td><td>Page-tagging</td></tr><tr><td><a href="http://omniture.com" target="_blank" rel="noopener">Omniture SiteCatalyst</a></td><td>ASP</td><td>Page-tagging, but they’d import your old logs for a fee</td></tr><tr><td><a href="http://sagemetrics.com" target="_blank" rel="noopener">SageMetrics</a> SageAnalyst</td><td>ASP</td><td>log analysis and page-tagging</td></tr><tr><td>WebSideStory HBX</td><td>Bought by Omniture, old HBX product is toast</td><td></td></tr></tbody></table></figure>
+
+
+
+<p>In any case, it’s a subject for another blog post as to what companies have to do to differentiate themselves from Google Analytics in order to make it worth the cash for users to upgrade from a free product.</p>
+
+
+
+<p>The main case here, though, is if log analysis has any value or relevance still in the market?&nbsp;&nbsp; What do you get from a log analysis tool these days that you can’t get from a pixel tracker?</p>
+
+    </section>
+    <footer><p>Categories: analytics, omniture, web analytics, web analytics, webtrends</p></footer>
+  </article>
+</body>
+</html>

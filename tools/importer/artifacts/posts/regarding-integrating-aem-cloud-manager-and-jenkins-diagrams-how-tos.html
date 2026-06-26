@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Regarding Integrating AEM Cloud Manager and Jenkins - Diagrams &amp; How-To&#39;s</title>
+  <link rel="canonical" href="https://www.opsinventor.com/regarding-integrating-aem-cloud-manager-and-jenkins-diagrams-how-tos/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Regarding Integrating AEM Cloud Manager and Jenkins - Diagrams &amp; How-To&#39;s</h1>
+      <time datetime="2020-11-24T04:40:53.000Z">11/23/2020, 8:40:53 PM</time>
+    </header>
+    <section class="content">
+      
+<p>If you are considering moving your Adobe Experience Manager-powered site to AEM as a Cloud Service or Adobe's AEM Managed Services (AMS) the only way to get code onto these systems is via Adobe's Cloud Manager CI/CD toolset. As you may know from experience, or from other writings on the topic, Cloud Manager is meant to be a one-size-fits-many solution rather than a fully-customizable CI/CD platform like Jenkins or Bamboo.  For small companies or for projects without robust development &amp; QA teams, Cloud Manager's feature set can be acceptable - as it does indeed take the code out of a git repo and put it on a server and performs some basic testing &amp; validation on the code as well.  </p>
+
+
+
+<p>The larger and more-complicated your site is, however, the more your team <strong><em>will </em></strong>run into the acute limitations of the Cloud Manager product.  The purpose of this post is to illustrate some of these limitations, and illustrate an approach that one can take to vastly extend what Cloud Manager can do.  </p>
+
+
+
+<h2>Regarding Scoping your AEM Cloud Migration Project</h2>
+
+
+
+<p>Let's get the tough news out of the way first: you're very likely going to need to scope some more DevOps and CI/CD work into your AEM Cloud Migration plan than you originally thought. Purpose of my post here is to try to get your wheels turning on what that scope might need to be.  </p>
+
+
+
+<p>Let's say that you have a 3-environment setup like many of us do (Dev / Stage / Prod).   First of all, if you have more envs than that and plan to move to AEM as a Cloud Service, you'll need to contract that just to Dev/Stage/Prod as that is all that is currently supported by the service, but Adobe AEM Managed Services (AMS) does support more environments than that.  </p>
+
+
+
+<p>Migrating a 3-environment setup into Cloud Manager gives you a pipeline which generally would look like this (explanation follows):</p>
+
+
+
+<h3>Diagram of Manual Steps in OOTB AEM Cloud Manager Release Process</h3>
+
+
+
+<figure class="wp-block-gallery columns-1 is-cropped"><ul class="blocks-gallery-grid"><li class="blocks-gallery-item"><figure><img src="http://www.jetteroheller.com/wp-content/uploads/2020/11/CM-DevOps-Flow-no-jenkins-v1a-1-1024x692.png" alt="" data-id="1597" class="wp-image-1597"/></figure></li></ul></figure>
+
+
+
+<p>As noted before, Cloud Manager was never intended to be a Jenkins or a Bamboo or a CircleCI.  It was meant to be a simple, easy-to-use, straightforward CI solution that would just work, and where all of the heavy lifting for configuration is done behind the scenes by Adobe employees.  As a result there are a few very key areas that Cloud Manager lacks: </p>
+
+
+
+<ul><li><strong>Repository Syncing:</strong> As you may have read in <a href="http://www.jetteroheller.com/aem-as-a-cloud-service-tech-qa-and-should-you-migrate-now/" data-type="post" data-id="1415">prior articles on AEM as a Cloud Service</a>, the only way to get code in to Cloud Manager is from an Adobe Git repo.  There's no OOTB automation to automate moving the code from your own repo into Adobe Git, and it's very much not recommended to use Adobe Git as your source of truth for code, as it has no SLA around its availability.  So, unless you want every dev deploy to also include a manual sync of your Github/Bitbucket to Adobe git, you'll need an outside process for this. </li><li><strong>Adding Conditional Build Steps</strong>: There is no way to add steps into the build process in Cloud Manager either before or after the build fires.  If there is a step that needs doing, this needs to be done outside of Cloud Manager. This means everything from smoke testing, load testing, UAT approvals, external system manipulation, reindexing, etc - that would all have to be done <em>OUTSIDE</em> of Cloud Manager.</li><li><strong>Dispatcher Configuration Linting &amp; Testing:</strong> In Cloud Manager, dispatcher (caching config, apache config, rewrites, filters, etc) code is deployed along with the application code.  However, very little testing is done on that code on its way in, so the only way you find out that there is something wrong with the Dispatcher code is when it fails and has to revert to the previous code.  It presently gives you no UI feedback aside from "FAILED" as well as an email from your support engineer.</li><li><strong>Slack/Teams or Email Notifications: </strong>Currently, the system only supports email notifications in the Stage / Prod deployments, and nothing in the Dev or other non-prod deployments.  This can be rough for dev teams, as while the deployment is going on, the system will go through waves of unavailability which can be rough for users who aren't in the know.  Slack/Teams notifications in Cloud Manager are not supported out of the box</li></ul>
+
+
+
+<h2>Flipping the Script: Having Jenkins Run Cloud Manager</h2>
+
+
+
+<p>If your project would benefit by automating the manual touchpoints of an out-of-the-box Cloud Manager setup, you'll really need to jump feet first into flipping things around and <em>not </em>using Cloud Manager as your central source of truth for CI/CD, but instead to use a standalone tool like Jenkins which itself will reach out &amp; talk to Cloud Manager where needed. </p>
+
+
+
+<p>Here is a diagram of what a more-ideal workflow would look like, centering around Jenkins as the main source of truth on the CI pipeline, rather than Cloud Manager: </p>
+
+
+
+<figure class="wp-block-image size-large"><img src="http://www.jetteroheller.com/wp-content/uploads/2020/11/CM-DevOps-Flow-with-jenkins-v1-1024x523.png" alt="" class="wp-image-1585"/></figure>
+
+
+
+<p><em>(Please zoom in, there's a bunch of detail on there)</em></p>
+
+
+
+<p>Basically though, in this case, the big difference is that you are telling Jenkins to make Cloud Manager deploy things, and have Cloud Manager notify you back using Adobe IO, rather than the reverse of trying to start from Cloud Manager, and then figure out how to insert conditional build steps into it (which you can't do anyhow).  </p>
+
+
+
+<p>The Pipeline illustrated above would be: </p>
+
+
+
+<ol><li><strong>Develop Locally, Commit to Local Git: </strong>Developer creates locally, and then commits into the corporate git repo (i.e. Bitbucket). </li><li><strong>Jenkins Dev Deployment: </strong>Jenkins jobs then: <ol><li>Sync the Dev branch of the git repo to the dev branch of Adobe CM git</li><li>Make an Adobe IO call out to kick off the Dev Deployment Pipeline in Cloud Manager.  Adobe IO is then configured to get notifications on completion events in Cloud Manager. </li><li>Jenkins then gets the result of that Cloud Manager build and passes it on to a Notification job which can send webhooks out to Slack or Microsoft Teams. </li><li>On a successful build, jobs can then kick off to run an automated smoke test or UI Functional Test in a framework like Saucelabs or Selenium Grid, or even just run some very basic smoke testing scripts.  </li></ol></li><li><strong>Sign-Off: </strong>Ideally, you would then pipeline your Jenkins jobs to the next environment - with either a Jira integration or a manual trigger so that the Stage Pipeline can't get kicked off until (a) a successful build from Dev completes, and (b) it gets appropriate sign-off.  </li><li><strong>Sync to Release Branch:</strong> Then you kick off a Jenkins job that syncs the approved state of the Dev branch into the release branch (obviously this could be rejiggered based on your preferred branching strategy). This would sync from your Bitbucket (or Github) Dev into Bitbucket Release, and then Bitbucket Release into Cloud Manager release branch.  </li><li><strong>Staging Release:</strong> When you've got a release candidate, you then trigger the "Stage/Prod" pipeline in Jenkins which again reaches out via Adobe IO to trigger a Cloud Manager "production" build, because Cloud Manager's Stage and Prod builds are a part of the same pipeline, and are the only truly "pipelined" builds in CM.  The Cloud Manager build then goes through its normal steps of creating a build, running tests, creating a build artifact and deploying that to Staging, and then doing its own internal set of security tests and load tests.   Whatever its result is, it notifies Adobe IO which then notifies Jenkins.  </li><li><strong>Regression / Load and other Automated tests:</strong>  This is where you would plug into Jenkins any further automated load tests, regression tests, UI Functional Tests, or other security scans and / or jobs that need doing after the Stage deployment is done.  </li><li>Once these get the green light, you can hit the button to notify to the CSE to deploy to prod. </li></ol>
+
+
+
+<h2><strong>How do we do all this?</strong></h2>
+
+
+
+<p>Thankfully a lot of the real heavy lifting on this has been done already by some great folks at <a href="https://github.com/jenkinsci/adobe-cloud-manager-plugin">Perficient </a>and <a href="https://tech.cognifide.com/blog/2020/cloud-manager-meets-jenkins/">Cognifide </a>among others.  </p>
+
+
+
+<figure class="wp-block-image size-large"><img src="http://www.jetteroheller.com/wp-content/uploads/2020/11/jenkins-cloud-manager-integration-jenkins-view.png" alt="" class="wp-image-1592"/><figcaption><em>Above is a Dockerized Jenkins spun up from code that connects to my Sandbox Bitbucket repository, syncs to Cloud Manager, and then deploys using Cloud Manager.  It was a proof-of-concept that I broke right before writing the article, so yes - the build is showing red at the moment.  :) </em></figcaption></figure>
+
+
+
+<p>I would fully recommend going through<a href="https://tech.cognifide.com/blog/2020/cloud-manager-meets-jenkins/"> this how-to</a> by Wojciech Blachowski who's put together a solid step-by-step on making the bare bones of this work.  Just make sure to first have your organization's Adobe account provisioned for <a href="https://www.adobe.io/apis/experienceplatform/project-firefly.html">Firefly and Adobe IO Runtime,</a> or else the glue that sticks it all together won't work.  Example code for making this work is on github here: <a href="https://github.com/wblachowski/cm-jenkins-helpers">GitHub - wblachowski/cm-jenkins-helpers: A set of auxiliary sources for CM+Jenkins solution</a></p>
+
+
+
+<p>But a lot of the hard work on this comes before implementation, and will be the result of some quality time in front of a whiteboard figuring out what <strong>your </strong>ideal Dev/Ops pipeline for AEM really is.</p>
+
+
+
+<p> <a href="https://www.linkedin.com/in/thaddeusreeves/">Hit me up</a> if you want to chat about it!</p>
+
+    </section>
+    <footer><p>Categories: adobe experience manager, adobe managed services, AEM, AEM / CQ, aem as a cloud service, aemaacs, AMS, ci/cd, deployment, jenkins</p></footer>
+  </article>
+</body>
+</html>

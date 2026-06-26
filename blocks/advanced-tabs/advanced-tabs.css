@@ -6,7 +6,7 @@
       display: block;
     }
 
-    &[data-status] {
+    &[data-status="decorated"] {
       display: none;
     }
   }

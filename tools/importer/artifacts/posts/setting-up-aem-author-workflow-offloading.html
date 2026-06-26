@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Setting up AEM Author Workflow Offloading</title>
+  <link rel="canonical" href="https://www.opsinventor.com/setting-up-aem-author-workflow-offloading/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Setting up AEM Author Workflow Offloading</h1>
+      <time datetime="2018-07-10T17:51:55.000Z">7/10/2018, 10:51:55 AM</time>
+    </header>
+    <section class="content">
+      An issue with AEM which has persisted since the earliest days of the platform, is that the Authoring environment has never been good at horizontally scaling.  By authoring environment, this also extends to all of the other things that the Author AEM instance usually does, like image workflows, PDF rendering, video transcoding, and the like.
+
+One model for attempting to horizontally scale the AEM author is to do <a href="https://helpx.adobe.com/experience-manager/6-4/sites/deploying/using/offloading.html"><em>Workflow Offloading</em></a>, where you offload the heavy-duty tasks from the AEM author onto a separate AEM instance which is there only to process workflows and then return the payload back to the primary author instance.  This has the purported benefit of being able to take major CPU-intensive and I/O-intensive ops and have them executed by a secondary server which is NOT the one your lag-sensitive authoring users are clicking around on.
+
+However, please be warned - setting up offloading is fraught with pitfalls, and you'll want to be very-super-extra-sure that you really want to go the offloading route before you try, because usually you'll just be better-served by beefing up your author box and optimizing your workflows.
+<h2>Diagrams of AEM Offloading Setup Architectures</h2>
+[caption id="attachment_1066" align="alignnone" width="1024"]<a href="http://www.jetteroheller.com/setting-up-aem-author-workflow-offloading/aem-offload-author-v1/" rel="attachment wp-att-1066"><img class="size-large wp-image-1066" src="http://www.jetteroheller.com/wp-content/uploads/2018/07/aem-offload-author-v1-1024x906.png" alt="AEM Offloading Author with Shared NFS/NAS Datastore" width="1024" height="906" /></a> AEM Offloading Author with Shared NFS/NAS Datastore[/caption]
+
+Above is the way that Adobe recommends setting up your workflow offloading, based on the <a href="https://helpx.adobe.com/experience-manager/6-4/assets/using/assets-offloading-best-practices.html#GeneralGuidanceandBestPracticesforAssetOffloading">offloading best practices document here</a>.  Specifically:
+<ul>
+ 	<li>You've already split your segmentstore and datastore at AEM installation time</li>
+ 	<li>You are using FileDatastore on an externalized NAS/NFS mount, and are sharing this datastore with the AEM Offload Instance</li>
+ 	<li>You are using binary-less replication to get the workflows and their payloads back and forth between the AEM Author master (leader) instance that your users are logging in to, and the Offload Author(s) that are handling the offloaded workflows.</li>
+</ul>
+It is also theoretically possible to do a similar setup using S3Datastore, though such a scenario isn't explicitly documented by Adobe.   <strong>(EDIT: after working with Adobe support, a working model was demonstrated on test gear, the steps of such a setup are documented below.)
+
+</strong>This setup would look like the following:
+
+[caption id="attachment_1070" align="alignnone" width="1024"]<a href="http://www.jetteroheller.com/setting-up-aem-author-workflow-offloading/aem-offload-author-s3-v1/" rel="attachment wp-att-1070"><img class="size-large wp-image-1070" src="http://www.jetteroheller.com/wp-content/uploads/2018/07/aem-offload-author-s3-v1-1024x921.png" alt="Diagram of AEM Offloading with S3 Datastore" width="1024" height="921" /></a> Diagram of AEM Offloading with S3 Datastore[/caption]
+
+Theoretically, offloading also works using an S3 Datastore.  When one has an AEM Assets environment spanning multiple (or tens) of terabytes, it's obviously advantageous to be able to use S3's low-cost storage to store AEM assets once, rather than multiplying this storage across a shared-nothing publish environment, all on higher-cost EBS storage.
+
+However, even getting workflow offloading to work at all using S3 is an undocumented and yet extremely effective source of pain and agony.  One of the reasons for this is that when an item is uploaded to S3, it's first written to a local S3 cache while an async call is sent off to persist the binary to S3.  However, there's no flag in the workflow to wait until the item is persisted out to S3 before kicking off the offload which then attempts binary-less replication of the workflow to the offload author which would then try to access the binary that perhaps is not available yet.  Race condition excellence.
+<h2>Steps to Configure Workflow Offloading on Authors with binary-less replication &amp; a Shared Amazon S3 Datastore</h2>
+After working with Adobe support extensively on this issue, the following basic instructions were used to get AEM author workflow offloading working on test instances which were connected based on the diagram above, using a shared S3 datastore.
+
+<strong>Configure Master and Worker instances with S3 Datastore</strong>
+<ol>
+ 	<li>Create folders for two AEM instances: master, worker</li>
+ 	<li>Configure the S3 datastore as per this Adobe documentation: <a href="https://helpx.adobe.com/experience-manager/6-3/sites/deploying/using/data-store-config.html">https://helpx.adobe.com/experience-manager/6-3/sites/deploying/using/data-store-config.html</a></li>
+</ol>
+<ol start="3">
+ 	<li>Start master AEM instance. Verify that it’s ready and accessible.</li>
+ 	<li>Start AEM worker. Verify that it’s ready and accessible.</li>
+</ol>
+&nbsp;
+
+<strong>Administering Topology </strong>
+<ol>
+ 	<li>Login into OSGi on the Master instance: http://localhost:4502/system/console/topology</li>
+ 	<li>Note the instance Sling ID and confirm that master AEM is shown as local. <strong>Note</strong>, that for master and worker reside on two different servers it requires to configure Configure Discovery.Oak Service at http:// &lt;host&gt;:&lt;port&gt;/system/console/configMgr/org.apache.sling.discovery.oak.Config</li>
+ 	<li>Verify that worker instance is shown under Connectors:</li>
+</ol>
+[caption id="attachment_1149" align="alignnone" width="1024"]<a href="http://www.jetteroheller.com/setting-up-aem-author-workflow-offloading/attachment/1/" rel="attachment wp-att-1149"><img class="size-large wp-image-1149" src="http://www.jetteroheller.com/wp-content/uploads/2018/07/1-1024x290.png" alt="" width="1024" height="290" /></a> Verify that worker instance is shown under Connectors[/caption]
+<ol start="4">
+ 	<li>Login into OSGi on worker: http://localhost:4504/system/console/topology</li>
+ 	<li>Note the instance Sling ID and confirm that Worker AEM is shown as local. <strong>Note</strong>, that for master and worker reside on two different servers it requires to configure Configure Discovery.Oak Service at http:// &lt;host&gt;:&lt;port&gt;/system/console/configMgr/org.apache.sling.discovery.oak.Config</li>
+ 	<li>Verify that worker Outgoing topology connectors is pointed to the master AEM:</li>
+</ol>
+<a href="http://www.jetteroheller.com/setting-up-aem-author-workflow-offloading/attachment/2/" rel="attachment wp-att-1150"><img class="size-large wp-image-1150" src="http://www.jetteroheller.com/wp-content/uploads/2018/07/2-1024x276.png" alt="Verify that worker Outgoing topology connectors is pointed to the master AEM" width="1024" height="276" /></a>
+
+Verify that worker Outgoing topology connectors is pointed to the master AEM<strong> </strong>
+
+<strong>Configure Topic Consumption </strong>
+<ol>
+ 	<li>On the master AEM, switch to Offloading Browser at: http://localhost:4502/libs/granite/offloading/content/view.html</li>
+ 	<li>Locate Topic: <em>com/adobe/granite/workflow/offloading </em></li>
+ 	<li>Disable Topic for the master instance:</li>
+</ol>
+[caption id="attachment_1151" align="alignnone" width="1024"]<a href="http://www.jetteroheller.com/setting-up-aem-author-workflow-offloading/attachment/3/" rel="attachment wp-att-1151"><img class="size-large wp-image-1151" src="http://www.jetteroheller.com/wp-content/uploads/2018/07/3-1024x82.png" alt="Disable Topic for the master AEM author instance" width="1024" height="82" /></a> Disable Topic for the master AEM author instance[/caption]
+
+<strong>Turning off automatic agent management </strong>
+
+Adobe recommends that you turn off automatic agent management because it does not support binary-less replication and can cause confusion when setting up a new offloading topology. Moreover, it does not automatically support the forward replication flow required by binary-less replication.
+<ol>
+ 	<li>Open Configuration Manager from the URL http://localhost:4502/system/console/configMgr.</li>
+ 	<li>Open the configuration for OffloadingAgentManager (http://localhost:4502/system/console/configMgr/com.adobe.granite.offloading.impl.transporter.OffloadingAgentManager).</li>
+ 	<li>Disable automatic agent management.</li>
+</ol>
+[caption id="attachment_1152" align="alignnone" width="976"]<a href="http://www.jetteroheller.com/setting-up-aem-author-workflow-offloading/attachment/4/" rel="attachment wp-att-1152"><img class="size-full wp-image-1152" src="http://www.jetteroheller.com/wp-content/uploads/2018/07/4.png" alt="Disable automatic agent management" width="976" height="157" /></a> Disable automatic agent management[/caption]
+
+Repeat same steps for the worker instance.
+
+&nbsp;
+
+<strong>Offloading replication agents </strong>
+<ol>
+ 	<li>Open replication agents in miscadmin console: http://localhost:4502/miscadmin#/etc/replication/agents.author</li>
+ 	<li>Delete all 3 agents named "<strong>offloading_replication_agent</strong>" "<strong>offloading_outbox</strong>" and "<strong>offloading_reverse_*</strong>" on Master</li>
+ 	<li>On the Master, create a new replication agent with the Title and Name as “offloading_*” where * is the sling ID of the Worker:
+
+[caption id="attachment_1153" align="alignnone" width="482"]<a href="http://www.jetteroheller.com/setting-up-aem-author-workflow-offloading/attachment/5/" rel="attachment wp-att-1153"><img class="size-full wp-image-1153" src="http://www.jetteroheller.com/wp-content/uploads/2018/07/5.png" alt="On the Master, create a new replication agent with the Title and Name as “offloading_*” where * is the sling ID of the Worker" width="482" height="221" /></a> On the Master, create a new replication agent with the Title and Name as “offloading_*” where * is the sling ID of the Worker[/caption]</li>
+ 	<li>Edit the properties of this replication agent as follows:</li>
+</ol>
+<table width="100%">
+<tbody>
+<tr>
+<td>Property</td>
+<td>Value</td>
+</tr>
+<tr>
+<td>Settings &gt; Serialization Type</td>
+<td>Binary less</td>
+</tr>
+<tr>
+<td>Transport &gt;Transport URI</td>
+<td>http://<em>&lt;ip of worker instance&gt;</em>:<em>&lt;port&gt;</em>/bin/receive?sling:authRequestLogin=1&amp;binaryless=true</td>
+</tr>
+<tr>
+<td>Transport &gt;Transport User</td>
+<td>Replication user on target instance</td>
+</tr>
+<tr>
+<td>Transport &gt;Transport Passoword</td>
+<td>Replication user password on target instance</td>
+</tr>
+<tr>
+<td>Extended &gt; HTTP Method</td>
+<td>POST</td>
+</tr>
+<tr>
+<td>Triggers &gt; Ignore Default</td>
+<td>True</td>
+</tr>
+</tbody>
+</table>
+&nbsp;
+
+[gallery ids="1154,1155,1156"]
+
+&nbsp;
+
+Repeat the same steps on the worker, with the following changes:
+<ul>
+ 	<li>The Name and Title is “offloading_*” with * being the Sling ID of the Master</li>
+ 	<li>The Transport URI needs to point to the Master</li>
+</ul>
+&nbsp;
+
+<strong> </strong>
+
+<strong>Offloading the Processing of DAM Assets </strong>
+<ol>
+ 	<li>On the master AEM get to Workflow console and switch to launchers tab: http://localhost:4502/libs/cq/workflow/content/console.html</li>
+ 	<li>There are four launchers for DAM Update Asset workflow.</li>
+ 	<li>For each launcher changes workflow dropdown value from “DAM Update Asset” to “DAM Update Asset Offloading”:
+
+[caption id="attachment_1157" align="alignnone" width="516"]<a href="http://www.jetteroheller.com/setting-up-aem-author-workflow-offloading/attachment/9/" rel="attachment wp-att-1157"><img class="size-full wp-image-1157" src="http://www.jetteroheller.com/wp-content/uploads/2018/07/9.png" alt="For each launcher changes workflow dropdown value from “DAM Update Asset” to “DAM Update Asset Offloading”" width="516" height="434" /></a> For each launcher changes workflow drop-down value from “DAM Update Asset” to “DAM Update Asset Offloading”[/caption]</li>
+ 	<li>On the worker, open DAM Update Assets workflow and uncheck <strong><em>Transient Workflow</em></strong>, then save the changes.
+
+[caption id="attachment_1158" align="alignnone" width="1024"]<a href="http://www.jetteroheller.com/setting-up-aem-author-workflow-offloading/attachment/10/" rel="attachment wp-att-1158"><img class="size-large wp-image-1158" src="http://www.jetteroheller.com/wp-content/uploads/2018/07/10-1024x429.png" alt="On the worker, open DAM Update Assets worklow and uncheck Transient Workflow, then Save the changes. " width="1024" height="429" /></a> On the worker, open DAM Update Assets worklow and uncheck Transient Workflow, then Save the changes.[/caption]</li>
+ 	<li>Open Workflow launcher console on the worker.</li>
+ 	<li>Disable all DAM Update Assets workflow launchers:
+
+[caption id="attachment_1159" align="alignnone" width="592"]<a href="http://www.jetteroheller.com/setting-up-aem-author-workflow-offloading/attachment/11/" rel="attachment wp-att-1159"><img class="size-full wp-image-1159" src="http://www.jetteroheller.com/wp-content/uploads/2018/07/11.png" alt="Disable all DAM Update Assets workflow launchers" width="592" height="590" /></a> Disable all DAM Update Assets workflow launchers[/caption]</li>
+</ol>
+&nbsp;
+
+<strong>Using forward replication </strong>
+<ol>
+ 	<li>On Worker, open configuration for OffloadingDefaultTransporter (http://localhost:4502/system/console/configMgr/com.adobe.granite.offloading.impl.transporter.OffloadingDefaultTransporter).</li>
+ 	<li>Change value of the property default.transport.agent-to-master.prefix from <em>offloading_outbox </em>to <em>offloading</em>.
+
+[caption id="attachment_1160" align="alignnone" width="944"]<a href="http://www.jetteroheller.com/setting-up-aem-author-workflow-offloading/attachment/12/" rel="attachment wp-att-1160"><img class="size-full wp-image-1160" src="http://www.jetteroheller.com/wp-content/uploads/2018/07/12.png" alt="Change value of the property default.transport.agent-to-master.prefix from offloading_outbox to offloading. " width="944" height="334" /></a> Change value of the property default.transport.agent-to-master.prefix from offloading_outbox to offloading.[/caption]</li>
+</ol>
+<strong>Turning off transport packages </strong>
+<ol>
+ 	<li>On master, open the component configuration of OffloadingDefaultTransporter component at http://localhost:4502/system/console/configMgr/com.adobe.granite.offloading.impl.transporter.OffloadingDefaultTransporter</li>
+ 	<li>Disable the property Replication Package (default.transport.contentpackage).</li>
+ 	<li>Repeat the same step on worker:
+
+[caption id="attachment_1161" align="alignnone" width="976"]<a href="http://www.jetteroheller.com/setting-up-aem-author-workflow-offloading/attachment/13/" rel="attachment wp-att-1161"><img class="size-full wp-image-1161" src="http://www.jetteroheller.com/wp-content/uploads/2018/07/13.png" alt="Disable the property Replication Package (default.transport.contentpackage) and repleat the same step on the worker. " width="976" height="343" /></a> Disable the property Replication Package (default.transport.contentpackage) and repleat the same step on the worker.[/caption]</li>
+</ol>
+<strong>Disabling the transport of workflow model </strong>
+<ol>
+ 	<li>On master, open the workflow console from http://localhost:4502/libs/cq/workflow/content/console.html.</li>
+ 	<li>Open the Models tab.</li>
+ 	<li>Open the DAM Update Asset Offloading workflow model.</li>
+ 	<li>Open step properties for the DAM Workflow Offloading step.</li>
+ 	<li>Open the Arguments tab, and unselect the Add Model To Input and Add Model To Output options:
+
+[caption id="attachment_1162" align="alignnone" width="580"]<a href="http://www.jetteroheller.com/setting-up-aem-author-workflow-offloading/attachment/14/" rel="attachment wp-att-1162"><img class="size-full wp-image-1162" src="http://www.jetteroheller.com/wp-content/uploads/2018/07/14.png" alt="Open the Arguments tab, and unselect the Add Model To Input and Add Model To Output options" width="580" height="541" /></a> Open the Arguments tab, and unselect the Add Model To Input and Add Model To Output options[/caption]</li>
+ 	<li>Save the changes to the model.</li>
+</ol>
+<strong>Optimizing the polling interval</strong>
+
+Workflow offloading is implemented using an external workflow on the master, that polls for the completion of the offloaded workflow on the worker. The default polling interval for the external workflow processes is five seconds. Adobe recommends that you increase the polling interval of the Assets offloading step to at least 15 seconds to reduce the offloading overhead on the master.
+<ol>
+ 	<li>Open the workflow console from <a href="http://localhost:4502/libs/cq/workflow/content/console.html">http://localhost:4502/libs/cq/workflow/content/console.html</a>.</li>
+ 	<li>Open the Models tab.</li>
+ 	<li>Open the DAM Update Asset Offloading workflow model.</li>
+ 	<li>Open the step properties for the DAM Workflow Offloading step.</li>
+ 	<li>Open the Commons tab, and adjust the value of the Period property.</li>
+ 	<li>Save the changes to the model.</li>
+</ol>
+&nbsp;
+
+&nbsp;
+
+<strong>Testing</strong>
+
+&nbsp;
+<ol>
+ 	<li>Upload an image to Asset on master.</li>
+ 	<li>Verify that the same image appears in Asset on Worker.</li>
+ 	<li>Check worker workflow console-&gt; Archive tab and note DAM Update Workflow</li>
+ 	<li>Check master workflow console-&gt; Archive tab and note DAM Update Asset Offloading instance.</li>
+ 	<li>Check the error.log on the Worker and ensure the processing is executed here:</li>
+</ol>
+…
+
+17.08.2018 23:12:39.349 *INFO* [JobHandler: /etc/workflow/instances/server0/2018-08-17/update_asset_5:/content/dam/myfolder/BinaryLogs.jpg/jcr:content/renditions/original] com.adobe.xmp.worker.files.ncomm.XMPFilesNComm [PERF][EXECUTE_START] | C:\Users\ela\AppData\Local\Temp\cq-dam-wf-file8971817675171803421.tmp | XMP extraction
+
+…
+<ol start="6">
+ 	<li>Check the error.log on the Master and ensure the renditions are retrieved from Worker:</li>
+</ol>
+…
+
+17.08.2018 23:12:37.534 *INFO* [JobHandler: /etc/workflow/instances/server0/2018-08-17/dam-xmp-writeback_6:/content/dam/myfolder/BinaryLogs.jpg/jcr:content/metadata] com.day.cq.dam.core.process.XMPWritebackProcess payload path :/content/dam/myfolder/BinaryLogs.jpg/jcr:content/metadata
+<h2>Adobe Documentation on Workflow Offloading</h2>
+<ul>
+ 	<li>AEM Assets Offloading Best Practices: <a href="https://helpx.adobe.com/experience-manager/6-4/assets/using/assets-offloading-best-practices.html">https://helpx.adobe.com/experience-manager/6-4/assets/using/assets-offloading-best-practices.html</a></li>
+ 	<li>Overview on Offloading Jobs in AEM: <a href="https://helpx.adobe.com/experience-manager/6-4/sites/deploying/using/offloading.html">https://helpx.adobe.com/experience-manager/6-4/sites/deploying/using/offloading.html</a></li>
+ 	<li>Creating &amp; Consuming jobs for Offloading: <a href="https://helpx.adobe.com/experience-manager/6-4/sites/developing/using/dev-offloading.html">https://helpx.adobe.com/experience-manager/6-4/sites/developing/using/dev-offloading.html</a></li>
+</ul>
+&nbsp;
+    </section>
+    <footer><p>Categories: 6.3, 6.4, Adobe, AEM, AEM / CQ, best practices, filedatastore, how-to, offloading, s3datastore, workflow</p></footer>
+  </article>
+</body>
+</html>

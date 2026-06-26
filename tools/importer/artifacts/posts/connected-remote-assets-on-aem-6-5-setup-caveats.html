@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Connected Remote Assets on AEM 6.5 - Setup &amp; Caveats</title>
+  <link rel="canonical" href="https://www.opsinventor.com/connected-remote-assets-on-aem-6-5-setup-caveats/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Connected Remote Assets on AEM 6.5 - Setup &amp; Caveats</h1>
+      <time datetime="2019-06-21T02:16:33.000Z">6/20/2019, 7:16:33 PM</time>
+    </header>
+    <section class="content">
+      
+<p>One of the new interesting features of AEM 6.5 is the ability to set up a connected AEM Assets environment, such that you could browse &amp; use assets from a remote AEM Assets instance on your local AEM Sites instance. </p>
+
+
+
+<p>Now that I've gotten a chance to set this up and watch it go, I wanted to give a brief overview of how to set it up, as well as caveats on what it can &amp; can't do. </p>
+
+
+
+<h2>AEM Connected Assets Architecture Overview</h2>
+
+
+
+<p>What this new Connected Assets topology allows you to do, is to separate out your DAM repository from your AEM Sites author, so that your Assets instance can specifically be built around handling bulk assets, and your sites author can be optimized around a great authoring &amp; publishing experience. </p>
+
+
+
+<h4>Diagram</h4>
+
+
+
+<p>Here's how it looks in a very crude diagram:</p>
+
+
+
+<figure class="wp-block-image"><img src="https://i1.wp.com/www.jetteroheller.com/wp-content/uploads/2019/06/aem-6.5-connected-assets-v2.png?fit=1024%2C712" alt="Diagram of AEM 6.5 Connected Assets instances" class="wp-image-1300"/><figcaption><em>Diagram of AEM 6.5 Connected Assets instances</em></figcaption></figure>
+
+
+
+<p>Basically, all you need is two AEM 6.5 Author instances, hosted either in the cloud, on-premise, or at Adobe Managed Services.  Adobe <em><a href="https://helpx.adobe.com/experience-manager/6-5/assets/using/use-assets-across-connected-assets-instances.html#Limitations">says</a></em><a href="https://helpx.adobe.com/experience-manager/6-5/assets/using/use-assets-across-connected-assets-instances.html#Limitations"> in their documentation</a> that it will only work on an Assets instance that's hosted in AMS, but it will in fact work anywhere.  </p>
+
+
+
+<p>Once set up, one can author a page on the AEM Sites instance, and then when pulling in assets for a page, one can select either to browse assets hosted in the local AEM instance, or to optionally browse the connected DAM instance and search for assets there.   <br></p>
+
+
+
+<h2>Features and Limitations</h2>
+
+
+
+<h3>What this Connected Assets feature allows you to do:</h3>
+
+
+
+<ul><li>Connect as many Sites Authors as you want to a single Assets author</li><li>On a Sites Author, one can browse &amp; search <strong>image</strong> assets on a remote Assets author</li><li>One can then drag &amp; drop assets from the remote Assets author onto your page, which will automatically download them onto the Sites Author</li></ul>
+
+
+
+<h3>Connected Assets Feature Limitations</h3>
+
+
+
+<ul><li>This feature supports <strong>images only</strong>.  It will <strong>not</strong> allow you to sync video assets, PDFs, content fragments, experience fragments, dynamic media and the like. So, realize that if the driver for using this feature involves video or PDF assets, this feature isn't written to support this use case at this time.  </li><li>Local assets on the AEM Sites instance don't get synchronized with the original assets on the remote Assets instance. Any edits, deletions, or revoking of permissions on the  DAM instance are not propagated back downstream - they would only get saved to the local copy.</li><li>Local asset copies on the Sites instance are meant to be read-only copies. Only non-destructive edits are permitted that are allowed by the Sites components.</li><li>Locally fetched assets are available for authoring purposes only.  Asset update workflows cannot be applied and metadata cannot be edited.  That work is meant to be done on the original Assets Author. </li><li>All Sites Authors have read permissions on the fetched copies, even if they do not have access to the remote DAM instance.</li><li>There is presently no API support to customize the Connected Assets integration.</li></ul>
+
+
+
+<h2>Setting up Connected Assets </h2>
+
+
+
+<p>This page on Adobe's helpx site describes how to set up Connected Assets. </p>
+
+
+
+<p>The only caveat is that it notes on the documentation that it requires that the Assets Author be hosted in Adobe Managed Services, which it does not.  The screenshots &amp; data below were done on a local development environment, so it does entirely work on self-hosted installations as well. </p>
+
+
+
+<h2>What it Looks Like In Action</h2>
+
+
+
+<figure class="wp-block-image"><img src="https://i1.wp.com/www.jetteroheller.com/wp-content/uploads/2019/06/Screen-Shot-2019-06-20-at-10.49.40-AM.png?fit=1024%2C702" alt="" class="wp-image-1299"/><figcaption><em>Searching remote assets, this time including my family's trip to Mt. St. Helens. <br></em></figcaption></figure>
+
+
+
+<p>The screenshot above shows an AEM 6.5 Sites instance that has been connected to an AEM 6.5 Assets instance.  I've uploaded &amp; manually tagged a few hundred assets in the AEM 6.5 Assets instance, and then created a page in the We.Retail sample site.  Clicking on the "Cloud" icon in the sidebar will connect to the remote Assets instance and start displaying images from the remote instance. </p>
+
+
+
+<p>The images are simply fetched &amp; displayed on the page, but are not persisted locally at this point.  However, as soon as you select an image and click &amp; drag it into a container on the page, you'll see this in the logs: </p>
+
+
+
+<p class="lang:default decode:true">20.06.2019 10:40:57.640 <em>INFO</em> [10.0.0.169 [1561052457600] POST /libs/dam/remoteassets/fetch.html HTTP/1.1] com.adobe.cq.remotedam.internal.assetfetch.services.impl.AssetFetchServiceImpl <strong>Fetching [/content/dam/test-assets/IMGP1574.JPG] without original</strong><br>20.06.2019 10:40:57.876 <em>INFO</em> [10.0.0.169 [1561052457600] POST /libs/dam/remoteassets/fetch.html HTTP/1.1] com.adobe.cq.remotedam.internal.assetfetch.proxy.impl.RemoteDAMProxy<strong>Service Successfully fetched package for [/content/dam/test-assets/IMGP1574.JPG]</strong><br> 20.06.2019 10:40:58.110 <em>INFO</em> [10.0.0.169 [1561052457600] POST /libs/dam/remoteassets/fetch.html HTTP/1.1] com.adobe.cq.remotedam.internal.assetfetch.services.impl.AbstractFetchAsset <strong>Streamed 421783 bytes of content-package to FetchedAssetsArtifacts9413781294683832586.zip</strong><br> 20.06.2019 10:40:59.080 <em>INFO</em> [10.0.0.169 [1561052457600] POST /libs/dam/remoteassets/fetch.html HTTP/1.1] com.adobe.cq.remotedam.internal.assetfetch.servlets.FetchAssetServlet <strong>Fetching [/content/dam/test-assets/IMGP1574.JPG] without original rendition; size of original rendition: 10719663 bytes </strong></p>
+
+
+
+<p>Then, once it's fetched a content package of the image renditions it needs for the Asset, you'll then be able to see the asset persisted locally in the repository as a read-only copy under /content/dam/connectedassets/</p>
+
+
+
+<figure class="wp-block-image"><img src="https://i1.wp.com/www.jetteroheller.com/wp-content/uploads/2019/06/Screen-Shot-2019-06-20-at-7.22.03-PM.png?fit=1024%2C739" alt="" class="wp-image-1305"/></figure>
+
+
+
+<p>This asset will then be what is activated with the page when it gets Published. </p>
+
+
+
+<h2>Hope for the Future<br></h2>
+
+
+
+<p>This is a very exciting new feature, and I have great hope that Adobe will continue to develop it, and add in other asset types aside from images. The ultimate use case for this would be to be able to fully offload 100% of your Asset processing to a heavy-lifting Asset author, which could then be able to deal with all of your I/O heavy Asset content. </p>
+
+
+
+<p>Please let me know if or how you plan to use this feature in your deployments!</p>
+
+
+
+<p><br></p>
+
+    </section>
+    <footer><p>Categories: 6.5, Adobe CQ, adobe experience manager, AEM, AEM / CQ, AMS, assets, connected assets, how-to, managed services</p></footer>
+  </article>
+</body>
+</html>

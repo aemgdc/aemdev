@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Visualizing the Perfect AEM Code Deployment Process</title>
+  <link rel="canonical" href="https://www.opsinventor.com/visualizing-the-perfect-aem-code-deployment-process/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Visualizing the Perfect AEM Code Deployment Process</h1>
+      <time datetime="2018-06-02T03:15:42.000Z">6/1/2018, 8:15:42 PM</time>
+    </header>
+    <section class="content">
+      After cutting my teeth in various tech support jobs in the mid-90's, I got my first real enterprise Sys Admin job in 1998, working for the grandfather of all hosting providers, <a href="https://en.wikipedia.org/wiki/UUNET">UUNET</a>.  Not knowing how to be a "real" sys admin, I looked for guidance among the seasoned vets, and the cardinal rule imparted to me was that "developers" and "those guys from the business side" were "all bad", "idiots" and were most certainly "going to take the site down with their untested changes."
+
+It became an "everyone knows" in sys-admin-land that the most important metric you'd be judged on was "uptime", that "any service interruption" could get you fired, and that developers were generally evil and out to get you.  And because of that, the "webmaster" or sys admin ended up as the traditional bad-tempered voice of doom who ironically was the gatekeeper of all new code releases and features for the enterprise web platform.
+
+But at last, enlightenment started creeping into the dark, ill-tempered and scraggly-bearded land of system administration.  In my circles, I credit the amazing, <a href="http://www.slideshare.net/jallspaw/10-deploys-per-day-dev-and-ops-cooperation-at-flickr">formerly-of-Flickr John Allspaw </a>with opening my eyes to the widespread organizational destructiveness of having a messy, manual deployment process that makes the act of rolling out new features too scary to contemplate.
+
+But, as Allspaw so intelligently pointed out  years ago, the point of the Ops guys needs to not be "<strong>setting up servers that people can use, and which never go down." </strong>as that means NO CHANGE EVER EVER.
+
+The job of the Ops guy should instead be to <strong><em>"continually create and hone a platform that enables the business to do awesome things</em></strong>."
+<h2>The Perils of Manual Deployment Steps in AEM</h2>
+In the course of my career I've had to create, update, take over, rewrite and deal with the eccentricities of a fair number of different AEM / CQ5 websites' deployments.  These have ranged from super-sexy, single-button deploys, to utterly-horrific, manual deploys with a cacaphony of manual steps, brittle scripts, and manual verification taking 8+ hours each, and involving the painstaking execution of 5+ pages of poorly-maintained Wiki article steps to complete.  The act of deploying new code should theoretically be only a <em>small fraction</em> of the overall effort of running a website.  In practice, however, I've seen the act of planning, executing, and then cleaning up the mess of deployment consume up to 75% of the efforts of my AEM operations teams.
+
+If the act of deploying new code can be turned into a trouble-free, low-risk, low-friction activity that can be carried-out by product managers and QA folks who have extremely limited infrastructure skills - well, that would allow them to focus on what <strong>they're trying to do</strong> in terms of rolling out new features and general awesomeness.
+
+Adobe Experience Manager (AEM / CQ / Day Communique / etc) has, over the years, been just as brittle and resistant to smooth code deployments as anything else out there.  My first CQ deployment process involved several relatively-brittle Ant tasks to build &amp; get the code out there, and then a variety of manual steps to clear cache, restart servers (usually multiple times), deal with Akamai, and then futz with memory leaks, server performance bottlenecks, and other sundries until things worked right.  Deployments were done off-hours, and were, at-minimum, 8 hours in length - sometimes much longer.  It was a nightmare.
+<h2>Defining an Ideal Deployment Process</h2>
+There's an "existing scene" and there's an "ideal scene".  How do we define what an "ideal scene" would be for code deployment?
+
+Everyone likely has their own opinion about this, but from my experience, the <strong>over-arching goal</strong> of an ideal deployment process is:
+<blockquote><strong>Make software deployment and configuration changes a friction-less, terror-free process, thereby enabling the business to rapidly make changes and improvements to the system which move business goals forward.</strong></blockquote>
+More specifically decomposing this goal:
+<ul>
+ 	<li><strong>Product development can run the deploy: </strong>Infrastructure doesn’t create the site features. Put full control of the deployment into the hands of product &amp; site development staff who understand the features being deployed.</li>
+ 	<li><strong>The deployment is as low-risk as possible:  </strong>Have sufficient isolation of the code-rollout process such that all high-impact issues can be caught before the code hits the general public.</li>
+ 	<li><strong>Roll-out and roll-back is automatic </strong>(or minimally, requires a single button-press)<strong>:  </strong>It should not require an infrastructure engineer or senior developer perform a series of complicated manual steps to execute the deployment, and it should NOT require a senior engineer to roll the code back.  That's the ideal.</li>
+ 	<li><strong>Complete testing in lower environments:  </strong>All code and configuration has been rolled out to earlier environments before hitting Prod.  There should be no surprises, and no cases of “we can only test xyz feature on prod”.   Everything should be able to be tested before it gets to production.  It is sad how often this is not followed.</li>
+ 	<li><strong>Deployments should be able to take place with as few manual steps as possible:  </strong>All of the steps should (ideally) take place within a Continuous Integration server.  No steps directly on the console, or on separate tools and pages.</li>
+</ul>
+<h2>Visualizing an AEM Release Process</h2>
+The diagram and outline below show what I've seen work well with various AEM sites, and should be useful for describing the overall process, and also for framing and giving some significance to the last half of this article, describing what the "perfect" AEM deployment pipeline might consist of.
+
+[caption id="attachment_1027" align="alignnone" width="738"]<a href="http://www.jetteroheller.com/visualizing-the-perfect-aem-code-deployment-process/release-process-v1-svg-2/" rel="attachment wp-att-1027"><img class="size-large wp-image-1027" src="http://www.jetteroheller.com/wp-content/uploads/2018/06/release-process-v1.svg_-1-738x1024.png" alt="An overview of an AEM software release process with automated testing, deployment and artifact promotion." width="738" height="1024" /></a> An overview of an AEM software release process with automated testing, deployment and artifact promotion.[/caption]
+<ol>
+ 	<li><strong>Local Development Work: </strong>After getting a feature to work on, developer has his own local / personal copy of AEM to develop on.  Depending on your app and the DevOps resources you have, this could either be running directly on the developer's laptop, could be located in a Vagrant-deployed, centrally managed VirtualBox container that he checks out daily, or could be located on individual cloud AEM deployments that are generated for each developer or development team.  Regardless of location, however, the developer would work on features on this dev environment, and would not commit code until feature complete and ready for testing or UAT.</li>
+ 	<li><strong>Shared Development / CI environment: </strong>After code is committed to the repository, the Continuous Integration (CI) server would have a post-commit hook to check out and deploy this code to a shared dev environment.  It would execute a full <a href="http://stackoverflow.com/questions/5901378/what-exactly-is-a-maven-snapshot-and-why-do-we-need-it">SNAPSHOT</a> build of the code, create a code package (named something like acmecorp-aem-code-1.0.0-SNAPSHOT.zip), and deploy it via the AEM Package Manager on the Dev Author and Publisher servers.  Again, please <a href="https://stackoverflow.com/questions/5901378/what-exactly-is-a-maven-snapshot-and-why-do-we-need-it">see this link</a> for an explanation of what a Maven snapshot is and how it differs from a release candidate.</li>
+ 	<li><strong>Post-Deploy Automated / Manual Testing: </strong>Ideally, one would then have automated testing fire off as a part of the build, so as to have an immediate feedback loop as to the quality of the commit.  This automated testing, ideally, would smoke-test the application, and give immediate feedback (generally via your chat tool like Slack/Hipchat).</li>
+ 	<li><strong>Release Candidate Gating: </strong>Dev servers are generally the only servers which get deployed-to whenever someone commits code.  Past dev, teams generally implement a gating process - ideally automated, but usually manual - where a release candidate is identified and promoted.   One would either tag this in version control, or simply say "the build, as it exists right now in revision 29560 is a release candidate".  At that point, the individual in charge of gating can promote the build.</li>
+ 	<li><strong>Build &amp; Deploy a Release Artifact to QA/STG: </strong>At this point you would have your CI server conduct another build, but instead of releasing it directly to your QA or Stage environments, you would instead version and release it to an <strong>Artifact Repository</strong>.  An artifact repository is a class of software like <a href="http://www.sonatype.org/nexus/">Sonatype Nexus</a>, <a href="https://www.jfrog.com/artifactory/">Jfrog Artifactory</a>, or <a href="https://archiva.apache.org/index.cgi">Apache Archiva</a>, which stores versioned binary artifacts, and which provides control over dependency management.  <a href="http://blog.sonatype.com/2009/04/what-is-a-repository/">This article</a> gives a great overview of the purpose of an artifact repo, and why to have one.  Once you've built and saved a release artifact of your AEM code package (let's call it acmecorp-aem-code-1.0.0.zip) your CI server would download it from the artifact repo, and deploy it onto QA or STG for testing.  Use of the artifact repository can then ensure that you deploy the exact same code to all servers, and that the "1.0.0" code package you deploy will be the EXACT same code that you release to production, once tested.</li>
+ 	<li><strong>Automated Testing on Staging Environment: </strong>Generally, one would then fire off a process to execute longer-running automated tests on your staging environment.  Ideally this would include functional testing of the software and its key integration points, as well as <strong>load testing</strong> to both validate speed optimizations, as well as to verify that new features don't create performance degradation or server instability under load.</li>
+ 	<li><strong>Production Deployment: </strong>Assuming successful completion of the automated test suite, as well as passing whatever other automatic or manual gating process you have in place, you would move on to execute a production deployment.  Deploying to production generally includes a few key processes:
+<ol>
+ 	<li><strong>Alerting: </strong>Calls to your monitoring software to pause alerting during your deployment window, so that your service desk (or Rackspace support team) do not get inundated with false-positive alerts during the deployment.</li>
+ 	<li><strong>Load Balancer: </strong>Interaction with your load balancer to take individual nodes out of the pool during deployment.  How this is done will depend on your AEM architecture, whether or not your publishers and dispatchers are lined up 1:1 or are each behind their own load balancers, etc.  Regardless, even though AEM can have code deployed to it while it is hot, you will NOT want to have your servers live and taking traffic during a deployment.  There will always be a window during code installation where the server will be responding with errors and may crash all together if under heavy load during code installation.   As such, you will want to ensure each node is taking no traffic while it is being deployed-to.</li>
+ 	<li><strong>Deployment: </strong>The actual act of deployment here should be only around ~30 seconds or so per server, as the only activity will be downloading the designated version of your code out of the artifact repository and installing it using the AEM package manager's web service interface - an activity that generally only takes a few seconds.</li>
+ 	<li><strong>Restarts: </strong>Depending on your code, about 50% of AEM sites I've seen also require the AEM service to be restarted post-deploy (and sometimes pre-deploy as well) in order to respond consistently and stably.  Server restarts can generally be accomplished automatically using your CI server (Jenkins, Team City, etc) or using an orchestration-tier product such as Rundeck or Ansible Tower.</li>
+ 	<li><strong>Monitoring &amp; Dashboarding: </strong>The most successful AEM sites I've seen had applied an ancient maxim with respect to website monitoring:
+<blockquote>"<strong>Any major factor which could affect the site's performance, stability or availability should be able to be visualized simply on a dashboard." -</strong><em> Abraham Lincoln</em><strong>
+</strong></blockquote>
+I could (and likely should) do a whole blog post / book on just this.  Your site should have dashboards that you have created using your log aggregation software (Splunk, Loggly, Sumo Logic, etc) as well as your Application Performance Monitoring (APM) tools like New Relic or AppDynamics.   Immediately after the deployment, and while your QA team is conducting post-deployment validation, one would monitor these dashboards closely to look for changes in response time, CPU load, disk utilization, cache-hit ratio, etc, to ensure that the application is healthy.  I've found Geckoboard to be a great tool to use as a dashboard aggregator, to take mulitple sources and put it all on a single pane of glass to view.   But however you construct it, such a dashboard can immediately show you leading indicators of degraded performance or failure BEFORE you actually incur an outage or degrated functionality, and are essential to your deployment process.</li>
+ 	<li><strong>Rollback: </strong>If you need to roll back for any reason, this is where your code artifact versioning becomes EXTREMELY important.  Let's say your release just installed <strong>"acmecorp-aem-code-1.0.1.zip" </strong>to replace the previous version "<strong>0.0"</strong>.  When you installed 1.0.1, AEM's package manager automatically deactivated and deprecated version 1.0.0 of the software.   If you realize that 1.0.1 is tragically flawed and has some previously-uncaught bug, rolling back code is as simple as removing the 1.0.1 package from AEM's package manager.  Version 1.0.0 would then automatically be re-installed and the site should immediately be up and running on the older version of the code.</li>
+</ol>
+</li>
+</ol>
+<h2>Components of a Perfect AEM Deployment Pipeline:</h2>
+There are a number of technologies &amp; practices which can help create a more reliable, repeatable, and terror-free deployment process.  Some are low-effort, high-payoff items, others are much more complex to implement and may have a lower return in terms of work-reduction and benefit.  I have sorted this list with the more important <strong>"don't think about <em>not</em> doing this"</strong> items at the top, proceeding down into more-optional and/or potentially controversial topics.
+<h3><strong>Version Control of Code &amp; Configs
+</strong></h3>
+<ol>
+ 	<li style="list-style-type: none;">
+<ol>
+ 	<li><strong>Version your code:</strong> Hopefully if your project is on or moving to a complex platform like Adobe Experience Manager, your team's codebase is already version controlled.  If it isn't, there is zero option for you - pick a version control platform (Git, Subversion, Mercurial, Microsoft Team Foundation, etc) and get everyone using it.</li>
+ 	<li><strong>Version your server configs</strong>:  Get all of your key infrastructure configs into version control, even if you don’t deploy them automatically.  Minimally, just saving your configs out to version control will give you a place to revert to if something goes awry.</li>
+</ol>
+</li>
+</ol>
+<h3><strong>Deploying Your Code Smartly
+</strong></h3>
+<ol>
+ 	<li style="list-style-type: none;">
+<ol>
+ 	<li style="list-style-type: none;">
+<ol>
+ 	<li><strong>No manual “hot” configuration changes unless it's on a Dev environment: </strong>AEM has a few settings (JVM, repository, etc) which are set with on-disk configuration files, but the vast majority of AEM's configuration happens in the OSGI console or by direct editing of nodes in CRX/DE.  These configs can usually be edited while the server is hot, and the flexibility of doing so can lead developers and engineers into the bad habit of making these changes in the UI, as opposed to in versioned code.  Making hot changes to the server opens the door to massive and extremely difficult-to-detect differences not only between environments (i.e. DEV/QA/STG/PRD) but even between machines in the same environment.   An example: let's say marketing wants a URL rewritten in Sling.  A Developer then goes in and manually edits the /etc/map entries in CRX-DE  to effect the desired change.   Once this change is tested on DEV, the developer should then <strong>COMMIT THIS CHANGE</strong> into version control, and have it deployed via a package that installs Sling rewrite maps.   That way, one can be certain that all instances up the chain get this same fix, eliminating a possible config difference between servers.</li>
+ 	<li><strong>Deploy versioned packages: </strong>This is an important and very poorly-documented part of the package deployment process.   In Apache Maven parlance, "SNAPSHOT" is a special version number that indicates a <strong><em>current development copy</em></strong> of software that is not yet released, and is not ready for release.  The idea here is that <strong>before</strong> a 1.0 release (or any other release), there would exist a "1.0-SNAPSHOT"  that <em>might become</em> the 1.0 release.   The difference between "1.0" and "1.0-SNAPSHOT" is that downloading "1.0-SNAPSHOT" from an artifact repository today might give you a different file than downloading it yesterday or tomorrow.  Conversely, the "acmecorp-aem-code-1.0.1.zip" package would be entirely unique, and even the slightest change to the codebase would create an entirely new version of the code.  Once a release candidate has been identified in QA (i.e. QA signs off and says "v1.0.1 is a pass, is OK to go to prod") one would not re-build before deploying to prod, but would instead deploy that exact artifact.</li>
+ 	<li><strong>No individual bundles – deploy only packages:</strong>  While it is technically possible to make individual cURL calls out to the AEM OSGI console and individually deploy code bundles that you wish, this is then (a) outside of the package management &amp; versioning process of the AEM Package Manager, and therefore (b) is <em>very</em> difficult to control and track. A healthy percentage of your AEM availability, functionality and performance issues will take place around the time of a deployment.  As such, being able to tell <em>definitively</em> when a server has had code applied to it, and by whom, is critical for the debugging process.</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h3><strong>Choose a CI Server that Works for You</strong></h3>
+This is a point that could (and should) have its own series of blog posts. <a href="https://en.wikipedia.org/wiki/Comparison_of_continuous_integration_software">This wiki page</a> is a good place to start.   I’ve seen AEM shops work well with <a href="https://jenkins.io/">Jenkins</a>/<a href="http://hudson-ci.org/">Hudson</a>, <a href="https://www.jetbrains.com/teamcity/">Team City by Jetbrains</a>, and <a href="https://www.thoughtworks.com/go/">Thoughtworks Go</a>, though there are many other high-quality solutions.
+<h3><strong>Artifact Creation, Versioning &amp; Promotion</strong></h3>
+<ol>
+ 	<li style="list-style-type: none;">
+<ol>
+ 	<li><strong>Define a process:</strong> Your team will want to define a process for creating, versioning and promoting your release artifacts. As discussed earlier, it’s imperative to have a clear difference between your continuously-built “SNAPSHOT” artifacts, and your versioned release artifacts.</li>
+ 	<li><strong>Pick an artifact repository that works with your process:</strong> There are a number of high-quality and relatively-inexpensive (or free) artifact repositories.  As detailed earlier, an artifact repository is a class of software like <a href="http://www.sonatype.org/nexus/">Sonatype Nexus</a>, <a href="https://www.jfrog.com/artifactory/">Jfrog Artifactory</a>, or <a href="https://archiva.apache.org/index.cgi">Apache Archiva</a>, which stores versioned binary artifacts, and which provides control over dependency management.  <a href="http://blog.sonatype.com/2009/04/what-is-a-repository/">This article</a> gives a great overview of the purpose of an artifact repo, and why to have one.  Team City and Jenkins both also store build artifacts internally, but don’t do things like dependency management.   Definitely treat this as one of the critical pieces of your deployment stack to evaluate and iron out.</li>
+</ol>
+</li>
+</ol>
+<h3><strong>Post-Deploy Review and your APM / Log Aggregator Dashboards</strong></h3>
+Critical to a successful deployment process is adequate data to determine if <strong>new code is a success or a failure</strong>. I’ve commonly seen manual UI functional testing being the only post-deployment QA done on a website. Yes, it is important to verify important functionality manually, but there are many cases where errors are happening under the covers, and only with detailed log analysis and application performance monitoring (APM) tools, can one determine whether or not the app is healthy.
+
+<strong>Story time:</strong>  For one client I worked for, we launched a fairly large, content-driven website that had newly-migrated to AEM.  The site launched with a search feature with auto-complete, which allowed one to rapidly search their hundreds of thousands of content bits.  This autocomplete function worked, and the website felt (via the browser) like it was performing well.  However, under the covers, the before/after of the code release showed a number of leading indicators that all was not well.  High CPU despite low numbers of actual PAGE requests, and a search subsystem that was nearly pummeled into the ground.  Investigation via Splunk rapidly uncovered that the search box auto-complete feature was recursively executing a full-text search <strong>10 times</strong> every time a user typed another character in the search box.  So, a user searching for “barbecue” would create 80 individual search requests – and MUCH more if the user forgot how to spell and kept backspacing.But the moral of the story on the above, was that this issue would have taken down the site, had the site been under heavy load – and was only located in time due to the fact that dashboards had been created that had all of the leading indicators of site performance / errors all spread out and updated regularly.
+
+<strong>What you want on your dashboard:</strong> There are a number of leading indicators you’ll want on your information radiators or DevOps dashboards for AEM, and these will be somewhat different for every installation depending on the features you use.  But minimally, the following are the ones I’ve found most useful:
+<ol>
+ 	<li style="list-style-type: none;">
+<ol>
+ 	<li style="list-style-type: none;">
+<ol>
+ 	<li><strong>Publisher CPU%</strong></li>
+ 	<li><strong>Publisher Disk I/O</strong></li>
+ 	<li><strong>Publisher disk utilization </strong></li>
+ 	<li><strong>Publisher requests/sec</strong></li>
+ 	<li><strong>Publisher error rate</strong></li>
+ 	<li><strong>Author activations</strong></li>
+ 	<li><strong>Dispatcher cache-hit ratio </strong>(divide # of dispatcher requests by # of publisher requests)</li>
+ 	<li><strong>Dispatcher disk utilization</strong></li>
+ 	<li><strong>Dispatcher worker thread status</strong></li>
+ 	<li><strong>Cache invalidation requests</strong></li>
+ 	<li><strong>Search head hits </strong>(for sites with Solr/Endeca/etc for search)</li>
+ 	<li><strong>Author CPU%</strong></li>
+ 	<li><strong>Authors logged-in</strong></li>
+ 	<li><strong>Author workflows running</strong></li>
+ 	<li><strong>Author disk I/O</strong></li>
+ 	<li><strong>Author disk space</strong></li>
+ 	<li><strong>Author error rate</strong></li>
+ 	<li><strong>Maintenance Tasks</strong> (TarMK optimization, datastore garbage collection (AEM 5.6) or compaction (AEM 6.x), backups, etc, as they can dramatically affect performance</li>
+ 	<li><strong>Import/Export Status</strong>: many sites have regular feeds which import into AEM in batches, and when run, can cause major performance hits</li>
+ 	<li><strong>Workflow Status: </strong>AEM is commonly used foremost as a digital asset repository, and the bulk ingest of a large number of assets, or the heavy workflow processing of even a small number of assets (or just one gigantic PDF) can materially impact the performance of your site.</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+<h3><strong>Acquire and Use an APM Tool</strong></h3>
+With a platform of the size and complexity of AEM, it’s imperative that you have a tool that can quickly give you answers to performance and functionality issues of your code.  APM suites such as <strong>New Relic</strong> or <strong>AppDynamics</strong> are our preferred tools at Rackspace, used by our Critical Application Support teams to detect and handle leading indicators of performance and availability issues.   However, we also train our clients’ development teams to use them as well, as if performance issues can be detected and handled on lower environments by dev teams, it doesn’t have to become and operations problem.
+<h3><strong>Acquire and use a Log Aggregation &amp; Analysis Tool</strong></h3>
+If you don’t already have your logs being ingested into a tool like Splunk, Sumo Logic, Loggly, etc, you’ll want to do so.  The majority of the dashboard items mentioned above will be pulled from your AEM error and replication logs, so you’ll never be able to visualize the status of your environment without such a tool.  Also, the more your site is multi-server and multi-region, the less you will be able to get a picture of what is happening with your application by tailing the log of a single server.
+<h3><strong>Eliminating Manual Steps in your Deployment</strong></h3>
+Key to being able to execute a deployment with minimal IT-Ops interaction is being able to eliminate manual steps in the deployment process. The major ones I’ve seen need to be handled on the CI server or in your deployment pipeline are:
+<ol>
+ 	<li style="list-style-type: none;">
+<ol>
+ 	<li><strong>Load Balancer handling:</strong> Although one can deploy code to an AEM server while the server is hot, it’s extremely unwise to do so while the server is under load of any sort and taking public traffic. There will inevitably be a point during the deployment when the old code is being replaced, that the server will throw errors to end users.   If the server is under heavy load when the deployment is happening, the server could crash alltogther.  As such, it’s important to be able to take each publisher out of your load-balanced pool during the deployment process, and preferably during the process where it is being manually verified or automatically smoke-tested.   This means, depending on your architecture, you will want to have a simple and bulletproof way to take a publisher out of the load balancer.Some companies do this with an API call to their F5 load balancer (if they’re on hardware) or with an API call to AWS, Rackspace or Azure cloud load balancers.Another handling that I’ve seen work VERY well is also one of the oldest tricks in the book.  Simply code a <strong>very</strong> lightweight page that can be served from the publisher, which has a text string (like “publisher1 IN SERVICE”) that your load balancer is looking for to determine if it is healthy.  If you want to take that publisher out, just change the text string and the publisher stops getting traffic.</li>
+ 	<li><strong>Dispatcher flushes:</strong> After deployment is completed, most teams then flush the dispatcher cache. The Dispatcher’s cache invalidation process is generally good at keeping cache fresh, but there are many cases during a deployment where new code is introduced which changes how a page is rendered, and that change doesn’t then go and invalidate pages and/or cached CSS/JS assets.   So, inserting automation to flush the dispatcher cache – either with scripted linux “rm” commands, or with the <a href="https://adobe-consulting-services.github.io/acs-aem-commons/features/dispatcher-flush-ui.html">ACS Commons Dispatcher Flush UI</a>, will need to be handled in your prod CI server’s deployment routine.<strong>Important note:</strong>  Flushing dispatcher cache may be something you will need to observe the effects of and iterate upon, especially for sites with heavy traffic or with heavy reliance on cached pages that take a long time to render un-cached.  You may want to pre-warm your Dispatcher cache with your top-20 most frequently hit pages before you put your dispatchers back into the load balancer pool, when executing a cache flush, to avoid excessive and potentially-crippling load on the publish tier.</li>
+ 	<li><strong>Akamai Cache Flushes:</strong> Cache flushes of your CDN can generally be done with an API call, although flushing all edge servers can typically take quite a while, sometimes over an hour.</li>
+ 	<li><strong>AEM restarts</strong>: It’s been mentioned before, but with many AEM sites it’s proven to be essential for reliability to recycle AEM after every code deployment.  As such, you will want to set your  CI server up to be able to SSH into individual publish instances so as to be able to execute the restarts, and alert you to failed/hung restarts.</li>
+ 	<li><strong>Pushing dependent/related dispatcher changes:</strong> Many times, there are dispatcher filter rules or Apache rewrites that go along with a major code release, and have to be done alongside the code release for functionality to work.  While you will want to automate this, this gets us into our next point, regarding configuration management.</li>
+</ol>
+</li>
+</ol>
+<h3><strong>Deploying with or in concert with Chef / Puppet / Ansible</strong></h3>
+The hurdle that any shop with more than a handful of servers will need to eventually tackle is choosing and implementing a configuration management framework such as Chef, Puppet or Ansible. This is something I’m not going to broach with this particular article, as it spans a much broader but extremely-important topic of how you’re building your entire environments, not just the code that runs on them.
+
+<strong> </strong>
+
+I hope that’s given you food for thought for your own Adobe Experience manager deployment.   Please do fire away with any commentary on this, as I'm always on the lookout for ways to make this process smoother.
+    </section>
+    <footer><p>Categories: administration, adobe experience manager, AEM, AEM / CQ, code release, cq, CQ5, deployment, devops, jenkins, pipeline</p></footer>
+  </article>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Running Sonar on iOS (Objective-C) Projects with Gradle</title>
+  <link rel="canonical" href="https://www.opsinventor.com/running-sonar-on-ios-objective-c-projects-with-gradle/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Running Sonar on iOS (Objective-C) Projects with Gradle</h1>
+      <time datetime="2014-09-08T17:57:03.000Z">9/8/2014, 10:57:03 AM</time>
+    </header>
+    <section class="content">
+      After getting the basics out of the way on setting up <a href="http://www.jetteroheller.com/setting-up-sonarqube-to-analyze-xcode-on-mac-osx/">Sonarqube on Mac OSX</a>, one has to invoke it somehow.   We settled on building our iOS project with Gradle, and as such, are using the sonarRunner plugin for Gradle to fire up the Sonar analysis.
+<h3>Making the Sonar Gradle Plugin Work</h3>
+Getting the SonarQube plugin for Gradle to work was pretty straightforward.
+
+In your build.gradle file, first insert:
+<pre class="lang:default decode:true ">apply plugin: "sonar-runner"
+</pre>
+Then, define Sonar properties for Objective-C analysis as follows:
+<pre class="lang:default decode:true">// Sonar Properties for Objective-C
+sonarRunner {
+    sonarProperties {
+        property "sonar.host.url", "http://sonarbox.mycompanyname.com:9000/"
+        property "sonar.jdbc.url", "jdbc:mysql://sonarbox.mycompanyname.com/sonar"
+        property "sonar.jdbc.driverClassName", "com.mysql.jdbc.Driver"
+        property "sonar.jdbc.username", "sonar"
+        property "sonar.jdbc.password", "sonar"
+        property "sonar.language", "objc"
+        property "sonar.projectKey", "org.codehaus.sonar:superdandymobile-objc-project"
+        property "sonar.projectName", "SuperDandy Mobile"
+        property "sonar.sources", "src"
+        property "sonar.cfamily.gcov.reportsPath", "output"
+    }
+}
+</pre>
+This will then give you a target when invoking the Gradle wrapper of "sonarRunner", such that you can just execute:
+<pre class="lang:default decode:true ">macmini-superdandy04:trunk administrator$ ./gradlew sonarRunner --info</pre>
+And this will go about downloading the needful dependencies to make the SonarQube plugin work, and will then insert the analysis data into Sonar.
+<h3>Making GCov Test Coverage Reports Work</h3>
+Now, the above analysis worked pretty trouble free for me.  However, as noted in the docs for the SonarSource Objective-C plugin, the plugin will not, out of the box, give you test coverage / code coverage reports.
+
+You'll first have to get the xcode project to generate the gcno/gcda code coverage reports as covered here.
+
+Then, execute something like the following to get the gcov files generated from that:
+<pre class="lang:default decode:true ">macmini-superdandy04:output administrator$ find . -type f | xargs -I {} xcrun gcov {}</pre>
+That final line in the sonar properties is meant to then tell it where to look for the gcov reports:
+<pre class="lang:default decode:true ">property "sonar.cfamily.gcov.reportsPath", "output"</pre>
+<strong>EDIT:</strong>  Just found out that despite code coverage and ingest of gcov files being mentioned in <a href="http://www.sonarsource.com/products/plugins/languages/c-cpp-objectivec/installation-and-usage/">their documentation</a>, the C++/Objective-C plugin for SonarQube presently <strong>does not</strong> do code/test coverage reporting for Objective-C.  This is actively under development, meant to release in October 2014.
+    </section>
+    <footer><p>Categories: gcov, gcovr, gradle, objective-c, sonar, sonarqube, technology, The Data Nerd, xcode</p></footer>
+  </article>
+</body>
+</html>

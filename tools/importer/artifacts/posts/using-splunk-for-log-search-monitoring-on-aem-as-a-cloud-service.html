@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Using Splunk for Log Search &amp; Monitoring on AEM as a Cloud Service</title>
+  <link rel="canonical" href="https://www.opsinventor.com/using-splunk-for-log-search-monitoring-on-aem-as-a-cloud-service/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Using Splunk for Log Search &amp; Monitoring on AEM as a Cloud Service</h1>
+      <time datetime="2021-08-02T15:46:59.000Z">8/2/2021, 8:46:59 AM</time>
+    </header>
+    <section class="content">
+      
+<p>Attempting to develop on and run a modern website without a log aggregator and without metrics and graphs is a clinic on infuriation and frustration.  When did the such-and-such problem start?  Was it before or after the deployment?  Has it always been this way?  Are all pages slow or just this one page?  It's throwing errors now - was it always throwing errors?  Does this error correlate to anything? </p>
+
+
+
+<p>These are the classes of questions that you get faced with when you only have access to a downloaded log, but are unable to search on it, graph it, and measure it across time and across multiple servers.  When <a href="https://www.opsinventor.com/aem-as-a-cloud-service-tech-qa-and-should-you-migrate-now/" data-type="post" data-id="1415">AEM as a Cloud Service first launched</a>, the only mechanism to get at logs was downloading whole logs via Cloud Manager.  Adobe later offered the ability to <a href="https://www.opsinventor.com/tailing-logs-on-aem-as-a-cloud-service/" data-type="post" data-id="1502">tail the logs of individual pods via a somewhat involved process using Adobe IO</a>.  But now, there's a third and <strong>vastly better</strong> way to instrument your AEM Cloud Service infrastructure, and that's with Splunk.  And guess what, it can even be done for free, if you're tight on cash or just trying to demo it out.  </p>
+
+
+
+<p>Here's how to set it up: </p>
+
+
+
+<h3>What You'll Need</h3>
+
+
+
+<p>In order to measure your AEM as a Cloud Service installation with Splunk, you'll need: </p>
+
+
+
+<ul><li><strong>A paid, licensed AEM as a Cloud Service environment:</strong>  This will work on any Dev, Stage or Prod AEM as a Cloud Service environment, <strong>but it will not work on your Adobe Partner Sandbox environment</strong>. Because of the way that the AEM Cloud Service sandboxes are set up, they share a lot of different configurations, one of them, being the Splunk configuration.   So, this only works with fully-fledged paid AEMaaCS environments. </li><li><strong>A Splunk Free, Splunk Enterprise or Splunk Cloud environment</strong> that you have Admin access to.   </li></ul>
+
+
+
+<h3>How it Works</h3>
+
+
+
+<p>The log data from AEM as a Cloud Service is first ingested into an Adobe-owned Splunk instance, which Adobe support has access to in order to monitor and troubleshoot your environments.  When properly set up, Adobe then sets up their Splunk instance to forward log information to <em>your</em> Splunk instance using the <a href="https://docs.splunk.com/Documentation/Splunk/8.2.1/Data/UsetheHTTPEventCollector">Splunk HTTP Event Collector</a> or "HEC".  </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/07/aem-as-a-service-with-splunk-v1.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/07/aem-as-a-service-with-splunk-v1-1024x626.png" alt="" class="wp-image-1815"/></a><figcaption><em>Diagram of Splunk with AEM as a Cloud Service</em></figcaption></figure>
+
+
+
+<h3>Setting it Up</h3>
+
+
+
+<p>I'm going to give you the list of things to do to set it up from scratch.  If you're a big company, you likely already have a Splunk environment you'll be using so will skip a bunch of steps.  But even if you're not doing a full enterprise setup, these instructions will work with the <strong>free version of Splunk</strong> and will give you 500MB/day worth of logging which will actually work with many small AEM installations, dev installs and even some production Assets installations I've worked on.  </p>
+
+
+
+<p>Here's what to do: </p>
+
+
+
+<h4>Install Splunk</h4>
+
+
+
+<p>Assuming you don't already have a Splunk setup, you'll first need to <a href="https://www.splunk.com/en_us/download/get-started-with-your-free-trial.html">install Splunk</a>.   To get started, even a very small environment will be sufficient to get you off the ground.  This demo was created with Splunk Free running on a single-CPU T-Series AWS VM with 8GB RAM, though any production environment will likely need significantly more resources.  </p>
+
+
+
+<h4>Configure an Index for your AEMaaCS Data</h4>
+
+
+
+<p>In Splunk, go to Settings -&gt; Indexes and create an index for your AEM Cloud Service data.  </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/07/image.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/07/image-1024x675.png" alt="" class="wp-image-1816"/></a><figcaption><em>Create a Splunk index for your AEM as a Cloud Service data.  </em></figcaption></figure>
+
+
+
+<h4>Procure an Externally-Valid SSL Cert for Splunk</h4>
+
+
+
+<p>Adobe requires an externally-valid SSL certificate for the Splunk HEC endpoint.  A self-signed certificate will not work.  Sometimes with server-to-server connections one can run SSL in a "relaxed" validation mode to allow for validation errors &amp; self-signed certs to work, but not in this case.  </p>
+
+
+
+<p>For this demo, I created an SSL cert for free with Letsencrypt using <a href="https://certbot.eff.org/lets-encrypt/centosrhel7-apache.html">Certbot on CentOS</a>.   </p>
+
+
+
+<h4>Configure the HTTP Event Connector</h4>
+
+
+
+<p>The next step is to configure the HTTP Event Collector on Splunk.  Go to <em>Settings -&gt; Data Inputs</em> and click " + Add New" for HTTP Event Collector.  </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/07/image-1.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/07/image-1-1024x675.png" alt="" class="wp-image-1817"/></a></figure>
+
+
+
+<p>When configuring the endpoint: </p>
+
+
+
+<ul><li>Make sure to select the Splunk index that you created earlier so that the HEC endpoint can feed into that index. </li><li>Leave "Enable indexer acknowledgement" unchecked.  If you enable indexer acknowledgement, it will end up throwing a "Data channel is missing" error from the source Splunk instance when you attempt to forward data.  So - leave it un-checked.  </li></ul>
+
+
+
+<h4>Configure SSL on the HEC Endpoint</h4>
+
+
+
+<p>A next point to do is to configure SSL on the Splunk endpoint.  Note here that Splunk web (the Splunk UI you use to search &amp; configure Splunk) and Splunk HEC have entirely separate HTTP and SSL configurations.  So, if you turn on SSL in Splunk web, this does <strong>not </strong>make your Splunk HEC SSL as well.  <strong>Adobe requires that HEC traffic be encrypted and prefers that it be on port 443.</strong>  I didn't push back on this too hard, so unknown if they can set up up on an alternate port if you ask nicely enough.  </p>
+
+
+
+<p>You can first turn SSL on by going to "GLOBAL SETTINGS" in the HTTP Event Collector settings, and clicking "enable SSL" and entering in the port number.  </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/07/image-3.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/07/image-3-1024x675.png" alt="" class="wp-image-1819"/></a></figure>
+
+
+
+<p>However, you'll then need to go into your Splunk configuration on disk in order to complete the SSL configuration. </p>
+
+
+
+<p>Edit {splunk_install_dir}/etc/apps/splunk_httpinput/local/inputs.conf and ensure it has the desired port and SSL certificate configuration in there: </p>
+
+
+
+<div class="hcb_wrap"><pre class="prism undefined-numbers lang-plain"><code>[http]
+disabled = 0
+port = 443
+serverCert = /etc/letsencrypt/live/splunk.opsinventor.com/fullchain.pem
+privKeyPath = /etc/letsencrypt/live/splunk.opsinventor.com/privkey.pem</code></pre></div>
+
+
+
+<p>Then, re-start Splunk.  You should then be able to do a test of the Splunk HEC endpoint with the following curl command: </p>
+
+
+
+<div class="hcb_wrap"><pre class="prism undefined-numbers lang-json" data-lang="JSON"><code>curl -k https://your-splunk-host.com:443/services/collector -H &#39;Authorization: Splunk 1e238ab6-1f9d-47d4-9b0g-81c2a47e389c&#39; -d &#39;
+ {
+    &quot;sourcetype&quot;: &quot;aemerror&quot;,
+    &quot;index&quot;: &quot;aemaacs&quot;,
+    &quot;event&quot;: {
+      &quot;host&quot;: &quot;172.27.60.76&quot;,
+      &quot;file_path&quot;: &quot;/var/log/aem/error.log&quot;,
+      &quot;orig_time&quot;: &quot;07.12.2020 10:07:09.895&quot;,
+      &quot;level&quot;: &quot;INFO&quot;,
+      &quot;msg&quot;: &quot;[FelixLogListener] Test SPLUNK&quot;,
+      &quot;pod_name&quot;: &quot;cm-random-pod&quot;,
+      &quot;aem_program_id&quot;: &quot;12345&quot;,
+      &quot;aem_tier&quot;: &quot;author&quot;,
+      &quot;aem_env_type&quot;: &quot;dev&quot;,
+      &quot;aem_env_id&quot;: &quot;32132&quot;,
+      &quot;splunk_customer&quot;: &quot;true&quot;
+    }
+  }
+&#39; </code></pre></div>
+
+
+
+<p>In the curl command, replace the "'Authorization: Splunk 1e238ab6-1f9d-47d4-9b0g-81c2a47e389c'" bit with the "Token Value" you see in the HTTP Event Collector inputs config in Splunk (/en-US/manager/search/http-eventcollector).  </p>
+
+
+
+<p>As a response, you should see:</p>
+
+
+
+<div class="hcb_wrap"><pre class="prism undefined-numbers lang-json" data-lang="JSON"><code>{&quot;text&quot;: &quot;Success&quot;,    &quot;code&quot;: 0} </code></pre></div>
+
+
+
+<p> This means your event collector is configured successfully.</p>
+
+
+
+<h4>Open a Ticket with Adobe to have them Set Up HEC on Their Side</h4>
+
+
+
+<p>Once the above is done,  you can open up a ticket with Adobe Support to have them begin forwarding logs to your Splunk instance.  </p>
+
+
+
+<p>Make sure to specifically include: </p>
+
+
+
+<ul><li><strong>Splunk HEC endpoint address:</strong> (i.e. https://splunk.myorganization.com)</li><li><strong>Splunk index:</strong> (the name of the index you created)</li><li><strong>Splunk port: </strong>443</li><li><strong>Splunk HEC token:</strong> (a value like "1e238ab6-1f9d-47d4-9b0g-81c2a47e389c" that you would have gotten from /en-US/manager/search/http-eventcollector in your Splunk instance</li><li>What environments you want ingested into Splunk</li></ul>
+
+
+
+<h4>What Data You Should See (How you know it's working)</h4>
+
+
+
+<p>In Splunk, you should then be able to do a simple search like: </p>
+
+
+
+<div class="hcb_wrap"><pre class="prism undefined-numbers lang-plain"><code>index=aemaacs</code></pre></div>
+
+
+
+<p>And it should display results like this: </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/08/image.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/08/image-1024x606.png" alt="" class="wp-image-1820"/></a></figure>
+
+
+
+<p>There should be (at least) 7 sourcetypes that come in to your results: </p>
+
+
+
+<ul><li>aemerror: AEM error logs from all instances </li><li>aemrequest: AEM request logs from authors &amp; publishers (includes timing &amp; response info) </li><li>aemaccess: AEM access logs from authors &amp; publishers</li><li>httpdaccess: Apache Dispatcher access_log </li><li>aemqueryrecorder: AEM query debug logs</li><li>aemdispatcher: AEM Dispatcher logs (containing cache-hit data)</li><li>httpderror: Apache error_log</li></ul>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/08/image-1.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/08/image-1.png" alt="" class="wp-image-1821"/></a></figure>
+
+
+
+<h3>A Sample Splunk Dashboard for AEM as a Cloud Service</h3>
+
+
+
+<p>To round out this demo, I created a sample dashboard for this AEM as a Cloud Service dev environment.</p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/08/image-2.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/08/image-2-1024x471.png" alt="" class="wp-image-1823"/></a></figure>
+
+
+
+<p>The top panels here show access info over time, average response time and cache-hit ratio.  Since there is currently no way to view average response time over time for the cloud service (that is - until Adobe give us access to New Relic or backend APM data) this is the only way I've found to get granular and find out, by page or resource, what is taking how long to process.  </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/08/splunk-screenshot.jpg"><img src="https://www.opsinventor.com/wp-content/uploads/2021/08/splunk-screenshot-1024x471.jpg" alt="" class="wp-image-1824"/></a></figure>
+
+
+
+<p>And above, you can get errors over time, plus a table of top 500/400-level errors, as well as a list of resources with the highest average response time.  </p>
+
+
+
+<p>I'll be making a separate post shortly with the Splunk searches used to generate this dashboard - as the sourcetypes, fields and such should all be the same for any AEM as a Cloud Service implementation, meaning you should only have to replace out your index name to get it to work. </p>
+
+
+
+<h3>To Repeat: This is Free, You Should Do It</h3>
+
+
+
+<p>All of this was created with no additional license charge with Adobe, and with <em>free</em> versions of Splunk.  The only cost involved is for the cloud VM needed to host Splunk.  </p>
+
+
+
+<p>For additional info, the free version of Splunk has a few key limitations.  The first is that Splunk Free does away with the login capability.  So, anyone who can hit the front end of your Splunk instance can see all your data.  This means that if you implement this, you'll want to either (a) buy the real version of Splunk or (b) just lock down Splunk by IP or put Nginx/Apache in front of it with HTTP basic auth.  </p>
+
+
+
+<p>The second limitation is that Splunk Free is limited to 500MB/day of logging.  For reference, the AEMaaCS Assets Dev environment that I am using for this demo is using, on average, about 22% of that license capacity: </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/08/image-3.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/08/image-3-1024x471.png" alt="" class="wp-image-1825"/></a></figure>
+
+
+
+<p>So, if you were to want to get this up and running with a Free license (while you sort out how to get a purchase order through for full real-deal Splunk) you may just want to make a separate Splunk env for Dev &amp; Stage, and another for Prod. </p>
+
+
+
+<p>I hope this helps! </p>
+
+    </section>
+    <footer><p>Categories: AEM, AEM / CQ, aem as a cloud service, aemaacs, logging, monitoring, splunk</p></footer>
+  </article>
+</body>
+</html>

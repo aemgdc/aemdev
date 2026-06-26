@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Handling an iGen3 with DocuSP to RIP Fast</title>
+  <link rel="canonical" href="https://www.opsinventor.com/handling-an-igen3-with-docusp-to-rip-fast/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Handling an iGen3 with DocuSP to RIP Fast</h1>
+      <time datetime="2007-09-26T04:53:26.000Z">9/25/2007, 9:53:26 PM</time>
+    </header>
+    <section class="content">
+      <a href="http://flickr.com/photos/apaton/194993573/"><img src="http://farm1.static.flickr.com/58/194993573_f51f5045df.jpg?v=0" class="reflect" height="275" width="500" /></a>
+This is what I feel like sometimes, when I wonder who's been working on the system when I'm asked to come in and do tech support. :)
+
+I'm an Internet Systems guy, but I was recently called in to help some of our people in our design &amp; printing department to debug an iGen3 (Xerox) press, printing from a DocuSP station with a Sun V890 running it.
+
+The system was printing a ton of PDF files, and was going absolutely <span style="font-weight:bold;">abysmally</span> slow, taking into account the raw speed of the V890 that was doing the ripping.  We were ripping 25-page PDFs at the rate of about 13 minutes per file, something that resulted in the racehorse iGen3 being able to print for about 15 minutes of every hour, with the rest of the time spent ripping.   Our press guy, not being 100% familiar with the DocuSP software, didn't know what to do, and as such was just waiting out these rediculous RIP times.
+
+Futher pouring lemon juice into the wound was that we had another DocuColor press, running an old 1Ghz PIII EFI Fiery RIP server, which was ripping the same files in 6 minutes that the quad-UltraSparc, 8GB RAM V890 machine was taking 13 minutes to do.
+
+That was not about to work.
+
+The problem, in this case, was another case of <a href="http://www.scientologyhandbook.org/SH1_3.HTM">Misunderstood Words</a> (as in <a href="http://www.scientologyhandbook.org/">Scientology</a> Study tech, so eloquently stated by Mr. Tom Cruise at the Applied Scholastics grand opening).
+[youtube=transparent]
+
+The problem was a bunch of misunderstood settings on one little panel, that, once cleared up, made the whole thing go.
+
+The settings were "anti-aliasing" and a "smart" image resampling setting, both of which were basically the cause of the whole thing.  With anti-aliasing turned off in the options, plus the "smart" image sampling changed to "system specified", the RIP time went from 13 minutes to 2 minutes, and now the ripper can more than keep up with the press.
+
+One more plug then, for Study Technology.
+<p style="text-align:right;font-size:8px;">Blogged with <a href="http://www.flock.com/blogged-with-flock" title="Flock" target="_new">Flock</a></p>
+<!-- technorati tags begin -->
+<p style="font-size:10px;text-align:right;">Tags: <a href="http://technorati.com/tag/igen3" rel="tag">igen3</a>, <a href="http://technorati.com/tag/docusp" rel="tag">docusp</a>, <a href="http://technorati.com/tag/%20rip" rel="tag"> rip</a>, <a href="http://technorati.com/tag/%20study%20tech" rel="tag"> study tech</a>, <a href="http://technorati.com/tag/%20scientology" rel="tag"> scientology</a></p>
+<!-- technorati tags end -->
+    </section>
+    <footer><p>Categories: education, technology</p></footer>
+  </article>
+</body>
+</html>

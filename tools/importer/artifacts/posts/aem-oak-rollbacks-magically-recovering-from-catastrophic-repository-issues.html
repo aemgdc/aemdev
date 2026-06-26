@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AEM Oak Rollbacks:  Magically Recovering from Catastrophic Repository Issues</title>
+  <link rel="canonical" href="https://www.opsinventor.com/aem-oak-rollbacks-magically-recovering-from-catastrophic-repository-issues/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>AEM Oak Rollbacks:  Magically Recovering from Catastrophic Repository Issues</h1>
+      <time datetime="2018-09-30T16:16:22.000Z">9/30/2018, 9:16:22 AM</time>
+    </header>
+    <section class="content">
+      In September 2017, my Rackspace colleague Peter Stolmar and I gave a devops talk in Santa Clara, CA at an <a href="https://adobecommunity.org/events.html">Adobe Global Community meetup</a>, on the process for doing an Oak Rollback in AEM, which I only just found out there was video footage of.  So, here's the presentation in its entirety - mostly my introducing Peter, as he poured his heart and soul into developing the process for doing these Oak Rollbacks automatically.
+<h2>Abstract:  How to Recover from a Multitude of Serious AEM Repository Issues with the Oak Roll-back procedure</h2>
+What if you could make high-risk changes in your local AEM without worrying about losing your day's work (or more), and without spending hours backing up the whole repository? What if you could quickly "undo" that package installation, content deletion, broken cumulative fix pack, or configuration change?
+
+Many users of AEM are aware of the built-in authoring undo features as well as the Page Versioning or <a href="https://helpx.adobe.com/experience-manager/kt/sites/using/timewarp-feature-video-use.html">"Time Warp" functionality</a> that can be used to restore previous versions of a page, including restoring deleted pages or content trees.
+
+But what if there are no pages to restore? What if it is necessary to go back to an older version of a bundle, a package will not uninstall, the repository is corrupted, or the number of nodes deleted is simply too large for the system to restore?
+
+There is a way to recover from these types of errors, but it requires a bit of preparation. We can create a repository checkpoint before performing a high-risk operation, and if things go wrong - even if AEM will not start, in many cases - we can quickly restore to this checkpoint using the oak-run jar.
+
+The speakers will demonstrate using the rollback process to undo the installation of an Adobe Experience Manager Cumulative Fix Pack and show how you can make use of this rollback process in your development workflow.
+
+Second, we will demonstrate using this rollback process to recover from the accidental deletion of a site.
+
+We will also discuss how to design and implement automation for this and other AEM maintenance tasks in order to have repeatable outcomes, further reducing risk in AEM environments.
+<h3>Video of the presentation:</h3>
+https://www.youtube.com/watch?v=rwzyJpoAtNE
+
+&nbsp;
+
+&nbsp;
+    </section>
+    <footer><p>Categories: adobe global community, AEM, AEM / CQ, devops, disaster, dr, maintenance, oak rollback, rackspace, recovery</p></footer>
+  </article>
+</body>
+</html>

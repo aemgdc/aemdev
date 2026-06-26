@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Headless iOS Simulator Runs for UI Testing &amp; Automation - Fixed (But Broken on XCode 6)</title>
+  <link rel="canonical" href="https://www.opsinventor.com/headless-ios-simulator-runs-for-ui-testing-automation-fixed/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Headless iOS Simulator Runs for UI Testing &amp; Automation - Fixed (But Broken on XCode 6)</h1>
+      <time datetime="2014-09-17T15:58:09.000Z">9/17/2014, 8:58:09 AM</time>
+    </header>
+    <section class="content">
+      &nbsp;
+
+<strong>Note:
+</strong>The post below works on XCode 5.1, but is broken when you move to XCode 6.  Doing xcodebuilds over SSH is presently not supported on XCode 6.  Workarounds for doing continuous integration with Jenkins exist (i.e. starting agents with JNLP) but for other platforms like Thoughtworks Go and Team City, or even just running builds over ssh, it no longer works.
+
+Apple is apparently working on a solution for such, stay tuned.
+
+<a href="http://www.jetteroheller.com/headless-ios-simulator-runs-for-ui-testing-automation-fixed/authpromptxcode/" rel="attachment wp-att-903"><img class="alignnone size-full wp-image-903" src="http://www.jetteroheller.com/wp-content/uploads/2014/09/AuthPromptXcode.png" alt="XCode Authorization Prompt" width="466" height="258" /></a>
+
+I've been working to get a continuous integration pipeline set up for an iOS project, and to get unit tests &amp; integration tests to run headlessly via gradle builds through a Thoughtworks Go server.
+
+An issue I've run into is where running the unit tests requires the iOS simulator to pop up on the build server, which then ends up hanging on the build.
+
+The first problem, is that you <em><strong>do</strong> </em>have to have the user that runs the builds also logged in to the console on that Mac build machine.  It needs to be able to pop up the simulator, and will fail if you don't have a user logged in -- as it can't do this entirely headless without a display.
+
+Secondly, the XCode Developer tools requires elevated privileges in order to execute all of the tasks on the Unit tests.  Sometimes you may miss seeing it, but without these, the Simulator will give you an authentication prompt that never clears.
+
+A first solution to this (on Mavericks) is to run:
+<pre class="lang:default decode:true ">sudo security authorizationdb write system.privilege.taskport allow</pre>
+This will eliminate one class of these authentication popups.   You'll also need to run:
+<pre class="lang:default decode:true">sudo DevToolsSecurity --enable</pre>
+Per Apple's man page on this tool:
+<blockquote>On normal user systems, the first time in a given login session that any such Apple-code-signed debugger or performance analysis tools are used to examine one of the user's processes, the user is queried for an administator password for authorization. DevToolsSecurity tool to change the authorization policies, such that a user who is a member of either the admin group or the _developer group does not need to enter an additional password to use the Apple-code-signed debugger or performance analysis tools.</blockquote>
+    </section>
+    <footer><p>Categories: automation, build, ci, hang, ios, mac, security, simulator, technology, tools, web development, xcode</p></footer>
+  </article>
+</body>
+</html>

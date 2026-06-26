@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tailing Logs on AEM as a Cloud Service</title>
+  <link rel="canonical" href="https://www.opsinventor.com/tailing-logs-on-aem-as-a-cloud-service/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Tailing Logs on AEM as a Cloud Service</h1>
+      <time datetime="2020-06-09T02:27:26.000Z">6/8/2020, 7:27:26 PM</time>
+    </header>
+    <section class="content">
+      
+<p>In order to monitor or debug AEM environments (or virtually any web environment) one needs data, and that data generally comes from server logs.   Adobe's new AEM as a Cloud Service product, given that it's entirely a managed web service, does not give you the ability to SSH on to individual containers to view logs, <a href="http://www.jetteroheller.com/introducing-aem-as-a-cloud-service/#DevOps_Observability_Tooling_Log_Aggregation_APM">nor does it give you access to any sort of Splunk or Elastic or similar log aggregator</a>.  </p>
+
+
+
+<p></p>
+
+
+
+<p>At this point, <a href="https://docs.adobe.com/content/help/en/experience-manager-cloud-service/implementing/using-cloud-manager/manage-logs.html">to get access to your AEM logs is one of two ways</a>: </p>
+
+
+
+<ol><li><strong>You can download whole logs out of Cloud Manager, and view them on your local, or</strong></li><li><strong>You can use the Adobe I/O Cloud Manager CLI to tail logs on any of your AEM as a Cloud Service instances. </strong></li></ol>
+
+
+
+<p><strong>Note:</strong> there is a current issue with both the Adobe IO CLI as well as Cloud Manager's log downloads, that large stack traces will currently be truncated, a limitation coming from the internal Splunk integration that the AEM as a Cloud Service infra uses on the back end to aggregate the logs.  (The Adobe team uses Splunk themselves at this stage, but the capability hasn't been added to turn this over to end users).  </p>
+
+
+
+<p>That being said, it's still extremely useful to be able to tail logs on any AEM instance, even if one isn't able to do critical time-correlation, graphing, historical queries, and all the other things you do with a log aggregator.  So, here are the steps to go through to tail logs on an AEM as a Cloud Service environment: </p>
+
+
+
+<h3>Step 1: Adobe IO Access for Cloud Manager</h3>
+
+
+
+<p>The first step you'll want to check is to make sure your Adobe account is provisioned with access to create a service integration on Adobe IO with Cloud Manager.  If you go to <a href="https://console.adobe.io">https://console.adobe.io</a> with your Adobe ID and create a new project, select "Add an API".  You should see "Cloud Manager" under Experience Cloud in the list of integrations available to you. </p>
+
+
+
+<figure class="wp-block-image size-large"><img src="https://i1.wp.com/www.jetteroheller.com/wp-content/uploads/2020/06/image-2.png?fit=1024%2C298" alt="" class="wp-image-1503"/><figcaption><em>What the Adobe IO console should look like if you have Cloud Manager access</em></figcaption></figure>
+
+
+
+<p>If you don't see Cloud Manager in there (like I didn't, at first) send an email either to your Adobe Sales rep or to SPP Help (in the case of a Sandbox instance)  who can get you sorted. </p>
+
+
+
+<h3>Step 2: Create an Adobe IO Project for your Cloud Manager (and logs) Access</h3>
+
+
+
+<p>You'll then need to create a public/private keypair which generates a new service account (JWT) credential, which you'll use later on to make your Adobe IO console authenticate to your Cloud Manager env as you.   Make sure to save this public/private keypair on your local, as you will need it shortly. </p>
+
+
+
+<p>Then, tell the integration what services it will get access to:</p>
+
+
+
+<figure class="wp-block-image size-large"><img src="https://i0.wp.com/www.jetteroheller.com/wp-content/uploads/2020/06/image-3.png?fit=1024%2C293" alt="" class="wp-image-1504"/></figure>
+
+
+
+<p></p>
+
+
+
+<p> And then hit "SAVE CONFIGURED API".  </p>
+
+
+
+<h3>Step 3: Install the Adobe IO Runtime</h3>
+
+
+
+<p><a href="https://github.com/adobe/aio-cli">This page</a> gives the full installation instructions for installing the Adobe IO runtime.  But in short, after installing NodeJS on your workstation, you: </p>
+
+
+
+<div class="hcb_wrap"><pre class="prism undefined-numbers lang-plain"><code>$ npm install -g @adobe/aio-cli</code></pre></div>
+
+
+
+<p>Post install, you should see: </p>
+
+
+
+<div class="hcb_wrap"><pre class="prism undefined-numbers lang-plain"><code>$ aio -v
+@adobe/aio-cli/3.5.0 win32-x64 node-v12.18.0</code></pre></div>
+
+
+
+<h3>Step 4: Install &amp; Configure the Adobe IO Cloud Manager CLI Plugin</h3>
+
+
+
+<p>The full install instructions are <a href="https://github.com/adobe/aio-cli-plugin-cloudmanager">here</a>, but in short, run:</p>
+
+
+
+<div class="hcb_wrap"><pre class="prism undefined-numbers lang-plain"><code>$ aio plugins:install @adobe/aio-cli-plugin-cloudmanager</code></pre></div>
+
+
+
+<p>Then, after that is installed, you'll need to get the elements from the Adobe IO integration you created, and paste them into a config.json file which you can use to configure cloud manager. It will consist of:</p>
+
+
+
+<div class="hcb_wrap"><pre class="prism undefined-numbers lang-json" data-lang="JSON"><code>//config.json 
+{
+  &quot;client_id&quot;: &quot;value from your CLI integration (String)&quot;,
+  &quot;client_secret&quot;: &quot;value from your CLI integration (String)&quot;,
+  &quot;jwt_payload&quot;: { value from your CLI integration (JSON Object Literal) },
+  &quot;token_exchange_url&quot;: &quot;https://ims-na1.adobelogin.com/ims/exchange/jwt&quot;
+}</code></pre></div>
+
+
+
+<p>Put that file on your workstation, then run the following to configure the credentials: </p>
+
+
+
+<div class="hcb_wrap"><pre class="prism undefined-numbers lang-plain"><code>aio config:set jwt-auth PATH_TO_CONFIG_JSON_FILE --file --json</code></pre></div>
+
+
+
+<p>Then tell it about your private certificate which you saved from Adobe IO above:</p>
+
+
+
+<div class="hcb_wrap"><pre class="prism undefined-numbers lang-plain"><code>aio config:set jwt-auth.jwt_private_key PATH_TO_PRIVATE_KEY_FILE --file</code></pre></div>
+
+
+
+<h3>Step 5: Tell AIO what your Default Program Is</h3>
+
+
+
+<p>Next, tell the Adobe IO runtime what your "Default Program" is.  In AEM as a Cloud Service, the "Program" is the collection of environments that make up a single web property.  Navigating to my.cloudmanager.adobe.com, you'll see a URL after logging in like "https://experience.adobe.com/#/@the_cool_name_of_my_company/cloud-manager/home.html/program/{PROGRAM_NUMBER}"</p>
+
+
+
+<p>That number at the end is your program number, and you can tell AIO about it like this (assuming "1234" is your program ID): </p>
+
+
+
+<pre class="wp-block-code"><code class="">$ aio config:set cloudmanager_programid 1234</code></pre>
+
+
+
+<h3>Step 6: List your Environments</h3>
+
+
+
+<p>Then, running the following command will list the environments in your program that you have access to: </p>
+
+
+
+<div class="hcb_wrap"><pre class="prism undefined-numbers lang-bash" data-lang="Bash"><code>$ aio cloudmanager:list-environments
+Environment Id Name                       Type  Description
+10001          consulting-sandbox-dev dev   Created to experience pain
+10002          Consulting-Sandbox-PRD prod  Created by Tad Reeves to test AEM as a Cloud Service
+10003          Consulting-Sandbox-STG stage Created by Tad Reeves to test AEM as a Cloud Service</code></pre></div>
+
+
+
+<h3>Step 7:  List Logs from an Environment </h3>
+
+
+
+<p>Note the number that each of your environments have as an Environment ID.  If you use this ID you can list what logs are available for that environment:</p>
+
+
+
+<div class="hcb_wrap"><pre class="prism undefined-numbers lang-plain"><code>$ aio cloudmanager:list-available-log-options 19090
+Environment Id Service    Name
+10001          author     aemaccess
+10001          author     aemerror
+10001          author     aemrequest
+10001          publish    aemaccess
+10001          publish    aemerror
+10001          publish    aemrequest
+10001          dispatcher httpdaccess
+10001          dispatcher httpderror
+10001          dispatcher aemdispatcher</code></pre></div>
+
+
+
+<h3>Step 8: Tail the Desired Log</h3>
+
+
+
+<div class="hcb_wrap"><pre class="prism undefined-numbers lang-bash" data-lang="Bash"><code>$ aio cloudmanager:tail-log 10001 author aemerror
+09.06.2020 02:20:10.394 [cm-p1234-e10001-aem-author-674d744bf5-q862v] *INFO* [67.189.6.206 [1591669210392] POST /content/dam.initiateUpload.json HTTP/1.1] com.adobe.cq.assetcompute.impl.servlet.InitiateUploadAssetServlet initiate upload asset: Mountain Biking the Uetliberg in Zurich.mp4, size: 74013446, mimeType: video/mp4
+09.06.2020 02:20:10.397 [cm-p1234-e10001-aem-author-674d744bf5-q862v] *INFO* [67.189.6.206 [1591669210392] POST /content/dam.initiateUpload.json HTTP/1.1] com.adobe.cq.assetcompute.impl.servlet.InitiateUploadAssetServlet initiate upload complete asset : Mountain Biking the Uetliberg in Zurich.mp4, size: 74013446, mimeType: video/mp4</code></pre></div>
+
+
+
+<p>It's cumbersome, it has a lot of steps, and no, it's not Splunk.  But it's far better than nothing and is definitely needed if you'll be doing any sort of development work on the instance. </p>
+
+
+
+<p>Hopefully this helps you out!</p>
+
+    </section>
+    <footer><p>Categories: access, AEM, AEM / CQ, aem as a cloud service, aemaacs, elastic, log aggregation, logs, new relic, splunk, ssh, tail</p></footer>
+  </article>
+</body>
+</html>

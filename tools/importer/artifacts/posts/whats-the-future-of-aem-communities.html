@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>What&#39;s the Future of AEM Communities?</title>
+  <link rel="canonical" href="https://www.opsinventor.com/whats-the-future-of-aem-communities/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>What&#39;s the Future of AEM Communities?</h1>
+      <time datetime="2021-02-23T22:33:51.000Z">2/23/2021, 2:33:51 PM</time>
+    </header>
+    <section class="content">
+      
+<p>I'll give you the hook first, then the explanation of why it's important: <strong>From everything I've been able to gather so far, AEM Communities is <em>not being ported to the AEM Cloud Service</em>, and at this point looks like a dead product which will not be getting further updates.</strong></p>
+
+
+
+<p>Now here's the back story, and why it matters. Remember the ye-olde term "<a href="https://en.wikipedia.org/wiki/Web_2.0">Web 2.0</a>"?  <a href="https://en.wikipedia.org/wiki/Web_2.0_Summit">Somebody said it in 2004 at an O'Reilly conference</a>, and then name stuck: it implied the ability to use the web not only to consume content, <strong>but to interact with it</strong> in terms of social media, comments, ratings, uploads and other user-generated content.  Fast forward to today, and social media is an entirely inextricable part of the Internet experience, even when it comes to traditionally non-interactive and "not-very-web-2.0" properties like marketing sites and corporate about-us pages.  Truly-immersive experiences many times need to accommodate not just pushing content out, but allowing people to interact.  </p>
+
+
+
+<p>For experiences built off of Adobe Experience Manager, unless one wants to create a UGC framework and infrastructure system from the ground-up, the solution to handling this is <strong>AEM Communities</strong>.  </p>
+
+
+
+<h2>What is AEM Communities?</h2>
+
+
+
+<p><strong>AEM Communities</strong> is a robust set of capabilities built into AEM (though licensed separately from the main AEM Sites product), which allows for: </p>
+
+
+
+<ul><li>Blogs</li><li>Comments</li><li>Likes &amp; Ratings (for comments as well as pages)</li><li>Q&amp;A components and Event Calendars</li><li>Inline translation of community content</li><li>Forums with group capabilities</li><li>Scoring &amp; gamification though badges</li><li>File Sharing &amp; uploads</li><li>Notifications &amp; activity streams</li><li>Tagging (@mentioning) community users</li><li>Social login using Twitter or Facebook, or other identity management systems</li><li>Robust infrastructure backends to handle volumes of UGC (user-generated content). </li></ul>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/02/image.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/02/image-1024x522.png" alt="" class="wp-image-1676"/></a><figcaption><em>The AEM Communities "Community Functions" configuration screen</em></figcaption></figure>
+
+
+
+<p>In addition to the innate functionality that each of these pre-built components offers, one of the primary facets that makes AEM Communities important as a product is that it extends to AEM a <em>supported back-end infrastructure</em> to handle this UGC.  </p>
+
+
+
+<p>If you're new to this as a problem, I highly recommend reading up on <a href="https://www.opsinventor.com/diagrams-of-how-aem-solr-mongo-ugc-msrp-works/" data-type="post" data-id="1475">this overview I put together on the guts of the AEM Communities infrastructure</a> and how it works.  But in-essence, the problem is that AEM's storage mechanism (the Java Content Repository or JCR) is an <em>append-only filesystem</em> which is designed for high-performance reads, but NOT for high-performance random writes.  It certainly is not the best tool for the job when tasked with storing and serving the highly-fluid needs of a forum with lots of comment updates, with likes &amp; file uploads and tagging, of notifications and activity streams and the like. </p>
+
+
+
+<figure class="wp-block-embed alignright is-type-video is-provider-gfycat wp-block-embed-gfycat"><div class="wp-block-embed__wrapper">
+https://gfycat.com/accuratefeistycoqui-american-pie-disgusting-gross-ewww
+</div><figcaption><em>(I won't elaborate more on AEM 6.0's UGC handling, you can't make me)</em></figcaption></figure>
+
+
+
+<p>When AEM 6.0 was released, Adobe had not yet built a backend infrastructure which could support UGC on a public site at any scale past a dev environment.  Any update to UGC or profile information on one publisher had to be <em>reverse-replicated through the author and then sent back out to all publishers</em>.  </p>
+
+
+
+<p>On one particular such AEM 6.0 site in my mind (a corp site which had less public traffic than this blog), it could not stay up for more than a week or so without a meltdown. It was an abomination.</p>
+
+
+
+<p>However, UGC handling got a <strong>thorough</strong> overhaul with AEM 6.1 and later versions, with several hosting options for UGC including either using MongoDB or a relational DB like MS SQL to persist your UGC, or you could just aim it at Adobe's Communities setup and let them host your UGC.</p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2020/05/AEM-communities-solrcloud-reads-v1-e1590036880345.png"><img src="https://www.opsinventor.com/wp-content/uploads/2020/05/AEM-communities-solrcloud-reads-v1-e1590036880345-1024x853.png" alt="" class="wp-image-1477"/></a><figcaption><em>Showing the MSRP or "Mongo Storage Resource Provider" architecture for AEM which allows AEM a high-performance option for serving &amp; storing UGC alongside of a normal AEM infrastructure.  See </em><a href="https://www.opsinventor.com/diagrams-of-how-aem-solr-mongo-ugc-msrp-works/" data-type="post" data-id="1475">Diagrams of How AEM Solr/Mongo UGC (MSRP) Works</a></figcaption></figure>
+
+
+
+<p>Although I won't say that it's perfect in its current incarnation, <a href="https://experienceleague.adobe.com/docs/experience-manager-65/communities/introduction/overview.html#introduction">Communities on AEM 6.5</a> is feature-rich and actually <em>does </em>scale pretty well presuming you're using it well. </p>
+
+
+
+<h2><strong>So, what again about AEM Communities getting canceled?</strong></h2>
+
+
+
+<p> So this brings me back to the point of this post. I've talked to a fair number of people at Adobe over the last 3 months trying to map out some issues I've had with AEM Communities, and also to map out future paths for customers on AEM as a Cloud Service.  One thing that's fairly clear is:  </p>
+
+
+
+<p><em>Adobe currently does not seem to have any plans to port AEM Communities to the Cloud Service, nor does it have a solution in near-readiness to store UGC for any customer who is looking to migrate to AEM as a Cloud Service. </em></p>
+
+
+
+<p>Additionally, as there is no AEM 6.6 or AEM 7.0 or any other on-premise version of AEM currently in the pipeline for release, the AEM Communities 6.5 release is likely the last release that will be done of the product.  Furthermore, I've further heard (unconfirmed) that Adobe will be pulling the SKUs for Communities, meaning new customers will not be able to purchase the product as it is now, though existing AEM Communities customers will of course be supported. </p>
+
+
+
+<p>And this brings me to the next conundrum: </p>
+
+
+
+<h2>What Should AEM Customers Do for UGC Without Communities?</h2>
+
+
+
+<p>This is a legitimate problem. </p>
+
+
+
+<p>Let's say you've got a property where a core part of the cross-platform experience contains UGC - let's say it has Comments, Likes, Ratings, Profiles, Badges (member ranking) and ability to upload screenshots.  </p>
+
+
+
+<p>Let's also say that your property is somewhat sensitive, and you don't just want to fling your UGC off into Disqus or another unknown platform with separate terms of service.  This means, on AEM as a Cloud Service, that you would need to write entirely custom functionality to handle this UGC, and then create a scalable cloud architecture to store and service this UGC which is performant and will keep up with the rest of your site. </p>
+
+
+
+<p>Or, you'll simply need to stay on the on-premise, self-managed (or AMS-hosted) AEM 6.5 release for the conceivable future.</p>
+
+
+
+<p>Or, you'd need to check out <a href="https://disqus.com/">Disqus</a>, <a href="https://talk.hyvor.com/">Hyvor Talk</a>, <a href="https://www.discourse.org/">Discourse</a>, or other UGC solutions and work out if their mechanics comport with your site and its plans for the future. </p>
+
+
+
+<h2>Hopefully There's a Future for Some Version of Communities</h2>
+
+
+
+<p>Probably the best single part about AEM Communities is that it is relatively standardized, and is a common &amp; supportable infrastructure. You can take your performance issues with Communities to Adobe, and get support on it as it's a known part of the product.  </p>
+
+
+
+<p>But given the massive variability of UGC stresses on a site, if we all end up having to craft our own solution for user-generated content, I don't want to then be the tech support manager at Adobe who has to take the phone call when some poor sod like me has to open a support ticket.  </p>
+
+
+
+<p><strong>Note:</strong>  If any Adobe folks read this and know that <strong>yes</strong> <em>there absolutely is a future product in mind to replace AEM Communities and it's just not out yet so chillout </em>- please let me know and I'd be happy to amend the article.  The above is based on conversations I've had with several different people at Adobe and may very well be wrong.  I hope it's wrong.  </p>
+
+
+
+<p><strong>Note for other AEM People</strong>: If you've created a UGC-handling solution for AEM that you're really happy with, please do tell!  I'm all ears.  </p>
+
+
+
+<hr class="wp-block-separator"/>
+
+
+
+<p><strong>Cover Photo:</strong> Taken on the 94th floor of the Guangzhou IFC tower, looking over the skyline of Guangzhou in southern China - the biggest city I've ever been in, and by some measurements, the largest metropolis in the world. <br>Original: <a href="https://www.flickr.com/photos/tadnkat/34078307961/">Skyline of Guangzhou from the IFC Tower 94th Floor | Flickr</a></p>
+
+
+
+<figure class="wp-block-embed is-type-photo is-provider-flickr wp-block-embed-flickr"><div class="wp-block-embed__wrapper">
+https://flic.kr/p/TVoeFP
+</div></figure>
+
+
+
+<p> </p>
+
+    </section>
+    <footer><p>Categories: Adobe, AEM, AEM / CQ, aem 6.6, cloud service, communities, new features, on-premise</p></footer>
+  </article>
+</body>
+</html>

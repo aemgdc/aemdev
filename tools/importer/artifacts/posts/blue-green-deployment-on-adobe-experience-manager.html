@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Blue-Green Deployment on Adobe Experience Manager</title>
+  <link rel="canonical" href="https://www.opsinventor.com/blue-green-deployment-on-adobe-experience-manager/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Blue-Green Deployment on Adobe Experience Manager</h1>
+      <time datetime="2018-08-02T01:59:35.000Z">8/1/2018, 6:59:35 PM</time>
+    </header>
+    <section class="content">
+      How do you execute an AEM deployment with absolute minimal risk of disrupting your public website visitors, while also minimizing downtime or outage windows that you have to give to your content authors?
+
+Like most AEM Dev/Ops guys, I've probably spent more time obsessing over the best way to execute an AEM release than anything else in my AEM/CQ career.  The blog post <a href="https://blog.rackspace.com/white-paper-creating-the-ideal-aem-deployment-process">I first wrote for Rackspace</a>, and that I've now continually been adding to, attempting to <a href="http://www.jetteroheller.com/visualizing-the-perfect-aem-code-deployment-process/">visualize the perfect AEM release process, is now up to over 4400 words</a>.  But now, I'll add to that with this - an overview on doing <strong>blue-green deployment</strong> on AEM.
+<h2>What is Blue/Green Deployment?</h2>
+As a definition:
+<blockquote>Blue-green deployment is a technique that reduces downtime and risk by running two identical production environments called Blue and Green.
+
+At any time, only one of the environments is live, with the live environment serving all production traffic. For this example, Blue is currently live and Green is idle. [Ref: <a href="https://docs.cloudfoundry.org/devguide/deploy-apps/blue-green.html">CloudFoundry</a>]</blockquote>
+This technique, while identified with "the Cloud!" can be applied really using any type of environment, be it public cloud like AWS or Azure, or on a single-tenant virtualized environment like the Managed VMWare environments that Rackspace specializes in so brilliantly.   But the gist is to run two separate IDENTICAL environments, one to carry the public load, the other to be deployed-to and tested on the next software release.
+<h2>An Example Blue-Green Deployment Pipeline for AEM</h2>
+Before getting into the advantages and disadvantages of setting up a blue-green deployment scheme for your environment, first let's dive into an example blue-green deployment process that we've been able to prove out on <a href="https://www.rackspace.com/digital/adobe-experience-manager">my team at Rackspace</a>.
+
+<strong>Assumptions:</strong>
+<ul>
+ 	<li><strong>Reduce Author Downtime to Near-Zero:  </strong>The process below is assuming that a key driver would be to reduce author downtime to near-zero, while also making the public deployment nearly 100% risk-free.</li>
+ 	<li><strong>AWS Fronted by</strong> Akamai:  This example is an all-AWS example fronted by Akamai as a CDN.  The example would work just as well, with minimal modifications, on a private VMWare/F5 or Azure setup.</li>
+ 	<li><strong>All-EBS /</strong> FileDataStore:  This example assumes the use of a shared-nothing FileDataStore in AEM, where the Author's full repository state is encapulated inside the crx-quickstart dir, and isn't shared with any other instances - same with the publishers.   This process <em>could</em> be made to work with an S3Datastore, but would require additional steps.</li>
+ 	<li><strong>No Clustering / Community / Search: </strong> This assumes no author cluster, no cold standby, no MongoDB, no AEM Communities Mongo/Solr setup and no separate Solr-Zookeeper or Endeca search backend.  This is a simple 2:2:1 AEM deployment.  A derivative process could be put together with any of the above added into the mix.</li>
+</ul>
+<h3>Step 1:  Pre-Deployment, Public Traffic &amp; Author Traffic pointed at Blue</h3>
+[caption id="attachment_1136" align="aligncenter" width="1024"]<a href="http://www.jetteroheller.com/blue-green-deployment-on-adobe-experience-manager/blue-green_v1_step1/" rel="attachment wp-att-1136"><img class="size-large wp-image-1136" src="http://www.jetteroheller.com/wp-content/uploads/2018/08/blue-green_v1_step1-1024x933.png" alt="AEM Blue-Green Deployment Diagram Step1: public website traffic and author traffic aimed at &quot;blue&quot; environment" width="1024" height="933" /></a> <span style="color: #999999;"><em> AEM Blue-Green Deployment Diagram Step1: public website traffic and author traffic aimed at "blue" environment</em></span>[/caption]
+
+At this step of the process, public traffic is hitting the Blue environment via Akamai, and AEM authors &amp; admins are using the AEM authoring environment in Blue as well.
+
+In this example, we left replication active to the Green publishers from the Blue Author, so that these publishers would always have a current copy of content and wouldn't require a content-sync as a part of this deployment process.  That being said, one could automate the quiescing of the Green environment so that it only powered up on occasion to receive content syncs, and thus save on AWS infrastructure bills, but I chose to leave out that sort of optimization for this particular example.
+
+<strong><span style="color: #ff6600;">Important note regarding licensing</span>:</strong>  As virtually anyone will tell you in the AEM world, nearly every licensing deal with AEM is bespoke, and there is no one set of rules I've seen applied uniformly to everyone.  That being said, I've heard with one particular customer who wanted to implement the scheme illustrated here, that production publishers that are still getting replicated-to but which are <em>not taking any production traffic load</em> do <span style="text-decoration: underline;">not</span> need to be licensed with their own AEM licenses.  I.e. you would not need to license 4 AEM publishers in the above illustration. HOWEVER - that being said, please do NOT take my word for it, and check with your Adobe representative before implementing such a setup, as they may come to you with the opposite and tell you that both blue and green environments need a license if they're powered-on at all.
+<h3>Step 2: Take an EBS Snapshot of the Blue Author and Mount it to the Green Author</h3>
+[caption id="attachment_1131" align="alignnone" width="1024"]<a href="http://www.jetteroheller.com/blue-green-deployment-on-adobe-experience-manager/blue-green_v1_step2/" rel="attachment wp-att-1131"><img class="size-large wp-image-1131" src="http://www.jetteroheller.com/wp-content/uploads/2018/08/blue-green_v1_step2-1024x933.png" alt="AEM Blue-Green Deployment Diagram Step 2: Take an EBS snapshot of the author environment" width="1024" height="933" /></a> <span style="color: #999999;"><em>AEM Blue-Green Deployment Diagram Step 2: Take an EBS snapshot of the author environment</em></span>[/caption]
+
+The next step of the process (which - though not explicitly shown on the diagram, <em>should</em> be done in the form of AWS CLI calls from a Jenkins/Teamcity/Bamboo/etc server) is to take an EBS snapshot of the EBS volume containing the Blue Author's crx-quickstart directory, and to then mount it as a new volume on the Green Author in place of the Green Author's current crx-quickstart dir.  This would give the Green Author 100% of the current working state of the Blue Author.
+
+This would be done <strong>while content authors are still able to access the system</strong>, and intentionally so.  This way, authors can continue working, uploading assets, editing pages, etc all while the deployment cycle commences.  However, from the point in time where this EBS snapshot happens, a <strong>content delta will start accumulating on the Blue Author</strong> of content which does not exist on Green.  So, at the moment we take that snapshot, that EBS snapper job will also set a marker so that we can later (at the end of the deploy) come back and grab all newly-modified content.
+<h3>Step 3: Execute Your Deployment to the Green Environment</h3>
+[caption id="attachment_1132" align="alignnone" width="1024"]<a href="http://www.jetteroheller.com/blue-green-deployment-on-adobe-experience-manager/blue-green_v1_step3/" rel="attachment wp-att-1132"><img class="size-large wp-image-1132" src="http://www.jetteroheller.com/wp-content/uploads/2018/08/blue-green_v1_step3-1024x848.png" alt="AEM Blue-Green Deployment Diagram Step 3: Deploy Dispatcher Configs &amp; Code Packages to Author &amp; Publish" width="1024" height="848" /></a> <span style="color: #999999;"><em>AEM Blue-Green Deployment Diagram Step 3: Deploy Dispatcher Configs &amp; Code Packages to Author &amp; Publish</em></span>[/caption]
+
+At this point, you execute your Maven/Gradle/etc builds to deploy your code packages from your continuous integration server to Author &amp; Publish tiers, and then also push any related Dispatcher configurations (dispatcher.any rules, rewrite rules, etc) to the Dispatcher tier.
+
+&nbsp;
+<h3>Step 4: Full Automated &amp; Manual QA, Load Testing and User Acceptance Testing</h3>
+[caption id="attachment_1133" align="alignnone" width="1024"]<a href="http://www.jetteroheller.com/blue-green-deployment-on-adobe-experience-manager/blue-green_v1_step4/" rel="attachment wp-att-1133"><img class="size-large wp-image-1133" src="http://www.jetteroheller.com/wp-content/uploads/2018/08/blue-green_v1_step4-1024x849.png" alt="AEM Blue-Green Deployment Diagram Step 4: Run automated testing, smoke testing and manual QA" width="1024" height="849" /></a> <span style="color: #999999;"><em>AEM Blue-Green Deployment Diagram Step 4: Run automated testing, smoke testing and manual QA</em></span>[/caption]
+
+At this point you would fire off at the Green environment your full suite of automated smoke tests, automated user acceptance tests, UI tests, manual feature &amp; ticket QA, as well as your load test suite to validate the new code hasn't created any performance issues.   As this environment is wholly complete inclusive of load balancer, you could then point your Akamai Staging configs against this origin URL, and do testing with or without the CDN, all without any impact to your internal and external users who are still blissfully using your Blue site.
+
+<strong>Note: </strong>Because the testing above can be done on an entirely inert environment, this testing is entirely risk-free, and can even span multiple days if issues are found.
+
+&nbsp;
+<h3>Step 5: Sync Author Content Delta from Blue to Green (brief Author Outage)</h3>
+[caption id="attachment_1134" align="alignnone" width="1024"]<a href="http://www.jetteroheller.com/blue-green-deployment-on-adobe-experience-manager/blue-green_v1_step5/" rel="attachment wp-att-1134"><img class="size-large wp-image-1134" src="http://www.jetteroheller.com/wp-content/uploads/2018/08/blue-green_v1_step5-1024x793.png" alt="AEM Blue-Green Deployment Diagram Step 5: Sync Content Delta from Blue to Green" width="1024" height="793" /></a> <span style="color: #999999;"><em>AEM Blue-Green Deployment Diagram Step 5: Sync Content Delta from Blue to Green</em></span>[/caption]
+
+At this stage of the game, your Jenkins server is going to log into Blue author, and after stopping replication agents and workflows, would block access to the author (easiest done by turning off the dispatcher or using the dispatcher to reroute to a maintenance page).  Then, it would build a query of changed content since the point-in-time when the snapshot was taken in step (2) above, and then either copy the content package from Blue -&gt; Green using the /crx/packmgr/service.jsp endpoint, or directly server -&gt; server using VLT.  Our working test case of this uses VLT.
+
+Depending on how much content has accumulated during the deployment process, this entire copy process can potentially only take less than a minute, or up to 5-10 minutes for a very large delta.   This will be the only part of this process where your authors will not be able to access the system - which is a <em>massive</em> improvement over most deployment scenarios where authors can be locked out for a period of many hours.   For AEM customers where there is a constant influx of news or other updates (such as content/news heavy sites like a Sports site) this is a big deal.
+<h3>Step 6: Cut Over to the Green Environment</h3>
+[caption id="attachment_1135" align="alignnone" width="1024"]<a href="http://www.jetteroheller.com/blue-green-deployment-on-adobe-experience-manager/blue-green_v1_step6/" rel="attachment wp-att-1135"><img class="size-large wp-image-1135" src="http://www.jetteroheller.com/wp-content/uploads/2018/08/blue-green_v1_step6-1024x916.png" alt="AEM Blue-Green Deployment Diagram Step 6: Cut Over to the Green Environment" width="1024" height="916" /></a> <span style="color: #999999;"><em>AEM Blue-Green Deployment Diagram Step 6: Cut Over to the Green Environment</em></span>[/caption]
+
+At this point, one would then cut over to the Green environment.  This would consist of:
+<ul>
+ 	<li>For the public site, do an Akamai origin switch, pointing Akamai at the Green environment as the origin URL instead of Blue.   Obviously this would also not need to be black &amp; white if you wanted to cut over using green as a "canary deployment", only shunting a percentage of traffic at Green to watch how it performs before cutting over entirely.</li>
+ 	<li>For the author, a simple backend DNS switch or Author Dispatcher <em>Render</em> switch would send all content authors at the new Green author environment.</li>
+</ul>
+One would then monitor the deployment and once one believes the new release is a success, one could either quiesce the Blue environment or leave it running, depending on your process and budget.
+<h3>Rolling Back</h3>
+A procedure like the above would give one the planet's easiest process for rolling back a deployment.  Rolling back publish, if a disastrous bug was found, would be a simple matter of pointing the Akamai origin back at the Blue environment.   Rolling back author could be done similarly quickly, and the same content-delta packaging/sync scheme detailed above could be run in reverse for any Green content that needed to be moved back to Blue.
+<h2>Why Implement Blue Green Deployment for AEM?  Why Not?</h2>
+Given the explanation above, there are a number of arguments both for and against such a deployment process.
+
+<strong>Pros:</strong>
+<ul>
+ 	<li>Risk free deployment</li>
+ 	<li>Easy roll-back</li>
+ 	<li>Maintain full traffic capacity during a release, as opposed to being required to do rolling deployments</li>
+ 	<li>Release consistency: the public would see your deployment all in one go, rather than the potential for a mixed experience as new code reaches publishers on a rolling-deployment.</li>
+ 	<li>A similar scheme could blue/green an AEM version upgrade (such as upgrading from AEM 6.3 to 6.4) so that one could fully test the new version without the stress of doing it all in one go on a rolling upgrade basis.</li>
+ 	<li>Author downtime for the release is nearly eliminated.</li>
+ 	<li>Allows one to test potentially disruptive server configurations as well (JVM arguments, storage backend fixes, Apache/Varnish configs, etc) without risking the entire site going down.</li>
+</ul>
+<strong>Cons:</strong>
+<ul>
+ 	<li>Vastly more complicated to implement</li>
+ 	<li>Requires a good bit of automation to pull off</li>
+ 	<li>Without a fully-optimized process, it means always keeping online two full Production environments, as well as two full Staging environments (as you need a place to TEST this whole process, too!!)</li>
+ 	<li>Gets more complicated if you add in Search, an S3Datastore, or other elements.</li>
+</ul>
+&nbsp;
+
+So there you go!  AEM doesn't lend itself too well to the same continuous-delivery model as more lightweight apps can, but there are still ways like this to be agile and stress-free even in the AEM world.
+
+I'd love to hear any feedback you have from anyone else who's looked at implementing any manner of similar process!
+    </section>
+    <footer><p>Categories: adobe experience manager, AEM, AEM / CQ, aws, azure, blue-green, ci, continous deployment, continous integration, continuous delivery, jenkins, pipeline, rackspace, rollback, vmware</p></footer>
+  </article>
+</body>
+</html>

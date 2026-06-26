@@ -1,0 +1,12 @@
+{
+  "name": "opsinventor-importer-tools",
+  "version": "1.0.0",
+  "description": "Utilities to convert WP export to semantic HTML for importer",
+  "private": true,
+  "dependencies": {
+    "xml2js": "^0.4.23"
+  },
+  "scripts": {
+    "generate": "node generate_posts.js"
+  }
+}

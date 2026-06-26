@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Back Door Access to Google/Facebook/Apple/etc/etc</title>
+  <link rel="canonical" href="https://www.opsinventor.com/back-door-access-to-googlefacebookappleetcetc/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Back Door Access to Google/Facebook/Apple/etc/etc</h1>
+      <time datetime="2013-06-10T16:33:08.000Z">6/10/2013, 9:33:08 AM</time>
+    </header>
+    <section class="content">
+      Here is the one thing I'm not quite tracking with in this whole <a href="http://www.guardian.co.uk/world/2013/jun/09/edward-snowden-nsa-whistleblower-surveillance">provide-data-to-the-NSA-en-masse debacle</a>.    How is it that it hasn't already been an exposed issue on any of these major player's parts (Google, Facebook, Apple, Skype, etc) that the NSA somehow has miraculous access to mass volumes of their data?
+
+Everyone seems focused on this massive PRISM system that somehow has ingested data from all of these various points, and are talking about how it could possibly store so much or search so much or whatever.  How could it possibly have enough search power to ingest not just the message meta data (time, source/destination) but also message body &amp; data payload as well, etc.
+
+But to me, the bigger question centers around how one could possibly hide from folks who are NOT working with security clearances, bonds, etc - and who even reside in foreign countries - the means to actually export and expose to a foreign network, the full data payload, log files, photos, password stores, etc, of the users on their systems.   Being a sys admin who has also had to architect security for web servers &amp; databases, who's built Splunk, Sumo Logic, &amp; other data mining tools to export and ingest log data, etc - I can't fathom how this hasn't already escaped into the wild, if it does indeed exist in the way it's being portrayed in the media.
+
+If you're Facebook, let's say - this means that either:
+<ol>
+	<li>The allegation is untrue, and the NSA has no server access</li>
+	<li>The NSA has access only to password store or auth info, and therefore can log as you and simply scrape all your info, or</li>
+	<li>The NSA has the ability to directly access servers, and thereby retrieve data directly from them in VOLUME.</li>
+</ol>
+If it's option (2), this probably would be the easiest to hide from Facebook employees, as a tighter circle of folks would likely have access to the information that a back door had been opened.  And the data scraping could then be done in patterns that closely mimic real production traffic, thus evading suspicion by others.   But if it's (3), there's simply <strong>no way</strong> that a LARGE number of sys admins and engineers wouldn't know that there's a non-Facebook 3rd party that's been given priveleged server access to slurp out data.  There would be persistent non-user load on all systems, there would be petabytes of data transfer out of the network, there would be back doors in app after app after app to allow for such access -- it would be on every network diagram and system schematic as the "thing we don't talk about", etc.  In short, it would be <strong>unthinkable</strong> that it wouldn't already be being discussed as, "Hey - the NSA is already on our VPN and slurping out 20 exabytes/year of user data.  NBD."
+
+[youtube=http://youtu.be/5yB3n9fu-rM] See, in order to do the sort of data mining that <a href="http://youtu.be/5yB3n9fu-rM">Snowdon is talking about</a> in his video, you would need much more than just "metadata".  You'd need actual data payload.  You would need more than just "the fact that a message was sent from here to here at this time".  You'd need the message content.  And that wouldn't just come from logs, you'd have to be ingesting that data in real time.  If you just had option (2) above, and could only use your password store info to log in and scrape someone's account, the messages one's after could have been long deleted.   You'd need real-time back door access to retrieve actual message bodies to achieve this.
+
+And that wouldn't come without SCORES of engineers in every company mentioned being <strong>totally in the know</strong> about these sorts of illegal and <strong>persistent</strong> connections being set up to siphon out their data.
+
+I'm totally familiar with what happens when you've got someone who's accessed or attacked or uploaded something to your website being accused of wrongdoing, and then due to a search warrant, one then has to turn over server log files &amp; such to the authorities.  That's fine &amp; understood.  But at no time, could I or would I ever be OK - as a Sys Admin - with someone requesting a continual and persistent back door connection to put full-time load on the system to export 100% of user data.
+
+I can't imagine that would have come to pass without someone from THOSE COMPANIES (not not not just the NSA) coming out and saying, "K guys, this is real and this is what's happening."
+
+Just my $.02.
+    </section>
+    <footer><p>Categories: apple, eric snowdon, facebook, google, illegal, nsa, skype, technology, wiretapping</p></footer>
+  </article>
+</body>
+</html>

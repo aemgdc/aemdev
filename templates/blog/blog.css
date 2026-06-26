@@ -1,0 +1,110 @@
+/* Blog post template — OpsInventor (Rev 3 ink/orange/teal) */
+
+/* Article-body typography: comfortable reading */
+.blog-template .section > .default-content {
+  font-size: var(--body-font-size-l);
+  line-height: 1.78;
+  color: var(--text);
+  max-width: 100%;
+  width: 100%;
+}
+
+/* Article body column constrained to readable width.
+   Full-bleed variants (hero, key-points, related, cta-band) opt out so they
+   span the viewport with their own internal padding + max-width. */
+.blog-template main .section:not(.has-bph-bg, .key-points, .related, .cta-band) {
+  max-width: var(--blog-content-width);
+  width: var(--grid-container-width);
+  margin: 0 auto;
+  padding: var(--spacing-m) 0 var(--spacing-l);
+}
+
+/* Full-bleed sections: span viewport, internal padding handled per-variant */
+.blog-template main .section.has-bph-bg,
+.blog-template main .section.key-points,
+.blog-template main .section.related,
+.blog-template main .section.cta-band {
+  max-width: none;
+  width: 100%;
+  margin: 0;
+}
+
+/* Center inner content of full-bleed variants */
+.blog-template main .section.key-points > .default-content,
+.blog-template main .section.related > .default-content,
+.blog-template main .section.cta-band > .default-content {
+  margin-inline: auto;
+}
+
+.blog-template .default-content p {
+  margin-bottom: 26px;
+}
+
+/* H2 in articles: orange underbar (matches prototype) */
+.blog-template .default-content h2 {
+  font-family: var(--display-font-family);
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  color: var(--ink);
+  margin: 56px 0 20px;
+  padding: 0;
+  border: none;
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+}
+
+.blog-template .default-content h2::before {
+  content: "";
+  display: block;
+  width: 48px;
+  height: 5px;
+  background: var(--orange);
+  margin-bottom: 16px;
+}
+
+/* H3 in articles: weighted body type */
+.blog-template .default-content h3 {
+  font-family: var(--body-font-family);
+  font-weight: 800;
+  font-size: 1.15rem;
+  color: var(--ink);
+  margin: 30px 0 12px;
+  letter-spacing: -0.01em;
+}
+
+/* Body images: clean edges, no chrome (figure block handles chrome) */
+.blog-template .default-content img {
+  margin: 28px 0;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/* Pre/code blocks inherit global ink+orange styling; align margins */
+.blog-template pre {
+  margin: 28px 0;
+  border-left: 4px solid var(--orange);
+  border-radius: 0;
+}
+
+/* Hide the metadata block — EDS reads it server-side */
+.blog-template .metadata-container,
+.blog-template .metadata-wrapper,
+.blog-template .metadata {
+  display: none;
+}
+
+/* "Light" section style — surface-tinted card with orange left rule */
+.blog-template .section.light {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--orange);
+  padding: 28px 32px;
+  margin-top: var(--spacing-xl);
+}
+
+.blog-template .section.light h2 {
+  margin-top: 0;
+}
+
+.blog-template .section.light h2::before {
+  display: none;
+}

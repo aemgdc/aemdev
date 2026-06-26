@@ -1,0 +1,32 @@
+/* Step — big orange numeral + H2 inline */
+
+.step {
+  display: flex;
+  gap: 20px;
+  align-items: baseline;
+  margin: 60px 0 18px;
+}
+
+.step-num {
+  font-family: var(--display-font-family);
+  font-size: 2.4rem;
+  letter-spacing: -0.04em;
+  color: var(--orange);
+  line-height: 0.9;
+  min-width: 64px;
+}
+
+.step h2 {
+  margin: 0;
+  padding: 0;
+  flex: 1;
+  font-family: var(--display-font-family);
+  font-size: clamp(1.4rem, 2.6vw, 1.8rem);
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+
+.step h2::before {
+  display: none;
+}

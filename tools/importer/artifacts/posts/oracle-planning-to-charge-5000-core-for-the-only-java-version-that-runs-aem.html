@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Oracle Planning to Charge $25/core/month for the only Java Version that Runs AEM</title>
+  <link rel="canonical" href="https://www.opsinventor.com/oracle-planning-to-charge-5000-core-for-the-only-java-version-that-runs-aem/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Oracle Planning to Charge $25/core/month for the only Java Version that Runs AEM</h1>
+      <time datetime="2018-07-26T18:34:47.000Z">7/26/2018, 11:34:47 AM</time>
+    </header>
+    <section class="content">
+      Oracle <a href="https://java.com/en/download/release_notice.jsp">have announced that, “after January 2019”, Java SE 8 public updates will not be available for “business, commercial or production use” without a commercial license</a>.
+
+This means that the only version of Java that presently runs Adobe Experience manager will soon be subject to exorbitant (and likely entirely un-budgeted) charges starting in January 2019.  As a note, this is indeed only for "updates", but seeing as <a href="https://www.cvedetails.com/vulnerability-list/vendor_id-93/product_id-19116/version_id-212962/Oracle-JDK-8.0.html">Java vulnerabilities have surfaced often</a>, all of us running JDKs on servers have had to patch/update Java rather often to stay current.
+<h3>Oracle Price List for Java 8</h3>
+<strong>Update: </strong> Although when this story was first brought to my attention, I found the <strong>extremely alarming</strong> <a href="https://www.itassetmanagement.net/2018/05/01/oracle-to-charge-for-java-from-jan-2019/">figure of "$5000/core"</a>, I have not been able to find any official Oracle price list to back that up.  So, it would appear that's (HOPEFULLY) never going to come to pass.
+
+It looks like the <a href="https://www.itassetmanagement.net/2018/05/01/oracle-to-charge-for-java-from-jan-2019/">more-current pricing for Java SE is on this page on Oracle's site</a>.
+
+The non-negotiated list price looks like it will be $12.50-25/core/month, on a sliding scale getting cheaper as you license more of them.   So, not quite $5000/core, but still heaps more than anyone has budgeted (i.e. $0).
+<table border="0" width="100%" cellspacing="0" cellpadding="0">
+<tbody>
+<tr class="titlebar centertext">
+<th colspan="3">
+<h2>Java SE Subscription Pricing</h2>
+</th>
+</tr>
+<tr class="subtitlebar">
+<th class="tcell centertext" width="30%">Volume</th>
+<th class="dcell centertext" width="35%">Subscription Metric</th>
+<th class="dcell centertext" width="35%">Monthly Subscription Price</th>
+</tr>
+<tr>
+<td class="tcell centertext">1-99</td>
+<td class="dcell centertext">Processor</td>
+<td class="dcell centertext">$25.00</td>
+</tr>
+<tr>
+<td class="tcell centertext">100-249</td>
+<td class="dcell centertext">Processor</td>
+<td class="dcell centertext">$23.75</td>
+</tr>
+<tr>
+<td class="tcell centertext">250-499</td>
+<td class="dcell centertext">Processor</td>
+<td class="dcell centertext">$22.50</td>
+</tr>
+<tr>
+<td class="tcell centertext">500-999</td>
+<td class="dcell centertext">Processor</td>
+<td class="dcell centertext">$20.00</td>
+</tr>
+</tbody>
+<tbody>
+<tr>
+<td class="tcell centertext">1,000-2,999</td>
+<td class="dcell centertext">Processor</td>
+<td class="dcell centertext">$17.50</td>
+</tr>
+<tr>
+<td class="tcell centertext">3,000-9,999</td>
+<td class="dcell centertext">Processor</td>
+<td class="dcell centertext">$15.00</td>
+</tr>
+<tr>
+<td class="tcell centertext">10,000-19,999</td>
+<td class="dcell centertext">Processor</td>
+<td class="dcell centertext">$12.50</td>
+</tr>
+<tr>
+<td class="tcell centertext">20,000+</td>
+<td class="dcell centertext">Contact for details</td>
+</tr>
+</tbody>
+</table>
+&nbsp;
+
+The AEM environments for customers I've been supporting run from about 140 cores on the low end (i.e. tallying up DEV, QA, STG, PRD environments, etc) to about 500 cores on the high end.  So, assuming a non-negotiated list price as above of $22.50/core/month, this would be a minimum of about $37,800/year to be spent at Oracle for JVM licensing for a 140-core environment, and $135,000/year for a 500-core environment.
+
+I don't know anyone who would actually pay this, but there aren't too many alternatives seeing as these are the only current supported JVMs for AEM 6.4:
+<table border="1" width="100%" cellspacing="0" cellpadding="1">
+<tbody>
+<tr>
+<td>Platform</td>
+<td>Support Level</td>
+</tr>
+<tr>
+<td>Oracle Java SE 10 JDK [1]</td>
+<td>Z: Not supported</td>
+</tr>
+<tr>
+<td>Oracle Java SE 9 JDK [1]</td>
+<td>Z: Not supported</td>
+</tr>
+<tr>
+<td><strong>Oracle Java SE 8 JDK - 64bit</strong></td>
+<td>A: Supported</td>
+</tr>
+<tr>
+<td>IBM J9 VM - build 2.9, JRE 1.8.0 [2]</td>
+<td>A: Supported</td>
+</tr>
+<tr>
+<td>IBM J9 VM - build 2.8, JRE 1.8.0 [2]</td>
+<td>A: Supported</td>
+</tr>
+</tbody>
+</table>
+reference:  <a href="https://helpx.adobe.com/experience-manager/6-4/sites/deploying/using/technical-requirements.html">https://helpx.adobe.com/experience-manager/6-4/sites/deploying/using/technical-requirements.html</a>
+
+So - do we all move our AEM workloads to IBM J9?  Or will Adobe move to support Java 10 or OpenJDK?
+
+Note:
+
+The original article I'd found that inspired writing this &amp; reaching out contained this table of JDK pricing:
+
+&nbsp;
+<table>
+<tbody>
+<tr>
+<td width="179"><strong> </strong></td>
+<td width="94"><strong>Per NUP*</strong></td>
+<td width="87"><strong>Support</strong></td>
+<td width="102"><strong>Per CPU</strong></td>
+<td width="85"><strong>Support</strong></td>
+</tr>
+<tr>
+<td width="179"><strong>Java SE Advanced Desktop</strong></td>
+<td width="94">$40</td>
+<td width="87">$8.80</td>
+<td width="102">N/A</td>
+<td width="85">N/A</td>
+</tr>
+<tr>
+<td width="179"><strong>Java SE Advanced</strong></td>
+<td width="94">£100</td>
+<td width="87">$22</td>
+<td width="102">$5,000</td>
+<td width="85">$1,100</td>
+</tr>
+<tr>
+<td width="179"><strong>Java SE Suite</strong></td>
+<td width="94">$300</td>
+<td width="87">$66</td>
+<td width="102">$15,000</td>
+<td width="85">$3,300</td>
+</tr>
+</tbody>
+</table>
+*Named User Plus
+
+Reference: <a href="https://www.itassetmanagement.net/2018/05/01/oracle-to-charge-for-java-from-jan-2019/">https://www.itassetmanagement.net/2018/05/01/oracle-to-charge-for-java-from-jan-2019/</a>
+
+<strong>If this pricing were to hold true, this would mean that your 16-core AEM Author would be incurring an $80,000 bill just for the JVM</strong>.
+
+Hopefully this pricing above is as erroneous as it looks, as I'm not aware of anyone who would pay such a bill.
+    </section>
+    <footer><p>Categories: AEM, AEM / CQ, bill, charge, java, jdk, openjdk, supported version</p></footer>
+  </article>
+</body>
+</html>

@@ -1,0 +1,104 @@
+/* crafted under the full moons gaze by yo boy frank */
+
+.author-rows-container {
+    padding: 2rem 0;
+  }
+
+.author-rows-container .author-rows h2 {
+    font-family: var(--heading-font-family);
+    font-size: 2.25rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+    line-height: 1.2;
+  }
+  
+  .author-rows {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 1rem;
+  }
+  
+  .author-rows > div {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .author-rows > div > div:first-child {
+    flex: 0 0 25%;
+    min-width: 200px;
+    align-self: center;
+  }
+  
+  .author-rows > div > div:first-child img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+  
+  .author-rows > div > div:last-child {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .author-rows p {
+    margin: 0.25rem 0;
+    font-size: 1.25rem;
+  }
+  
+  .author-rows p strong{
+      font-family: var(--heading-font-family);
+      font-size: 2rem;
+  }
+  
+  .author-rows p:nth-child(2){
+      font-family: var(--heading-font-family);
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: #62a814;
+  }
+  
+  .author-rows .button-container {
+    margin-top: 0.5rem;
+  }
+  
+  .author-rows .button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: #406E0C !important;
+    color: white !important;
+    font-family: var(--heading-font-family);
+    text-transform: uppercase;
+    font-size: 1rem;
+    text-decoration: none;
+    border-radius: 1rem;
+    transition: background-color 0.3s ease;
+  }
+  
+  .author-rows .button:hover {
+    background-color: #62a814!important;
+  }
+  
+  @media (max-width: 768px) {
+    .author-rows > div {
+      flex-direction: column;
+      text-align: center;
+    }
+  
+    .author-rows > div > div:first-child {
+      flex: 0 0 auto;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+    .author-rows-container .author-rows h2 {
+      font-size: 2rem;
+      text-align: center;
+    }
+  }

@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Adobe Certifying AEM to work on Redhat OpenShift Containers</title>
+  <link rel="canonical" href="https://www.opsinventor.com/adobe-certifying-aem-to-work-on-redhat-openshift-containers/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Adobe Certifying AEM to work on Redhat OpenShift Containers</h1>
+      <time datetime="2020-07-21T22:46:21.000Z">7/21/2020, 3:46:21 PM</time>
+    </header>
+    <section class="content">
+      
+<p>Today, Adobe announced a very interesting partnership with IBM/Redhat that has some very interesting connotations for the future. </p>
+
+
+
+<figure class="wp-block-embed-twitter wp-block-embed is-type-rich is-provider-twitter"><div class="wp-block-embed__wrapper">
+https://twitter.com/lonistark/status/1285656384785338369
+</div></figure>
+
+
+
+<p>Most of the announcements that <a href="https://theblog.adobe.com/adobe-ibm-and-red-hat-partner-to-advance-customer-experience-transformation/">Adobe detailed in this blog post</a> were general in nature, but one of them stuck out considerably: </p>
+
+
+
+<blockquote class="wp-block-quote"><p>Adobe, IBM and Red Hat aim to enable brands to manage and deliver their content and assets within any hybrid cloud environment – from multiple public clouds to on-premise data centers. By certifying and delivering&nbsp;<a rel="noreferrer noopener" href="https://www.adobe.com/marketing/experience-manager.html" target="_blank">Adobe Experience Manager</a>&nbsp;6.5, part of&nbsp;<a rel="noreferrer noopener" href="https://www.adobe.com/experience-cloud.html" target="_blank">Adobe Experience Cloud</a>, to run on Red Hat&nbsp;<a rel="noreferrer noopener" href="https://www.openshift.com/" target="_blank">OpenShift</a>, the industry’s leading enterprise open source container platform, IBM will offer clients the flexibility to host, access and leverage data in an environment of their choice.</p></blockquote>
+
+
+
+<h2>Go Full-Cloud or Double-Down on Self-Host?</h2>
+
+
+
+<p>So, this is the first public acknowledgement (or even indication) that Adobe has been putting engineering effort into continuing to support folks that are self-hosting AEM, either internally in their company, or via a managed AEM hosting provider.  100% of the marketing effort and conference circuit has been to support the <a href="http://www.jetteroheller.com/aem-as-a-cloud-service-tech-qa-and-should-you-migrate-now/">launch of AEM as a Cloud Service</a>, which while an absolutely exciting taste of the future, is very unfortunately not a product that a number customers I've spoken with over the last 6 months are able to seriously consider for a variety of reasons.  </p>
+
+
+
+<p>As we went over in our <a href="http://www.jetteroheller.com/panel-discussion-on-aem-as-a-cloud-service/">roundtable on AEM as a Cloud Service</a>, Adobe's new cloud service is an engineering marvel, most notably finally allowing AEM to embrace the power of containerization, and thereby allowing for massive scaling and automatic healing the likes of which we could never do in a self-hosting environment.  </p>
+
+
+
+<p>However, as we also discussed on that selfsame roundtable, there are some major gaps in the product as it currently exists, <a href="http://www.jetteroheller.com/aem-as-a-cloud-service-tech-qa-and-should-you-migrate-now/">some of which are discussed here</a>.  The service is fabulous for net-new customers, and for customers with little-to-no devops staffing, as it allows one a very rapid time-to-value on AEM Sites and AEM Assets without having to monkey with a bunch of Ops nonsense.  </p>
+
+
+
+<p>However, other companies I've talked to are doubling down on their on-premise AEM environments, as there's no current way for them to make use of a shared-tenancy service for functional or security reasons, and other functionality or interoperability requirements make it necessary to just get to the latest version of on-premise AEM and roll.  </p>
+
+
+
+<h2>What Could AEM OpenShift (Kubernetes) Support Portend?</h2>
+
+
+
+<p>At this point in time, Adobe has not announced an AEM 6.6 version, <a href="https://helpx.adobe.com/experience-manager/update-releases-roadmap.html">nor any other version of on-premise AEM past AEM 6.5.7.0</a> (set to release in November).  Interactions with Adobe employees has always indicated that there are no major feature enhancements planned for on-premise or self-managed AEM, with those engineering efforts all being directed at making AEM as a Cloud Service really roll.</p>
+
+
+
+<p><strong>However</strong>, this announcement of AEM 6.5 getting certified to run on OpenShift brings some utterly intriguing concepts to mind: </p>
+
+
+
+<ol><li><strong>Will containerization support mean Sling Feature Model support?</strong>  If Adobe plans to offer full certification for AEM on OpenShift (Kubernetes), does this infer that there are plans in the works to bring the Sling Feature Model, and the ability to separate out the factory software image from customer content into their own repositories?  One of the big problems with running AEM inside containers is that the AEM repository can be GIGANTIC, and it contains the full state of the application including its factory codebase, custom codebase, the version history of all content, all published digital assets, EVERYTHING.  <br><br>However, if one were able to run a lean container with only factory code in it, and then have a separate repo for /content, /apps, etc that could be hosted outside of the container, this would allow one to rapidly scale (or autoscale) an AEM application realistically.  <br></li><li><strong>Will Adobe productize an OpenShift-based AEM Deployment?</strong>  It could be that configuring something like the above to run on an Openshift-based system would be a mighty task that only the very largest and most resource-rich organizations could attempt.  But if a shrink-wrapped, 80%-of-the-way-there package were to be offered by Adobe as an almost-turnkey solution, that would be something most customers I've run into could confront. <br></li><li><strong>How will IBM iX play into this?</strong>  Also noted in the announcement was: <br><br><em><a rel="noreferrer noopener" href="https://www.ibm.com/services/ibmix/" target="_blank">IBM iX</a>, the business design arm of IBM Services, will extend their offerings across all of Adobe’s core enterprise applications. With broader, integrated support for clients across&nbsp;<a rel="noreferrer noopener" href="https://www.adobe.com/creativecloud.html" target="_blank">Adobe Creative Cloud</a>, Adobe Experience Cloud, and&nbsp;<a rel="noreferrer noopener" href="https://acrobat.adobe.com/us/en/" target="_blank">Adobe Document Cloud</a>, IBM iX will accelerate how global brands use data to design, implement, and scale personalized customer experiences to instill trust across every corner of their business.</em><br><br>So, does this mean that Adobe will turn over such deployments preferentially to iX to be able to handle OpenShift Redhat rollouts? </li></ol>
+
+
+
+<p>In any case, the possibilities are intriguing.  We'll all have to <a href="https://event.on24.com/wcc/r/2460949/68B2B1D870B283CDAE8C6B7E3C304F7E">tune in to Adobe's webcast on 4 August</a> to find out where this is all going to take us.  </p>
+
+
+
+<p></p>
+
+    </section>
+    <footer><p>Categories: AEM, AEM / CQ, aemaacs, cloud, cloud service, deployment, devops, ibm, ix, kubernetes, on-premise, openshift, redhat</p></footer>
+  </article>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tips for AEM Infrastructure in China: Designing an in-China or Near-China Site Architecture</title>
+  <link rel="canonical" href="https://www.opsinventor.com/tips-for-aem-sites-in-china-licensing-hosting-choices/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Tips for AEM Infrastructure in China: Designing an in-China or Near-China Site Architecture</h1>
+      <time datetime="2021-07-01T16:55:52.000Z">7/1/2021, 9:55:52 AM</time>
+    </header>
+    <section class="content">
+      
+<p>Let's say you're already past <a href="https://www.opsinventor.com/tips-for-aem-infrastructure-in-china-do-you-need-in-china-hosting/" data-type="post" data-id="1770">Part 1 of the running-marketing-sites-in-China journey</a>, and after analyzing your current site's user experience in China you've decided SOMETHING HAS TO CHANGE.  The next big question is: </p>
+
+
+
+<p><strong>Do you need infrastructure <em>IN</em> China or just <em>CLOSER TO</em> China?</strong></p>
+
+
+
+<p>Let's break down what each of those approaches entails, and how close each one gets you to what you're trying for.</p>
+
+
+
+<h2>What's Involved in Hosting in China?</h2>
+
+
+
+<p>Hosting your site in China gets you a number of decided advantages, but is a complex and rather involved process that comes with limitations as well.   For example:</p>
+
+
+
+<ul><li><strong>Significant latency penalty for Chinese visitors when hosted outside of China:</strong>  As noted in the last article, hosting outside of China means you will most likely be subject to a significant penalty in terms of latency and quality-of-service as compared to in-China hosting.  In some cases, and for some sites, your performance may be acceptable, but for others it's a deal-breaker - and <a href="https://www.opsinventor.com/tips-for-aem-infrastructure-in-china-do-you-need-in-china-hosting/" data-type="post" data-id="1770">only your RUM analytics</a> can tell you the story of whether you're turning away customers due to a sluggish or unusable site. </li><li><strong>Ability to use in-China CDN:</strong>  In order to use an in-China CDN provider like Akamai China or <a href="https://en.chinacache.com/">China Cache</a>, you need to be hosted inside of China, and also need to have a license for your content as well (see ICP license section below).  </li><li><strong>Subject to blocking &amp; quality-of-service limits:</strong>  If you're outside China, your site experience will also be highly-variable, subject to potential blocking without recourse, as well as random (or seemingly-random) quality-of-service degradation.  </li><li><strong>Online Sales within China or accepting Payment:</strong> If your mission is to accept payment inside China or sell &amp; deliver products &amp; services to Chinese residents, you'll need a licensed, hosted-in-China site.</li></ul>
+
+
+
+<h2>China ICP Licensing: When You Need It and When You Don't</h2>
+
+
+
+<p>In order to host any website within the borders of mainland China (i.e. not in Hong Kong or Macau), the first thing you'll need to do is to apply for what's called an ICP License.  </p>
+
+
+
+<p>ICP stands for "Internet Content Provider" and is a state-issued registration that allows a China-based website to legally exist. Two different licenses are available - essentially one for commercial activities, and the other (called a Bei'an license) for non-commercial activities. You require a commercial license though if you intend to: </p>
+
+
+
+<ul><li>Make any online sales in China</li><li>Advertise products in china</li><li>Conduct any business activities that involve payments through your Internet platform</li></ul>
+
+
+
+<p>If you intend to host any of this on a server in mainland China, or if you intend to host outside of China but use an in-China CDN like Akamai to accelerate your web traffic, you need to get an ICP license first.  <a href="https://nhglobalpartners.com/what-is-icp-license-how-to-get-one/">This site give a very informative rundown on the ICP process</a> and what's involved.  </p>
+
+
+
+<p>Another facet of this is that generally only Chinese citizens and companies can get approved for an ICP license.  From the site linked above, the following individuals &amp; entities can apply for a license: </p>
+
+
+
+<ul><li><strong>Chinese nationals</strong> who use their state-issued ID. They are eligible to apply for an individual ICP.</li><li><strong>Foreign passport holders</strong> who use their passports as identification. They must be physically present in the country for a long enough duration that they can fulfill basic registration requirements. They can acquire individual ICP.&nbsp;</li><li><strong>Chinese-owned businesses</strong> with a Chinese business license can apply for a business ICP license.</li><li><strong>Wholly foreign-owned businesses</strong> with a Chinese business license can apply for a business ICP license.&nbsp;</li><li><strong>Joint venture businesses</strong> where more than 50% of the company is owned by a Chinese company can apply for a business ICP license.&nbsp;</li></ul>
+
+
+
+<p>Once you've got an ICP license, you can then start building out infrastructure - either just by deploying your content via a CDN and a .cn domain, or by using a local ISP like AliCloud to host your content. </p>
+
+
+
+<h2>Is AEM as a Cloud Service Available Inside China?</h2>
+
+
+
+<p> At this time, <strong>no</strong>.  AEM as a Cloud Service is not available in mainland China.  As noted in <a href="https://www.opsinventor.com/aem-as-a-cloud-service-a-year-later-update-on-features-limitations/#Data_Residency">AEM as a Cloud Service a Year Later – Update on Features &amp; Limitations</a> the closest you'd be able to get, geographically, to running AEMaaCS in China is the <strong>APAC-Japan region</strong>.  One <em>could</em> run AEM as a Cloud Service out of Japan, get an ICP license for China and a local in-China CDN, but this would mean all un-cached calls back to the origin would still have to go back out the high-latency connections to Japan. </p>
+
+
+
+<h2>Regarding Designing an In-China AEM Infrastructure</h2>
+
+
+
+<p>There are a few design concerns one should think with when designing an infrastructure for China, and I'd like to illustrate these using a hodgepodge made-up infrastructure that has elements from the last few AEM environments I've seen in China.  </p>
+
+
+
+<p><strong>The set-up:</strong> Let's assume you're a US company with an existing AEM environment.  It's a three-publisher setup with a standalone Author, and most of your Authoring manpower is in the USA.  You front your website with Akamai, but that's just the normal "Global-but-not-China" Akamai service that you're paying for.  You've got a SolrCloud search backend that builds many of your pages on the fly out of search, as well as a legacy PIM (product information management) system that has a catalog of all of your products and specifications.   You use Dynamic Media for your images and video content.  What might your in-China AEM infrastructure look like, and what are some gotchas on this?</p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/07/china-aem-schematic-for-blog-v1.0.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/07/china-aem-schematic-for-blog-v1.0-1024x721.png" alt="" class="wp-image-1791"/></a></figure>
+
+
+
+<p>In the infrastructure schematic above, you can see the global infra on the left, and the newly-deployed China infra on the right.  The vertical, heavy red dashed line represents everything inside or outside of mainland China.  The red dotted lines all represent high-latency, potentially slow/unreliable connections outside of China. </p>
+
+
+
+<p>A few points to make about this diagram which might be food for thought for your own China plans: </p>
+
+
+
+<ul><li><strong>Akamai</strong>: The global Akamai CDN product is not really a "global" product, but really "global except China" just like every other CDN (Limelight, Fastly, Cloudflare, etc).  In order to get CDN services in China (which in most cases is a complete necessity) you need to first procure an ICP license for your domain, and then work with Akamai to acquire the Akamai China CDN product which gives you content delivery to the Chinese market.  </li><li><strong>Putting both Publishers and Dispatcher in China:</strong> As the license cost of AEM publishers is very high, it can be tempting to only put a dispatcher server in China as a local caching layer, and having that go back to your publish tier back in the main USA datacenter.  Realize though that the latency between your Chinese infrastructure and the USA is very high (with a possibility for errors &amp; connection resets), so unless your cache hit ratio is planned to be +98%, it would be unwise to rely on such a connection.  </li><li><strong>Search Infrastructure:</strong>  In this example you can see the SolrCloud search cluster only existing in the USA.  If Search is only used infrequently, this could be an acceptable trade-off to duplicating your search hardware in China.  However, if search is used often, this could create a major performance bottleneck.  Also, given that China -> USA connections frequently lag or drop entirely (especially if the user generates a search string that triggers content filters in any way) the search backend may error out, thus returning ugly search errors to your China users.  </li><li><strong>Adobe Dynamic Media:  </strong>Out of the box, Dynamic Media will only get you as close as Hong Kong or Singapore, as Akamai is used as the edge for Dynamic Media.  However, the word on the street is that if you acquire an ICP license for your custom Dynamic Media domain, you can speak to Dynamic Media Support at Adobe, and they can set up an in-China endpoint for your Dynamic Media.  I've never attempted this, so at this point this is just theory, but I'm told it's possible.  </li><li><strong>Adobe Launch:</strong> Also to be covered in my cloud services post, but Adobe Launch too will not be served from China.  Your workaround for this, if latency is too slow, is to run<a href="https://medium.com/launch-by-adobe/configuring-an-sftp-server-for-use-with-adobe-launch-bc626027e5a6"> Launch in SFTP self-host mode</a> instead of hosted by Adobe.</li><li><strong>Okta / SSO / Login: </strong>At this point in time, due to the murky waters of <a href="https://incountry.com/blog/data-protection-laws-in-china-ways-to-stay-compliant-with-cloud-data/">China's data residency law</a>, <a href="https://support.okta.com/help/s/question/0D50Z00008C3jcQSAR/does-okta-support-china-aws-?language=en_US">Okta only supports SAML2 auth</a> and not Federated SSO in China.  It also means that if you're authenticating against AD or LDAP, you would need to have Okta authenticating against an LDAP directory physically located in China.  </li></ul>
+
+
+
+<p>This AEM infrastructure listed above is a simplified one, and many AEM implementations end up with considerably more integration points than this one - especially as they connect with legacy sites and backend systems, and especially if they also perform an eCommerce role and need to have the user-facing servers integrate with product management, Magento/Hybris, or other tooling.  The most important take-away is that in evaluating a service design for China, one has to think with ALL the ways it will have to talk to anything outside of AEM, and to also isolate which of those communication points have a direct real-time impact on a user request.  </p>
+
+
+
+<h2>The Alternative: Building Infrastructure CLOSER TO China (but not IN China)</h2>
+
+
+
+<p>Let's assume for discussion that you've evaluated the options above, but have decided that it's either (a) impractical or impossible to obtain an ICP license to host in China, or (b) not quite worth the full two-footed effort to go all-in on China, when much of your traffic is spread throughout the rest of the Asia-Pacific region.  What options do you have?  </p>
+
+
+
+<h3>Running a Near-China AEM as a Cloud Service Installation</h3>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/07/china-aemaacs-schematic-for-blog-v1.0-1.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/07/china-aemaacs-schematic-for-blog-v1.0-1-1024x711.png" alt="" class="wp-image-1794"/></a></figure>
+
+
+
+<p>Full disclosure: I haven't done this yet.  But this would be a sample of how one might run AEM as a Cloud Service for China.  Some call-outs from the diagram above: </p>
+
+
+
+<ul><li><strong>Deploy in the Azure Japan region: </strong> The closest you're going to get with AEM as a Cloud Service to China is Japan, so deploy your CS environment there. </li><li><strong>ICP License:</strong>  You're going to need an ICP license for your Akamai China CDN, which will be essential to making this work with acceptable latency.  </li><li><strong>Akamai China: </strong> Once you have an ICP license, you front your entire site with the Akamai China CDN, which calls back to your Cloud Service origin in Japan.  You'll need to aggressively optimize your site for an ultra-high cache hit ratio, as calls back to the Cloud Service will be slow and potentially problematic.  </li><li><strong>Adobe Launch: </strong> Provision an Apache server in the Azure Beijing / Shanghai region, and configure Adobe Launch to SFTP your launch files there, so that they can be served via your Akamai CDN front-end, thereby saving you the latency / potential block risk of having your Launch files served from outside China. </li><li><strong>LDAP / SSO integration:</strong>  Assuming you've got a login component of your site that has to sync with LDAP, set up <a href="https://www.adobe.com/content/dam/cc/en/security/pdfs/AdobeIdentityServices.pdf#:~:text=Adobe%20IMS%20includes%20the%20Adobe%20User%20Sync%20Tool,Azure%20Active%20Directory%20and%20Google%20Workspace%20Directory%20services.">the LDAP sync tool</a> with your company's AD as well as a China-hosted LDAP copy for data residency compliance.</li></ul>
+
+
+
+<p>It's not 100% ideal, as of course all of your un-cachable calls still need to transit the firewall and can potentially get QoS'ed or blocked, but still vastly better than the UX local Chinese will get if your site is hosted entirely outside of the firewall.  </p>
+
+
+
+<p>Clearly, a similar configuration (or modification of such) could be created with AEM on-premise as well, with a million permutations of such.  All of them have their potential advantages and drawbacks though in terms of cost, resiliency and performance.</p>
+
+
+
+<h2>Regarding the Sheer Size of the China Market</h2>
+
+
+
+<p>There is no doubt that it's going to be a lot of hassle and a lot of expense to get your infrastructure right to properly cater to the Chinese market.  Some companies I've dealt with have looked at the relatively small numbers of visits from China that they currently get, and have assumed that it's not really worth it to put more than a cursory effort into getting their site performing well for China - even if they <em>do</em> have a strategy to sell more in the Chinese market. </p>
+
+
+
+<p>If there is one thing that was the biggest take-away I had from my visits to China, it's that virtually nobody I know in the West has the first concept of the sheer size and scope of the cities of China.  I feel that there's still a stuck picture folks have that "yes China has a lot of people, but it's still a developing nation", and that their cities - while populous - are still just big fishing villages or something.  </p>
+
+
+
+<p>A few notes here just to attempt to make my point: </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/07/40177127850_b8c0e4b817_k.jpg"><img src="https://www.opsinventor.com/wp-content/uploads/2021/07/40177127850_b8c0e4b817_k-edited.jpg" alt="" class="wp-image-1798"/></a><figcaption><em>West Lake Park in Fuzhou, Fujian Province - a city barely anyone in the West has heard of, yet it's a larger city than Chicago.</em></figcaption></figure>
+
+
+
+<p>One of the places I visited on my last trip to China is the lovely city of Fuzhou on the south coast, the closest major Chinese city to Taiwan.  You've probably not heard of Fuzhou, as it's the 31st-largest city of China, dwarfed by the big cities like Shanghai which are almost 10x its size.  However, Fuzhou is <strong>more populous than Chicago</strong>, has a modern underground subway system that will (as of next year) be larger than the DC Metro, has high-speed railway connections to the rest of China and a vibrant manufacturing base as well as an avid outdoors-oriented population.  </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/07/33449134404_d8bd9386ee_o.jpg"><img src="https://www.opsinventor.com/wp-content/uploads/2021/07/33449134404_d8bd9386ee_o-1024x577.jpg" alt="" class="wp-image-1799"/></a><figcaption><em>Looking over the massive city of Guangzhou - a city larger than New York or London</em></figcaption></figure>
+
+
+
+<p>Never mind a city like Guangzhou (formerly known in the West as Canton), which not only is home to the busiest airport in the world (overtaking Atlanta in 2020) but is the anchor of the world's most populous megacity, the sprawling Pearl River Delta, which is composed of the interconnected cities of Hong Kong, Shenzhen, Macao, Foshan, and others and has a <strong>population greater than the entire countries of Italy, Argentina or South Korea</strong>.  High-speed rail criss-crosses the region and lets you commute the 90-miles from one end of the megacity (Guangzhou) to the other (Shenzhen) in just 30 minutes flat, which only further enables the businesses of the area to thrive.</p>
+
+
+
+<p>This point deserves its own full article, for sure.  But my aim here is just to convey the fact that the addressable market in China is larger in scope that you likely are able to currently imagine, and it's up to folks like  you and me to design a way to reach them! </p>
+
+    </section>
+    <footer><p>Categories: AEM, AEM / CQ, aem as a cloud service, aemaacs, china, devops, icp, infrastructure</p></footer>
+  </article>
+</body>
+</html>

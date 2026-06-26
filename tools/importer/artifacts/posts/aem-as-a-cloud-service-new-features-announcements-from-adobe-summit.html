@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AEM as a Cloud Service - New Features &amp; Announcements from Adobe Summit</title>
+  <link rel="canonical" href="https://www.opsinventor.com/aem-as-a-cloud-service-new-features-announcements-from-adobe-summit/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>AEM as a Cloud Service - New Features &amp; Announcements from Adobe Summit</h1>
+      <time datetime="2022-03-17T02:47:06.000Z">3/16/2022, 7:47:06 PM</time>
+    </header>
+    <section class="content">
+      
+<p>We've just wrapped up Adobe Summit 2022, and there were some <strong>seriously interesting</strong> new developments that Adobe announced for its AEM as a Cloud Service digital experience platform.  </p>
+
+
+
+<p>Last year's Summit had a mild lack of shock value, due to our getting a steady diet of amazing new features all year as they were released.  But this year, the Adobe crew was prepared with some heavy-duty features that they've been working hard on this year, with a real focus on bettering the developer and operations experience. </p>
+
+
+
+<h2 class="wp-block-heading">New Relic APM comes to AEM as a Cloud Service! Finally!</h2>
+
+
+
+<p>If you've read anything I've written in the last two years, it's been one of the most major points that has made it tough to recommend AEM as a Cloud Service in the past, in that there was no way for developers to get a feedback loop for how their AEM environments are performing.  Additionally, as AEM as a Cloud Service automatically scales up your environment to meet load, it could be that your infrastructure would automatically scale up due to poorly-performing pages and API calls, ridiculously large repository traversals, or poor caching strategies - and you'd NEVER KNOW.  </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2022/03/Screenshot-2022-03-16-at-18-49-48-Adobe-Experience-Manager-as-a-Cloud-Service-2022-Top-Innovations.png"><img src="https://www.opsinventor.com/wp-content/uploads/2022/03/Screenshot-2022-03-16-at-18-49-48-Adobe-Experience-Manager-as-a-Cloud-Service-2022-Top-Innovations-1024x576.png" alt="" class="wp-image-1890"/></a><figcaption class="wp-element-caption"><em>Adobe's AEM as a Cloud Service product owner Bertrand De Coatpont demonstrates New Relic running on the Cloud Service.  As you can see here, this is similar to other AEM instances running Adobe's Newrelic plugin, exposing the JCR as a "database" so that you can dig in and see heavy database operations, drill into JCR traversals, etc.   </em></figcaption></figure>
+
+
+
+<p>New Relic is already being used by Adobe engineers on the backend, so there's nothing to do on the infrastructure side to enable it for you.  However, setting up your own access to access New Relic One for AEM as a Cloud Service requires some manual ticketing &amp; work on your end, <a href="https://experienceleague.adobe.com/docs/experience-manager-cloud-service/content/implementing/using-cloud-manager/user-access-new-relic.html?lang=en#">which is described here in the Adobe docs</a>. </p>
+
+
+
+<p>Again, tough to overstate how excited I am about this feature, given that it's come up in every interview I've had with anyone on the AEMaaCS product side, as well as in virtually every blog post I've written on the subject.  It'll be fun to put this into use!</p>
+
+
+
+<p>And now, with APM on the application server, <a href="https://www.opsinventor.com/using-splunk-for-log-search-monitoring-on-aem-as-a-cloud-service/">plus ingesting Splunk logs from the Dispatcher, Publisher and Author</a>, plus being able to also get logging from AEM Assets Worker Microservices (another amazing new feature that I saw demo'd at Summit that deserves its whole own blog post) plus adding in Synthetics monitoring on the front end, it's entirely possible to have a full suite of pro-grade application, browser, performance and stability monitoring for your web presence.  </p>
+
+
+
+<p></p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2022/03/image-4.png"><img src="https://www.opsinventor.com/wp-content/uploads/2022/03/image-4-1024x550.png" alt="" class="wp-image-1891"/></a></figure>
+
+
+
+<p>There are a number of other features which are in the "coming soon" category, and are meant for delivery in Q2-Q4 2022.  </p>
+
+
+
+<h2 class="wp-block-heading">Content Backflow</h2>
+
+
+
+<p>This is a long-requested feature, both on AEM as a Cloud Service, but also on AMS as well (AEM Managed Services for AEM 6.4/6.5).  Actually, it's been a pretty regular ask of any devops team for any CQ/AEM site I've ever worked on.  </p>
+
+
+
+<p>The problem is: in order to test adequately on lower environments, lower envs have to match prod. The longer production operates, with authors publishing out content, versions getting created, indexes being updated, etc, etc, the further your Stage and Dev environments get from actually looking and acting anything like the production environment.  So, the requests inevitably come to get a full copy of the Prod environment brought down to Stage or Dev so that testing can be done against the full corpus of content in the repository.  But that's always been harder than it sounds, and is more so with a completely new architecture like the Cloud Service is. </p>
+
+
+
+<p>Details are still forthcoming, but what we know at this point is that the copy-down functionality will allow you to copy all of the content from your production environment down to any of your dev or stage environments (Cloud Service only, not local or local-hosted).  It's possible that they may allow you to copy to other <em>Programs</em> as well - which would be intensely useful if one was going to need to make a complete copy of a site to turn over to another business unit for, say, a EU-only website or the like.  We'll learn more about this when the feature is released. </p>
+
+
+
+<h2 class="wp-block-heading">CDN Logs &amp; Tuning</h2>
+
+
+
+<figure class="wp-block-image size-full"><a href="https://www.opsinventor.com/wp-content/uploads/2021/02/aem-as-a-service-diagram-v3-2.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/02/aem-as-a-service-diagram-v3-2.png" alt="" class="wp-image-1655"/></a></figure>
+
+
+
+<p>If you look at the overall architecture of the AEM as a Cloud Service product, all inbound requests to the system go through the Fastly content delivery network (CDN).  Normally, the CDN slaves off of the cache-control headers that you set in the dispatcher, so any cache lifetimes or cachability of objects is generally controlled there.  However, let's say you want different cache behaviour, or are trying to troubleshoot why it was that - maybe - an image didn't show up right, or a cached copy was being served when it shouldn't, or maybe you thought a purge happened but it didn't, etc.  Or perhaps you want different cache behavior in your CDN than your dispatcher.  </p>
+
+
+
+<p>Tooling is going to be coming out for more CDN tunability later in 2022, which is very exciting -especially for sites that leverage the CDN heavily for performance.  This is especially important where you want different rules for areas that are further away from the origin - like if you're <a href="https://www.opsinventor.com/tips-for-aem-sites-in-china-licensing-hosting-choices/" data-type="post" data-id="1774">running AEM in China</a> and are serving out of Singapore.  You may want your /content/zh/cn to be cached in the CDN WAY more than /content/ja/jp or something like that.  </p>
+
+
+
+<p><strong>EDIT: Sept 2024 - </strong>as of this point there is inbuilt <a href="https://blog.arborydigital.com/config-examples-for-managed-cdn-on-aem-as-a-cloud-service">configurability of the Adobe Managed CDN for AEM as a Cloud Service</a>.  Discussed <a href="https://blog.arborydigital.com/config-examples-for-managed-cdn-on-aem-as-a-cloud-service">here</a> and <a href="https://www.youtube.com/watch?v=VpUThxk8O3U">here</a>, the CDN config allows for redirects, adjustable backends, environment variables and more.  </p>
+
+
+
+<p>Additionally - LOGGING.  Currently, the only logs that you get in Splunk when you <a href="https://www.opsinventor.com/using-splunk-for-log-search-monitoring-on-aem-as-a-cloud-service/" data-type="post" data-id="1814">set up Splunk log forwarding</a> is the access, error, request and dispatcher logs - but not any logs for the CDN.  This is evidently set to change, with logs from the CDN made available to you for troubleshooting and analytics.  Again, this is HUGE. </p>
+
+
+
+<h2 class="wp-block-heading">HotDev Environments</h2>
+
+
+
+<p>This feature - which we got very little detail of and which should be available around Q4 of this year, is allowing the creation of temporary AEM environments in the Cloud Service on which <em>live changes</em> can be made without a pipeline. </p>
+
+
+
+<p>If you've followed any of the deployment chatter on <a href="https://www.opsinventor.com/speeding-up-aem-cloud-service-deployment-the-dispatcher-only-pipeline/" data-type="post" data-id="1846">AEM as a Cloud Service deployments</a>, the mechanics and safety features built into the AEM as a Cloud Service deployment mechanism makes for some sometimes very slow deployments.  Dev deployments generally take around 45 minutes, production deployments can take two hours.  There are a NUMBER of things that Adobe is currently doing to speed that up, with a near-term goal of having all dev deployments take under 30 minutes and prod deployments taking under an hour.  </p>
+
+
+
+<p>But still, for quick dev changes where you want to tweak one thing and watch it go, it's important to be able to iterate fast.  In such a case, the ability to spin up a temp environment on which hot changes can be made is a big deal, and gets bigger the more you think about your last deployment.  :) </p>
+
+
+
+<h2 class="wp-block-heading">Repository Browser</h2>
+
+
+
+<p>One thing that has changed with the Cloud Service is that the old <strong>CRXDE</strong> node-browsing environment previously available on self-hosted versions of AEM (or on the local SDK) is not available in the cloud service.  So, sometimes when you need to browse the repository for specific debugging (why did this meta tag get applied, what configuration is REALLY running on my system, etc) it makes it hard if you can't crack open the repository and look directly at the repo.  Fortunately for us, it was Bertrand-to-the-rescue once again!</p>
+
+
+
+<figure class="wp-block-image size-full"><a href="https://www.opsinventor.com/wp-content/uploads/2022/03/image-5.png"><img src="https://www.opsinventor.com/wp-content/uploads/2022/03/image-5.png" alt="" class="wp-image-1892"/></a><figcaption class="wp-element-caption">Just released as of today is a repository browser that allows you to directly browse the repo on any dev, stage or production Cloud Service environment.  It's in the Developer Console of any instance you have right now, presuming you're updated to the latest.  Check it out!</figcaption></figure>
+
+
+
+<p></p>
+
+    </section>
+    <footer><p>Categories: Adobe, adobe experience manager, adobesummit, AEM, AEM / CQ, aemaacs</p></footer>
+  </article>
+</body>
+</html>

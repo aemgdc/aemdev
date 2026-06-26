@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Gnome 3 &amp; Fedora 15 on VirtualBox 4</title>
+  <link rel="canonical" href="https://www.opsinventor.com/gnome-3-fedora-15-on-virtualbox-4/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Gnome 3 &amp; Fedora 15 on VirtualBox 4</h1>
+      <time datetime="2011-05-25T15:31:10.000Z">5/25/2011, 8:31:10 AM</time>
+    </header>
+    <section class="content">
+      I've been running Fedora on VirtualBox as my main desktop environment for the last year or so.  Company requires that I have a Windows XP desktop, so I just virtualize to get the environment I want, and don't have to use Windows at all.  That said, I just upgraded to Fedora 15, running on VirtualBox 4.08.  Having a few issues getting Gnome 3 to be usable for me, and below post is (mostly) for my own benefit in keeping track of issues.
+<ul>
+	<li><strong>VirtualBox 4.08 required:</strong>  First lesson - make sure your VirtualBox is updated to 4.08 or better.  The VirtualBox folks <a href="http://www.webupd8.org/2011/05/virtualbox-408-released-with-gnome.html">released a fix with 4.08 to make sure it works with the new Gnome 3 shell</a>.</li>
+	<li><strong>Install w/Dev Libraries:</strong>  You need to have the VirtualBox guest additions installed to make the new Gnome 3 shell work (3D/GL) and to get those extensions to build, you need to have the kernel headers &amp; kernel sources on the box to build the kernel modules.  Had a rough time with the Fedora 15 beta, even after yum installing kernel-devel, kernel headers, etc - so just check off the dev libraries on your initial install.  I did so with the last final version, and building the VirtualBox guest additions worked just fine.</li>
+	<li><strong>Issues with package installer:</strong> First thing I went to do with the new Gnome 3 install was to install flash-plugin from Adobe's site, and Chrome from Google.  For some reason, the package installer in GNOME 3 just hangs and doesn't install packages.  Had to install them from KDE Plasma and it worked.  (yes, I know I could have done it manually, but I like having the GUI package manager resolve deps for me).</li>
+	<li><strong>Wacky White-Out Graphics Issues:</strong> Over the last hour, I've now had 3 times where the entire interface has gone white, with bizarre little square squiggles outlining some illegible text.  Had to do a ctrl+alt+backspace to restart x &amp; go back in, as couldn't do anything.  Was just in Chrome the first time, and was just trying to navigate system settings the other time.  So, graphics rendering is not stable on VirtualBox.</li>
+	<li><strong>No Desktop?</strong>  Still getting used to the fact that there is no desktop.  I.e. no place to just drag/drop items onto &amp; use them.  I doubt my wife will want to use Gnome 3 as she's so used to being able to plop things on the desktop.</li>
+	<li><strong>No widgets?</strong>  Hate lack of widgets.  Yes, I know their design people say that we don't need them, but first thing I always do on Gnome 2.x was to put a system monitor in the panel so I can see CPU utilization, load &amp; N/W usage.</li>
+	<li><strong>No minimize?</strong>  Don't like the inability to minimize.  And if you do right-click/minimize, where does the window go?  No visible way to get it back.</li>
+</ul>
+I think there are a lot of slick things about Gnome 3, but still looks like a technology preview to me rather than something I can use on my daily desktop for work.  Switching back to my Fedora 15 / Gnome 2 desktop for now.
+    </section>
+    <footer><p>Categories: 15, chrome, fedora, flash player, gnome, gnome 3, installer, linux, packagekit, rpm yum, technology, virtualbox</p></footer>
+  </article>
+</body>
+</html>

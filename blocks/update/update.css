@@ -1,0 +1,64 @@
+/* Update — ink-bg dated note (teal default, success variant green) */
+
+.update {
+  background: var(--ink);
+  color: var(--white);
+  padding: 36px clamp(24px, 4vw, 40px);
+  margin: 48px 0;
+  border-left: 6px solid var(--teal);
+  position: relative;
+}
+
+.update-tag {
+  font-family: var(--mono-font-family);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 12px;
+  font-weight: 700;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.update-tag::before {
+  content: "●";
+  color: var(--teal);
+  font-size: 0.7em;
+}
+
+.update h3 {
+  font-family: var(--display-font-family);
+  font-size: clamp(1.3rem, 2vw, 1.6rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  margin: 0 0 18px;
+  font-weight: 400;
+}
+
+.update p {
+  color: #cfd9de;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  margin-bottom: 18px;
+}
+
+.update p:last-child {
+  margin-bottom: 0;
+}
+
+.update a {
+  color: var(--orange);
+  text-decoration: underline;
+}
+
+.update.success {
+  border-left-color: #7fcf85;
+}
+
+.update.success .update-tag,
+.update.success .update-tag::before {
+  color: #7fcf85;
+}

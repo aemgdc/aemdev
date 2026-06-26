@@ -1,0 +1,250 @@
+<div>
+  <div class="blog-post-hero">
+    <div>
+      <div></div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <p>// What we're testing</p>
+  <ul>
+    <li>Client-side text crawling</li>
+    <li>Adobe LLMO Optimize-at-Edge</li>
+    <li>PDF discoverability</li>
+    <li>Live LLM citation</li>
+  </ul>
+  <div class="section-metadata">
+    <div>
+      <div>Style</div>
+      <div>key-points</div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <p>I'm running a test here to see what it actually takes to get LLMs — ChatGPT, Perplexity, Grok, Gemini — to pull non-server-rendered text off a page and cite it in their responses. The hypothesis is that most of the citation-worthy content on modern Edge Delivery / AEM sites is hidden from crawlers, and that <a href="https://business.adobe.com/products/llm-optimizer.html">Adobe LLM Optimizer</a> can close that gap.</p>
+
+  <div class="figure">
+    <div>
+      <div><img src="https://i0.wp.com/www.opsinventor.com/wp-content/uploads/2026/02/image.png?ssl=1" alt="Adobe LLM Optimizer dashboard"></div>
+    </div>
+    <div>
+      <div>01</div>
+      <div>Adobe LLM Optimizer dashboard — the testbed for this experiment</div>
+    </div>
+  </div>
+
+  <h2>The testbed</h2>
+
+  <p>I recently wrote <a href="https://blog.arborydigital.com/en/blog/eds-cdn-architecture-advanced-search-aem-meetup-cary-nc">this post on our AEM Meetup in NC</a>, and in that post I have a section "PDF resources from the event" which uses an Edge Delivery block that generates a list of related PDFs from the AEM Cloud Service DAM. The PDFs are AEM/EDS architecture diagrams — exactly the kind of artifact an LLM should love to cite. But right now, despite solid traditional SEO, zero LLMs are surfacing them.</p>
+
+  <p>I built the block intentionally: the juiciest part of the data — the PDF titles, descriptions, and links — is <strong>client-side rendered</strong>, which makes it (theoretically) invisible to most crawlers. Forty-eight hours after publishing, zero LLMs — Gemini, ChatGPT, Grok, Copilot — could give me a link to the PDF, even when I pointed them at the exact page.</p>
+
+  <div class="figure">
+    <div>
+      <div><img src="https://i0.wp.com/www.opsinventor.com/wp-content/uploads/2026/02/image-4.png?ssl=1" alt="LLM unable to find PDF links"></div>
+    </div>
+    <div>
+      <div>02</div>
+      <div>Forty-eight hours in — none of the major LLMs can find the PDFs</div>
+    </div>
+  </div>
+
+  <p>The test prompt:</p>
+
+  <p><code>Find me a PDF document on blog.arborydigital.com with the description "Diagram of an example Edge Delivery Services / DA / AEMaaCS implementation, showing authentication, authorization, SSO and configuration auth workflows"</code></p>
+
+  <p>Given this testbed, I'm measuring how well a few prompt variations get the article or PDFs cited, using <a href="https://experienceleague.adobe.com/en/docs/llm-optimizer/using/resources/optimize-at-edge/overview">Adobe LLMO's Optimize-at-Edge</a> tech to generate pre-hydrated HTML specifically for the LLMs.</p>
+
+  <div class="figure">
+    <div>
+      <div><img src="https://i0.wp.com/www.opsinventor.com/wp-content/uploads/2026/02/image-1.png?ssl=1" alt="Prompt variations and visibility scoring in LLM Optimizer"></div>
+    </div>
+    <div>
+      <div>03</div>
+      <div>Prompt variations and per-LLM visibility scoring in the LLM Optimizer UI</div>
+    </div>
+  </div>
+
+  <p>Experiment kicked off today (2/24/26) — we'll see where this goes.</p>
+
+  <div class="update">
+    <div>
+      <div>Update · Feb 25, 2026</div>
+    </div>
+    <div>
+      <div>Implemented Adobe LLMO Optimize-at-Edge</div>
+    </div>
+    <div>
+      <div>
+        <p>As of today the LLMO Optimize-at-Edge routing is enabled on our CDN for Adobe LLM Optimizer. A custom version of the site is now hosted-in-parallel by Adobe gear, creating a pre-hydrated, LLM- and crawler-friendly version that should start to surface the text we're after.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="figure">
+    <div>
+      <div><img src="https://i0.wp.com/www.opsinventor.com/wp-content/uploads/2026/02/image-2.png?ssl=1" alt="LLMO routing configuration"></div>
+    </div>
+    <div>
+      <div>04</div>
+      <div>Optimize-at-Edge routing enabled on the CDN</div>
+    </div>
+  </div>
+
+  <p>As of last night, asking an LLM to "find me a diagram on blog.arborydigital.com which is a diagram of an example Edge Delivery Services / DA / AEMaaCS implementation" — zero of them could find it, even pointed at the page. The JS-rendered text was still invisible. Once edge optimizations finish hydrating, I'll update again.</p>
+
+  <div class="update">
+    <div>
+      <div>Update · Feb 26, 2026 (AM)</div>
+    </div>
+    <div>
+      <div>Deployed pre-render</div>
+    </div>
+    <div>
+      <div>
+        <p>Traffic routing was complete, but there were manual configs on the Adobe side before the UI accepted configurations. All domain URLs are now onboarded in pre-render.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="figure">
+    <div>
+      <div><img src="https://i0.wp.com/www.opsinventor.com/wp-content/uploads/2026/02/image-5.png?ssl=1" alt="Domain URLs onboarded"></div>
+    </div>
+    <div>
+      <div>05</div>
+      <div>All domain URLs onboarded into pre-render</div>
+    </div>
+  </div>
+
+  <p>LLM-friendly summaries were also added:</p>
+
+  <div class="figure">
+    <div>
+      <div><img src="https://i0.wp.com/www.opsinventor.com/wp-content/uploads/2026/02/image-6.png?ssl=1" alt="LLM-friendly summaries added"></div>
+    </div>
+    <div>
+      <div>06</div>
+      <div>LLM-friendly summaries staged for crawler ingestion</div>
+    </div>
+  </div>
+
+  <p>Waiting now for these to kick in and start being pulled — then we'll update PDF readability results.</p>
+
+  <div class="update success">
+    <div>
+      <div>Update · Feb 26, 2026 (PM) — Result</div>
+    </div>
+    <div>
+      <div>Success: some LLMs are immediately finding the PDF URLs</div>
+    </div>
+    <div>
+      <div>
+        <p>One hour after deploying the edge optimization on LLM Optimizer, I re-ran the PDF searches. Previously <strong>zero</strong> LLMs could find a link to the PDFs. Now we're already getting results — first from those LLMs that do a live fan-out search and pull live URLs (rather than just cached search results).</p>
+      </div>
+    </div>
+  </div>
+
+  <p>ChatGPT pulled the exact PDF URL — which was in client-side JS, now being fed pre-rendered to the LLM by Adobe LLM Edge Optimization:</p>
+
+  <div class="figure">
+    <div>
+      <div><img src="https://i0.wp.com/www.opsinventor.com/wp-content/uploads/2026/02/image-7.png?ssl=1" alt="ChatGPT returning the exact PDF URL"></div>
+    </div>
+    <div>
+      <div>07</div>
+      <div>ChatGPT returning the exact, previously-invisible PDF URL</div>
+    </div>
+  </div>
+
+  <p>Grok was also able to pull the exact PDF URL:</p>
+
+  <div class="figure">
+    <div>
+      <div><img src="https://i0.wp.com/www.opsinventor.com/wp-content/uploads/2026/02/image-8.png?ssl=1" alt="Grok also surfacing the PDF URL"></div>
+    </div>
+    <div>
+      <div>08</div>
+      <div>Grok independently surfacing the same PDF URL</div>
+    </div>
+  </div>
+
+  <p>Copilot and Google AI Mode still aren't finding the PDFs themselves (just the HTML heading that already existed). Perplexity can pull the JS-rendered text but can't find the link. Still — one hour in, and we've already recovered meaningful visibility.</p>
+
+  <h2>What this means</h2>
+  <p>The premise — that client-side rendered content is effectively invisible to LLM crawlers — held up. So did the premise that Adobe's LLMO Optimize-at-Edge meaningfully changes that, at least for the LLMs doing live fan-out retrieval. I'll keep this article live as the test progresses and update with results as more LLMs catch up.</p>
+</div>
+
+<div>
+  <p>// Related reading</p>
+  <ul>
+    <li>
+      <p><em>Interview · AEMaaCS</em></p>
+      <p><a href="/en/aem-infrastructure-and-personnel-strategy-a-talk-with-tom-johnson-of-hirobe">AEM infrastructure and personnel strategy — a talk with Tom Johnson of Hirobe</a></p>
+      <p>Read the conversation →</p>
+    </li>
+    <li>
+      <p><em>Field Notes · DevOps</em></p>
+      <p><a href="/en/tailing-and-viewing-adobe-cloud-manager-build-logs">Tailing and viewing Adobe Cloud Manager build logs</a></p>
+      <p>Read the runbook →</p>
+    </li>
+  </ul>
+  <div class="section-metadata">
+    <div>
+      <div>Style</div>
+      <div>related</div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <p><em>// Direct Line</em></p>
+  <h2>Got a content visibility problem of your own?</h2>
+  <p>Bring me the hard part. I do scoped advisory engagements for engineering leaders who need a real answer — not a slide deck, not discovery theater.</p>
+  <p><a href="mailto:tad@opsinventor.com">Start a conversation →</a></p>
+  <div class="section-metadata">
+    <div>
+      <div>Style</div>
+      <div>cta-band</div>
+    </div>
+  </div>
+</div>
+
+<div>
+  <div class="metadata">
+    <div>
+      <div>title</div>
+      <div>Testing GEO/SEO with Adobe LLM Optimizer</div>
+    </div>
+    <div>
+      <div>description</div>
+      <div>A running field experiment: can Adobe LLM Optimizer's Optimize-at-Edge make client-side rendered Edge Delivery content visible to ChatGPT, Perplexity, Grok and Gemini?</div>
+    </div>
+    <div>
+      <div>image</div>
+      <div>https://i0.wp.com/www.opsinventor.com/wp-content/uploads/2026/02/image.png?resize=1800%2C1000&amp;ssl=1</div>
+    </div>
+    <div>
+      <div>template</div>
+      <div>blog</div>
+    </div>
+    <div>
+      <div>author</div>
+      <div>Tad Reeves</div>
+    </div>
+    <div>
+      <div>date</div>
+      <div>2026-02-24</div>
+    </div>
+    <div>
+      <div>category</div>
+      <div>Field Experiment</div>
+    </div>
+    <div>
+      <div>tags</div>
+      <div>Field Experiment, Adobe LLM Optimizer, GEO, SEO, Edge Delivery</div>
+    </div>
+  </div>
+</div>

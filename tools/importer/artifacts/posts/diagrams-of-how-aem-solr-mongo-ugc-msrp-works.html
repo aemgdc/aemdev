@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Diagrams of How AEM Solr/Mongo UGC (MSRP) Works</title>
+  <link rel="canonical" href="https://www.opsinventor.com/diagrams-of-how-aem-solr-mongo-ugc-msrp-works/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Diagrams of How AEM Solr/Mongo UGC (MSRP) Works</h1>
+      <time datetime="2020-05-21T05:44:13.000Z">5/20/2020, 10:44:13 PM</time>
+    </header>
+    <section class="content">
+      
+<p>When the AEM 6.1 Communities functionality was first released about 4 years ago, I'd just created my first blog post with AEM architecture diagrams for the Rackspace blog, and <strong>promised </strong>all my teammates that I would TOTALLY create some great diagrams of how the Adobe Experience Manager / Solr / Mongo / Sling Distribution setup worked.</p>
+
+
+
+<p>Well, now here we are a few versions later, and in the intervening years I've made still further promises to co-workers to make some understandable diagrams of how this all works.  Well, sorry team, I'm finally catching up my backlog. </p>
+
+
+
+<h2>First: Understanding the Problem of UGC on AEM</h2>
+
+
+
+<p>In AEM (with the exception of the new <a href="http://www.jetteroheller.com/introducing-aem-as-a-cloud-service/">AEM as a Cloud service</a>) each Publish instance keeps an entire copy of ALL of the content a user could possibly want to see, with the exception of things like - say - a custom on-site search engine like Sinequa or Solr, or a Commerce engine like Hybris.  </p>
+
+
+
+<p>So, if you wanted to implement some social features like comments, blog posts, likes, ratings, bookmarks, blog "follow" functionality, etc, that all needs to be stored somewhere that all users can get to.  </p>
+
+
+
+<p>In the old days (i.e. AEM 6.0 and earlier) your only option was to have all of your publicly logged-in users to be REAL AEM users, and a comment or a "like" posted on one AEM publisher would then have to get reverse-replicated back to the Author (which is not supposed to be taking public traffic) which then forward-replicates it out to the other publishers.  This setup was EXCEPTIONALLY brittle, and with its multiple redundant points of failure could handle FAMOUSLY little traffic before falling over dead.  The most problematic AEM site I ever worked on, causing me more heartache and grief than virtually anything else I've ever touched in my career was AEM 6.0 with such a setup.</p>
+
+
+
+<p><strong>And don't ask me for a diagram of it, I won't do it.</strong></p>
+
+
+
+<figure class="wp-block-image"><img src="https://3.bp.blogspot.com/-YQJpc6EV2o0/WkzSnXS6gxI/AAAAAAAAox0/n-ibnlKQMTknksFQUFE3vKmgtIJt2_wrACLcBGAs/s1600/giphy%2B%25282%2529.gif" alt=""/></figure>
+
+
+
+<p>Adobe had to design an entirely separate system for handling both User profiles and access, as well as handling the user-generated content itself.  From that <a href="https://docs.adobe.com/content/help/en/experience-manager-65/communities/home.html">AEM Communities</a> was born. </p>
+
+
+
+<h2>AEM UGC Infrastructure Choices</h2>
+
+
+
+<p>Since AEM 6.1, Adobe has maintained four separate mechanisms for storing UGC in AEM.  They are: </p>
+
+
+
+<ul><li><strong>MSRP - Mongo Storage Resource Provider: </strong>Persists UGC in MongoDB, and uses Solr as a caching and search mechanism to quickly serve it up to the publishers. Suitable for high traffic sites with a lot of UGC, but does take a fair bit of DevOps muscle. </li><li><strong>DSRP - </strong>Relational Database:  Same as MSRP, but uses a relational database like MySQL to persist the UGC, and still uses Solr as a read cache. Slower than MSRP but works for those with a lot of DBA muscle around. </li><li><strong>ASRP - Adobe Storage Resource Provider: </strong>This is where you use Adobe's Cloud-Hosted AEM Communities endpoints, which are really just MSRP under the covers, but you just don't need to provision the infrastructure for them.  If you have the option of moving your UGC out of your org's ops footprint, this is a great option. <br><br>Also, this will be the only option available for AEM as a Cloud Service once AEM communities is released for AEMaaCS. </li><li><strong>JSRP - Java Storage Resource Provider:</strong>  This is for dev use only, and NOT for production, and persists all UGC into the local JCR of the publish instance, and can't share it with another instance.  Just for developing on your local.  </li></ul>
+
+
+
+<p>Today, we're going to be talking about MSRP. </p>
+
+
+
+<h2>User Profile Data vs User Generated Content</h2>
+
+
+
+<p>The first distinction to make when understanding this setup is that there are two very different types of user data to handle on a Communities setup: </p>
+
+
+
+<ul><li><strong>User Generated Content: </strong>This would consist of blog posts, comments, ratings, post likes, comment likes, author follows, bookmarks, and other user-generated content, much of which is in a <em>constant </em>state of flux, and which could be rapidly changing with every page refresh.  </li><li><strong> User Profile data:</strong> This would be <em>seldomly-updated</em> and user-specific data for a given user, like username, password, display name, email address, etc.  It is data with infrequent updates, but also must be persisted as part of the AEM application as it can be they key for things like Closed User Groups and user-specific content access.  But because it's not in a state of constant, high-volume flux, it gets persisted differently than UGC. </li></ul>
+
+
+
+<p>For user profile data, AEM uses <a href="https://docs.adobe.com/content/help/en/experience-manager-65/administering/security/sync.html">Sling Distribution user sync </a>to take updated user data from one publisher and ensure it gets to all other publish instances in the farm. </p>
+
+
+
+<figure class="wp-block-image size-large"><img src="http://www.jetteroheller.com/wp-content/uploads/2020/05/AEM-communities-msrp-sling-dist-v1-e1590036849784-1024x749.png" alt="" class="wp-image-1478"/><figcaption>Simple diagram of Sling User Sync on AEM</figcaption></figure>
+
+
+
+<p>The link above gives the instructions for setting up user sync on AEM 6.5.  Setting up User Sync on AEM can be a brittle process, as it does require that the Author environment be in the loop and be the via for any user changes that happen in the publish environment.  </p>
+
+
+
+<p><strong>NOTE: It is, presently, the only part of a modern AEM site where the loss of the Author environment would impact the user experience and full availability of your public-facing website.  </strong></p>
+
+
+
+<p>Generally, an Author instance can be taken offline on the weekends without any effect at all on your publish environment (aside from no new content getting published) but with Sling user sync in the loop, taking down the author means that if someone changes their display name or profile image on one publisher, that change will not be reflected in the other publishers while the Author is down.  Adobe recommends that if this is an issue, or if you are not able to implement sticky sessions (i.e. if users can hop from publisher to publisher at any time) it's recommended to go with a separate SSO solution to establish your user sessions rather than use Sling user sync. </p>
+
+
+
+<h2>Storing &amp; Serving User Content with Mongo / Solr</h2>
+
+
+
+<p>Now, for storing &amp; serving user-generated content itself.  I'm focusing here on <strong>MSRP</strong>, as it's the most robust platform you can host yourself.  </p>
+
+
+
+<p>First off, just know that setting up MSRP is NOT FAST AND EASY.  <a href="https://docs.adobe.com/content/help/en/experience-manager-65/communities/administer/msrp.html">This document talks about how to do it in detail</a>, but if you're looking at doing this for the first time, recommend that you hit up some DevOps muscle to help you with automating that setup.    </p>
+
+
+
+<p>There are two ends of this to talk about, how data is written to the system, and how it's read back &amp; displayed.  </p>
+
+
+
+<p>For writes, the system-of-record for AEM Communities UGC here is MongoDB: </p>
+
+
+
+<figure class="wp-block-image size-large"><img src="http://www.jetteroheller.com/wp-content/uploads/2020/05/AEM-communities-mongo-writes-v1-e1590036820769-1024x917.png" alt="" class="wp-image-1479"/><figcaption>How a user action resulting in a write of UGC to the system gets persisted.</figcaption></figure>
+
+
+
+<p>In the example above, a user on the website clicks the "Like" button on a blog post.  That call then goes through a load balancer where he's assigned to a dispatcher, the dispatcher passes that request back to the publisher.  </p>
+
+
+
+<p>The AEM Publisher does <em>not</em> persist this "Like" anywhere in the JCR locally, but instead hands it off to the MSRP setup, where it makes a write to your MongoDB cluster, where it will be permanently stored.  </p>
+
+
+
+<p>Solr in this case will pull its data from Mongo to be used for later refreshes of that page, or for other users to see that the page has a "Like". </p>
+
+
+
+<p>To restate: the system of record for the UGC setup is Mongo.  If Solr data becomes inconsistent, or if you upgrade Solr and need to wipe it out and start from scratch, there is a <a href="https://docs.adobe.com/content/help/en/experience-manager-65/communities/administer/msrp.html#msrp-reindex-tool">Solr Reindex job you run from the Author </a>which vaporizes Solr and pulls all the data newly from Mongo. </p>
+
+
+
+<p>Then, for reads, let's look at Solr: </p>
+
+
+
+<figure class="wp-block-image size-large"><img src="http://www.jetteroheller.com/wp-content/uploads/2020/05/AEM-communities-solrcloud-reads-v1-e1590036880345-1024x853.png" alt="" class="wp-image-1477"/></figure>
+
+
+
+<p>In the example above, the user loads an AEM page that contains user comments on it.  After passing through the dispatcher, the AEM publisher would go to attempt to render the page.  On-page components that come from the JCR get spat out directly, but components that contain the user-generated content go to the MSRP connector. </p>
+
+
+
+<p>Now, Adobe supports both going with a stand-alone Solr server, or with full <a href="https://lucene.apache.org/solr/guide/6_6/setting-up-an-external-zookeeper-ensemble.html">SolrCloud Solr/Zookeeper setup</a>.  For high-availability and speed, you'd want SolrCloud.  </p>
+
+
+
+<p>In the case above, the first thing that happens is the AEM Zookeeper client kicking off to talk to your Zookeeper ensemble and ask it what Solr servers it should be talking to for a given Solr Collection.  If a Solr server is being restarted or is not responding, Zookeeper will handle the load-balancing and failover for you.  </p>
+
+
+
+<p>After AEM gets what Solr server it should talk to, it reaches out to talk to Solr (usually port 8983) to query and get the data it needs (i.e. "give me all the blog posts for a page with this id" etc).  </p>
+
+
+
+<p>Once it gets the data back from Solr, AEM can return the page. </p>
+
+
+
+<hr class="wp-block-separator"/>
+
+
+
+<p><strong>About the Cover Photo:</strong> Taken on a lovely sunset in June 2018 on the Donnersbergerbruecke in Munich, Germany while on a business trip.  I'm forever envious of how easy it is to get around Munich without a car. Original: <a href="https://www.flickr.com/photos/tadnkat/40789094440/">Sunset Trains Coming from Munich Haubtbahnhof | Tad Reeves | Flickr</a></p>
+
+
+
+<figure class="wp-block-embed is-type-photo is-provider-flickr wp-block-embed-flickr"><div class="wp-block-embed__wrapper">
+https://www.flickr.com/photos/tadnkat/40789094440/
+</div></figure>
+
+    </section>
+    <footer><p>Categories: AEM, AEM / CQ, aemaacs, communities, diagram, diagrams, mongo, mongodb, pictures, social, solr, solrcloud, user generated content, zookeeper</p></footer>
+  </article>
+</body>
+</html>

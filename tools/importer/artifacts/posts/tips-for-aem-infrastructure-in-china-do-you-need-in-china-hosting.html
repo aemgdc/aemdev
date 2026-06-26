@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Tips for AEM Infrastructure in China: Do you NEED in-China Hosting?</title>
+  <link rel="canonical" href="https://www.opsinventor.com/tips-for-aem-infrastructure-in-china-do-you-need-in-china-hosting/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Tips for AEM Infrastructure in China: Do you NEED in-China Hosting?</h1>
+      <time datetime="2021-06-30T01:44:30.000Z">6/29/2021, 6:44:30 PM</time>
+    </header>
+    <section class="content">
+      
+<p>I've gotten the opportunity to consult for a few different companies deploying infrastructure to China, as well as debugging China-specific performance issues for AEM environments, and it remains the most complicated country to solve for.  There are variables, unknowns and gotchas galore, so I figured it might be helpful to put together a collection of some of the issues I've run into, in the case it might help you evaluate your infrastructure plans.  Some of these issues may pertain only to sites that run on Adobe Experience Manager, others affect a broad range of platforms - I'll try to make it a worthwhile read even if you don't run AEM.  </p>
+
+
+
+<p>I was going to do this as one big gigantor article, but just the first section I'm writing is already bloating out of control, so I'll do this as a multi-part series, split up into a few topics: </p>
+
+
+
+<ul><li>How do you measure &amp; decide whether or not you need a hosting solution for China?</li><li>Is AEM as a Cloud Service an Option?</li><li>Do you need a specific license to host in China?</li><li>What CDN considerations should one have for China?</li><li>Do you set up an entirely new infrastructure, or just put a Dispatcher/Publisher setup in China?  Or just a Dispatcher?</li><li>What networking concerns should you be aware of with China infrastructure?</li><li>What about SSO/Site Login?</li><li>How will user-generated content (UGC) get handled, and how does that play with Chinese data residency law?</li><li>What about your custom backend calls like your site-search infrastructure, databases, etc?</li><li>What about Adobe Dynamic Media and Adobe Launch?  </li><li>What if you use Brightcove or Youtube for your on-demand videos?</li></ul>
+
+
+
+<p>See, lots to talk about.  I'll start in this article just with the first bit - how to decide whether or not you even need China-specific infrastructure?</p>
+
+
+
+<p>Edit:  The second post in the series is up here: <a href="https://www.opsinventor.com/tips-for-aem-sites-in-china-licensing-hosting-choices/">Tips for AEM Infrastructure in China: Designing an in-China or Near-China Site Architecture</a></p>
+
+
+
+<h2>Dealing with the Great Firewall: What's Different about Accessing Sites in China</h2>
+
+
+
+<p>In case you're not already well-versed with Internet access in China, one should know that China's internet access is, for the most part, entirely behind the world's most murky and complex web filtering apparatus.  It's a partially-automated, partially human-controlled access filter which can control ingress and egress using a number of mechanisms including DNS blocking, IP-based blocking, quality-of-service filtering (i.e. slowly degrading website usability instead of outright-blocking), man-in-the-middle attacks and packet spoofing.  These mechanisms can have highly-variable effects on website traffic and website UX.  </p>
+
+
+
+<p>As an example: it's popularly known that "you can't see Twitter in China".  However, that's not technically true.  When last I visited China in 2018 - as a foreign visitor, in a hotel in Guangzhou (primarily used by foreign visitors) I had no problem accessing Flickr or Twitter, though I occasionally had trouble with Gmail and Google.  However, Facebook, for me, worked the first time, was slower the second time, and by day 2 of my stay, I no longer found I could get the whole Facebook page to load.  Note that this was my experience when using the hotel's wifi.  When I got myself a prepaid China Unicom SIM card for my burner cell phone, and then used it to tether my laptop, suddenly ALL US social media sites were blocked, Google, Facebook, Youtube, everything.  </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/06/image-2.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/06/image-2-1024x442.png" alt="" class="wp-image-1776"/></a><figcaption><em>The view from my hotel in Guangzhou - where I had no problem accessing US sites usually assumed to be restricted in China</em></figcaption></figure>
+
+
+
+<p>Furthermore, when traveling to a city like <a href="https://flic.kr/p/24djhmS">Fuzhou</a> or <a href="https://www.youtube.com/watch?v=8q_FBYU4B68">Quanzhou </a>(an out-of-the-way destination not frequented by foreigners) I found I couldn't hit Facebook, Linkedin, Flickr or any of the usual social media biggies - sometimes even with a VPN.   </p>
+
+
+
+<p>Hong Kong and Macau, however, as they are "special administrative regions" of China, are not restrained by the same internet access filtering as the rest of China - and therefore resources hosted in datacenters located in Hong Kong will face delays, quality-of-service issues and potential blocking as they transit into the rest of China.  </p>
+
+
+
+<p>The main take-aways you should have from this are: </p>
+
+
+
+<p>(a) Accessing any resource hosted outside of mainland China will potentially be subjected to either outright blocking, delay, or quality-of-service degradation, and </p>
+
+
+
+<p>(b) Because of the variable nature of the implementation of the filtering apparatus, one can't take a single website visit or a small cross-section of visits (i.e. the hear-say of a single office worker in Shanghai) as representative of what your potential users and customers are facing across China. </p>
+
+
+
+<h2>Measuring China Website Performance: Do You Need In-China Hosting? </h2>
+
+
+
+<p>That being said, the first and most important thing to quantify is to decide whether or not you <em>actually</em> need separate infrastructure for China or not.  You need to decide whether or not there is a problem, and if there is a problem you need to decide what its root cause is.  Remember your average website page view contains potentially hundreds of sub-requests, many of them to third-party resources.  You need to discover: </p>
+
+
+
+<p>(a) Are your users having a bad time?<br>(b) Is it the requests to YOUR gear that's slow, or is it a third-party?<br>(c) Is that something you can fix by substituting locale-specific resources, or is there no substitute for getting some gear in China? </p>
+
+
+
+<p>This evaluation takes a few parts, and can really turn into the scope of work for a large discovery project just to determine.  And it could be REALLY IMPORTANT to determine. Have a look at this analysis from my own site, hosted in the USA: </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/06/image-3.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/06/image-3-1024x434.png" alt="" class="wp-image-1777"/></a><figcaption><em>Above is a "filterable geography" graph from New Relic Browser for the www.opsinventor.com site. Note that for the limited subset of visitors for this USA-hosted site, US visitors get ~7x faster load times than Hong Kong ~30x faster page load times than mainland China.</em></figcaption></figure>
+
+
+
+<p>I hereby apologize to any of my mainland Chinese blog visitors. </p>
+
+
+
+<p>Assuming first that you have a significant fraction of site visitors from China (data your Google Analytics / Adobe Analytics should be able to rapidly tell you), it's important to then deeply understand what sort of user experience those visitors are currently getting.  If you don't have much traffic, no reason to put hundreds of thousands into new marketing infrastructure in the country.  However, if you're Tesla or Marriott and are doing billions in sales locally in China, it's not really much of an option. </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/06/image-4.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/06/image-4.png" alt="" class="wp-image-1778"/></a><figcaption><em>Geolocation report from Google Analytics for recent traffic for this site - looks like I do have enough China-specific traffic to bother with, were I to monetize this site at all...</em></figcaption></figure>
+
+
+
+<h2>Use Real-User Monitoring </h2>
+
+
+
+<p>The best and unequivocally-recommended way to do this is to employ a real-user monitoring (RUM) tool on your site such as <a href="https://docs.newrelic.com/docs/browser/browser-monitoring/getting-started/introduction-browser-monitoring/">New Relic Browser</a>, <a href="https://www.dynatrace.com/support/help/how-to-use-dynatrace/real-user-monitoring/">Dynatrace </a>or <a href="https://docs.datadoghq.com/real_user_monitoring/">Datadog </a>which uses javascript code injected into every page on your site to be able to conduct detailed timing &amp; analysis of user interactions, and thereby give you a real view, by locale, of what people are seeing.  This is the most real, as it also takes into account all factors like user hardware, the quality of real users' Internet connections or company VPNs, etc.  </p>
+
+
+
+<p>Tools like this also allow you to dig into specific session traces, so that you can debug and iterate - looking at how long a specific visitor took to load various resources, comparing mobile vs desktop, etc to really understand whether a resource hang stopped the whole loading of a page for a user, or just silently timed out.  This screenshot is from New Relic Browser, showing this in action: </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/06/image-5.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/06/image-5-1024x448.png" alt="" class="wp-image-1779"/></a></figure>
+
+
+
+<p>Another tool which I've used with great success for geo-specific testing is good old <a href="https://webpagetest.org/">WebPageTest</a>, which allows you to test specific URLs on a variety of browsers, from a variety of specific locations including several in China itself as well as other APAC regions like Hong Kong, Japan and Singapore.   </p>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/06/image-1.png"><img src="https://www.opsinventor.com/wp-content/uploads/2021/06/image-1-1024x896.png" alt="" class="wp-image-1772"/></a></figure>
+
+
+
+<p>The nice thing about WebPageTest is that it will optionally also record an MP4 of the page loading in the browser, so that you can see what it would have looked like for a user in China loading a given page resource.  </p>
+
+
+
+<p>It's essential to gather enough data first before any big infrastructure purchase, to make sure you know that you'll be solving the right problem with the engineering resources you then devote to making a snappy and usable Chinese user experience.  </p>
+
+
+
+<h2><strong>About the Header Image</strong> &amp; My Last China Trip</h2>
+
+
+
+<p>The image in the header was taken at Guangzhou South railway station, while I was on a trip to a few different Chinese cities (Shenzhen, Quanzhou, Fuzhou, Zhuhai),  getting around by high speed rail, metro and ferry.  My son is a train fanatic, so I made a video of the experience here: </p>
+
+
+
+<figure class="wp-block-embed is-type-video is-provider-youtube wp-block-embed-youtube wp-embed-aspect-16-9 wp-has-aspect-ratio"><div class="wp-block-embed__wrapper">
+https://www.youtube.com/watch?v=GbdZZB6-1pA
+</div></figure>
+
+
+
+<p></p>
+
+    </section>
+    <footer><p>Categories: adobe experience manager, AEM, AEM / CQ, analytics, blocking, china, devops, filtering, great firewall, infrastructure, rum</p></footer>
+  </article>
+</body>
+</html>

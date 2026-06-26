@@ -1,0 +1,101 @@
+<body>
+  <header></header>
+  <main><div><div class="blog-post-hero"><div><div></div></div></div></div><div><p>// Key takeaways</p><ul><li>SSL in AEM 6.3, 6.4 and Later</li><li>Steps for SSL installation on the Dispatcher</li></ul><div class="section-metadata"><div><div><p>Style</p></div><div><p>key-points</p></div></div></div></div><div><p>By default, server-to-server communication on AEM is all in plaintext HTTP. As these connections are usually all on the backend, this generally isn’t much of a security concern aside from the fact that the user that is used to replicate content between AEM Author &amp; Publish instances generally has sufficient permissions to create &amp; replicate content throughout the entire site. So, anyone sniffing traffic momentarily on the network would see the masses of repl events between servers, and thus you have yourselves a compromised site.</p><h2 id="ssl-in-aem-63-64-and-later">SSL in AEM 6.3, 6.4 and Later</h2><p>Though there is definitely a performance hit for running SSL on AEM, most of why most implementations I’ve seen tend to go all-http instead of all-SSL is complexity. SSL on AEM 6.2 and earlier was a nightmare. However, Adobe implemented a vastly simplified scheme to implement SSL on Adobe Experience Manager 6.3. The following instructions work to get SSL up between AEM instances, using self-signed certs:</p><p><strong>1) First create the keys you’ll need for AEM. Below are the steps for generating a self-signed certificate.</strong></p><pre><code>### Create Private Key
+$ openssl genrsa -aes256 -out localhostprivate.key 4096
+  
+### Generate Certificate Signing Request using private key
+$ openssl req -sha256 -new -key localhostprivate.key -out localhost.csr -subj '/CN=localhost'
+  
+### Generate the SSL certificate and sign with the private key, will expire one year from now
+$ openssl x509 -req -days 365 -in localhost.csr -signkey localhostprivate.key -out localhost.crt
+  
+### Convert Private Key to DER format - SSL wizard requires key to be in DER format
+$ openssl pkcs8 -topk8 -inform PEM -outform DER -in localhostprivate.key -out localhostprivate.der -nocrypt
+</code></pre><p><strong>1a) Generate a separate unencrypted private key to use for Apache</strong></p><pre><code>[me@localhost ssl]$ openssl rsa -in localhostprivate.key -out localhost_apache.key
+Enter pass phrase for localhostprivate.key:
+writing RSA key
+</code></pre><p><strong>1b) Create a new file that has the key on top and the crt below it</strong>, to be used on the apache servers. You’ll put it at /etc/pki/tls/certs/.</p><p><strong>2) On the Author or publisher, go into <a href="http://localhost:4502/libs/granite/security/content/sslConfig.html">http://localhost:4502/libs/granite/security/content/sslConfig.html</a> to configure SSL.</strong> Upload the .der file generate above as the key, and the .crt file as the certificate</p><p><strong>3) AEM will then fire up on SSL without a restart</strong>. I like to restart it anyhow after SSL is instantiated, but it will in-fact work on the SSL port that you’ve configured without an AEM restart.</p><p>Further info on this is on Adobe’s site here:</p><ul>
+<li><a href="https://helpx.adobe.com/experience-manager/kt/platform-repository/using/ssl-wizard-technical-video-use.html">https://helpx.adobe.com/experience-manager/kt/platform-repository/using/ssl-wizard-technical-video-use.html</a></li>
+<li><a href="https://helpx.adobe.com/experience-manager/6-3/sites/administering/using/ssl-by-default.html">https://helpx.adobe.com/experience-manager/6-3/sites/administering/using/ssl-by-default.html</a></li>
+</ul><h2 id="aem-ssl-keystore-location-in-the-new-63-way-vs-the-old-way">AEM SSL Keystore Location in the new 6.3+ way vs the old way</h2><p>It’s worth noting that AEM stores the SSL certificates in different locations on pre-6.3 releases, than it now does currently. Up through AEM 6.2, SSL was configured by creating <em>org.apache.felix.https</em> configurations directly, and then storing the SSL truststore and keystores on-disk in a Java keystore (JKS) file.</p><p>With AEM 6.3 and later (it’s unchanged in 6.4 and 6.5), AEM now stores the keystore in the JCR, under <strong>/home/users/system/security/ssl-service/keystore/store.p12</strong>, and the truststore is in <strong>/etc/truststore/truststore.p12</strong>.</p><h2 id="problems-when-upgrading-from-an-earlier-ssl-implementation-into-aem-636465">Problems when Upgrading from an earlier SSL implementation into AEM 6.3/6.4/6.5</h2><p>When I’ve done in-place upgrades of an SSL-enabled AEM 6.2 instance to AEM 6.3 or 6.4, the legacy org.apache.felix.https configurations were migrated over with the upgrade, and SSL continued to work as before.</p><p>However, don’t try to then update SSL using the new SSL wizard, as the configurations will then get into a fight and won’t work. You’ll have to use one or the other.</p><h2 id="steps-for-ssl-installation-on-the-dispatcher">Steps for SSL installation on the Dispatcher</h2><p>These are the steps I’ve done to get SSL working both for inbound HTTP requests, as well as for the backend SSL requests that are then made to the publishers.</p><ol>
+<li>
+<p>Install mod_ssl (command below is for mod_ssl on Apache 2.4 for CentOS 7)</p>
+<pre><code>yum install httpd24u-mod_ssl
+</code></pre>
+</li>
+<li>
+<p>Make a new vhost_ssl.conf file in /etc/httpd/vhosts/ (assuming you’re using such) which will take the *:443 requests:</p>
+<pre><code>&lt;VirtualHost *:443&gt;
+        ServerName ThisFrickingServerName
+        DocumentRoot /var/www/html/
+        DocumentRoot /var/www/html
+        ErrorLog logs/ssl_error_log
+        TransferLog logs/ssl_access_log
+        LogLevel warn
+        SSLEngine on
+  
+        SSLProtocol all -SSLv3
+        SSLProxyProtocol all -SSLv3
+  
+        SSLHonorCipherOrder on
+  
+        SSLCipherSuite HIGH:MEDIUM:!MD5:!RC4
+        SSLProxyCipherSuite HIGH:MEDIUM:!MD5:!RC4
+  
+        SSLCertificateFile /etc/pki/tls/certs/environment_name.crt
+        &lt;Directory /var/www/html/&gt;
+           &lt;IfModule mod_deflate.c&gt;
+           # Enable gzip compression
+           SetOutputFilter DEFLATE
+           # Don't compress binaries
+           SetEnvIfNoCase Request_URI .(?:exe|t?gz|zip|iso|tar|bz2|sit|rar) no-gzip dont-vary
+           # Don't compress images
+           SetEnvIfNoCase Request_URI .(?:gif|jpe?g|jpg|ico|png)  no-gzip dont-vary
+           # Don't compress PDFs
+           SetEnvIfNoCase Request_URI .pdf no-gzip dont-vary
+           # Don't compress flash files
+           SetEnvIfNoCase Request_URI .flv no-gzip dont-vary
+           # Netscape 4.X has some problems
+           BrowserMatch ^Mozilla/4 gzip-only-text/html
+           # Netscape 4.06-4.08 have some more problems
+           BrowserMatch ^Mozilla/4.0[678] no-gzip
+           # MSIE masquerades as Netscape, but it is fine
+           BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+           # Make sure proxies don't deliver the wrong content
+           Header append Vary User-Agent env=!dont-vary
+           &lt;/IfModule&gt;
+                &lt;IfModule disp_apache2.c&gt;
+                        SetHandler dispatcher-handler
+                        ModMimeUsePathInfo On
+                        DirectorySlash Off
+                &lt;/IfModule&gt;
+                Options FollowSymLinks
+                AllowOverride None
+        &lt;/Directory&gt;
+&lt;/VirtualHost&gt;
+</code></pre>
+<p>For the SSLCertificateFile listed above, paste in the name you saved your new cert as.</p>
+</li>
+<li>
+<p>Update Dispatcher module in /etc/httpd/modules to at least 4.2.3 from <a href="https://www.adobeaemcloud.com/content/companies/public/adobe/dispatcher/dispatcher.html">https://www.adobeaemcloud.com/content/companies/public/adobe/dispatcher/dispatcher.html</a> and ln -s /etc/httpd/modules/<a href="http://mod_dispatcher.so/">mod_dispatcher.so</a> to this new version.  <strong>NOTE:</strong> The AWS boxes we’ve been using have come with OpenSSL 1.0.2k which  <strong>does not work</strong>  with Dispatcher 4.2.2 and earlier.  It will work on the front side, but will not make SSL backend connections and you’ll get errors.  Make sure that it is the SSL version of the dispatcher as well. If the file is already there, remove it and download this version of it.</p>
+</li>
+<li>
+<p>Change your dispatcher.any to point at the SSL port on the backend author or publisher:</p>
+<pre><code>/renders
+  {
+   /ThisFrickingRenderName
+    {
+    /hostname "127.0.0.1"
+    /port "5443" #put in your ssl port here
+    /timeout "0"
+    /secure "1" #this enables SSL on the dispatcher
+    }
+        }
+</code></pre>
+</li>
+<li>
+<p>Restart Apache</p>
+</li>
+</ol><p>I’ll make a separate post on how to do SSL on AEM 6.2 and earlier, as with those you have to keep your SSL keys in a Java keystore (.jks file) on-disk, and manage your SSL inside of those JKS files. Also, there are a number of OSGI console configs you have to make (difficult to automate generically).</p><p>Hope this works well for you!</p></div><div><p>// Related reading</p><ul><li><p><em>Field Experiment · LLM</em></p><p><a href="/en/testing-geo-seo-with-adobe-llm-optimizer">Testing GEO/SEO with Adobe LLM Optimizer</a></p><p>Read the experiment →</p></li><li><p><em>Field Notes · DevOps</em></p><p><a href="/en/tailing-and-viewing-adobe-cloud-manager-build-logs">Tailing and viewing Adobe Cloud Manager build logs</a></p><p>Read the runbook →</p></li></ul><div class="section-metadata"><div><div><p>Style</p></div><div><p>related</p></div></div></div></div><div><p><a href="/en/fragments/cta-band">CTA Band</a></p></div><div><div class="metadata"><div><div><p>title</p></div><div><p>Implementing SSL on AEM</p></div></div><div><div><p>description</p></div><div><p>By default, server-to-server communication on AEM is all in plaintext HTTP. As these connections are usually all on the backend, this generally isn’t much of a security concern aside from the fact th...</p></div></div><div><div><p>image</p></div><div><p>https://content.da.live/treeves/opsinventor-eds/en/.implementing-ssl-on-aem/imgdbe3cf63f86c.png</p></div></div><div><div><p>template</p></div><div><p>blog</p></div></div><div><div><p>author</p></div><div><p>Tad Reeves</p></div></div><div><div><p>date</p></div><div><p>2018-07-17</p></div></div><div><div><p>category</p></div><div><p>AEM</p></div></div><div><div><p>tags</p></div><div><p>AEM / CQ, 6.3, 6.4, adobe experience manager, AEM, apache, cq, self-signed, ssl</p></div></div></div></div></main>
+  <footer></footer>
+</body>

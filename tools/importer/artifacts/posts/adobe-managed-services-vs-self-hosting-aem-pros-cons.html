@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Adobe Managed Services vs. Self-Hosting AEM - Pros &amp; Cons</title>
+  <link rel="canonical" href="https://www.opsinventor.com/adobe-managed-services-vs-self-hosting-aem-pros-cons/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Adobe Managed Services vs. Self-Hosting AEM - Pros &amp; Cons</h1>
+      <time datetime="2019-04-23T23:58:39.000Z">4/23/2019, 4:58:39 PM</time>
+    </header>
+    <section class="content">
+      
+<blockquote class="wp-block-quote"><p>"Where should I host AEM?  Should I keep it in our datacenter, or put it in the cloud, or perhaps at a dedicated hosting provider? And Adobe <em>really</em> is pushing me to use Adobe Managed Services to host my Experience Manager install.  Are they any good?"</p></blockquote>
+
+
+
+<p>Being the centerpiece of the most complicated pieces of marketing infrastructure in the world, Adobe Experience Manager can be a real challenge to architect, deploy, and integrate.  Everyone's got a solution to pitch to you. "Everyone should go to the Cloud!" "Run it in containers!" "Let Adobe manage it for you!"  However, with these folks each proclaiming that their solution is a one-size-fits-all, it's important to consider <strong>the most fundamental decision</strong> you'll make in setting up Adobe Experience Manager: </p>
+
+
+
+<blockquote class="wp-block-quote"><p><strong>Do I buy a license from Adobe and then host AEM myself (either on-premise or in the cloud), or do I sign a contract with Adobe Managed Services and have them run my AEM infrastructure for me?</strong></p></blockquote>
+
+
+
+<p>There are a lot of factors to consider, and they have to do not just with technical capabilities in AEM itself, but also with your current (and ideal!) deployment process, the personnel you have available to you now, and all of the many other things you might need your AEM system to talk to. </p>
+
+
+
+<p>But first - <strong>urgent disclaimer!</strong>  As an AEM Architect that specializes in AEM infrastructure, I do currently work for a company (<a href="https://www.icf.com/next">ICF Next</a>) that has an amazing, automation-rich, managed AEM hosting service that runs in AWS, Azure or Google Cloud Platform.   I also consult on other cloud &amp; on-premise AEM infrastructures, and it's my job to set up great AEM infra that purrs like a kitten.  So, that's my skin in this game, and figured I'd get that out of the way while saying what I have to say, below. </p>
+
+
+
+<h2>What is Adobe Managed Services and how is it different from hosting it myself?</h2>
+
+
+
+<p>Let's get the basics out of the way first.  How does Adobe Managed Services (AMS) differ from self-hosting?  </p>
+
+
+
+<figure class="wp-block-image"><img src="https://i1.wp.com/www.jetteroheller.com/wp-content/uploads/2019/04/ams-diagram-v1-1.png?fit=1024%2C640" alt="" class="wp-image-1256"/><figcaption><br><em>A simplified diagram of Adobe Managed Services and how you interact with AEM, and what functions you do not have access to. </em></figcaption></figure>
+
+
+
+<p>The above is a simplified view of what Adobe Managed Services offers.  From an infrastructure perspective, Adobe provides a simplified GUI front-end that allows them to essentially provision and own AWS or Azure accounts (your choice) where your AEM environment will be deployed to, and then they provision and maintain whatever size of AEM environment you are licensed for in your AMS contract.  Starting and stopping environments can be done self-service-style via their Cloud Manager web front-end.  Technical staff at AMS then handle any platform issues that come up with your environment, and are the only ones who have back-end access to ssh to your instances, to look at Splunk or New Relic to get application performance data, and to view or modify the automation that creates your environment.  Much more on that to follow.  </p>
+
+
+
+<p>From what Adobe has said at the last few Adobe Summits, they've designed their AMS offering around "the 80th-percentile use cases" to try to make a system that works for as many use cases as possible, while enabling clients to run an AEM system with less devops staff than in a more traditional model.  As model that was designed to be fairly self-service, it comes with its own inherent advantages and disadvantages, as well as company personas that work, and ones that do not.  </p>
+
+
+
+<p>The other side of the coin from Adobe Managed Services would be acquiring a license from Adobe for AEM, and then running it on either your own datacenter, or in one of any shared-tenancy clouds like Microsoft Azure, Amazon Web Services, Google Cloud Platform, Ali Cloud or a host of others.   I've already put quite a few <a href="http://www.jetteroheller.com/sample-architecture-diagrams-for-adobe-experience-manager/">AEM infrastructure diagrams</a> together, so I won't belabor that here. </p>
+
+
+
+<ul class="wp-block-gallery columns-4 is-cropped"><li class="blocks-gallery-item"><figure><a href="http://www.jetteroheller.com/aem-6-5-new-features-guide-for-platform-architects-ops/aem-6-5-connected-assets/"><img src="http://www.jetteroheller.com/wp-content/uploads/2019/04/aem-6.5-connected-assets-1024x669.png" alt="AEM 6.5 Connected Assets Diagram" data-id="1245" data-link="http://www.jetteroheller.com/aem-6-5-new-features-guide-for-platform-architects-ops/aem-6-5-connected-assets/" class="wp-image-1245"/></a><figcaption>AEM 6.5 Connected Assets Diagram</figcaption></figure></li><li class="blocks-gallery-item"><figure><a href="http://www.jetteroheller.com/on-choosing-a-disaster-recovery-strategy-for-adobe-experience-manager/aem-6-4-cold-standby-v1/"><img src="http://www.jetteroheller.com/wp-content/uploads/2018/09/aem-6.4-cold-standby-v1-1024x962.png" alt="AEM 6.4 with Cold Standby Author" data-id="1177" data-link="http://www.jetteroheller.com/on-choosing-a-disaster-recovery-strategy-for-adobe-experience-manager/aem-6-4-cold-standby-v1/" class="wp-image-1177"/></a><figcaption>AEM 6.4 with Cold Standby Author</figcaption></figure></li><li class="blocks-gallery-item"><figure><a href="http://www.jetteroheller.com/blue-green-deployment-on-adobe-experience-manager/blue-green_v1_step1/"><img src="http://www.jetteroheller.com/wp-content/uploads/2018/08/blue-green_v1_step1-1024x933.png" alt="AEM Blue-Green Deployment Diagram Step1: public website traffic and author traffic aimed at &quot;blue&quot; environment" data-id="1136" data-link="http://www.jetteroheller.com/blue-green-deployment-on-adobe-experience-manager/blue-green_v1_step1/" class="wp-image-1136"/></a><figcaption>AEM Blue-Green Deployment Diagram Step1:  public website traffic and author traffic aimed at "blue" environment</figcaption></figure></li><li class="blocks-gallery-item"><figure><a href="http://www.jetteroheller.com/setting-up-aem-author-workflow-offloading/aem-offload-author-s3-v1/"><img src="http://www.jetteroheller.com/wp-content/uploads/2018/07/aem-offload-author-s3-v1-1024x921.png" alt="Diagram of AEM Offloading with S3 Datastore" data-id="1070" data-link="http://www.jetteroheller.com/setting-up-aem-author-workflow-offloading/aem-offload-author-s3-v1/" class="wp-image-1070"/></a><figcaption><a href="http://www.jetteroheller.com/setting-up-aem-author-workflow-offloading/">http://www.jetteroheller.com/setting-up-aem-author-workflow-offloading/</a>Diagram of AEM Offloading with S3 Datastore</figcaption></figure></li></ul>
+
+
+
+<p>But to compare running AMS or a self-hosted installation of AEM, I figured I'd dive into the details of what each can and can't do, so as to hopefully help you make a decision on where your next AEM project should be hosted. </p>
+
+
+
+<h3>AEM Licensing Cost &amp; Acquisition</h3>
+
+
+
+<p>I'll get the most contentious part out of the way first: AEM licensing costs. Adobe Experience Manager is, without much argument, the premiere marketing platform on the planet right now.  It's top-shelf, enterprise software - and as a result, it's not cheap.  Licensing costs can be a significant driver in cost/benefit analyses, and Adobe has been <em>very</em> aggressive in their sales strategy to attempt to shunt buyers toward their own managed product.  In talking with around 20 different companies who had been involved in discussions with Adobe on getting licenses &amp; support contracts renewed or acquired, AMS was heavily pushed on each, even when they already had a current hosting situation they were happy with.  In most cases, reps from these companies told me that they were offered <strong>significant</strong> discounts on their licensing (surpassing <strong>six figures</strong> in some cases) if they would move their AEM workloads to Adobe Managed Services.  </p>
+
+
+
+<p>For companies that, perhaps, just have a Asset library and little in the way of permanent development and dev/ops staff, this sort of thing may be attractive - as it would allow one to potentially not have to hire AEM sysadmins to run the site.  So, in such a case, the total package may end up being a cost savings.   For others, it's not an issue - especially if going to a managed hosting provider is not an option to begin with.    </p>
+
+
+
+<h3>AEM Infrastructure choice (Azure / AWS / On-Premise / etc)</h3>
+
+
+
+<p><a href="https://helpx.adobe.com/legal/product-descriptions/adobe-experience-manager-managed-services.html">Adobe Managed Services arranges their infrastructure packages in tiers</a>, the lowest of which has only a single author / publisher / dispatcher in Production.   Their highest tier has 4 dispatcher/publishers and a clustered author.  Each tier has exactly-prescribed instance sizes with a certain amount of storage available for each.  </p>
+
+
+
+<p>There are AEM projects I've been on where the infrastructure wasn't really under stress, and where the usage patterns of the public and authoring sides of the environment didn't really color outside the lines too much.  In cases like this, one may be OK going with a basic Adobe Managed setup.  </p>
+
+
+
+<p>However, there are a number of other factors which may send you well outside of the box that is prescribed for you in managed services.  As examples:</p>
+
+
+
+<ul><li>Financial services organizations commonly have requirements to have only single-tenancy hardware (virtualized or bare-metal).  While Amazon does have a single-tenancy product (never mind the great <a href="https://www.rackspace.com/en-us/cloud/servers/onmetal">OnMetal product that Rackspace has</a>) this isn't something you could spec as part of AMS. </li><li>You may have a massive datastore which requires something much faster than commodity Amazon S3 or Azure blob store, and want something like a NetApp all-flash SAN to back the entire thing. </li><li>You may have regulatory requirements that require you to have encryption-at-rest on your AEM datastore, something not supported by AMS.  </li><li>You may have to have your application behind current corporate load-balancing or layer-7 switching appliances like an F5, where it's not feasible to port these configurations to AWS or have them run under someone else's purview. </li><li></li></ul>
+
+
+
+<h3>Number of Pre-Production / Development Environments</h3>
+
+
+
+<p>Traditionally, AEM licenses are always for production only, and companies are allowed to have as many non-production environments as they need to be able to support the development workflow that they are using.  It's common to have at minimum a Development / QA / Stage and Production tier of your environment, with your Stage environment always being as nearly-identical to production as possible.  However, with AEM version upgrades and major feature releases, it's common to clone an environment to a second dev or stage environment to use for testing the new codebase or AEM version (i.e. a <a href="http://www.jetteroheller.com/blue-green-deployment-on-adobe-experience-manager/">blue-green type setup</a>).  </p>
+
+
+
+<p>In all cases, presuming you run the hardware yourself, the only real expense out of pocket when one decides to provision more environments is the infrastructure costs and labor costs involved with getting AEM installed and operational.  </p>
+
+
+
+<p>Adobe Managed Services approaches this in a different way, with fixed numbers of AEM instances available for each price tier.  They are: </p>
+
+
+
+<ul><li><strong>AEM Sites MS Basic:</strong> 1 author / 1 publish / 1 dispatcher in prod, and a total of three non-production instances.  I.e., enough for a 1:1:1 setup in Stage, and no Dev or QA environments. </li><li><strong>AEM Sites: MS Basic HR: </strong>1 Author Instance, 2 Publish Instances, and 2 Dispatcher Instances, and 5 pre-prod instances</li></ul>
+
+
+
+<p>You then pay more for more uptime guarantees (i.e. 99.5% vs 99.9%) all the way up to their top-tier service which gives one 5 production and up to 10 pre-production instances. </p>
+
+
+
+<p>10 may sound like a lot, but one particular mid-sized AEM intranet project I happen to be working on has 42 pre-production instances, all in use as part of the development pipeline, all necessary.  Another project I am working on ended up signing an Adobe Managed Services contract before their web strategy had really gelled fully, and now will have to be setting up a bifurcated setup whereby their Staging and Production environments will be in AMS, but their Dev, QA and Sandbox environments will be hosted on their own, with obvious environmental differences which will then constantly be popping up between the two.  </p>
+
+
+
+<h3>Other Integrating Systems (Solr, MongoDB, JBoss, WebLogic,etc) </h3>
+
+
+
+<p>It's extremely common to run AEM alongside of other systems that provide critical functionality to the website, such as on-site search (Solr, Endeca, Sinequa, etc) or Java Enterprise apps (JBoss, Wildfly, WebLogic) or databases like MongoDB for AEM Social content.  AMS doesn't provide for any of these features.  It's not necessarily a complete roadblock, though it does mean that if you've got a SolrCloud cluster that you want to integrate with an AMS-hosted AEM environment, that you would have to maintain your own separate AWS account that you could potentially work to peer with each AMS account (Prod / pre-prod, etc) and run these two infrastructures in parallel.  But this does introduce constant care &amp; feeding that the relationship between your infrastructure and theirs would have (i.e. what happens when you spin up a new version of AEM in AMS - it might blow away the peering relationship you had previously, etc), and also means that despite paying Adobe for the devops personnel to run AEM itself, you'd never be able to lose all of your devops personnel internally either as you've got your own environments to keep up. </p>
+
+
+
+<p>Again, not a roadblock, but certainly factors into the cost/benefit analysis of both options. </p>
+
+
+
+<h3>Integration with infrastructure automation (Chef/Puppet/Ansible)</h3>
+
+
+
+<p>Most evolved IT organizations have moved to some level of infrastructure automation when it comes to setting up AEM environments, like Chef, Puppet or Ansible.   When you've got a scenario as discussed earlier, where one has 40+ AEM instances that all <em>should</em> have been built and configured in an identical process, it's imperative that you use automation to do this so you don't create issues in Production that didn't show themselves in QA or Dev, or the inverse where you've got production bugs that you can't reproduce in lower environments.  </p>
+
+
+
+<p>If you end up with a bifurcated setup whereby your local development and Dev/Sandbox/QA systems are on different infrastructure and built differently than your AMS servers, i.e. also with different dispatcher configurations (as it's not possible to deploy dispatcher configurations with code into AMS presently, to my knowledge), you end up with a build pipeline that doesn't really flow.  </p>
+
+
+
+<p>For smaller marketing sites which are one-hit development efforts and not continuous streams of work, this is not as much of an issue.  I've worked on several AEM sites which were big efforts to <em>create</em> but once they were up, they had minimal updates.  The lack of environment automation didn't really affect them, and they probably could have worked fine with an AMS-style setup.  Just another important consideration, especially if you've got a more-complete development staff and process. </p>
+
+
+
+<h3>Log Aggregation (Splunk, etc) &amp; Application Performance Monitoring (New Relic / AppDynamics)</h3>
+
+
+
+<p>It's not much of a secret, <a href="http://www.jetteroheller.com/useful-aem-related-splunk-searches-for-author-publish-dispatcher/">I love Splunk</a>, always have.  Adobe seems to like Splunk as well, seeing as though (as of last year) they were running Splunk on Adobe Managed Services clients to aggregate and report on logs.  Only problem though, is that you don't get access to it.  You can get access to some manner of activity feed that you can consume and parse yourself, but not the Splunk that is already running on the instances.  Also, you aren't able to install your own APM tooling (Application Performance Monitoring) like AppDynamics or New Relic.  </p>
+
+
+
+<p>To me, this is one of the most glaring product improvements that needs to be made to the Adobe Managed Services product, as any AEM installation of any size needs to be hooked in to APM tooling and hooked into a log aggregator so that developers can both debug current problems, as well as iterate upon and improve the performance of the site.  If you want access to New Relic and Splunk, you'll need to host AEM yourself.  </p>
+
+
+
+<h3>CI/CD Process &amp; Adobe Managed Services' Cloud Manager</h3>
+
+
+
+<p>Continuous integration &amp; continuous delivery is a huge subject.  I put around 6000 words into <a href="http://www.jetteroheller.com/visualizing-the-perfect-aem-code-deployment-process/">describing an ideal process for deploying code into Adobe Experience Manager</a>, so I won't try to rehash that here, but the gist is this: your ideal process (depending on your resources available, personnel, release cadence, etc) should then <em>dictate the tools you use</em> in your release process.  It shouldn't be the other way around where you're stuck with tools that then dictate how you roll out updates.  </p>
+
+
+
+<p>There are indeed plenty of organizations who have never been able to get their releases automated with a CI/CD tool like Jenkins or TeamCity or CircleCI, and for those folks they'll be quite happy with the Adobe Cloud Manager tool which is your mechanism for both provisioning cloud environments, conducting upgrades, as well as rolling out software releases. </p>
+
+
+
+<figure class="wp-block-image"><a href="https://www.adobe.com/marketing/experience-manager-sites/managed-cloud.html#cloud-manager-overview"><img src="https://i0.wp.com/www.jetteroheller.com/wp-content/uploads/2019/04/image-1.png?fit=1024%2C576" alt="" class="wp-image-1263"/></a><figcaption><em>Cloud Manager overview video on Adobe's site<br></em></figcaption></figure>
+
+
+
+<p>As it has built-in code inspection and a degree of security performance testing built in, it does allow one to get up and running with less work than setting up a deployment pipeline from scratch.  </p>
+
+
+
+<p>However, let's say that you're not an entry-level customer, have already run Adobe Experience manager for some time, and already do have QA engineers, and folks who have set up some decently well-thought-out build automation.  Or, let's say you want to implement a <a href="http://www.jetteroheller.com/blue-green-deployment-on-adobe-experience-manager/">blue-green deployment pipeline for your AEM upgrade</a> or for your major code releases?  In those cases, you'd be unable to use a different process other than the one prescribed here.  </p>
+
+
+
+<p>Granted, Adobe has been iterating <em>hard</em> on Cloud Manager, and has taken it a LONG WAY from where it was at the release of AEM 6.4.  At that point in time, you had to send your build artifacts to Adobe for them to manually install in Prod rather than have ANY sort of CI process.  So, this is likely to improve, but again - it's something to consider. <br></p>
+
+
+
+<h3>Alternate Caching Layer (i.e. Varnish)</h3>
+
+
+
+<p>This isn't a big deal for many, but was a dealbreaker for one financial services customer that I was engaged with:  some AEM customers have chosen to use an alternative cache tier, <a href="https://www.varnish-software.com/wiki/content/tutorials/aem.html">employing Varnish in place of the normal Apache/Dispatcher setup</a> folks usually have in front of their publishers.   </p>
+
+
+
+<p>Varnish has a number of advantages - it's lightning-fast compared to Apache, and does instantaneous cache invalidation, as the cache is all in RAM.  It also works great as an application proxy, and can also employ a disk cache to augment the RAM cache if you have a particularly large site.  </p>
+
+
+
+<p>Varnish's control language (VCL) definitely has a learning curve, so it's nowhere near as simple to set up as an Apache/Dispatcher setup, but for those that want it, it's not going to be available in an on-demand environment like AMS.  </p>
+
+
+
+<h3>Connected Remote Assets Server Topology</h3>
+
+
+
+<p>At this point in time, the recently-released <a href="http://www.jetteroheller.com/aem-6-5-new-features-guide-for-platform-architects-ops/#Connected_Remote_AEM_Assets_Instances">AEM 6.5 feature allowing for a connected assets environment</a> is only available when using an Assets Author which is hosted on Adobe Managed services. </p>
+
+
+
+<figure class="wp-block-image"><img src="http://www.jetteroheller.com/wp-content/uploads/2019/04/aem-6.5-connected-assets-1024x669.png" alt="AEM 6.5 Connected Assets Diagram" class="wp-image-1245"/><figcaption>AEM 6.5 Connected Assets Diagram</figcaption></figure>
+
+
+
+<h3>Automated AEM Upgrades</h3>
+
+
+
+<p>Adobe made significant announcements this year around seamless and "frictionless" AEM ugrades to AEM 6.5 using their Cloud Manager.  I'm likely going to need to make an entirely separate post on the differences between upgrading AEM on an on-premise environment vs. doing it on a cloud environment vs. doing it at Adobe Managed Services.  But, in short, the vast majority of the work that Adobe put into making AEM upgrades as frictionless as possible applies only to Adobe Managed Services customers. </p>
+
+
+
+<p>There are a few features of this which are compelling, especially if you don't have a devops team or a partner already engaged to support you in this effort (something that ICF Next absolutely does, by the way).  Adobe has said that they will take any AEM 6.x repository and will handle the upgrade to AEM 6.5, essentially in whatever level of broken-ness the repo is.  Which, given the state of some early 6.0 and 6.1 systems I've worked on, is saying something.  </p>
+
+
+
+<p>The automation that they've demonstrated around AEM upgrades looks really promising in the demos that I saw at Adobe Summit, though I've never seen them in operation on a real site.  There are a few feature gaps, which I know they're already aware of - in that the "blue green deployment" setup they've created for AEM upgrades lacks handling for a <a href="http://www.jetteroheller.com/blue-green-deployment-on-adobe-experience-manager/#Step_5_Sync_Author_Content_Delta_from_Blue_to_Green_brief_Author_Outage">sync of the content delta</a> that will accumulate on your existing environment while you're standing up a new environment.  </p>
+
+
+
+<figure class="wp-block-image"><a href="http://www.jetteroheller.com/blue-green-deployment-on-adobe-experience-manager/#Step_5_Sync_Author_Content_Delta_from_Blue_to_Green_brief_Author_Outage" target="_blank" rel="noreferrer noopener"><img src="http://www.jetteroheller.com/wp-content/uploads/2018/08/blue-green_v1_step5-1024x793.png" alt="AEM Blue-Green Deployment Diagram Step 5: Sync Content Delta from Blue to Green" class="wp-image-1134"/></a><figcaption><em>From a description of a <a href="http://www.jetteroheller.com/blue-green-deployment-on-adobe-experience-manager/#Step_5_Sync_Author_Content_Delta_from_Blue_to_Green_brief_Author_Outage">blue-green deployment process for AEM</a>, the diagram above depicts how one needs to sync over content that has accumulated on your active environment before shunting live traffic to your new environment. </em></figcaption></figure>
+
+
+
+<p>But all-told, it represents a big step forward in automating upgrades, and taking a major pain point away from teams, such that they can focus on their code instead.  </p>
+
+
+
+<p>It should be mentioned though, that a lot of the not-insignificant work that Adobe has been doing to make upgrades easier though, also applies to a self-hosted AEM installation as well.  The <a href="https://helpx.adobe.com/experience-manager/6-4/sites/deploying/using/repository-restructuring.html">repository restructuring that was first started with AEM 6.4</a>, as well as the new Segment Node Store storage backend in 6.3 were done with malice aforethought to make upgrades less painful.  </p>
+
+
+
+<h3>Summary</h3>
+
+
+
+<p>AEM has never been a one-size-fits-all system, and today more-so than ever.  It's fabulous that we do now have such a wealth of options on how to host AEM, and it's important for anyone who has a stake in the game to weigh their options carefully as to where they're going to put what will end up being one of their very most valuable marketing assets. </p>
+
+    </section>
+    <footer><p>Categories: Adobe, Adobe CQ, adobe experience manager, AEM, AEM / CQ, AMS, cloud, cms, iaas, icfnext, infrastructure, technology</p></footer>
+  </article>
+</body>
+</html>

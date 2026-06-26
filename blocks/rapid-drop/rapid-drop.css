@@ -1,0 +1,145 @@
+/* Rapid Drop panel — externalized from home-hero's right column.
+  Renders identically to the former .home-hero-right panel. */
+
+.rapid-drop {
+  background: var(--orange);
+  color: var(--white);
+  padding: 64px clamp(28px, 4vw, 60px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.rapid-drop-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.rapid-drop-bg picture,
+.rapid-drop-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.22;
+  mix-blend-mode: multiply;
+  filter: grayscale(1) contrast(1.15);
+}
+
+.rapid-drop::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  z-index: 1;
+}
+
+.rapid-drop::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: var(--ink);
+  z-index: 3;
+}
+
+.rapid-drop > *:not(.rapid-drop-bg) {
+  position: relative;
+  z-index: 2;
+}
+
+.rapid-drop-badge {
+  font-family: var(--mono-font-family);
+  font-size: 0.74rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  background: var(--ink);
+  color: var(--white);
+  padding: 8px 14px;
+  width: max-content;
+  margin-bottom: 24px;
+  font-weight: 700;
+}
+
+.rapid-drop-title {
+  font-family: var(--display-font-family);
+  font-size: clamp(2.6rem, 6vw, 4.6rem);
+  line-height: 0.92;
+  letter-spacing: -0.03em;
+  margin-bottom: 18px;
+  color: var(--white);
+}
+
+.rapid-drop-dek {
+  font-size: 1.05rem;
+  max-width: 460px;
+  margin-bottom: 28px;
+  color: rgb(255 255 255 / 92%);
+  line-height: 1.55;
+}
+
+.rapid-drop-platforms {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.rapid-drop-platforms span,
+.rapid-drop-platforms a {
+  font-family: var(--mono-font-family);
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 7px 12px;
+  background: rgb(11 17 21 / 18%);
+  border: 1px solid rgb(255 255 255 / 40%);
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--white);
+}
+
+.rapid-drop-platforms a:hover {
+  background: rgb(255 255 255 / 16%);
+}
+
+.rapid-drop-form {
+  display: flex;
+  gap: 0;
+  max-width: 440px;
+}
+
+.rapid-drop-form input {
+  flex: 1;
+  border: 2px solid var(--ink);
+  background: var(--white);
+  color: var(--ink);
+  padding: 12px 14px;
+  font-family: var(--body-font-family);
+  font-size: 0.95rem;
+  outline: none;
+}
+
+.rapid-drop-form button {
+  background: var(--ink);
+  color: var(--white);
+  border: 2px solid var(--ink);
+  padding: 12px 18px;
+  font-family: var(--mono-font-family);
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.rapid-drop-form button:hover {
+  background: var(--white);
+  color: var(--ink);
+}

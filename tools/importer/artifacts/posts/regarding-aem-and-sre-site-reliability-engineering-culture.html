@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Regarding AEM and SRE (Site Reliability Engineering) Culture</title>
+  <link rel="canonical" href="https://www.opsinventor.com/regarding-aem-and-sre-site-reliability-engineering-culture/">
+</head>
+<body>
+  <article>
+    <header>
+      <h1>Regarding AEM and SRE (Site Reliability Engineering) Culture</h1>
+      <time datetime="2021-05-12T23:04:38.000Z">5/12/2021, 4:04:38 PM</time>
+    </header>
+    <section class="content">
+      
+<p class="has-drop-cap">A few years back, someone (badly) explained Google's operations team structure to me, telling me that Google called them "SRE's" and it meant that developers were on-call, that nobody actually did operations work and their whole world is just developers on developers, and then developers all the way down.  </p>
+
+
+
+<figure class="wp-block-embed is-type-rich is-provider-twitter wp-block-embed-twitter"><div class="wp-block-embed__wrapper">
+https://twitter.com/davecheney/status/1393325087797825538
+</div></figure>
+
+
+
+<p class="has-drop-cap">As a multi-decade, traditional "ops" guy, I dismissed it as fanciful at the time, though did start to notice companies all over the place start to call their "ops" folk "SRE's" regardless of whether that changed their job description.  I gradually righted my mis-perception of what site reliability engineering is, but only just recently made time to read the <a href="https://sre.google/books/">O'Reilly Site Reliability Engineering book</a>, thanks in part to the <a href="https://www.audible.com/pd/Site-Reliability-Engineering-Audiobook/B08VKYWGYD">Audible version</a> that I could listen to while on long bike rides. I wanted to share my thoughts on this as it relates to infrastructure for portly and natively cloud-unfriendly CMS implementations like Adobe Experience Manager. </p>
+
+
+
+<h3>What is Site Reliability Engineering?</h3>
+
+
+
+<p>SRE is a term (and an associated job role) for the <em>engineers</em> whose job it is to enable the business they're working for by making a desired service run smoothly and reliably.  This also may be what operations folks like myself <em>thought</em> they've been doing all along (mom, can I be called an SRE too?) but there are a few key differences that define the SRE approach (mostly, in this case, shamelessly lifted from <em><a href="https://sre.google/workbook/how-sre-relates/">The Site Reliability Engineering Workbook</a></em>: </p>
+
+
+
+<ul><li><strong>Operations is a Software Problem:</strong> The basic tenet of SRE is that doing operations well is treating it like a <em>software problem</em>. SRE should use software engineering approaches to solve problems in operations.</li><li><strong>Manage by Service Level Objectives (SLOs):</strong> SRE does not attempt to give everything 100% availability. Instead, the product team and the SRE team select an appropriate availability target for the service and its user base, and the service is managed to that SLO.</li><li><strong>Work to Minimize Toil:</strong> Operations work is classically rich in repetitive, required work.  In SRE, the principle is that if a machine <em>can</em> perform a desired operation, then a machine often <em>should</em>.  The distinction between SRE and other non-SRE orgs is that in traditional ops the toil IS the job, and that's what you're paying a person to do, whereas in SRE any time you're spent doing repetitive toil is time you're taking away from your primary job of engineering services to be more reliable. </li><li><strong>Scale Services Without Scaling Employees: </strong>A side-effect of eliminating toil and increasing automation is that one ideally should be able to scale up the size of a service without always proportionally scaling up your staffing.  A site should be able to handle vastly more traffic without needing simultaneously vastly more staff. </li><li><strong>Automate This Year's Job Away:</strong>  The real work in this area is determining what to automate, under what conditions, and how to automate it.  SRE (as practiced in Google) has a hard limit of how much time a team member can spend on toil, as opposed to engineering that produces lasting value at 50%.  Most "classically trained" operations folks in my line of work have been doing the same repetitive tasks for 10 years in some cases, by contrast.</li><li><strong>Share Ownership with Developers:</strong> Rigid boundaries between “application development” and “production” (sometimes called programmers and operators) are counterproductive. This is especially true if the segregation of responsibilities leads to power imbalances or discrepancies in esteem or pay. In SRE implementation</li></ul>
+
+
+
+<h3>Challenges in Implementing SRE on an AEM Environment</h3>
+
+
+
+<figure class="wp-block-image size-large"><a href="https://www.opsinventor.com/wp-content/uploads/2021/05/6555878561_ac0c70ddce_o-e1620767537680.jpg"><img src="https://www.opsinventor.com/wp-content/uploads/2021/05/6555878561_ac0c70ddce_o-e1620767537680-1024x443.jpg" alt="" class="wp-image-1753"/></a></figure>
+
+
+
+<p>Running an on-premise or self-hosted Adobe Experience Manager environment has some intrinsic factors that I've seen can lead one away from an SRE-style culture, and more one of traditional, old-school "Ops".  This means leaning more toward reactive operations, and less toward continually automating yourself out of a job, and working to minimize "toil".   </p>
+
+
+
+<p>AEM installations I'm working on at this very minute tend to be very manual, and run by more traditional operations methods, with the application, web server, load balancers all installed and configured manually, little-to-no configuration-as-code, etc.  In this day and age this might seem shocking, but the reality is that there are several reasons why companies use such a dated and problematic operating model with such an important and expensive system which almost invariably costs millions to deploy and maintain.  </p>
+
+
+
+<h4>Licensing</h4>
+
+
+
+<p>It's unfortunate, but the AEM licensing model is a big root cause, in my experience, for why companies haven't gone to a more devops-ish approach to their AEM installations.  A large majority of installations I've run have been 1-Author / 2-Publisher systems, mostly because that was the most that the company was willing to shell out for.  If you've only got two Publishers (the application server in an AEM environment) and never will have more, there's diminished benefit to automating things like instance provisioning, auto-scaling logic, and the like - as you'll always have the same two persistent Publishers all the time.  If you always have the same two Publishers, you'll always have the same two Apache servers fronting them, so Apache installation doesn't "need" to be automated either.  This, then, moves one in the direction of classic "Ops" as you then just have static set of production servers that you care, feed and know the names of - as opposed to a programmatic infrastructure that you describe as code, and expand, contract, deploy and fix with software.   </p>
+
+
+
+<h4>The Servers are Managed By Corporate</h4>
+
+
+
+<p>Another big reason I come across why SRE/DevOps culture "can't work" on AEM is the teams that are managing the AEM systems don't even have root access on their own servers, as they're managed by corporate IT.   Obviously, it's easy to understand why corporate may not want to give individual application teams root access to their servers, if corporate has to be the one that handles the monthly patching jobs, configures the antivirus, runs the hypervisors and the firewalls, etc.  </p>
+
+
+
+<p>But when you have an application team that cannot actually <strong>manage</strong> their whole stack, it severely curtails the amount of DevOps you can do.   When you look at the classes of problem that you'd want to attack as an SRE, even if you know you're limited to only two AEM publishers, you'd need to be able to have at minimum: </p>
+
+
+
+<ul><li>Root access on any Linux system you run</li><li>Sufficient access to any hypervisors (if you're running in a corp datacenter) or cloud accounts to be able to provision/destroy VMs</li><li>Sufficient API access to load balancers to be able to add and remove members from a pool, create and destroy pools and manage healthchecks</li><li>Leeway to implement a configuration management system</li><li>Leeway to implement monitoring &amp; log aggregation tooling  </li></ul>
+
+
+
+<p>Without this, you are forced to respond to every problem reactively.  But <em>with </em>this, and even with the restrictive nature of AEM licensing, all manner of fabulous automation can be designed around AEM to solve routine problems, eliminate the toil of long, manual deployment processes, manual maintenance, or other neat tasks like upsizing VMs, reverting backups, or doing prod-to-lower-environment content migrations.  </p>
+
+
+
+<p>But without access, you're essentially saying that you <em>never</em> want your teams to be able adopt any SRE principles.</p>
+
+
+
+<h4>Monolithic Nature of AEM</h4>
+
+
+
+<p>Now, I wanted to mention the monolithic nature of AEM in this too, as I've seen it get thrown around a lot as a reason why AEM can't be all DevOps'ish like other more container-friendly applications.  It is indeed difficult to do things like auto-scaling with AEM, as one has to clone the entire state of the repository (content and code) to another machine, and that repository size is usually many hundreds of gigs, sometimes many terabytes.  It is about as tractable as a wild hog when it comes to moving it around like that.  </p>
+
+
+
+<p>However, whilst that does present a barrier to containerization, it certainly isn't a barrier to operating using SRE principles, and any company running AEM on-premise can work around the limitations of having to deal with its massive repository to automate all of the <em>other</em> things you can to solve problems of toil and repetitive work. The main goal here is to be able to have services that can scale up without having to always proportionally scale up your operations workforce as well.</p>
+
+
+
+<figure class="wp-block-pullquote"><blockquote><p>The main goal here is to be able to have services that can scale up without having to always proportionally scale up your operations workforce as well.   </p></blockquote></figure>
+
+
+
+<p>To sort of sum up these challenges in implementing SRE in an AEM environment, and why having the leeway to automate is so key, I wanted to pull a quote from the <em>Site Reliability Engineering</em> book - where an engineer is talking about the constant battle folks have to justify whether getting a certain little something automated is worth it.  </p>
+
+
+
+<p>It's because it comes down to more than just raw time savings.  It comes down to the fact that once one has encapsulated a manual operation into a piece of automation that can be run by anyone (or even by itself), you no longer are a slave to your system and its good days and bad days.  This quote sums it up perfectly: </p>
+
+
+
+<blockquote class="wp-block-quote"><p>"If we are engineering processes and solutions that are not automatable, we continue having to staff humans to maintain the system. If we have to staff humans to do the work, we are feeding the machines with the blood, sweat, and tears of human beings. Think <em>The Matrix</em> with less special effects and more pissed off System Administrators." </p><cite>Joseph Bironas - Google SRE [<a href="https://sre.google/sre-book/automation-at-google/">ref</a>]</cite></blockquote>
+
+
+
+<p>I've got a lot more thoughts on this, but this is already a wall of text, so I'll have to put it in another post.  Or maybe a podcast - who wants to sit &amp; talk AEM, DevOps and SRE with me for an hour or so?  </p>
+
+    </section>
+    <footer><p>Categories: AEM, AEM / CQ, devops, google, infrastructure, operations, site reliability engineering, SRE</p></footer>
+  </article>
+</body>
+</html>

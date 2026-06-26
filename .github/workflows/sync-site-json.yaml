@@ -1,0 +1,52 @@
+name: Sync site.json file
+on:
+  workflow_dispatch:
+    inputs:
+      site:
+        description: Site to sync
+        required: true
+        type: choice
+        options:
+          - aemdev
+        default: aemdev
+
+permissions:
+  contents: write
+
+jobs:
+  updateConfig:
+    environment:
+      name: main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Validate selected site config directory
+        run: |
+          CONFIG_DIR="config/sites/${{ inputs.site }}"
+          echo "Preflight: Sync site.json | site=${{ inputs.site }} | configDir=$CONFIG_DIR"
+          if [ ! -d "$CONFIG_DIR" ]; then
+            echo "::error::Missing config directory for selected site: $CONFIG_DIR"
+            exit 1
+          fi
+      - name: Run sync script
+        env:
+          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+          SITE_NAME: ${{ inputs.site }}
+          OUTPUT_PATH: config/sites/${{ inputs.site }}/site.json
+        run: node scripts/sync-configs.mjs
+      - name: Commit changes (if any)
+        run: |
+          FILE="config/sites/${{ inputs.site }}/site.json"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$FILE"
+          if git diff --cached --quiet; then
+            echo "No site.json changes to commit"
+            exit 0
+          fi
+          git commit -m "Update ${{ inputs.site }} site.json from API"
+          git push

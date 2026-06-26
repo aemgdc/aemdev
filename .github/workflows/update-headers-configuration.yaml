@@ -1,0 +1,39 @@
+name: Update Headers Configuration File
+on:
+  workflow_dispatch:
+    inputs:
+      site:
+        description: Site to update
+        required: true
+        type: choice
+        options:
+          - aemdev
+        default: aemdev
+
+jobs:
+  updateConfig:
+    environment:
+      name: main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Validate selected site config file
+        run: |
+          CONFIG_FILE="config/sites/${{ inputs.site }}/headers.json"
+          echo "Preflight: Update Headers | site=${{ inputs.site }} | config=$CONFIG_FILE"
+          if [ ! -f "$CONFIG_FILE" ]; then
+            echo "::error::Missing config file for selected site: $CONFIG_FILE"
+            exit 1
+          fi
+      - name: Run update script
+        env:
+          AUTH_TOKEN: ${{ secrets.AUTH_TOKEN }}
+          SITE_NAME: ${{ inputs.site }}
+          CONFIG_PATH: config/sites/${{ inputs.site }}/headers.json
+          CONFIG_NAME: headers.json
+        run: node scripts/update-configs.mjs
+

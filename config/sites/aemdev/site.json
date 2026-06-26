@@ -1,3 +1,43 @@
 {
-  
+  "version": 5,
+  "code": {
+    "owner": "aemgdc",
+    "repo": "aemdev",
+    "source": {
+      "type": "github",
+      "url": "https://github.com/aemgdc/aemdev"
+    }
+  },
+  "access": {
+    "admin": {
+      "role": {
+        "admin": [
+          "tadreeves@gmail.com",
+          "tad@arborydigital.com"
+        ]
+      },
+      "requireAuth": "false"
+    }
+  },
+  "content": {
+    "source": {
+      "type": "markup",
+      "url": "https://content.da.live/aemgdc/aemdev/"
+    },
+    "contentBusId": "c21d4be7453a72d10d8ba81524b22cc261d623d82ea5df130f7b051c504"
+  },
+  "lastModified": "2026-06-26T21:31:17.565Z",
+  "created": "2026-06-22T15:55:13.968Z",
+  "apiKeys": {
+    "VqW5S86VB52YHXNhLsdLA6uTzTqOo7KloRJFL-AGA5O_": {
+      "description": "GitHub Actions - aemdev-config-sync",
+      "roles": [
+        "admin"
+      ],
+      "id": "VqW5S86VB52YHXNhLsdLA6uTzTqOo7KloRJFL+AGA5O/",
+      "subject": "aemgdc/aemdev",
+      "expiration": "2027-06-26T21:31:17.000Z",
+      "created": "2026-06-26T21:31:17.630Z"
+    }
+  }
 }

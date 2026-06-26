@@ -1,0 +1,14 @@
+{
+  "/content/*": [
+    {
+      "key": "access-control-allow-origin",
+      "value": "*"
+    }
+  ],
+  "*": [
+    {
+      "key": "access-control-allow-origin",
+      "value": "*"
+    }
+  ]
+}

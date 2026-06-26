@@ -1,0 +1,80 @@
+auto-generated: true
+indices:
+#aemdev EN CONTENT#
+  aemdev-en:
+    include:
+      - /en/**
+    exclude:
+      - /en/drafts/**
+      - /en/sandbox/**
+      - /en/fragments/**
+    target: /en/query-index.json
+    properties:
+      author:
+        select: head > meta[name="author"]
+        value: |
+          attribute(el, "content")
+      title:
+        select: head > meta[property="og:title"]
+        value: |
+          attribute(el, "content")
+      image:
+        select: head > meta[property="og:image"]
+        value: |
+          match(attribute(el, "content"), "https:\/\/[^/]+(/.*)")
+      description:
+        select: head > meta[name="description"]
+        value: |
+          attribute(el, "content")
+      displayDescription:
+        select: head > meta[name="displaydescription"]
+        value: |
+          attribute(el, "content")
+      releaseDate:
+        select: head > meta[name="releasedate"]
+        value: |
+          attribute(el, "content")
+      redirectTarget:
+        select: head > meta[name="redirecttarget"]
+        value: |
+          attribute(el, "content")
+      offDateTime:
+        select: head > meta[name="offdatetime"]
+        value: |
+          attribute(el, "content")
+      eventDateTime:
+        select: head > meta[name="eventdatetime"]
+        value: |
+          attribute(el, "content")
+      eventDisplayTime:
+        select: head > meta[name="eventdisplaytime"]
+        value: |
+          attribute(el, "content")
+      eventDisplayLabel:
+        select: head > meta[name="eventdisplaylabel"]
+        value: |
+          attribute(el, "content")
+      bookTypeTitle:
+        select: head > meta[name="booktypetitle"]
+        value: |
+          attribute(el, "content")
+      bookPublishDate:
+        select: head > meta[name="bookpublishdate"]
+        value: |
+          attribute(el, "content")
+      bookAuthor:
+        select: head > meta[name="bookauthor"]
+        value: |
+          attribute(el, "content")
+      displayLabel:
+        select: head > meta[name="displaylabel"]
+        value: |
+          attribute(el, "content")
+      displayImage:
+        select: head > meta[name="displayimage"]
+        value: |
+          attribute(el, "content")
+      tags:
+        select: head > meta[property="article:tag"]
+        values: |
+          attribute(el, "content")

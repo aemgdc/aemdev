@@ -1,0 +1,12 @@
+version: 2
+
+sitemaps:
+  site:
+    origin: https://www.aemdev.org
+    lastmod: YYYY-MM-DD
+    languages:
+      en:
+        source: /en/query-index.json
+        destination: /en/sitemap.xml
+        hreflang: en
+        alternate: /en/{path}

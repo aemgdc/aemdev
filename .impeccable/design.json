@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-25T00:00:00Z",
+  "title": "Design System: aemdev.org",
+  "extensions": {
+    "colorMeta": {
+      "aem-red":       { "role": "primary",  "displayName": "Adobe Red",      "canonical": "#eb1000", "tonalRamp": ["#3d0300","#6b0500","#980800","#c50e00","#eb1000","#ff3320","#ff6655","#ff9988","#ffccbb","#fff0ee"] },
+      "aem-red-deep":  { "role": "primary",  "displayName": "Adobe Red Deep", "canonical": "#c50e00", "tonalRamp": ["#3d0300","#6b0500","#980800","#c50e00","#eb1000","#ff3320","#ff6655","#ff9988","#ffccbb","#fff0ee"] },
+      "carbon":        { "role": "neutral",  "displayName": "Carbon",         "canonical": "#0e0e0e", "tonalRamp": ["#0e0e0e","#1b1b1b","#272727","#3a3a3a","#4d4d4d","#616161","#757575","#9e9e9e","#c2c2c2","#e0e0e0"] },
+      "carbon-mid":    { "role": "neutral",  "displayName": "Carbon Mid",     "canonical": "#1b1b1b" },
+      "carbon-surface":{ "role": "neutral",  "displayName": "Carbon Surface", "canonical": "#272727" },
+      "slate":         { "role": "neutral",  "displayName": "Slate",          "canonical": "#6b7280", "tonalRamp": ["#1f2937","#374151","#4b5563","#6b7280","#9ca3af","#d1d5db","#e5e7eb","#f3f4f6","#f9fafb","#ffffff"] },
+      "surface":       { "role": "neutral",  "displayName": "Light Surface",  "canonical": "#f4f4f4" },
+      "off-white":     { "role": "neutral",  "displayName": "Off-White",      "canonical": "#f9f9f9" },
+      "body-text":     { "role": "neutral",  "displayName": "Body Text",      "canonical": "#1f1f1f" },
+      "muted-text":    { "role": "neutral",  "displayName": "Muted Text",     "canonical": "#6b7280" },
+      "border-light":  { "role": "neutral",  "displayName": "Border Light",   "canonical": "#d1d5db" }
+    },
+    "typographyMeta": {
+      "display":  { "displayName": "Display",  "purpose": "H1 hero headlines. Bebas Neue all-caps. Do not add text-transform: uppercase." },
+      "headline": { "displayName": "Headline", "purpose": "H2 section headings. Same font stack as Display; smaller size." },
+      "title":    { "displayName": "Title",    "purpose": "H3 subheadings, card titles. Inter 700, mixed-case." },
+      "body":     { "displayName": "Body",     "purpose": "Article body, descriptions. Inter 400, 65–72ch max in articles." },
+      "label":    { "displayName": "Label",    "purpose": "Tags, dates, bylines, eyebrows. Space Mono, uppercase." }
+    },
+    "shadows": [
+      { "name": "hover-lift", "value": "0 4px 16px rgba(0,0,0,0.18)", "purpose": "Interactive card/tile hover state only. Never at rest." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Default easing for state transitions (color, shadow, opacity)." },
+      { "name": "duration-fast",  "value": "150ms", "purpose": "Hover color/border transitions." }
+    ],
+    "breakpoints": [
+      { "name": "mobile",  "value": "390px" },
+      { "name": "tablet",  "value": "768px" },
+      { "name": "desktop", "value": "1024px" },
+      { "name": "wide",    "value": "1440px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Adobe Red CTA button. Sharp-edged. Used for primary actions and navigation CTAs.",
+      "html": "<button class=\"ds-btn-primary\">Join the Community</button>",
+      "css": ".ds-btn-primary { display: inline-block; background: #eb1000; color: #f9f9f9; border: 2px solid #eb1000; border-radius: 0; padding: 12px 28px; font-family: 'Space Mono', menlo, monospace; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none; line-height: 1; cursor: pointer; transition: background 0.15s ease, color 0.15s ease; } .ds-btn-primary:hover, .ds-btn-primary:focus-visible { background: #c50e00; border-color: #c50e00; }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Outline button with Adobe Red border. Flips to filled on hover.",
+      "html": "<button class=\"ds-btn-ghost\">Read More</button>",
+      "css": ".ds-btn-ghost { display: inline-block; background: transparent; color: #eb1000; border: 2px solid #eb1000; border-radius: 0; padding: 11px 27px; font-family: 'Space Mono', menlo, monospace; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none; line-height: 1; cursor: pointer; transition: background 0.15s ease, color 0.15s ease; } .ds-btn-ghost:hover, .ds-btn-ghost:focus-visible { background: #eb1000; color: #f9f9f9; }"
+    },
+    {
+      "name": "Article Feed Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Content card for article and meetup recap listings. Sharp-edged, flat at rest, lift on hover.",
+      "html": "<article class=\"ds-feed-card\"><a href=\"#\"><div class=\"ds-card-tag\">Article</div><h3>How to Model Content in AEM EDS</h3><div class=\"ds-card-meta\">2026-06-15 · Tad Reeves</div></a></article>",
+      "css": ".ds-feed-card { background: #f9f9f9; border: 1px solid #d1d5db; border-radius: 0; transition: box-shadow 0.15s ease; } .ds-feed-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.18); } .ds-feed-card a { display: block; padding: 24px; text-decoration: none; color: #1f1f1f; } .ds-card-tag { font-family: 'Space Mono', monospace; font-size: 0.74rem; letter-spacing: 0.18em; text-transform: uppercase; color: #eb1000; margin-bottom: 8px; } .ds-feed-card h3 { font-family: 'Inter', system-ui, sans-serif; font-size: 1.1rem; font-weight: 700; line-height: 1.25; margin: 0 0 8px; } .ds-card-meta { font-family: 'Space Mono', monospace; font-size: 0.78rem; color: #6b7280; letter-spacing: 0.03em; }"
+    },
+    {
+      "name": "Category Tag / Chip",
+      "kind": "chip",
+      "description": "Used for article categories and meetup tags. 2px radius (only rounded element).",
+      "html": "<span class=\"ds-tag\">AEM EDS</span>",
+      "css": ".ds-tag { display: inline-block; border: 1px solid #d1d5db; border-radius: 2px; padding: 3px 8px; font-family: 'Space Mono', monospace; font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; color: #4b5563; transition: border-color 0.15s, color 0.15s; cursor: pointer; } .ds-tag:hover, .ds-tag.active { border-color: #eb1000; color: #eb1000; }"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "description": "Dark carbon nav bar. Links flip to Adobe Red on hover and active state.",
+      "html": "<nav class=\"ds-nav\"><a href=\"/\" class=\"ds-nav-link ds-nav-link--active\">Home</a><a href=\"/en/articles/\" class=\"ds-nav-link\">Articles</a><a href=\"/en/meetup-recaps/\" class=\"ds-nav-link\">Meetup Recaps</a><a href=\"/en/contact/\" class=\"ds-nav-link\">Contact</a></nav>",
+      "css": ".ds-nav { background: #0e0e0e; display: flex; align-items: center; gap: 32px; padding: 0 24px; height: 72px; } .ds-nav-link { color: #f9f9f9; text-decoration: none; font-family: 'Inter', system-ui, sans-serif; font-size: 0.92rem; font-weight: 500; padding-bottom: 2px; border-bottom: 2px solid transparent; transition: color 0.15s, border-color 0.15s; } .ds-nav-link:hover { color: #eb1000; } .ds-nav-link--active { color: #eb1000; border-bottom-color: #eb1000; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Builder's Signal",
+    "overview": "aemdev.org is the signal in the noise for AEM practitioners — a community-built hub that feels like it was made by people who actually ship AEM, not by a marketing team with a style guide. The visual system carries that through: high contrast, no decoration for its own sake, and typography that announces itself without apologizing. Adobe Red earns its place as the one alert color in an otherwise disciplined palette of carbon and cool gray.\n\nThe register is committed: Adobe Red is not a token that appears once in a hero. It is the signal color — CTAs, active states, tags, code accents, the bar that says 'this is AEM.' Against near-black carbon backgrounds it reads with maximum force. Against light gray surfaces it carries the same decisiveness without shouting.",
+    "keyCharacteristics": [
+      "Carbon ground + Adobe Red accent + Bebas Neue / Inter pairing",
+      "Sharp edges everywhere — no border-radius except 2px on chips/tags",
+      "Dark-capable by default: hero sections and navigation sit on carbon",
+      "Community photography is a layout element, not a background treatment",
+      "Bebas Neue display headings: condensed, all-caps, high signal-to-noise"
+    ],
+    "rules": [
+      { "name": "The One Signal Rule", "body": "Adobe Red appears on ≤40% of any given screen's accent surface. It signals action or identity — not atmosphere.", "section": "colors" },
+      { "name": "The No-Cream Rule", "body": "The OpsInventor warm-cream surface (#f5efe7) is prohibited. aemdev.org surfaces are cool gray (#f4f4f4) or near-black (#0e0e0e).", "section": "colors" },
+      { "name": "The All-Caps Contract", "body": "Bebas Neue is intrinsically uppercase. Do not apply text-transform: uppercase on top — it is redundant. For mixed-case headings, use Inter (H3–H6).", "section": "typography" },
+      { "name": "The Mono Discipline Rule", "body": "Space Mono is reserved for code, metadata labels, and pre blocks. Three mono-set elements on one screen is the ceiling.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "Surfaces are flat at rest. Shadow appears only as interaction feedback. If you need to define a container boundary, use a 1px solid border.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use Adobe Red for CTAs, active states, and category labels only.",
+      "Do use Carbon (#0e0e0e) for hero sections, the header, and dark-surface sections.",
+      "Do feature community event photography at full editorial scale — full-bleed or large-panel.",
+      "Do design article heroes with Bebas Neue type on carbon when photos are unavailable.",
+      "Do keep buttons sharp-edged (border-radius: 0).",
+      "Do use Space Mono for dates, author bylines, category labels, and code.",
+      "Do write descriptive alt text for every community event photo."
+    ],
+    "donts": [
+      "Don't use Adobe.com's marketing aesthetic — polished gradients, stock photography, or 'Transform your digital experience' register.",
+      "Don't use the warm cream surface (#f5efe7) from OpsInventor.",
+      "Don't add border-radius greater than 2px to any interactive element.",
+      "Don't use glassmorphism, frosted panels, or gradient overlays.",
+      "Don't put Adobe Red on more than 40% of any screen's accent surface.",
+      "Don't apply text-transform: uppercase to Bebas Neue.",
+      "Don't use Bebas Neue for body text, navigation, or H3–H6.",
+      "Don't center headline text on a full-bleed photograph without a contrast scrim.",
+      "Don't hide or minimize event photography."
+    ]
+  }
+}

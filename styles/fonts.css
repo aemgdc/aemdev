@@ -1,5 +1,6 @@
-/* Site fonts — Archivo Black (display), Inter (body), Space Mono (mono).
+/* Site fonts — Barlow Condensed (display), Inter (body), Space Mono (code/labels).
+   Barlow Condensed is a Google Fonts fallback for Automate OT (Adobe Fonts).
    Already loaded via head.html link tag for fastest paint; this file is
    re-imported from styles.css as a safety net for tools that load
    styles.css standalone (e.g., DA preview iframes). */
-@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap');

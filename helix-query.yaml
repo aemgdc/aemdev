@@ -1,9 +1,8 @@
-auto-generated: true
 indices:
-  blog:
+  articles:
     include:
-      - /blog/**
-    target: /blog/query-index.json
+      - /en/articles/**
+    target: /en/articles/query-index.json
     properties:
       title:
         select: head > meta[property="og:title"]
@@ -21,10 +20,6 @@ indices:
         select: none
         value: |
           parseTimestamp(headers['last-modified'], 'ddd, DD MMM YYYY hh:mm:ss GMT')
-      featured:
-        select: head > meta[name="featured"]
-        value: |
-          attribute(el, "content")
       author:
         select: head > meta[name="author"]
         value: |
@@ -33,19 +28,71 @@ indices:
         select: head > meta[property="og:image"]
         value: |
           match(attribute(el, "content"), "https:\/\/[^/]+(/.*)")
-      content:
-        select: main > div
-        values: characters(textContent(el), 0, 200)
       tags:
         select: head > meta[property="article:tag"]
         values: |
           attribute(el, 'content')
-  authors:
+      category:
+        select: head > meta[name="category"]
+        value: |
+          attribute(el, "content")
+      featured:
+        select: head > meta[name="featured"]
+        value: |
+          attribute(el, "content")
+      content:
+        select: main > div
+        values: characters(textContent(el), 0, 200)
+
+  meetup-recaps:
     include:
-      - /author/**
-    target: /author/query-index.json
+      - /en/meetup-recaps/**
+    target: /en/meetup-recaps/query-index.json
     properties:
       title:
         select: head > meta[property="og:title"]
         value: |
           attribute(el, "content")
+      description:
+        select: head > meta[name="description"]
+        value: |
+          attribute(el, "content")
+      date:
+        select: head > meta[name="publication-date"]
+        value: |
+          dateValue(attribute(el, 'content'), 'MM-DD-YYYY')
+      lastModified:
+        select: none
+        value: |
+          parseTimestamp(headers['last-modified'], 'ddd, DD MMM YYYY hh:mm:ss GMT')
+      author:
+        select: head > meta[name="author"]
+        value: |
+          attribute(el, "content")
+      image:
+        select: head > meta[property="og:image"]
+        value: |
+          match(attribute(el, "content"), "https:\/\/[^/]+(/.*)")
+      tags:
+        select: head > meta[property="article:tag"]
+        values: |
+          attribute(el, 'content')
+      event-date:
+        select: head > meta[name="event-date"]
+        value: |
+          dateValue(attribute(el, 'content'), 'MM-DD-YYYY')
+      location:
+        select: head > meta[name="event-location"]
+        value: |
+          attribute(el, "content")
+      speakers:
+        select: head > meta[name="event-speakers"]
+        value: |
+          attribute(el, "content")
+      recap-video:
+        select: head > meta[name="recap-video"]
+        value: |
+          attribute(el, "content")
+      content:
+        select: main > div
+        values: characters(textContent(el), 0, 200)

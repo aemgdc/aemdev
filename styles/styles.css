@@ -1,24 +1,33 @@
 /* ============================================================
-   OpsInventor / Tad Reeves — site styles (Rev 3)
-   Design tokens: ink + orange + teal; Archivo Black / Inter / Space Mono.
-   Light color-scheme only. No border-radius. Modern rgb()/% color notation.
+   aemdev.org — AEM Global Developer Collective
+   Design tokens: carbon + Adobe Red + cool gray; Bebas Neue / Inter / Space Mono.
+   Light color-scheme only. No border-radius. DESIGN.md is the spec.
    ============================================================ */
 
 :root {
   /* === BRAND COLOR TOKENS === */
-  --ink: #0d1418;          /* primary dark background */
-  --ink-2: #16222a;        /* secondary dark surface */
-  --ink-3: #1c2b33;        /* dark borders / hairlines */
-  --orange: #ce5b12;       /* primary accent */
-  --orange-dk: #a8460a;    /* accent hover / link rest */
-  --teal: #39aab5;         /* secondary accent */
-  --teal-dk: #17828d;      /* teal hover */
-  --surface: #f5efe7;      /* light cream surface */
-  --text: #2b2b2b;         /* body text on light */
-  --muted: #6a6a6a;        /* secondary text */
-  --border: #d8d1c5;       /* light border on cream */
-  --white: #fff;
-  --paper: #fff;
+  --aem-red: #eb1000;      /* Adobe Red — signal color, CTAs, accents */
+  --aem-red-dk: #c50e00;   /* Adobe Red hover / link rest */
+  --carbon: #0e0e0e;       /* primary dark background */
+  --carbon-2: #1b1b1b;     /* secondary dark surface */
+  --carbon-3: #272727;     /* dark borders / hairlines */
+  --slate: #6b7280;        /* mid-gray — secondary text, metadata */
+  --slate-dk: #4b5563;     /* slate hover */
+  --surface: #f4f4f4;      /* light gray surface */
+  --text: #1f1f1f;         /* body text on light */
+  --muted: #6b7280;        /* secondary text */
+  --border: #d1d5db;       /* light border */
+  --white: #f9f9f9;        /* off-white — never pure #fff */
+  --paper: #f9f9f9;
+
+  /* === LEGACY ALIASES — maps old OpsInventor names to new tokens === */
+  --ink: var(--carbon);
+  --ink-2: var(--carbon-2);
+  --ink-3: var(--carbon-3);
+  --orange: var(--aem-red);
+  --orange-dk: var(--aem-red-dk);
+  --teal: var(--slate);
+  --teal-dk: var(--slate-dk);
 
   /* === LEGACY ALIASES (preserves back-compat with existing blocks) === */
   --color-brand: var(--orange);
@@ -48,7 +57,7 @@
   --color-code-text: #e8eef2;
 
   /* === FONT FAMILIES === */
-  --display-font-family: "Archivo Black", "Helvetica Neue", helvetica, arial, sans-serif;
+  --display-font-family: "Barlow Condensed", "Automate OT", "Arial Narrow", sans-serif;
   --body-font-family: "Inter", system-ui, "Helvetica Neue", helvetica, arial, sans-serif;
   --mono-font-family: "Space Mono", menlo, consolas, "Liberation Mono", monospace;
 
@@ -64,8 +73,8 @@
   --heading-font-size-m: clamp(1.3rem, 2.4vw, 1.6rem);
   --heading-font-size-s: 1.15rem;
   --heading-font-size-xs: 1rem;
-  --heading-line-height: 1.1;
-  --heading-letter-spacing: -0.025em;
+  --heading-line-height: 1.05;
+  --heading-letter-spacing: -0.01em;
 
   /* === BODY TYPE SCALE === */
   --body-font-size-xxxl: 1.4rem;
@@ -254,9 +263,14 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: var(--heading-letter-spacing);
 }
 
-h1, h2 {
+h1 {
   font-family: var(--display-font-family);
-  font-weight: 400; /* Archivo Black is intrinsically heavy */
+  font-weight: 800;
+}
+
+h2 {
+  font-family: var(--display-font-family);
+  font-weight: 700;
 }
 
 h3, h4, h5, h6 {
@@ -303,12 +317,12 @@ code {
   font-size: inherit;
 }
 
-/* Inline code (in paragraphs / list items) — orange-tinted chip */
+/* Inline code (in paragraphs / list items) — red-tinted chip */
 p code,
 li code {
-  background-color: rgb(206 91 18 / 8%);
-  border: 1px solid rgb(206 91 18 / 25%);
-  color: var(--orange-dk);
+  background-color: rgb(235 16 0 / 8%);
+  border: 1px solid rgb(235 16 0 / 25%);
+  color: var(--aem-red-dk);
   font-size: 0.88em;
   padding: 2px 7px;
 }

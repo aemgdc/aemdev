@@ -23,6 +23,26 @@ const linkBlocks = [
 // Blocks with self-managed styles
 const components = ['fragment', 'schedule'];
 
+// Section folders whose child pages get the long-form "blog" template applied
+// automatically, so their body content area matches the article reading layout
+// (constrained readable column + full-bleed special sections). Locale-agnostic:
+// matches the folder as a path segment in any locale (e.g. /en/articles/foo).
+const templatedSections = ['articles', 'meetup-recaps', 'meeting-recaps'];
+
+// If the current page is a child of a templated section and has no explicit
+// template metadata, inject template=blog before the area (and template) load.
+function applyTemplateByPath() {
+  if (document.head.querySelector('meta[name="template"]')) return;
+  const segments = window.location.pathname.split('/').filter(Boolean);
+  const idx = segments.findIndex((seg) => templatedSections.includes(seg));
+  const isChildPage = idx > -1 && idx < segments.length - 1;
+  if (!isChildPage) return;
+  const meta = document.createElement('meta');
+  meta.setAttribute('name', 'template');
+  meta.setAttribute('content', 'blog');
+  document.head.append(meta);
+}
+
 // How to decorate an area before loading it
 const decorateArea = ({ area = document }) => {
   const eagerLoad = (parent, selector) => {
@@ -37,6 +57,7 @@ const decorateArea = ({ area = document }) => {
 
 export async function loadPage() {
   setConfig({ hostnames, locales, linkBlocks, components, decorateArea });
+  applyTemplateByPath();
   await loadArea();
 }
 await loadPage();

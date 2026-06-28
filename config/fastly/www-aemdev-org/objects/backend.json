@@ -34,7 +34,7 @@
     "prefer_ipv6": false,
     "request_condition": "services path",
     "ssl_ciphers": null,
-    "override_host": null,
+    "override_host": "publish-p121227-e1306133.adobeaemcloud.com",
     "shield": "",
     "auto_loadbalance": false,
     "comment": "",

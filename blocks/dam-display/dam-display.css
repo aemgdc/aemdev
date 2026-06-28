@@ -29,6 +29,16 @@
   --dam-color-empty-bg: #f9f9f9;
   --dam-card-bg: #191b22;
   --dam-transition: all 0.3s ease;
+
+  /* Card text/accent tokens — the dark cards need light text, and these give
+     the block defined values instead of relying on undefined site variables. */
+  --dam-card-text: #e9e9ee;
+  --dam-card-heading: #fff;
+  --dam-accent: var(--aem-red, #eb1000);
+  --dam-accent-hover: #ff3b2e;
+  --dam-on-accent: var(--white, #f9f9f9);
+  --dam-shadow-sm: 0 1px 2px rgb(0 0 0 / 25%);
+  --dam-shadow-lg: 0 6px 16px rgb(0 0 0 / 35%);
 }
 
 /* ==============================
@@ -133,12 +143,22 @@ main .dam-display.mode-pdf .dam-display-image-link img {
   height: 100%;
   object-fit: cover;
   border-radius: var(--dam-border-radius) var(--dam-border-radius) 0 0;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--dam-shadow-lg);
   transition: transform 0.5s ease;
 }
 
 main .dam-display.mode-pdf .dam-display-image-link:hover img {
   transform: scale(1.05);
+}
+
+/* Generic placeholder (no rendition available) — show the whole icon, no crop */
+main .dam-display .dam-display-thumbnail-placeholder {
+  object-fit: contain;
+  background-color: var(--dam-card-bg);
+}
+
+main .dam-display .dam-display-image-link:hover .dam-display-thumbnail-placeholder {
+  transform: none;
 }
 
 /* Content Container */
@@ -156,11 +176,11 @@ main .dam-display.mode-pdf .dam-display-title-link {
   display: block;
   margin-bottom: var(--dam-spacing-sm);
   text-decoration: none;
-  color: var(--text-color);
+  color: var(--dam-card-heading);
 }
 
-main .dam-display.mode-pdf .dam-display-title-link:hover {
-  color: var(--link-hover-color);
+main .dam-display.mode-pdf .dam-display-title-link:hover .dam-display-title {
+  color: var(--dam-accent-hover);
 }
 
 main .dam-display.mode-pdf .dam-display-title {
@@ -169,7 +189,7 @@ main .dam-display.mode-pdf .dam-display-title {
   font-size: var(--dam-font-size-2xl);
   text-wrap: wrap;
   line-height: 1.3;
-  color: var(--link-color);
+  color: var(--dam-card-heading);
   letter-spacing: -1px;
 }
 
@@ -189,11 +209,11 @@ main .dam-display.mode-pdf .dam-display-badge {
   font-size: var(--dam-font-size-sm);
   font-weight: 600;
   text-transform: uppercase;
-  background-color: var(--link-color);
-  color: var(--dam-card-bg);
+  background-color: var(--dam-accent);
+  color: var(--dam-on-accent);
   border-radius: var(--dam-border-radius-sm);
   padding: 3px var(--dam-spacing-sm) 2px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--dam-shadow-sm);
   font-family: var(--heading-font-family);
 }
 
@@ -263,7 +283,7 @@ main .dam-display.mode-images .dam-display-caption {
   padding: 12px 14px;
   font-size: var(--dam-font-size-lg);
   line-height: 1.4;
-  color: var(--text-color);
+  color: var(--dam-card-text);
   text-shadow: 0 1px 2px rgb(0 0 0 / 30%);
   overflow-wrap: break-word;
   transition: var(--dam-transition);
@@ -325,7 +345,7 @@ main .dam-display.mode-images .dam-display-card-image:hover .dam-display-caption
   box-shadow:
     0 8px 32px rgb(0 0 0 / 20%),
     inset 0 -1px 0 rgb(0 0 0 / 10%);
-  color: var(--text-color);
+  color: var(--dam-card-text);
   text-shadow: 0 1px 2px rgb(0 0 0 / 30%);
   padding: 16px 24px;
   border-radius: 0 0 8px 8px;
@@ -361,7 +381,7 @@ main .dam-display.mode-images .dam-display-card-image:hover .dam-display-caption
   color: white;
   font-size: 30px;
   cursor: pointer;
-  background: var(--link-hover-color);
+  background: var(--dam-accent);
   border: none;
   width: 40px;
   height: 35px;

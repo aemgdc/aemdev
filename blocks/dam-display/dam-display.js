@@ -15,7 +15,17 @@
  */
 
 const SERVLET_PATH = '/services/damservlet?path=';
-const RENDITION_NAME = 'cq5dam.web.1280.1280.jpeg';
+
+// Rendition names usable as an <img> source, in display-preference order.
+// We try each in turn so any asset (PDF, image, etc.) that has *some* preview
+// rendition still shows a thumbnail.
+const IMAGE_RENDITION_PRIORITY = [
+  'cq5dam.web.1280.1280.jpeg',
+  'cq5dam.zoom.2048.2048.jpeg',
+  'cq5dam.thumbnail.319.319.png',
+  'cq5dam.thumbnail.140.100.png',
+  'cq5dam.thumbnail.48.48.png',
+];
 
 // AEM origin that hosts the DAM servlet and assets. The EDS frontends
 // (localhost, *.aem.page, www.aemdev.org) do not consistently proxy
@@ -57,14 +67,64 @@ function getBlockParams(block) {
 }
 
 /**
- * Find the web rendition image path from an asset's renditions array.
- * @param {Array} renditions
- * @returns {string|null}
+ * Build an ordered list of candidate thumbnail URLs for an asset. Tries the
+ * known preview renditions first, then the original asset itself when it is a
+ * directly-displayable image. The caller falls through to a placeholder if none
+ * load, so every card shows a thumbnail regardless of file type.
+ * @param {Object} asset
+ * @returns {string[]}
  */
-function getImagePath(renditions) {
-  if (!renditions || !Array.isArray(renditions)) return null;
-  const rendition = renditions.find((r) => r.name === RENDITION_NAME);
-  return rendition ? rendition.path : null;
+function getThumbnailCandidates(asset) {
+  const candidates = [];
+  const renditions = Array.isArray(asset.renditions) ? asset.renditions : [];
+  IMAGE_RENDITION_PRIORITY.forEach((name) => {
+    const rendition = renditions.find((r) => r.name === name);
+    if (rendition && rendition.path) candidates.push(rendition.path);
+  });
+  // The original binary is only usable as an <img> when it is itself an image.
+  const format = (asset['dc:format'] || '').toLowerCase();
+  if (format.startsWith('image/') && asset.path) candidates.push(asset.path);
+  return candidates;
+}
+
+/**
+ * Inline SVG placeholder (generic document icon on the card background) used
+ * when no rendition loads, guaranteeing a visible thumbnail for any file type.
+ * @returns {string} data URI
+ */
+function placeholderDataUri() {
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 180">'
+    + '<rect width="320" height="180" fill="#191b22"/>'
+    + '<g fill="none" stroke="#6b7280" stroke-width="4" stroke-linejoin="round">'
+    + '<path d="M126 56h30l18 18v50a4 4 0 0 1-4 4h-44a4 4 0 0 1-4-4V60a4 4 0 0 1 4-4z"/>'
+    + '<path d="M156 56v18h18"/></g></svg>';
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
+/**
+ * Create an <img> that walks through candidate URLs on error and finally shows
+ * a placeholder, so a thumbnail is always visible.
+ * @param {string[]} candidates Ordered candidate image URLs
+ * @param {string} alt
+ * @returns {HTMLImageElement}
+ */
+function createThumbnailImg(candidates, alt) {
+  const img = document.createElement('img');
+  img.alt = alt;
+  img.loading = 'lazy';
+  const sources = [...candidates];
+  const showNext = () => {
+    if (sources.length) {
+      img.src = sources.shift();
+    } else {
+      img.removeEventListener('error', showNext);
+      img.classList.add('dam-display-thumbnail-placeholder');
+      img.src = placeholderDataUri();
+    }
+  };
+  img.addEventListener('error', showNext);
+  showNext();
+  return img;
 }
 
 /**
@@ -119,23 +179,16 @@ function createPdfCard(pdf) {
   const card = document.createElement('article');
   card.className = 'dam-display-card';
 
-  // Image / thumbnail
-  const imagePath = getImagePath(pdf.renditions);
-  if (imagePath) {
-    const imageLink = document.createElement('a');
-    imageLink.className = 'dam-display-image-link';
-    imageLink.href = pdf.path;
-    imageLink.target = '_blank';
-    imageLink.rel = 'noopener noreferrer';
-    imageLink.title = pdf.title || 'Download PDF';
-
-    const img = document.createElement('img');
-    img.src = imagePath;
-    img.alt = pdf.title || 'PDF preview';
-    img.loading = 'lazy';
-    imageLink.append(img);
-    card.append(imageLink);
-  }
+  // Thumbnail — always rendered so every card has a preview, whatever the
+  // file type. Falls back through candidate renditions to a placeholder.
+  const imageLink = document.createElement('a');
+  imageLink.className = 'dam-display-image-link';
+  imageLink.href = pdf.path;
+  imageLink.target = '_blank';
+  imageLink.rel = 'noopener noreferrer';
+  imageLink.title = pdf.title || 'Open asset';
+  imageLink.append(createThumbnailImg(getThumbnailCandidates(pdf), pdf.title || 'Preview'));
+  card.append(imageLink);
 
   // Content container
   const content = document.createElement('div');
@@ -210,16 +263,10 @@ function createImageCard(asset) {
   const card = document.createElement('article');
   card.className = 'dam-display-card dam-display-card-image';
 
-  const imagePath = getImagePath(asset.renditions);
-  const src = imagePath || asset.path;
-
   const imgWrapper = document.createElement('div');
   imgWrapper.className = 'dam-display-image-wrapper';
 
-  const img = document.createElement('img');
-  img.src = src;
-  img.alt = asset.title || 'Image';
-  img.loading = 'lazy';
+  const img = createThumbnailImg(getThumbnailCandidates(asset), asset.title || 'Image');
   img.dataset.fullSrc = asset.path; // original for lightbox
   imgWrapper.append(img);
   card.append(imgWrapper);

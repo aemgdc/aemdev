@@ -6,46 +6,73 @@
    - `images-large`          : 2-up cards with large image on top.
 
    Optional authored config rows (key | value):
-   - limit   | 6                       (cards per page, default 9)
-   - index   | /opsinventor-en.json    (query index path)
+   - limit    | 6                      (cards per page, default 9)
+   - index    | /en/query-index.json   (query index path)
+   - category | Meetup Recap, News     (only show articles in these categories)
+   - tag      | EDS, GDC               (only show articles with any of these tags)
+
+   `category` and `tag` accept a comma-separated list (matched case-insensitively;
+   values within a key are OR'd). If both are given, an article must match both.
 
    Sort: by `date` descending.
 */
 
 import { dateValue } from '../../scripts/utils/date.js';
 
-const DEFAULT_INDEX = '/opsinventor-en.json';
+const DEFAULT_INDEX = '/en/query-index.json';
 const DEFAULT_PAGE_SIZE = 9;
 const DA_HOST = 'https://content.da.live';
 
-function deriveTag(article) {
-  if (article.category && article.category.trim()) return `// ${article.category.trim()}`;
+function cleanValue(s) {
+  return (s || '').replace(/^["\s]+|["\s]+$/g, '');
+}
+
+// Normalize an article's `tags` field (array, JSON string, or comma list) to an array.
+function articleTags(article) {
   const t = article.tags;
-  let first = '';
-  if (Array.isArray(t)) {
-    [first = ''] = t;
-  } else if (typeof t === 'string' && t.trim()) {
+  if (Array.isArray(t)) return t.map(cleanValue).filter(Boolean);
+  if (typeof t === 'string' && t.trim()) {
     const raw = t.trim();
     if (raw.startsWith('[')) {
       try {
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length) [first] = parsed;
-      } catch {
-        first = raw.replace(/^\[|\]$/g, '').split(',')[0];
-      }
-    } else {
-      [first] = raw.split(',');
+        if (Array.isArray(parsed)) return parsed.map(cleanValue).filter(Boolean);
+      } catch { /* fall through to manual parse */ }
+      return raw.replace(/^\[|\]$/g, '').split(',').map(cleanValue).filter(Boolean);
     }
-    first = first.replace(/^["\s]+|["\s]+$/g, '');
+    return raw.split(',').map(cleanValue).filter(Boolean);
   }
+  return [];
+}
+
+// Split a comma-separated authored value into a lowercased list for matching.
+function splitList(val) {
+  return val.split(',').map((s) => cleanValue(s).toLowerCase()).filter(Boolean);
+}
+
+function matchesFilters(article, { categories, tags }) {
+  if (categories) {
+    const cat = cleanValue(article.category).toLowerCase();
+    if (!categories.includes(cat)) return false;
+  }
+  if (tags) {
+    const articleTagsLc = articleTags(article).map((s) => s.toLowerCase());
+    if (!tags.some((t) => articleTagsLc.includes(t))) return false;
+  }
+  return true;
+}
+
+function deriveTag(article) {
+  if (article.category && article.category.trim()) return `// ${article.category.trim()}`;
+  const [first] = articleTags(article);
   return first ? `// ${first}` : '// Field Notes';
 }
 
 function resolveImage(src) {
   if (!src) return '';
   if (/^https?:\/\//i.test(src)) return src;
-  // DA-hosted asset paths like /treeves/opsinventor-eds/en/... need the content.da.live host
-  if (src.startsWith('/treeves/')) return `${DA_HOST}${src}`;
+  // DA-hosted asset paths like /aemgdc/aemdev/en/... need the content.da.live host
+  if (src.startsWith('/aemgdc/')) return `${DA_HOST}${src}`;
   return src;
 }
 
@@ -108,6 +135,12 @@ function readConfig(block) {
       if (Number.isFinite(n) && n > 0) config.limit = n;
     } else if (key === 'index' || key === 'index-path') {
       if (val.startsWith('/')) config.index = val;
+    } else if (key === 'category' || key === 'categories') {
+      const list = splitList(val);
+      if (list.length) config.categories = list;
+    } else if (key === 'tag' || key === 'tags') {
+      const list = splitList(val);
+      if (list.length) config.tags = list;
     }
   });
   return config;
@@ -120,7 +153,8 @@ function resolveVariant(block) {
 }
 
 export default async function decorate(block) {
-  const { limit, index } = readConfig(block);
+  const config = readConfig(block);
+  const { limit, index } = config;
   const variant = resolveVariant(block);
   const withImage = variant !== 'text';
 
@@ -161,7 +195,8 @@ export default async function decorate(block) {
       .filter((a) => a.path
         && !a.path.endsWith('/index')
         && !a.redirectTarget
-        && (!a.template || a.template === 'blog'))
+        && (!a.template || a.template === 'blog')
+        && matchesFilters(a, config))
       .sort((a, b) => dateValue(b.date) - dateValue(a.date));
   } catch (e) {
     const err = document.createElement('p');

@@ -22,7 +22,7 @@ const RENDITION_NAME = 'cq5dam.web.1280.1280.jpeg';
 // /services/* to this AEM, so the block always calls it directly. The
 // servlet returns permissive CORS headers, so cross-origin fetches work
 // from every environment.
-const AEM_ORIGIN = 'https://blog.arborydigital.com';
+const AEM_ORIGIN = 'https://www.aemdev.org';
 
 /* ------------------------------------------------------------------ */
 /*  Shared helpers                                                     */

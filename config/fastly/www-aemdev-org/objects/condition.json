@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "comment": "",
+    "statement": "req.url.path ~ \"^/services/\"",
+    "name": "services path",
+    "priority": "10",
+    "type": "REQUEST",
+    "service_id": "tTSyFJgoN3lZqBOA0n3Rd7"
+  }
+]

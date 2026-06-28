@@ -42,6 +42,30 @@ backend F_Helix_5_DA_Origin {
         .window = 5;
       }
 }
+backend F_AEM_Publish_Services_Origin {
+    .between_bytes_timeout = 10s;
+    .connect_timeout = 1s;
+    .dynamic = true;
+    .first_byte_timeout = 15s;
+    .host = "publish-p121227-e1306133.adobeaemcloud.com";
+    .max_connections = 200;
+    .port = "443";
+    .share_key = "tTSyFJgoN3lZqBOA0n3Rd7";
+
+    .ssl = true;
+    .ssl_cert_hostname = "publish-p121227-e1306133.adobeaemcloud.com";
+    .ssl_check_cert = always;
+    .ssl_sni_hostname = "publish-p121227-e1306133.adobeaemcloud.com";
+
+    .probe = {
+        .dummy = true;
+        .initial = 5;
+        .request = "HEAD / HTTP/1.1"  "Host: publish-p121227-e1306133.adobeaemcloud.com" "Connection: close";
+        .threshold = 1;
+        .timeout = 2s;
+        .window = 5;
+      }
+}
 
 
 
@@ -83,6 +107,7 @@ sub vcl_recv {
 if (req.url.path !~ "/media_[0-9a-f]{40,}[/a-zA-Z0-9_-]*\.[0-9a-z]+$"
   && req.url.ext !~ "(?i)^(gif|png|jpe?g|webp)$"
   && req.url.ext != "json"
+  && req.url.path !~ "^/services/"
   && req.url.path != "/.auth") {
   // strip query string from request url
   set req.url = req.url.path;
@@ -98,6 +123,14 @@ if (req.url.path !~ "/media_[0-9a-f]{40,}[/a-zA-Z0-9_-]*\.[0-9a-z]+$"
 
 
 
+  # Request Condition: services path Prio: 10
+  if( req.url.path ~ "^/services/" ) {
+
+    set req.backend = F_AEM_Publish_Services_Origin;
+
+
+      }
+  #end condition
 
       #do shield here F_Helix_5_DA_Origin > ssl_shield_iad_va_us;
 

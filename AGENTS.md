@@ -46,3 +46,12 @@ Skills will be added to `.claude/skills/` as needed for this project. Check the 
 
 **For ALL development work involving blocks, core scripts, or functionality, you MUST start with the content-driven-development skill.** It will orchestrate other skills as needed throughout the development workflow.
 <!-- upskill:skills:end -->
+
+## Plans / work-in-progress
+
+Persistent, cross-context plans live in `.agents/plans/`. Read the relevant one before
+continuing related work.
+
+- [`.agents/plans/fastly-cdn-cicd.md`](.agents/plans/fastly-cdn-cicd.md) — Fastly CDN
+  config in Git → CI/CD. Phase 1 (read-only sync) shipped; Phase 2 (Terraform push) is
+  the next step and includes a ready-to-use kickoff prompt.

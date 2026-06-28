@@ -38,38 +38,6 @@ indices:
         select: head > meta[name="redirecttarget"]
         value: |
           attribute(el, "content")
-      offDateTime:
-        select: head > meta[name="offdatetime"]
-        value: |
-          attribute(el, "content")
-      eventDateTime:
-        select: head > meta[name="eventdatetime"]
-        value: |
-          attribute(el, "content")
-      eventDisplayTime:
-        select: head > meta[name="eventdisplaytime"]
-        value: |
-          attribute(el, "content")
-      eventDisplayLabel:
-        select: head > meta[name="eventdisplaylabel"]
-        value: |
-          attribute(el, "content")
-      bookTypeTitle:
-        select: head > meta[name="booktypetitle"]
-        value: |
-          attribute(el, "content")
-      bookPublishDate:
-        select: head > meta[name="bookpublishdate"]
-        value: |
-          attribute(el, "content")
-      bookAuthor:
-        select: head > meta[name="bookauthor"]
-        value: |
-          attribute(el, "content")
-      displayLabel:
-        select: head > meta[name="displaylabel"]
-        value: |
-          attribute(el, "content")
       displayImage:
         select: head > meta[name="displayimage"]
         value: |
@@ -77,4 +45,32 @@ indices:
       tags:
         select: head > meta[property="article:tag"]
         values: |
+          attribute(el, "content")
+      category:
+        select: head > meta[name="category"]
+        value: |
+          attribute(el, "content")
+      template:
+        select: head > meta[name="template"]
+        value: |
+          attribute(el, "content")
+      publicationDate:
+        select: head > meta[name="publication-date"]
+        value: |
+          attribute(el, "content")
+      eventDate:
+        select: head > meta[name="event-date"]
+        value: |
+          attribute(el, "content")
+      recapVideo:
+        select: head > meta[name="recap-video"]
+        value: |
+          attribute(el, "content")
+      speakers:
+        select: head > meta[name="speakers"]
+        value: |
+          attribute(el, "content")
+      location:
+        select: head > meta[name="location"]
+        value: |
           attribute(el, "content")

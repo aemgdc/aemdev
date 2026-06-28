@@ -1,5 +1,5 @@
 {
-  "version": 5,
+  "version": 8,
   "code": {
     "owner": "aemgdc",
     "repo": "aemdev",
@@ -12,8 +12,8 @@
     "admin": {
       "role": {
         "admin": [
-          "tadreeves@gmail.com",
-          "tad@arborydigital.com"
+          "tad@arborydigital.com",
+          "tadreeves@gmail.com"
         ]
       },
       "requireAuth": "false"
@@ -26,7 +26,7 @@
     },
     "contentBusId": "c21d4be7453a72d10d8ba81524b22cc261d623d82ea5df130f7b051c504"
   },
-  "lastModified": "2026-06-26T21:31:17.565Z",
+  "lastModified": "2026-06-28T16:08:16.732Z",
   "created": "2026-06-22T15:55:13.968Z",
   "apiKeys": {
     "VqW5S86VB52YHXNhLsdLA6uTzTqOo7KloRJFL-AGA5O_": {
@@ -38,6 +38,31 @@
       "subject": "aemgdc/aemdev",
       "expiration": "2027-06-26T21:31:17.000Z",
       "created": "2026-06-26T21:31:17.630Z"
+    }
+  },
+  "headers": {
+    "/content/*": [
+      {
+        "key": "access-control-allow-origin",
+        "value": "*"
+      }
+    ],
+    "*": [
+      {
+        "key": "access-control-allow-origin",
+        "value": "*"
+      }
+    ]
+  },
+  "robots": {
+    "txt": "# Robots.txt file for www.aemdev.org\nUser-agent: *\nAllow: /\n\n"
+  },
+  "cdn": {
+    "prod": {
+      "type": "fastly",
+      "serviceId": "tTSyFJgoN3lZqBOA0n3Rd7",
+      "authToken": "cFeN0H7EuPhP9NRQTyoept0DQvpUodXc",
+      "host": "www.aemdev.org"
     }
   }
 }

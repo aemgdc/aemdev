@@ -43,11 +43,13 @@ backend F_Helix_5_DA_Origin {
       }
 }
 backend F_AEM_Publish_Services_Origin {
+    .always_use_host_header = true;
     .between_bytes_timeout = 10s;
     .connect_timeout = 1s;
     .dynamic = true;
     .first_byte_timeout = 15s;
     .host = "publish-p121227-e1306133.adobeaemcloud.com";
+    .host_header = "publish-p121227-e1306133.adobeaemcloud.com";
     .max_connections = 200;
     .port = "443";
     .share_key = "tTSyFJgoN3lZqBOA0n3Rd7";
@@ -124,7 +126,7 @@ if (req.url.path !~ "/media_[0-9a-f]{40,}[/a-zA-Z0-9_-]*\.[0-9a-z]+$"
 
 
   # Request Condition: services path Prio: 10
-  if( req.url.path ~ "^/services/" ) {
+  if( req.url.path ~ "^/(services|content/dam)/" ) {
 
     set req.backend = F_AEM_Publish_Services_Origin;
 

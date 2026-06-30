@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Advanced Search and Replace</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <!-- Import DA App SDK -->
+    <script src="https://da.live/nx/utils/sdk.js" type="module"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <!-- Project App Logic -->
+    <script src="/tools/search/advanced-search.js" type="module"></script>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" type="text/css" href="/tools/advanced-search/advanced-search.css">
+  </head>
+  <body class="advanced-search">
+    <h1>Advanced Search</h1>
+    <br>
+    <form id="searchQuery">
+      <div id="searchFilters">
+        <div>
+          <div class="filter-section">
+            <p class="filter-label">Block: </p>
+            <select name="block_scope">
+            </select>
+          </div>
+          <div class="filter-section">
+            <p class="filter-label">Property: </p>
+            <select name="property_scope">
+            </select>
+          </div>
+          <div class="filter-section">
+            <input type="checkbox" id="emptyValue" name="emptyValue" value="true"/>
+            <label class="filter-label" for="emptyValue">Empty Value?</label>
+          </div>
+        </div>
+        <div>
+          <div class="filter-section">
+            <p class="filter-label">HTML: </p>
+            <select name="tag_scope">
+            </select>
+          </div>
+          <div class="filter-section">
+            <p class="filter-label">Attribute: </p>
+            <select name="attribute_scope">
+            </select>
+          </div>
+        </div>
+        <div>
+          <div class="filter-section">
+            <p class="filter-label">Publish Status: </p>
+            <select id="publish_scope">
+              <option value="">Select</option>
+              <option value="published">Published</option>
+              <option value="previewed">Previewed</option>
+              <option value="unpublished">Unpublished</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="mySearchContainer">
+        <div class="page-path-wrapper">
+          <!-- lock/unlock -->
+          <button id="toggle-edit" type="button" class="icon-btn" aria-label="Enable editing" aria-pressed="false" title="Enable editing">
+            <!-- locked padlock icon -->
+            <svg id="icon-lock" class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="5" y="11" width="14" height="10" rx="2" ry="2"></rect>
+              <path d="M8 11V7a4 4 0 1 1 8 0v4"></path>
+            </svg>
+          </button>
+          <div class="separator" aria-hidden="true"></div>
+          <input id="page-path-input" type="text" value="/en" disabled aria-label="Page Path" />
+          <div class="separator" aria-hidden="true"></div>
+          <!-- file picker -->
+          <label for="file-input" style="display:inline-flex; align-items:center;">
+            <button type="button" id="mybutton" class="icon-btn" aria-label="Open File Explorer" title="Open File Explorer">
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h5l2 3h9a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"></path>
+                <path d="M12 13v4M10 15h4"></path>
+              </svg>
+            </button>
+          </label>
+          <dialog id="modal">
+            <iframe src="/tools/pagetree/pagetree.html"></iframe>
+          </dialog>
+        </div>
+        <input class="searchTerms" type="text" name="searchTerms" placeholder="Enter search text"></input>
+      </div>
+      <input type="checkbox" id="caseSensitiveSearch" name="caseSensitiveSearch" value="true"/>
+      <label for="caseSensitiveSearch">Case Sensitive?</label>
+      <button type="button" name="submitSearch">Submit</button>
+    </form>
+    <div class="advanced-actions">
+      <div id="advanced-action-prompt" class="hidden">
+        <button id="create-version-button" class="version" type="button">Create Page Versions</button>
+        <button id="replace-text-button" class="button" type="button">Replace Text?</button>
+        <button id="advanced-action-button" type="button">Perform Block Action Change?</button>
+        <button id="export-csv-button" type="button">Export Results to CSV</button>
+      </div>
+      <form id="replace-text-form" class="hidden">
+        <label for="replaceText">Replace With</label>
+        <input type="text" id="replacement-text" name="replaceText" placeholder="New Text"></input>
+        <button type="button" id="replace-submit-button" class="advanced-submit">Submit</button>
+        <button type="button" id="undo-replace-button" class="undo">Undo</button>
+      </form>
+      <form id="action-form" class="hidden">
+        <div class="advanced-replacement-group">
+          <div class="action-radio-buttons">
+            <input type="radio" id="addNewRow" name="advanced-replace" value="add">
+            <label for="addNewRow">Add new row?</label>
+            <input type="radio" id="deleteRow" name="advanced-replace" value="delete">
+            <label for="deleteRow">Delete entire row?</label>
+            <input type="radio" id="editRow" name="advanced-replace" value="edit">
+            <label for="editRow">Edit Row?</label>
+            <input type="radio" id="mergeRows" name="advanced-replace" value="merge">
+            <label for="mergeRows">Merge with row?</label>
+            <div id="add-section" class="advanced-section">
+              <label for="newRowName">Name:  </label>
+              <input type="text" id="newRowName" placeholder="New text">
+              <label for="newRowValue">Value:  </label>
+              <input type="text" id="newRowValue" placeholder="New text">
+            </div>
+            <div id="delete-section" class="advanced-section">
+              <label for="deleteRowName">Row To Delete:  </label>
+              <input type="text" id="deleteRowName" placeholder="Row Name">
+            </div>
+            <div id="edit-section" class="advanced-section">
+              <div>
+                <input type="checkbox" id="changeRowName" value="true">
+                <label for="rowName">Change Row Name?</label>
+                <input type="text" id="newRowName" placeholder="New Name">
+              </div>
+              <div>
+                <input type="checkbox" id="changeRowValue" value="true">
+                <label for="rowValue">Change Row Value?</label>
+              </div>
+              <div class="sub-section">
+                <select name="partialEdit" value="whole">
+                  <option value="whole">Whole Value</option>
+                  <option value="each">Each Item</option>
+                  <option value="keyword">Keyword (if provided)</option>
+                </select>
+                <select name="editTextAction" value="prepend">
+                  <option value="prepend">Prepend</option>
+                  <option value="append">Append</option>
+                  <option value="replace">Replace</option>
+                </select>
+                <input type="text" id="newText" placeholder="New text">
+              </div>
+            </div>
+            <div id="merge-section" class="advanced-section">
+              <label for="mergeRowName">Row To Merge With?</label>
+              <input type="text" id="mergeName" name="mergeRowName" value="" placeholder="Row Name"></input>
+              <input type="checkbox" id="createRowCheckbox" name="createRowCheckbox" value="true"></input>
+              <label for="createRowCheckbox">Create Row if it doesn't exist?</label>
+            </div>
+          <button type="button" id="advanced-submit-button" class="advanced-submit">Submit</button>
+          <button type="button" id="undo-button" class="undo">Undo Last Action</button>
+        </div>
+      </form>
+    </div>
+    <div class="export-options">
+      <form id="export-form" class="hidden">
+        <div>
+          <input type="checkbox" id="path-exp" name="path" checked disabled/>
+          <label for="path">Page Path</label>
+        </div>
+        <div>
+          <input type="checkbox" id="title-exp" name="title" checked/>
+          <label for="title">Title</label>
+        </div>
+        <div>
+          <input type="checkbox" id="description-exp" name="description" checked/>
+          <label for="description">Meta Description</label>
+        </div>
+        <div>
+          <input type="checkbox" id="tags-exp" name="tags" checked/>
+          <label for="tags">Tags</label>
+        </div>
+        <div>
+          <input type="checkbox" id="publish-status-exp" name="publishStatus" checked/>
+          <label for="publishStatus">Publish Status</label>
+        </div>
+        <div>
+          <input type="checkbox" id="last-published-exp" name="lastPublished" checked/>
+          <label for="last_published">Last Published Date</label>
+        </div>
+        <div>
+          <input type="checkbox" id="last-modified-exp" name="lastModified" checked/>
+          <label for="lastModified">Last Modified Date</label>
+        </div>
+        <div>
+          <input type="checkbox" id="last-modified-by-exp" name="lastModifiedBy" checked/>
+          <label for="lastModifiedBy">Last Modified By</label>
+        </div>
+        <button type="button" id="export-submit-button" class="export-submit">Export</button>
+      </form>
+    </div>
+    <div class="results-container">
+    </div>
+  </body>
+</html>

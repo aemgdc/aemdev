@@ -77,7 +77,7 @@ function createTreeItem(name, node, onClick) {
     button.setAttribute('aria-label', `Insert link for page "${name.replace('.html', '')}"`);
 
     const pageIcon = document.createElement('img');
-    pageIcon.src = '/icons/file.png';
+    pageIcon.src = '/img/icons/file.png';
     pageIcon.alt = 'Page';
     pageIcon.className = 'tree-icon';
     pageIcon.setAttribute('aria-hidden', 'true');
@@ -93,7 +93,7 @@ function createTreeItem(name, node, onClick) {
     previewIcon.title = `Preview "${displayName}"`;
 
     const eyeImg = document.createElement('img');
-    eyeImg.src = '/icons/folder.png';
+    eyeImg.src = '/img/icons/folder.png';
     eyeImg.alt = 'Preview';
     eyeImg.className = 'tree-icon preview-icon';
     eyeImg.setAttribute('aria-hidden', 'true');
@@ -132,7 +132,7 @@ function createTreeItem(name, node, onClick) {
     folderButton.setAttribute('aria-label', `Folder ${name}`);
 
     const folderIcon = document.createElement('img');
-    folderIcon.src = '/icons/folder.png';
+    folderIcon.src = '/img/icons/folder.png';
     folderIcon.alt = ''; // Decorative image, using aria-hidden instead
     folderIcon.className = 'tree-icon folder-icon';
     folderIcon.setAttribute('aria-hidden', 'true');
@@ -180,8 +180,8 @@ function createTreeItem(name, node, onClick) {
       const isExpanded = folderButton.classList.contains('expanded');
       folderButton.setAttribute('aria-expanded', isExpanded);
       folderIcon.src = isExpanded
-        ? '/icons/folder-open.png'
-        : '/icons/folder.png';
+        ? '/img/icons/folder-open.png'
+        : '/img/icons/folder.png';
 
       // Lazy-load children when first expanded
       if (isExpanded) {

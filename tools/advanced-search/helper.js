@@ -220,6 +220,32 @@ function getCurrentVersion(json) {
   };
 }
 
+async function saveToDa(text, pathname, token) {
+  const daPath = `/${DA_CONSTANTS.org}/${DA_CONSTANTS.repo}${pathname}`;
+  const daHref = `${DA_CONSTANTS.editUrl}${daPath}`;
+
+  const body = replaceHtml(text);
+
+  const blob = new Blob([body], { type: 'text/html' });
+  const formData = new FormData();
+  formData.append('data', blob);
+  const opts = {
+    method: 'PUT',
+    body: formData,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+
+  try {
+    const daResp = await fetch(`${DA_CONSTANTS.sourceUrl}${daPath}.html`, opts);
+    return { daHref, daStatus: daResp.status, daResp, ok: daResp.ok };
+  } catch {
+    console.log(`Couldn't save ${pathname}`);
+    return null;
+  }
+}
+
 export {
   createRateLimiter,
   createTag,
@@ -229,5 +255,6 @@ export {
   getCurrentVersion,
   getPageStatus,
   getPublishStatus,
+  saveToDa,
   toLowerCaseObject,
 };

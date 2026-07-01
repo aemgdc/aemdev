@@ -1,6 +1,6 @@
 :root {
   /* colors */
-  --text-color: #333333;
+  --text-color: red;
   --link-color: #0378cd;
   --link-hover-color: #3aaafc;
   --background-color: #ffffff;
@@ -46,9 +46,9 @@
   --linkColor: var(--color-primary);
   --error: var(--red);
   /* fonts */
-  --font-primary: "anova-light", arial, helvetica, sans-serif;
-  --font-secondary: "anova-regular", arial, helvetica, sans-serif;
-  --font-bold: "anova-bold", arial, helvetica, sans-serif;
+  --font-primary: arial, helvetica, sans-serif;
+  --font-secondary: arial, helvetica, sans-serif;
+  --font-bold: arial, helvetica, sans-serif;
 }
 
 .advanced-search {

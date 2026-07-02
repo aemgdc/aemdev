@@ -1,38 +1,38 @@
 [
   {
-    "name": "set byocdn var for miss",
-    "priority": "100",
-    "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
-    "dynamic": "0",
     "id": "KrnUcLo7v680MsQHAgW4j1",
     "content": "set bereq.http.X-BYO-CDN-Type = \"fastly\";\nset bereq.http.X-Push-Invalidation = \"enabled\";",
+    "dynamic": "0",
+    "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
+    "name": "set byocdn var for miss",
+    "priority": "100",
     "type": "miss"
   },
   {
+    "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
     "name": "set byocdn var for pass",
     "priority": "100",
-    "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
-    "id": "eSJ8CzXLe2yjQrEJTbflk3",
-    "dynamic": "0",
     "type": "pass",
-    "content": "set bereq.http.X-BYO-CDN-Type = \"fastly\";\nset bereq.http.X-Push-Invalidation = \"enabled\";"
+    "id": "eSJ8CzXLe2yjQrEJTbflk3",
+    "content": "set bereq.http.X-BYO-CDN-Type = \"fastly\";\nset bereq.http.X-Push-Invalidation = \"enabled\";",
+    "dynamic": "0"
   },
   {
+    "priority": "100",
     "type": "deliver",
-    "content": "unset resp.http.Age;",
-    "priority": "100",
-    "dynamic": "0",
     "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
+    "name": "strip age header",
     "id": "Pio3zDR4baXZ6XK7KP2z07",
-    "name": "strip age header"
+    "content": "unset resp.http.Age;",
+    "dynamic": "0"
   },
   {
-    "type": "recv",
-    "content": "if (req.url.path !~ \"/media_[0-9a-f]{40,}[/a-zA-Z0-9_-]*\\.[0-9a-z]+$\"\n  && req.url.ext !~ \"(?i)^(gif|png|jpe?g|webp)$\"\n  && req.url.ext != \"json\"\n  && req.url.path !~ \"^/services/\"\n  && req.url.path != \"/.auth\") {\n  // strip query string from request url\n  set req.url = req.url.path;\n}",
-    "priority": "100",
-    "id": "Nf9QmSFmkXvPDXnFyBmAM2",
     "dynamic": "0",
-    "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
-    "name": "strip query string on vcl_rcv"
+    "content": "if (req.url.path !~ \"/media_[0-9a-f]{40,}[/a-zA-Z0-9_-]*\\.[0-9a-z]+$\"\n  && req.url.ext !~ \"(?i)^(gif|png|jpe?g|webp)$\"\n  && req.url.ext != \"json\"\n  && req.url.path !~ \"^/services/\"\n  && req.url.path != \"/.auth\") {\n  // strip query string from request url\n  set req.url = req.url.path;\n}",
+    "id": "Nf9QmSFmkXvPDXnFyBmAM2",
+    "type": "recv",
+    "priority": "100",
+    "name": "strip query string on vcl_rcv",
+    "service_id": "tTSyFJgoN3lZqBOA0n3Rd7"
   }
 ]

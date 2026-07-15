@@ -7,11 +7,11 @@
       "active_version": 9
     }
   ],
-  "comment": "",
+  "number": 9,
   "testing": false,
   "deployed": false,
   "locked": true,
-  "staging": false,
+  "comment": "",
   "active": true,
-  "number": 9
+  "staging": false
 }

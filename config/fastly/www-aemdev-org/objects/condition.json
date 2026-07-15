@@ -1,10 +1,10 @@
 [
   {
     "name": "services path",
-    "priority": "10",
+    "type": "REQUEST",
     "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
-    "statement": "req.url.path ~ \"^/(services|content/dam)/\"",
     "comment": "",
-    "type": "REQUEST"
+    "statement": "req.url.path ~ \"^/(services|content/dam)/\"",
+    "priority": "10"
   }
 ]

@@ -381,7 +381,7 @@ function getQuery(caseSensitiveFlag) {
 }
 
 async function getConfigurations() {
-  const blockProperties = `${pathPrefix}/docs/library/blocks.json`;
+  const blockProperties = `${pathPrefix}/docs/blocks.json`;
   const resp = await actions.daFetch(`${daSourceUrl}${blockProperties}`);
   if (!resp.ok) {
     console.log('Could not fetch item');
@@ -393,7 +393,7 @@ async function getConfigurations() {
   });
   window.blockProperties = blockOptions;
 
-  const tagAttribute = `${pathPrefix}/docs/library/tag-attribute.json`;
+  const tagAttribute = `${pathPrefix}/docs/tag-attribute.json`;
   const respTags = await actions.daFetch(`${daSourceUrl}${tagAttribute}`);
   if (!respTags.ok) {
     console.log('Could not fetch item');

@@ -216,7 +216,7 @@ function createResultItem(item, highlightTerm) {
   });
 
   const openPageIcon = createTag('img', {
-    src: `${window.location.origin}/icons/new-tab-icon.svg`,
+    src: `${window.location.origin}/img/icons/new-tab-icon.svg`,
     class: 'open-page',
   });
   link.append(openPageIcon);

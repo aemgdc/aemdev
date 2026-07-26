@@ -3,8 +3,8 @@
     "statement": "req.url.path ~ \"^/(services|content/dam)/\"",
     "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
     "name": "services path",
+    "priority": "10",
     "type": "REQUEST",
-    "comment": "",
-    "priority": "10"
+    "comment": ""
   }
 ]

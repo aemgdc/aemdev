@@ -1,0 +1,63 @@
+name: Publish/Unpublish web resources on StreamX
+
+on:
+  workflow_dispatch:
+    inputs:
+      publish_all_webresources:
+        description: "Publish all, pattern included webresources to StreamX"
+        required: false
+        type: boolean
+        default: false
+  pull_request:
+    types:
+      - closed
+    branches:
+      - china
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  sync-pr-with-streamx:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run sync with StreamX
+        uses: streamx-dev/streamx-common-github-actions/.github/actions/connector-github@v1
+        env:
+          STREAMX_CONNECTION_SOCKET_TIMEOUT: 3000
+        with:
+          action: sync
+          channel: web-resources
+          source-provider: PullRequestDiffSourceProvider
+          type: 'web-resource/static'
+          include-patterns: ${{ vars.STREAMX_INGESTION_INCLUDES }}
+          streamx-ingestion-token: ${{ secrets.STREAMX_INGESTION_TOKEN }}
+          streamx-ingestion-url: ${{ vars.STREAMX_INGESTION_URL }}
+
+  sync-all-with-streamx:
+    if: github.event_name == 'workflow_dispatch' && inputs.publish_all_webresources == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run full sync with StreamX
+        uses: streamx-dev/streamx-common-github-actions/.github/actions/connector-github@v1
+        env:
+          STREAMX_CONNECTION_SOCKET_TIMEOUT: 3000
+        with:
+          action: publish
+          channel: web-resources
+          source-provider: BatchSourceProvider
+          workspace: ${{ github.workspace }}
+          type: 'web-resource/static'
+          include-patterns: ${{ vars.STREAMX_INGESTION_INCLUDES }}
+          streamx-ingestion-token: ${{ secrets.STREAMX_INGESTION_TOKEN }}
+          streamx-ingestion-url: ${{ vars.STREAMX_INGESTION_URL }}

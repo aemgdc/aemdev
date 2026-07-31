@@ -1,0 +1,55 @@
+name: Unpublish from StreamX
+
+on:
+  repository_dispatch:
+    types:
+      - resource-unpublished
+
+jobs:
+  check-event-status:
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          CLIENT_PAYLOAD: ${{ toJSON(github.event.client_payload) }}
+        run: |
+          echo $CLIENT_PAYLOAD
+          echo "Status: ${{ github.event.client_payload.status }}"
+          echo "Path: ${{ github.event.client_payload.path }}"
+
+  unpublish-from-streamx:
+    if: (github.event.client_payload.status == 200 || github.event.client_payload.status == 204) && endsWith(github.event.client_payload.path, '.md')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare ingestion variables
+        id: vars
+        shell: bash
+        run: |
+          sleep 1s
+          streamx_path=$(echo "${{ github.event.client_payload.path }}" | sed 's/\.md$//g')
+          # Indexed documents are namespaced (`en:/en/blog/post`), so the
+          # unpublish subject has to carry the same prefix the publish workflow
+          # builds - a bare path targets a document id that does not exist.
+          if [[ "$streamx_path" =~ ^/([a-z]{2}(-[a-z]{2})?)(/|$) ]]; then
+            streamx_namespace="${BASH_REMATCH[1]}:"
+          else
+            streamx_namespace=""
+          fi
+          streamx_subject=${streamx_namespace}${streamx_path}
+          echo "streamx_subject=${streamx_subject}" >> "$GITHUB_OUTPUT"
+          echo "CloudEvent subject: ${streamx_subject}"
+
+      # Mirrors the publish job: same action org/@v1 input schema (event-type +
+      # subject), and the same STREAMX_INGESTION_GH_TOKEN. The previous config
+      # used the streamx-dev org with `action`/`channel`/`key` inputs that @v1
+      # no longer defines, plus STREAMX_INGESTION_EDS_TOKEN, which fails auth -
+      # so unpublished pages were never removed from the search index.
+      - name: Run unpublish from StreamX
+        uses: streamx-hub/streamx-common-github-actions/.github/actions/connector-github@v1
+        env:
+          STREAMX_CONNECTION_SOCKET_TIMEOUT: 30000
+          STREAMX_CONNECTION_TIMEOUT: 3000
+        with:
+          streamx-ingestion-url: ${{ vars.STREAMX_INGESTION_URL }}
+          streamx-ingestion-token: ${{ secrets.STREAMX_INGESTION_GH_TOKEN }}
+          event-type: 'com.streamx.blueprints.page.unpublished.v1'
+          subject: ${{ steps.vars.outputs.streamx_subject }}

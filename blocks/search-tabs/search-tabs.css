@@ -1,0 +1,1116 @@
+/* stylelint-disable selector-class-pattern */
+
+/* The library stylesheet is injected by the block decorator, so it lands in
+   <head> *after* this file. Every override below is therefore qualified with
+   `.search-tabs` to out-specify the library's single-class rules. */
+
+.search-tabs {
+  /* Library theme tokens. `background` is transparent so the panel and tabs
+     sit directly on the page rather than reading as a darker card; anything
+     that genuinely needs a solid backdrop (the suggestions dropdown) sets its
+     own below. */
+  --stx-color-text: #fff;
+  --stx-color-muted: #98a1b0;
+  --stx-color-background: transparent;
+  --stx-color-surface: rgb(255 255 255 / 6%);
+  --stx-color-border: rgb(255 255 255 / 14%);
+  --stx-color-focus: var(--link-color);
+  --stx-color-text-query-input: var(--text-color);
+  --stx-shadow-dropdown: 0 18px 40px rgb(0 0 0 / 45%);
+
+  /* Mesh palette, shared by the search button and the field's border ring.
+     The four sit deliberately close together - the spread between them is
+     what decides whether the drift reads as ambient or as an effect, so widen
+     these to make it more obvious and tighten them to calm it down. */
+  --stx-mesh-floor: color-mix(in srgb, var(--link-color) 72%, var(--link-hover-color));
+  --stx-mesh-base: var(--link-color);
+  --stx-mesh-light: color-mix(in srgb, var(--link-color) 92%, #fff);
+  --stx-mesh-dark: color-mix(in srgb, var(--link-color) 86%, #000);
+
+  /* Opaque equivalents of the translucent surface, mixed from the page colour.
+     The field needs a solid inner fill so the animated border underneath it
+     shows only in the border ring and not through the whole control. */
+  --stx-field-fill: color-mix(in srgb, #fff 6%, var(--background-color));
+  --stx-field-fill-active: color-mix(in srgb, #fff 10%, var(--background-color));
+
+  /* Layout. The library hardcodes the column at 220px and the gap at 2rem;
+     both are re-declared from these so the indent below cannot drift. */
+  --stx-facet-column: 25%;
+  --stx-facet-gap: 2.5rem;
+  --stx-facet-indent: calc(var(--stx-facet-column) + var(--stx-facet-gap));
+
+  /* The controls nest inside the field's 6px padding, so their radius is the
+     field's less that inset - concentric corners rather than parallel ones. */
+  --stx-field-radius: var(--border-radius);
+  --stx-control-radius: calc(var(--border-radius) - 6px);
+  --stx-ease: 0.3s ease-in-out;
+}
+
+/* ---------------------------------------------------------------- shell -- */
+
+/* Both carry a background and 10px of padding by default. Dropping the padding
+   puts the query input, the tab buttons and the results all on one left edge,
+   which is what makes the indent further down a single shared value. */
+.search-tabs .stx-tabs,
+.search-tabs .stx-results-panel {
+  padding: 0;
+  background: none;
+  color: var(--stx-color-text);
+  font-family: var(--body-font-family);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.search-tabs .stx-results-panel {
+  gap: var(--stx-facet-gap);
+}
+
+/* border-box matters here: with the default content-box the divider and the
+   padding would sit outside the 25%, pushing the results column past the point
+   the header is indented to and breaking the alignment by a few pixels. Inside
+   the box, the divider lands exactly on the 25% line with a full gap of clear
+   space either side of it. */
+.search-tabs .stx-results-panel__facets-container {
+  box-sizing: border-box;
+  flex-basis: var(--stx-facet-column);
+  padding-right: var(--stx-facet-gap);
+  border-right: 1px solid var(--stx-color-border);
+
+  /* Inherited by the collapsible panels below - it is what allows their
+     `height: auto` to interpolate rather than snap. */
+  /* stylelint-disable-next-line property-no-unknown */
+  interpolate-size: allow-keywords;
+}
+
+/* styles.css styles every <button> on the site as a filled page button:
+   `margin: 16px 0`, `border-radius: 1rem`, `overflow: hidden` and an ellipsis.
+   These are toggles and icon controls, not page buttons, and the library only
+   defends some of them - so the treatment is undone here before any of the
+   styling below lands.
+
+   The radius-plus-overflow pair is the damaging one: it clips a label against
+   the rounded corner and shaves the first character off. `margin` is the other
+   - on the clear button, which is absolutely positioned, 16px of it drags the
+   control below centre. */
+.search-tabs .stx-tabs__button,
+.search-tabs .stx-results-panel__facet-toggle,
+.search-tabs .stx-results-panel__facet-subtoggle,
+.search-tabs .stx-query-input__search-button,
+.search-tabs .stx-query-input__clear-button,
+.search-tabs .results-panel-facet-more,
+.search-tabs .stx-results-panel__pagination-list button {
+  margin: 0;
+  overflow: visible;
+  border-radius: 0;
+  text-overflow: clip;
+}
+
+/* ---------------------------------------------------------- search field --
+   The whole control becomes one rounded field: the input's own border and
+   background are stripped and `__controls` carries them instead, so the text,
+   the clear button and the submit button share a single pill. */
+
+.search-tabs .stx-query-input {
+  margin-bottom: 1rem;
+}
+
+/* The border carries the same drifting mesh as the search button.
+   `border-image` cannot follow a border-radius, so the standard two-layer
+   trick is used instead: a transparent border, an opaque fill clipped to the
+   padding box on top, and the mesh clipped to the border box underneath. Only
+   the 2px ring is left uncovered.
+
+   The blobs are wide and short rather than circular - across a 640px field a
+   circle large enough to cover the ring would read as one flat wash. */
+.search-tabs .stx-query-input__controls {
+  gap: 6px;
+  padding: 6px 6px 6px 22px;
+  border: 2px solid transparent;
+  border-radius: var(--stx-field-radius);
+  background-color: var(--stx-mesh-floor);
+  background-image:
+    linear-gradient(var(--stx-field-fill), var(--stx-field-fill)),
+    radial-gradient(closest-side circle, var(--stx-mesh-light) 0%, transparent 100%),
+    radial-gradient(closest-side circle, var(--stx-mesh-base) 0%, transparent 100%),
+    radial-gradient(closest-side circle, var(--stx-mesh-dark) 0%, transparent 100%);
+  background-repeat: no-repeat;
+  background-origin: padding-box, border-box, border-box, border-box;
+  background-clip: padding-box, border-box, border-box, border-box;
+  background-position: 0 0, 0% 50%, 55% 50%, 100% 50%;
+  background-size: auto, 55% 900%, 45% 900%, 65% 900%;
+  animation: stx-field-border-drift 10s ease-in-out infinite alternate;
+  transition: box-shadow var(--stx-ease);
+}
+
+/* The border is transparent now, so focus lifts the inner fill and raises the
+   field rather than recolouring the ring.
+
+   The hairline in the first layer is doing accessibility work, not decoration:
+   the library sets `outline: none` on the input, so with the old green glow
+   gone this is the only thing marking the field as focused. */
+.search-tabs .stx-query-input__controls:focus-within {
+  --stx-field-fill: var(--stx-field-fill-active);
+
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 18%),
+    0 2px 4px rgb(0 0 0 / 18%),
+    0 10px 24px rgb(0 0 0 / 26%);
+}
+
+/* The first layer is the static fill; only the three blobs travel. */
+@keyframes stx-field-border-drift {
+  from {
+    background-position: 0 0, 0% 50%, 55% 50%, 100% 50%;
+  }
+
+  to {
+    background-position: 0 0, 100% 50%, 10% 50%, 35% 50%;
+  }
+}
+
+.search-tabs .stx-query-input__input {
+  height: 40px;
+
+  /* styles.css `main input` sets `margin-bottom: 1rem` and `max-width: 50rem`.
+     The margin pushes the text off-centre inside the field; the max-width
+     silently caps the control at 800px however wide the row is. */
+  max-width: none;
+  margin: 0;
+  padding: 0 38px 0 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--stx-color-text-query-input);
+  font-family: var(--body-font-family);
+  font-size: 16px;
+}
+
+.search-tabs .stx-query-input__input::placeholder {
+  color: var(--stx-color-muted);
+}
+
+/* ------------------------------------------------------------- controls -- */
+
+.search-tabs .stx-query-input__search-button {
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+  height: 40px;
+  margin-left: 0;
+  border-radius: var(--stx-control-radius);
+
+  /* Three soft blobs over a dark floor - a small mesh gradient. Each layer is
+     sized well past 100% so it can drift without its edge ever entering the
+     circle, and the whole stack is clipped by the border-radius. Longhands
+     rather than the `background` shorthand, so the hover rule below can lift
+     the base colour without wiping the image. */
+  background-color: var(--stx-mesh-floor);
+  background-image:
+    radial-gradient(circle, var(--stx-mesh-light) 0%, transparent 58%),
+    radial-gradient(circle, var(--stx-mesh-base) 0%, transparent 52%),
+    radial-gradient(circle, var(--stx-mesh-dark) 0%, transparent 62%);
+  background-repeat: no-repeat;
+  background-position: 0% 20%, 100% 80%, 30% 100%;
+  background-size: 150% 150%, 130% 130%, 165% 165%;
+  color: #fff;
+  animation: stx-search-button-drift 10s ease-in-out infinite alternate;
+  transition:
+    background-color var(--stx-ease),
+    transform var(--stx-ease);
+}
+
+/* An animated property outranks a normal declaration, so the drift has to be
+   switched off for the hover colour to land at all. */
+.search-tabs .stx-query-input__search-button:hover,
+.search-tabs .stx-query-input__search-button:focus-visible {
+  background-color: color-mix(in srgb, var(--link-color) 88%, #fff);
+  animation: none;
+}
+
+.search-tabs .stx-query-input__search-button:hover {
+  color: #fff;
+  transform: scale(1.05);
+}
+
+/* The blobs travel in different directions, so the overlaps keep rearranging
+   rather than the whole field sliding as one. 10s each way, 20s round trip. */
+@keyframes stx-search-button-drift {
+  from {
+    background-color: var(--stx-mesh-floor);
+    background-position: 0% 20%, 100% 80%, 30% 100%;
+  }
+
+  to {
+    background-color: var(--stx-mesh-base);
+    background-position: 100% 75%, 10% 15%, 80% 0%;
+  }
+}
+
+.search-tabs .stx-query-input__search-button svg {
+  width: 19px;
+  height: 19px;
+}
+
+.search-tabs .stx-query-input__clear-button {
+  right: 6px;
+  width: 26px;
+  min-width: 26px;
+  max-width: 26px;
+  height: 26px;
+  border-radius: var(--stx-control-radius);
+  color: var(--stx-color-muted);
+  transition:
+    background-color var(--stx-ease),
+    color var(--stx-ease);
+}
+
+.search-tabs .stx-query-input__clear-button:hover {
+  background: rgb(255 255 255 / 12%);
+  color: var(--stx-color-text);
+}
+
+.search-tabs .stx-query-input__clear-button svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* ----------------------------------------------------------- suggestions --
+   Needs a solid backdrop of its own now that the shared background token is
+   transparent. */
+
+.search-tabs .stx-query-input__suggestions-wrapper {
+  width: 100%;
+  margin-top: 8px;
+  padding: 6px;
+  border: 1px solid var(--stx-color-border);
+  border-radius: var(--border-radius);
+  background: #1e222b;
+  box-shadow: var(--stx-shadow-dropdown);
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 24%) transparent;
+}
+
+/* The wrapper lives in the DOM permanently and is only filled while
+   suggestions are open, so the padding and border above would otherwise
+   render as a small floating nub under the field whenever it is empty. */
+.search-tabs .stx-query-input__suggestions-wrapper:empty {
+  display: none;
+}
+
+/* The site forces a 12px green scrollbar globally (styles.css `*` rules);
+   too heavy for a dropdown this size. */
+.search-tabs .stx-query-input__suggestions-wrapper::-webkit-scrollbar {
+  width: 8px;
+}
+
+.search-tabs .stx-query-input__suggestions-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.search-tabs .stx-query-input__suggestions-wrapper::-webkit-scrollbar-thumb {
+  border: 0;
+  border-radius: 8px;
+  background-color: rgb(255 255 255 / 20%);
+}
+
+.search-tabs .stx-suggestion__item {
+  border-radius: calc(var(--border-radius) - 0.4rem);
+  font-family: var(--body-font-family);
+  font-size: 15px;
+
+  /* The library swaps the background on hover but never times it. */
+  transition: background-color var(--stx-ease);
+}
+
+/* ------------------------------------------------------------------ tabs --
+   Text plus an accent indicator, no fills. The horizontal padding sets how far
+   the indicator runs past the label on each side, so the flex gap is kept
+   smaller to compensate. */
+
+.search-tabs .stx-tabs__buttons {
+  /* Anchors the shared indicator, and makes this the offset parent the JS
+     measures each button against. */
+  position: relative;
+  gap: 18px;
+  margin-bottom: 1.75rem;
+
+  /* The library rails the whole row; the indicator alone carries the state. */
+  border-bottom: 0;
+
+  /* The site forces a visible scrollbar globally, and this is a scroll
+     container. The library hides the WebKit one but not the Firefox one. */
+  scrollbar-width: none;
+}
+
+/* One shared bar rather than one per button, so switching tabs slides it
+   across instead of fading one out and another in. Width and offset come from
+   `slideTabIndicator` in the block script; the fallbacks keep it invisible
+   until that first measurement lands. */
+.search-tabs .stx-tabs__buttons::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: var(--stx-indicator-w, 0);
+  height: 2px;
+  border-radius: 2px;
+  background: var(--stx-color-focus);
+  transform: translateX(var(--stx-indicator-x, 0));
+}
+
+.search-tabs .stx-tabs__buttons.tabs-indicator-ready::after {
+  transition:
+    width var(--stx-ease),
+    transform var(--stx-ease);
+}
+
+.search-tabs .stx-tabs__button {
+  align-items: center;
+
+  /* The indicator spans the button box: the horizontal value is what it
+     overhangs the label by, the bottom value is the gap beneath the label. */
+  padding: 10px 10px 9px;
+  border-bottom: 0;
+  border-radius: 0;
+  background: none;
+  color: var(--stx-color-muted);
+  font-family: var(--body-font-family);
+  font-size: 15px;
+  font-weight: 500;
+  transition: color var(--stx-ease);
+}
+
+.search-tabs .stx-tabs__button:hover {
+  background: none;
+  color: var(--stx-color-text);
+}
+
+.search-tabs .stx-tabs__button[aria-selected="true"] {
+  background: none;
+  color: var(--stx-color-text);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------- results --
+   The renderer's own markup (`results-panel-item`) is styled here rather than
+   in the results-panel block: that stylesheet only loads when a .results-panel
+   block is on the page, so on a tabbed search the items arrive unstyled. */
+
+/* Wraps because the selected-facet badges share this row and their number is
+   whatever the reader has filtered by. */
+.search-tabs .stx-results-panel__results-number {
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--stx-color-border);
+  font-family: var(--body-font-family);
+}
+
+/* The library emits the page counter first. Reordering visually rather than
+   restyling keeps the count - the more useful of the two - on the left. */
+.search-tabs .stx-results-panel__total-number {
+  order: -1;
+  color: var(--stx-color-text);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.search-tabs .stx-results-panel__page-number {
+  color: var(--stx-color-muted);
+}
+
+/* Selected facet values, sitting with the count rather than out by the page
+   counter: `order` puts it alongside the total, and `margin-right: auto` stops
+   the row's space-between from stranding it in the middle. */
+.search-tabs .results-panel-selected {
+  display: flex;
+  order: -1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.375rem;
+  margin-right: auto;
+}
+
+.search-tabs .results-panel-selected[hidden] {
+  display: none;
+}
+
+/* A pill, so unlike the other buttons here it keeps a radius - what comes off
+   is styles.css's fill, margin and ellipsis. */
+.search-tabs .results-panel-selected-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin: 0;
+  padding: 2px 8px 2px 10px;
+  overflow: visible;
+  border: 1px solid var(--stx-color-border);
+  border-radius: 999px;
+  background: var(--stx-color-surface);
+  color: var(--stx-color-text);
+  font-family: var(--body-font-family);
+  font-size: 12px;
+  font-weight: 500;
+  text-overflow: clip;
+  cursor: pointer;
+  transition: border-color var(--stx-ease), background-color var(--stx-ease);
+}
+
+.search-tabs .results-panel-selected-badge:hover,
+.search-tabs .results-panel-selected-badge:focus {
+  border-color: var(--stx-color-focus);
+  background: var(--stx-color-surface);
+}
+
+.search-tabs .results-panel-selected-badge:focus-visible {
+  outline: 2px solid var(--stx-color-focus);
+  outline-offset: 2px;
+}
+
+.search-tabs .results-panel-selected-badge__remove {
+  color: var(--stx-color-muted);
+  font-size: 14px;
+  line-height: 1;
+  transition: color var(--stx-ease);
+}
+
+.search-tabs .results-panel-selected-badge:hover .results-panel-selected-badge__remove {
+  color: var(--stx-color-text);
+}
+
+/* Wider than the 2px this sat at while the rows were separator-delimited: with a
+   border on each card, too little space reads as one doubled rule rather than as
+   two edges. */
+.search-tabs .stx-results-panel__results-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* The library's bottom-rule separator gives way to a bordered card per result.
+   `border` rather than `border-bottom: 0` - setting all four edges is what drops
+   the library's rule, so it no longer needs zeroing separately. */
+.search-tabs .stx-results-panel__results-item {
+  padding: 0;
+  border: 1px solid var(--stx-color-border);
+  border-radius: var(--border-radius);
+  transition: background-color var(--stx-ease), border-color var(--stx-ease);
+}
+
+/* The existing hover surface, plus the edge lifting with it so the whole card
+   responds rather than just its fill. */
+.search-tabs .stx-results-panel__results-item:hover {
+  border-color: rgb(255 255 255 / 24%);
+  background: rgb(255 255 255 / 4%);
+}
+
+/* Padding lives on the anchor, not the row, so the whole card is clickable. */
+.search-tabs .results-panel-item {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  padding: 16px 18px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.search-tabs .results-panel-item__title {
+  color: var(--stx-color-text);
+  font-family: var(--heading-font-family);
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.35;
+  transition: color var(--stx-ease);
+}
+
+.search-tabs .results-panel-item__category {
+  align-self: flex-start;
+  padding: 2px 9px;
+  border: 1px solid var(--stx-color-border);
+  border-radius: 999px;
+  color: var(--stx-color-muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.search-tabs .results-panel-item:hover .results-panel-item__title,
+.search-tabs .results-panel-item:focus-visible .results-panel-item__title {
+  color: var(--stx-color-focus);
+}
+
+.search-tabs .results-panel-item:focus-visible {
+  outline: 2px solid var(--stx-color-focus);
+  outline-offset: -2px;
+  border-radius: var(--border-radius);
+}
+
+/* ------------------------------------------------------------ pagination --
+   Square-ish targets, no chrome until hovered, accent only for the current
+   page - the same rules the tabs and facets follow. */
+
+.search-tabs .stx-results-panel__pagination-container {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--stx-color-border);
+}
+
+.search-tabs .stx-results-panel__pagination-list {
+  gap: 4px;
+  justify-content: center;
+}
+
+.search-tabs .stx-results-panel__pagination-list button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: var(--stx-control-radius);
+  background: none;
+  color: var(--stx-color-muted);
+  font-family: var(--body-font-family);
+  font-size: 14px;
+  font-weight: 500;
+  transition:
+    background-color var(--stx-ease),
+    color var(--stx-ease);
+}
+
+.search-tabs .stx-results-panel__pagination-list button:hover {
+  background: rgb(255 255 255 / 8%);
+  color: var(--stx-color-text);
+}
+
+/* Dark text on the accent, as on the tabs: white lands near 3:1 here. */
+.search-tabs .stx-results-panel__pagination-list button.stx-is-active {
+  background: var(--stx-color-focus);
+  color: #14210b;
+  font-weight: 600;
+}
+
+.search-tabs .stx-results-panel__pagination-dots {
+  min-width: 24px;
+  justify-content: center;
+  padding: 0;
+  color: var(--stx-color-muted);
+}
+
+/* ---------------------------------------------------------------- facets --
+   Same language as the field and the tabs: no cards, no fills, and the accent
+   reserved for selection state. Group headings read as section labels rather
+   than as buttons. */
+
+.search-tabs .stx-results-panel__facet + .stx-results-panel__facet {
+  margin-top: 1.5rem;
+}
+
+.search-tabs .stx-results-panel__facet-toggle {
+  padding: 0 0 0.5rem;
+  border-bottom: 0;
+
+  /* The global rule forces nowrap; group names should wrap in a 25% column. */
+  white-space: normal;
+  color: var(--stx-color-muted);
+  font-family: var(--body-font-family);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: color var(--stx-ease);
+}
+
+/* The library paints a 2px accent underline on hover and while expanded. It is
+   dropped here so the accent means "selected" and nothing else. */
+.search-tabs .stx-results-panel__facet-toggle:hover,
+.search-tabs .stx-results-panel__facet-toggle:focus,
+.search-tabs .stx-results-panel__facet-toggle[aria-expanded="true"] {
+  border-bottom: 0;
+  color: var(--stx-color-text);
+}
+
+/* Library default is `transform 0.1s ease`; matched to the shared easing. The
+   chevron draws itself from currentcolor, so it tracks the toggle. */
+.search-tabs .stx-results-panel__facet-chevron::before {
+  transition: transform var(--stx-ease);
+}
+
+.search-tabs .stx-results-panel__facet-subtoggle {
+  color: var(--stx-color-muted);
+  transition: color var(--stx-ease);
+}
+
+.search-tabs .stx-results-panel__facet-subtoggle:hover {
+  color: var(--stx-color-text);
+}
+
+/* Rows carry their own padding and hover state, so the stack tightens up. */
+.search-tabs .stx-results-panel__facet-values,
+.search-tabs .stx-results-panel__facet-node,
+.search-tabs .stx-results-panel__facet-children {
+  gap: 0.125rem;
+}
+
+/* The library gives every node `display: flex` but only restores `display: none`
+   for [hidden] on the values and children wrappers - never on a node. Without
+   this, hiding a node from JS has no visible effect at all. */
+.search-tabs .stx-results-panel__facet-node[hidden] {
+  display: none;
+}
+
+/* Filter field and "show more", both added by enhanceFacetGroup for facets
+   longer than the visible limit. */
+
+.search-tabs .results-panel-facet-search {
+  /* styles.css `main input` sets margin-bottom: 1rem and max-width: 50rem, which
+     would push the field off the stack's rhythm and out of the column. */
+  width: 100%;
+  max-width: none;
+  height: 28px;
+  margin: 0 0 0.375rem;
+  padding: 0 0.5rem;
+  border: 1px solid var(--stx-color-border);
+  border-radius: var(--stx-control-radius);
+  background: var(--stx-color-surface);
+  color: var(--stx-color-text);
+  font-family: var(--body-font-family);
+  font-size: 13px;
+  transition: border-color var(--stx-ease);
+}
+
+.search-tabs .results-panel-facet-search::placeholder {
+  color: var(--stx-color-muted);
+}
+
+.search-tabs .results-panel-facet-search:focus {
+  border-color: var(--stx-color-focus);
+  outline: none;
+}
+
+/* Reads as a link but behaves as a button - see enhanceFacetGroup for why it is
+   not an anchor. */
+.search-tabs .results-panel-facet-more {
+  align-self: flex-start;
+  margin: 0.25rem 0 0;
+
+  /* Padding rather than more margin, so the extra room is inside the hit area. */
+  padding: 0.375rem 0 0;
+  border: 0;
+  background: none;
+  color: var(--stx-color-muted);
+  font-family: var(--body-font-family);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color var(--stx-ease);
+}
+
+/* `:focus` as well as `:hover`: styles.css repaints the filled background on
+   both, and the base rule above only clears the resting state. */
+.search-tabs .results-panel-facet-more:hover,
+.search-tabs .results-panel-facet-more:focus {
+  background: none;
+  color: var(--stx-color-text);
+  text-decoration: underline;
+}
+
+.search-tabs .results-panel-facet-more:focus-visible {
+  outline: 2px solid var(--stx-color-focus);
+  outline-offset: 2px;
+}
+
+/* styles.css sets `display: inline-block` on every button, which outranks the
+   UA rule for [hidden] - without this the control stays on screen when there is
+   nothing left to reveal. */
+.search-tabs .results-panel-facet-more[hidden] {
+  display: none;
+}
+
+.search-tabs .stx-results-panel__facet-values {
+  margin-top: 0.25rem;
+  padding-left: 0;
+}
+
+.search-tabs .stx-results-panel__facet-children {
+  margin-left: 0.95rem;
+  padding-left: 0.875rem;
+  border-left: 1px solid rgb(255 255 255 / 10%);
+}
+
+/* Collapsing panels.
+   The library toggles the `hidden` attribute and maps it to `display: none`,
+   which cannot animate. Overriding that keeps the panel in the layout so its
+   height and opacity can transition.
+
+   `content-visibility` then takes over the job `display: none` was doing -
+   keeping collapsed rows out of the accessibility tree and out of the tab
+   order. It is transitioned discretely so it only flips once the panel has
+   finished closing, rather than blanking the content on the first frame. */
+.search-tabs .stx-results-panel__facet-values,
+.search-tabs .stx-results-panel__facet-children {
+  height: auto;
+  overflow: hidden;
+  opacity: 1;
+  transition:
+    height var(--stx-ease),
+    opacity var(--stx-ease),
+    content-visibility var(--stx-ease) allow-discrete;
+}
+
+.search-tabs .stx-results-panel__facet-values[hidden],
+.search-tabs .stx-results-panel__facet-children[hidden] {
+  display: flex;
+  height: 0;
+  opacity: 0;
+  content-visibility: hidden;
+}
+
+.search-tabs .stx-results-panel__facet-row {
+  padding: 5px 8px;
+  border-radius: 8px;
+  transition: background-color var(--stx-ease);
+}
+
+.search-tabs .stx-results-panel__facet-row:hover {
+  background: rgb(255 255 255 / 5%);
+}
+
+.search-tabs .stx-results-panel__facet-option {
+  gap: 0.625rem;
+  font-size: 15px;
+}
+
+.search-tabs .stx-results-panel__facet-label {
+  color: var(--stx-color-text);
+}
+
+.search-tabs .stx-results-panel__facet-count {
+  color: var(--stx-color-muted);
+  font-size: 13px;
+}
+
+/* ------------------------------------------------------------ checkboxes --
+   `appearance: none` also drops the native indeterminate rendering, which the
+   panel sets on any parent with a selected descendant. Both marks are drawn
+   back explicitly below - without the second one that state would be
+   indistinguishable from unchecked. */
+
+.search-tabs .stx-results-panel__facet-option input[type="checkbox"] {
+  appearance: none;
+  flex-shrink: 0;
+
+  /* styles.css `main input` applies `margin-bottom: 1rem` and
+     `padding: 0.75rem 0.6rem` to every input in the page body. The margin is
+     what makes the box read as taller than it is wide - it gives a square
+     control a 18x34 margin box, so it sits above centre in the row. The
+     padding would displace the tick, which is positioned against the padding
+     box. Both have to go for the control to be square. */
+  box-sizing: border-box;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+  border: 1.5px solid rgb(255 255 255 / 28%);
+  border-radius: 6px;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 11px;
+  transition:
+    background-color var(--stx-ease),
+    border-color var(--stx-ease);
+}
+
+.search-tabs .stx-results-panel__facet-option input[type="checkbox"]:hover {
+  border-color: rgb(255 255 255 / 55%);
+}
+
+.search-tabs .stx-results-panel__facet-option input[type="checkbox"]:checked {
+  border-color: var(--stx-color-focus);
+  background-color: var(--stx-color-focus);
+
+  /* stylelint-disable-next-line max-line-length */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 5 5L19 7'/%3E%3C/svg%3E");
+}
+
+.search-tabs .stx-results-panel__facet-option input[type="checkbox"]:indeterminate {
+  border-color: var(--stx-color-focus);
+  background-color: var(--stx-color-focus);
+
+  /* stylelint-disable-next-line max-line-length */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round'%3E%3Cpath d='M6 12h12'/%3E%3C/svg%3E");
+}
+
+.search-tabs .stx-results-panel__facet-option input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--stx-color-focus);
+  outline-offset: 2px;
+}
+
+/* ----------------------------------------------------------------- error --
+   Four separate failure surfaces, styled as one family. The first is what a
+   reader sees when a request fails - a 404 from an unregistered `requestId`,
+   for instance - so it gets the most care. */
+
+.search-tabs .stx-results-panel__error {
+  gap: 0.75rem;
+  padding: 3rem 1.5rem;
+  border: 1px solid var(--stx-color-border);
+  border-radius: var(--border-radius);
+  background: rgb(255 255 255 / 3%);
+  text-align: center;
+}
+
+.search-tabs .stx-results-panel__error::before {
+  content: "";
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: rgb(255 255 255 / 6%);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 22px;
+
+  /* stylelint-disable-next-line max-line-length */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2398a1b0' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 7.5v5.5M12 16.5h.01'/%3E%3C/svg%3E");
+}
+
+.search-tabs .stx-results-panel__error-heading {
+  color: var(--stx-color-text);
+  font-family: var(--heading-font-family);
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.search-tabs .stx-results-panel__error-text {
+  color: var(--stx-color-muted);
+  font-size: 15px;
+}
+
+/* Quieter: a per-result notice rather than a whole-panel failure. */
+.search-tabs .stx-results-panel__no-item-renderer {
+  padding: 12px 14px;
+  border: 1px solid var(--stx-color-border);
+  border-radius: 8px;
+  background: rgb(255 255 255 / 3%);
+  color: var(--stx-color-muted);
+  font-size: 14px;
+}
+
+/* Debug-only, shown per unrendered hit while `debugMode` is on. The library
+   sets `color: red` on a `rgba(256, 0, 0, 0.2)` fill - note the 256. */
+.search-tabs .stx-results-panel__missing-renderer {
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid rgb(229 115 115 / 35%);
+  border-radius: 8px;
+  background-color: rgb(229 115 115 / 10%);
+  color: #f0b4b4;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* The second span is a raw JSON.stringify of the whole hit - one unbroken
+   string that would otherwise blow out the column width. */
+.search-tabs .stx-results-panel__missing-renderer span:last-child {
+  max-height: 7.5em;
+  overflow: auto;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgb(0 0 0 / 28%);
+  color: var(--stx-color-muted);
+  font-family: var(--fixed-font-family);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+  scrollbar-width: thin;
+  scrollbar-color: rgb(255 255 255 / 24%) transparent;
+}
+
+/* Authoring errors ("requires searchApiUrl", "requires dataSources"). The
+   library's `replaceElWithError` writes a bright red box as inline styles with
+   no class of its own, so !important is the only way to reach it. */
+.search-tabs > div[style] {
+  padding: 16px 18px !important;
+  border: 1px solid rgb(229 115 115 / 40%) !important;
+  border-radius: var(--border-radius) !important;
+  background: rgb(229 115 115 / 12%) !important;
+  color: #f0b4b4 !important;
+  font-family: var(--body-font-family);
+  font-size: 15px;
+}
+
+/* --------------------------------------------------------------- layout --
+   Leaves the facet column alone on the left, with the query input, the tab
+   buttons and the results sharing one column to its right.
+
+   The facets render inside each tab's own results panel, so they cannot be
+   hoisted into a grid shared with the header without breaking the [hidden]
+   toggle that shows one tab at a time. Indenting the header by the facet
+   column's footprint gives the same layout with no DOM changes.
+
+   The indent is unconditional, and panels without facets reserve the column
+   rather than reclaiming it. The library drops the facets container outright
+   when a response carries no aggregations, so keying the indent off its
+   presence slid the entire layout sideways whenever a tab switch, a new query
+   or a filter changed what came back. Holding the column costs some width on
+   facet-less tabs and buys a layout that never moves. */
+
+.stx-search-tabs .stx-query-input,
+.stx-search-tabs .stx-tabs__buttons {
+  margin-left: var(--stx-facet-indent);
+}
+
+/* Stands in for the absent container so the results keep their left edge. */
+.search-tabs .stx-results-panel:not(:has(.stx-results-panel__facets-container)) {
+  padding-left: var(--stx-facet-indent);
+}
+
+/* Not a results panel at all, so it needs the same reservation to land on the
+   shared edge instead of starting at the panel's own. */
+.search-tabs .search-tabs-content-tab {
+  padding-left: var(--stx-facet-indent);
+}
+
+/* The library ships no media queries, so the facet column would otherwise hold
+   its width down to the narrowest viewport. */
+@media (width <= 900px) {
+  .search-tabs .stx-results-panel {
+    flex-direction: column;
+  }
+
+  .search-tabs .stx-results-panel__facets-container {
+    flex-basis: auto;
+    width: 100%;
+  }
+
+  .stx-search-tabs .stx-query-input,
+  .stx-search-tabs .stx-tabs__buttons {
+    margin-left: 0;
+  }
+
+  /* Stacked, so there is no column left to hold. */
+  .search-tabs .stx-results-panel:not(:has(.stx-results-panel__facets-container)),
+  .search-tabs .search-tabs-content-tab {
+    padding-left: 0;
+  }
+}
+
+/* ----------------------------------------------------------- content tab --
+   A tab holding an authored fragment rather than a results panel (see
+   injectContentTab in search-tabs.js). Kept deliberately thin: the fragment
+   arrives already decorated and inherits the page's own typography. */
+
+/* The fragment brings the page's .section wrappers with it, and their padding
+   would read as a stray indent inside a panel already sitting on the shared
+   left edge. */
+.search-tabs .search-tabs-content-tab .section {
+  padding: 0;
+}
+
+/* No measure on the wrapper: the entry rows span the panel so their rule and
+   chevron reach its full width. The measure moves onto the answer body, which
+   is the part that is actually prose. */
+
+/* Same split the result rows use - full-strength for the question, muted for
+   the body - so the tab reads as part of the search UI. */
+.search-tabs .search-tabs-content-tab h2 {
+  color: var(--stx-color-text);
+}
+
+.search-tabs .search-tabs-content-tab p {
+  color: var(--stx-color-muted);
+}
+
+.search-tabs .search-tabs-content-tab a {
+  color: var(--link-color);
+  text-decoration: underline;
+}
+
+/* Entries collapsed to their question until opened (buildAccordion). The
+   chevron is rebuilt from the facet toggle's geometry rather than shared with
+   it - that one is a pseudo-element on a span the library owns. */
+
+.search-tabs .search-tabs-entry {
+  border-bottom: 1px solid var(--stx-color-border);
+}
+
+.search-tabs .search-tabs-entry-question {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+
+  /* Suppresses the default disclosure triangle; the ::after chevron below
+     replaces it. Safari needs the pseudo-element form as well. */
+  padding: 1rem 0;
+  list-style: none;
+  cursor: pointer;
+}
+
+.search-tabs .search-tabs-entry-question::-webkit-details-marker {
+  display: none;
+}
+
+/* The authored h2 sits inside the summary, so it drops the page's heading scale
+   and takes the panel's own. The hover transition belongs here rather than on
+   the summary: the summary never changes colour itself, so declaring it there
+   left the hover snapping. */
+.search-tabs .search-tabs-entry-question h2 {
+  margin: 0;
+  font-size: 1.0625rem;
+  line-height: 1.4;
+  transition: color var(--stx-ease);
+}
+
+.search-tabs .search-tabs-entry-question:hover h2 {
+  color: var(--link-color);
+}
+
+.search-tabs .search-tabs-entry-question::after {
+  content: "";
+  flex-shrink: 0;
+  width: 0.4rem;
+  height: 0.4rem;
+
+  /* Nudged onto the question's first baseline; the box is square, so its own
+     height is what centres it against the cap. */
+  margin-top: 0.35rem;
+
+  /* Holds the chevron off the panel's right edge. Sized against the rotated
+     box, whose corner overhangs the border box by a couple of pixels. */
+  margin-right: 0.625rem;
+  border-right: 2px solid currentcolor;
+  border-bottom: 2px solid currentcolor;
+  color: var(--stx-color-muted);
+  transform: rotate(45deg);
+  transition: transform var(--stx-ease);
+}
+
+.search-tabs .search-tabs-entry[open] .search-tabs-entry-question::after {
+  transform: rotate(225deg);
+}
+
+.search-tabs .search-tabs-entry-question:focus-visible {
+  outline: 2px solid var(--stx-color-focus);
+  outline-offset: 2px;
+}
+
+.search-tabs .search-tabs-entry-answer {
+  max-width: 70ch;
+}
+
+/* The answer's own paragraphs carry the spacing, so the first one does not add
+   a second gap under the question. */
+.search-tabs .search-tabs-entry-answer > :first-child {
+  margin-top: 0;
+}

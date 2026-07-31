@@ -1,0 +1,632 @@
+.stx-query-input,
+.stx-query-input * {
+  box-sizing: border-box;
+}
+
+.stx-search-modal {
+  overflow: visible;
+  z-index: 100; /* needed when opening the dialog as non-modal */
+}
+
+.stx-query-input__controls {
+  display: flex;
+  align-items: center;
+}
+
+/* The input owns a stacking context so its suggestions dropdown paints above
+   the page content below it. The value is themeable because the default is high
+   enough to out-stack a host's site header - which would put a header search's
+   dropdown *under* a second input further down the page. Lower it when the
+   component sits inside a page that manages its own stacking. */
+.stx-query-input {
+  position: relative;
+  z-index: var(--stx-z-query-input, 1000);
+}
+
+.stx-query-input__input-wrapper {
+  position: relative;
+  flex-grow: 1;
+}
+
+.stx-query-input__input-wrapper label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.stx-query-input__input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 10px 36px 10px 12px;
+  appearance: none;
+  border: 0;
+  border-bottom: 1px solid var(--stx-color-border);
+  border-radius: 0;
+  background: var(--stx-color-surface);
+  color: var(--stx-color-text-query-input);
+  outline: none;
+  font: inherit;
+}
+
+.stx-query-input__input::placeholder {
+  color: var(--stx-color-muted);
+}
+
+.stx-query-input__input:focus {
+  border-color: var(--stx-color-focus);
+}
+
+.stx-query-input__clear-button,
+.stx-query-input__search-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  max-width: 24px;
+  margin: 0;
+  padding: 0;
+  appearance: none;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--stx-color-muted);
+  cursor: pointer;
+  font: inherit;
+  line-height: 1;
+}
+
+.stx-query-input__clear-button {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+}
+
+.stx-query-input__search-button {
+  min-width: 30px;
+}
+
+.stx-query-input__clear-button:hover,
+.stx-query-input__search-button:hover {
+  color: var(--stx-color-text);
+}
+
+.stx-query-input__clear-button:focus-visible,
+.stx-query-input__search-button:focus-visible {
+  outline: 2px solid var(--stx-color-focus);
+  outline-offset: 2px;
+}
+
+.stx-query-input__clear-button[hidden],
+.stx-query-input__search-button[hidden] {
+  display: none;
+}
+
+.stx-query-input__suggestions-wrapper {
+  position: absolute;
+  top: 100%;
+  width: 100%;
+  max-height: 600px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--stx-color-background);
+  box-shadow: var(--stx-shadow-dropdown);
+}
+
+.stx-suggestions-wrapper {
+  display: block;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stx-suggestion__category {
+  display: block;
+  padding: 12px 12px 4px;
+  color: var(--stx-color-muted);
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 1.3;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.stx-suggestion__item {
+  display: block;
+  margin: 0;
+  padding: 8px 12px;
+  background: transparent;
+  color: var(--stx-color-text-query-input);
+  text-decoration: none;
+  font: inherit;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.stx-suggestion__item:hover,
+.stx-suggestion__item:focus,
+.stx-suggestion__item.is-active {
+  background: color-mix(
+    in srgb,
+    var(--stx-color-surface) 88%,
+    var(--stx-color-text)
+  );
+}
+
+.stx-suggestion__item:focus {
+  outline: none;
+}
+
+.stx-suggestion__item.is-active {
+  outline: 1px solid var(--stx-color-focus);
+  outline-offset: -1px;
+}
+
+.stx-suggestion__item em {
+  font-style: normal;
+  font-weight: 600;
+}
+:root {
+  --stx-color-text: #222;
+  --stx-color-muted: #666;
+  --stx-color-text-query-input: #222;
+  --stx-color-background: #fff;
+  --stx-color-surface: #fff;
+  --stx-color-border: #eee;
+  --stx-color-focus: #4d90fe;
+  --stx-shadow-dropdown: rgba(100, 100, 111, 0.2) 0 7px 29px 0;
+}
+
+.stx-hidden {
+  display: none;
+}
+
+.stx-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+.stx-results-panel {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  padding: 10px;
+  background: var(--stx-color-background);
+  color: var(--stx-color-text);
+  font:
+    14px/1.5 system-ui,
+    sans-serif;
+}
+
+.stx-results-panel__facets-container {
+  flex: 0 0 220px;
+}
+
+/* --------------------------------------------------------------- facets --
+   A facet renders as a collapsible group of checkboxes. Nested aggregations
+   add an expandable subtree per node; a flat facet renders as a plain list
+   with no chevron or indent. */
+
+.stx-results-panel__facet + .stx-results-panel__facet {
+  margin-top: 0.75rem;
+}
+
+.stx-results-panel__facet-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.5rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--stx-color-text);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  text-align: left;
+}
+
+.stx-results-panel__facet-toggle:hover,
+.stx-results-panel__facet-toggle:focus,
+.stx-results-panel__facet-toggle[aria-expanded="true"] {
+  background-color: transparent;
+  border-bottom: 2px solid var(--stx-color-focus);
+  border-radius: 0;
+}
+
+.stx-results-panel__facet-toggle:focus-visible {
+  outline: 2px solid var(--stx-color-focus);
+  outline-offset: 2px;
+}
+
+.stx-results-panel__facet-chevron {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-left: 0.5rem;
+}
+
+.stx-results-panel__facet-chevron::before {
+  content: "";
+  display: block;
+  width: 0.4rem;
+  height: 0.4rem;
+  margin: auto;
+  border-right: 2px solid currentcolor;
+  border-bottom: 2px solid currentcolor;
+  transform: rotate(45deg);
+  transition: transform 0.1s ease;
+}
+
+.stx-results-panel__facet-toggle[aria-expanded="true"]
+  .stx-results-panel__facet-chevron::before {
+  transform: rotate(225deg);
+}
+
+.stx-results-panel__facet-values,
+.stx-results-panel__facet-node,
+.stx-results-panel__facet-children {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.stx-results-panel__facet-values {
+  margin-top: 0.5rem;
+  padding-left: 0.25rem;
+}
+
+.stx-results-panel__facet-values[hidden],
+.stx-results-panel__facet-children[hidden] {
+  display: none;
+}
+
+.stx-results-panel__facet-row {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.stx-results-panel__facet-option {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-weight: 400;
+}
+
+.stx-results-panel__facet-option input {
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+}
+
+.stx-results-panel__facet-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.stx-results-panel__facet-count {
+  flex-shrink: 0;
+  margin-left: 0.5rem;
+  color: var(--stx-color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The reset is deliberate: host pages often style every <button>, which would
+   otherwise paint this icon-sized toggle as a filled, rounded button. */
+.stx-results-panel__facet-subtoggle {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--stx-color-text);
+  cursor: pointer;
+}
+
+.stx-results-panel__facet-subtoggle:hover,
+.stx-results-panel__facet-subtoggle:focus {
+  background: transparent;
+  color: var(--stx-color-text);
+}
+
+.stx-results-panel__facet-subtoggle:focus-visible {
+  outline: 2px solid var(--stx-color-focus);
+  outline-offset: 2px;
+}
+
+.stx-results-panel__facet-subtoggle .stx-results-panel__facet-chevron {
+  width: 0.6rem;
+  height: 0.6rem;
+  margin-left: 0;
+}
+
+.stx-results-panel__facet-subtoggle .stx-results-panel__facet-chevron::before {
+  transform: rotate(-45deg);
+}
+
+.stx-results-panel__facet-subtoggle[aria-expanded="true"]
+  .stx-results-panel__facet-chevron::before {
+  transform: rotate(45deg);
+}
+
+/* Keeps leaf rows aligned with siblings that do have a chevron. */
+.stx-results-panel__facet-subtoggle-spacer {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+}
+
+.stx-results-panel__facet-children {
+  margin-left: 0.5rem;
+  padding-left: 1rem;
+  border-left: 1px solid var(--stx-color-border);
+}
+
+.stx-results-panel__container {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Results refresh in place: the panel keeps its size and dims, rather than
+   collapsing to a loader and reflowing the page. */
+.stx-results-panel__container--loading {
+  pointer-events: none;
+}
+
+.stx-results-panel__container--loading
+  > :not(.stx-results-panel__loading-overlay) {
+  opacity: 0.45;
+}
+
+.stx-results-panel__loading-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  background: color-mix(in srgb, var(--stx-color-background) 55%, transparent);
+  pointer-events: none;
+}
+
+.stx-results-panel__results-number {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  color: var(--stx-color-muted);
+  font-size: 0.875rem;
+}
+
+.stx-results-panel__container > ul,
+.stx-results-panel__results-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stx-results-panel__results-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--stx-color-border);
+}
+
+.stx-results-panel__pagination-container {
+  margin-top: 1.5rem;
+}
+
+.stx-results-panel__pagination-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.stx-results-panel__pagination-list button {
+  display: block;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid var(--stx-color-border);
+  border-radius: 4px;
+  background-color: var(--stx-color-surface);
+  color: var(--stx-color-text);
+  cursor: pointer;
+  font: inherit;
+  text-decoration: none;
+}
+
+.stx-results-panel__pagination-list button:hover,
+.stx-results-panel__pagination-list button:focus-visible {
+  background: color-mix(
+    in srgb,
+    var(--stx-color-surface) 85%,
+    var(--stx-color-text)
+  );
+}
+
+.stx-results-panel__pagination-list button:focus-visible {
+  outline: 2px solid var(--stx-color-focus);
+  outline-offset: 2px;
+}
+
+.stx-results-panel__pagination-dots {
+  display: flex;
+  align-items: center;
+  padding: 0 0.5rem;
+  color: var(--stx-color-muted);
+}
+
+.stx-results-panel button.stx-is-active {
+  border-color: var(--stx-color-focus);
+  background-color: color-mix(
+    in srgb,
+    var(--stx-color-surface) 80%,
+    var(--stx-color-text)
+  );
+}
+
+.stx-results-panel:has(.stx-results-panel__loader) {
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.stx-results-panel__loader {
+  animation: stx-spin 1s linear infinite;
+}
+
+.stx-results-panel__error,
+.stx-results-panel__no-item-renderer {
+  border: 1px solid var(--stx-color-border);
+  border-radius: 5px;
+  padding: 10px 5px;
+  background: var(--stx-color-surface);
+  color: var(--stx-color-text);
+}
+
+.stx-results-panel__error {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.stx-results-panel__error-heading {
+  font-size: 1.5rem;
+}
+
+@keyframes stx-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.stx-results-panel__missing-renderer {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: red;
+  background-color: rgba(256, 0, 0, 0.2);
+  padding: 5px;
+}
+.stx-search-modal {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: min(720px, calc(100vw - 32px));
+  max-width: 720px;
+
+  margin: 0;
+  padding: 0;
+
+  border: 1px solid var(--stx-color-border);
+  border-radius: 8px;
+
+  background: var(--stx-color-surface);
+  color: var(--stx-color-text);
+
+  overflow: hidden;
+  text-align: left;
+
+  box-shadow: var(--stx-shadow-dropdown);
+
+  font-family: system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.3;
+  font-weight: 400;
+}
+
+.stx-search-modal,
+.stx-search-modal * {
+  box-sizing: border-box;
+}
+.stx-tabs {
+  padding: 10px;
+  background: var(--stx-color-background);
+  color: var(--stx-color-text);
+  font:
+    14px/1.5 system-ui,
+    sans-serif;
+}
+
+.stx-tabs__buttons {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--stx-color-border);
+  overflow: auto;
+}
+
+.stx-tabs__buttons::-webkit-scrollbar {
+  display: none;
+}
+
+.stx-tabs__button {
+  display: flex;
+  align-items: flex-end;
+  flex-shrink: 0;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--stx-color-text);
+  cursor: pointer;
+  font: inherit;
+}
+
+.stx-tabs__button:hover {
+  background: color-mix(
+    in srgb,
+    var(--stx-color-surface) 85%,
+    var(--stx-color-text)
+  );
+}
+
+.stx-tabs__button[aria-selected="true"] {
+  border-color: var(--stx-color-focus);
+  border-radius: 0;
+  font-weight: 600;
+}
+
+.stx-tabs__button:focus-visible {
+  outline: 2px solid var(--stx-color-focus);
+  outline-offset: 2px;
+}
+/*$vite$:1*/

@@ -1,0 +1,3 @@
+/* search-config is a headless config block read by the header decorator;
+   it renders nothing and needs no styles. This file exists only to give the
+   EDS block loader a 200 for the conventional <block>.css fetch. */

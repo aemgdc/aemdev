@@ -1,0 +1,61 @@
+name: Publish to StreamX
+
+on:
+  repository_dispatch:
+    types:
+      - resource-published
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  check-event-status:
+    runs-on: ubuntu-latest
+    steps:
+      - env:
+          CLIENT_PAYLOAD: ${{ toJSON(github.event.client_payload) }}
+        run: |
+          echo $CLIENT_PAYLOAD
+          echo "Status: ${{ github.event.client_payload.status }}"
+          echo "Path: ${{ github.event.client_payload.path }}"
+
+  publish-to-streamx:
+    if: (github.event.client_payload.status == 200 || github.event.client_payload.status == 204) && endsWith(github.event.client_payload.path, '.md')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare ingestion variables
+        id: vars
+        shell: bash
+        run: |
+          sleep 1s
+          streamx_path=$(echo "${{ github.event.client_payload.path }}" | sed 's/\.md$//g')
+          if [[ "$streamx_path" =~ ^/([a-z]{2}(-[a-z]{2})?)(/|$) ]]; then
+            streamx_namespace="${BASH_REMATCH[1]}:"
+          else
+            streamx_namespace=""
+          fi
+          page_path=$(echo "${{ github.event.client_payload.path }}" | sed 's/\.md$//g' | sed 's/index//g')
+          eds_page_url="${{ vars.EDS_DOMAIN_URL }}$page_path"
+          streamx_subject=${streamx_namespace}${streamx_path}
+          echo "streamx_subject=${streamx_subject}" >> "$GITHUB_OUTPUT"
+          echo "eds_page_url=$eds_page_url" >> "$GITHUB_OUTPUT"
+          echo "Page URL: $eds_page_url"
+          echo "CloudEvent subject: ${streamx_subject}"
+
+
+      - name: Run publish to StreamX
+        if: ${{ !(endsWith(steps.vars.outputs.streamx_subject, '/nav') ||
+          endsWith(steps.vars.outputs.streamx_subject, '/footer')) }}
+        uses: streamx-hub/streamx-common-github-actions/.github/actions/connector-github@v1
+        env:
+          STREAMX_CONNECTION_SOCKET_TIMEOUT: 30000
+          STREAMX_CONNECTION_TIMEOUT: 3000
+        with:
+          source-provider: ExternalSourceProvider
+          streamx-ingestion-url: ${{ vars.STREAMX_INGESTION_URL }}
+          streamx-ingestion-token: ${{ secrets.STREAMX_INGESTION_GH_TOKEN }}
+          event-type: 'com.streamx.blueprints.page.published.v1'
+          event-data: '{"type": "page/eds"}'
+          external-resource-url: ${{ steps.vars.outputs.eds_page_url }}
+          subject: ${{ steps.vars.outputs.streamx_subject }}

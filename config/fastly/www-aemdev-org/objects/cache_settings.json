@@ -2,9 +2,9 @@
   {
     "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
     "ttl": "120",
+    "cache_condition": "",
     "stale_ttl": null,
     "name": "2 Minute TTL",
-    "cache_condition": "",
     "action": null
   }
 ]

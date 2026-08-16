@@ -58,6 +58,10 @@ indices:
         select: head > meta[name="publication-date"]
         value: |
           attribute(el, "content")
+      status:
+        select: head > meta[name="status"]
+        value: |
+          attribute(el, "content")
       eventDate:
         select: head > meta[name="event-date"]
         value: |

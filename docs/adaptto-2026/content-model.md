@@ -67,9 +67,11 @@ is genuinely ambiguous to a European audience — we are presenting this in Berl
 ### Follow-through
 
 - [x] `publicationDate` → `date` in the repo config
-- [ ] Push via `update-index-configuration` (this triggers a reindex — see below)
-- [ ] Update the existing recap page's two date values to ISO
-- [ ] Author every corpus page with ISO dates from the start
+- [x] `status` added alongside it
+- [x] Pushed via `update-index-configuration` — run 31980075227, and the live index now
+      carries both columns
+- [x] Existing recap migrated to ISO dates, `status: recap`, `template: meetup` and canonical tags
+- [x] Every corpus page authored with ISO dates from the start
 
 ### Bonus: the reindex flushes the stale columns
 
@@ -83,14 +85,29 @@ drift between repo and config service — **the published index is stale**. It w
 under an older config and still carries columns nothing backs any more.
 
 Which means the earlier warning ("pushing would silently drop 8 columns") was backwards: those
-columns are already orphaned, and the reindex triggered by this `date` change will clear them.
+columns are already orphaned, and a reindex clears them.
 No decision needed, no data lost.
+
+**Update:** the config push and a reindex of the 8 meetup pages landed `date` and `status`,
+but the stale columns are **still present** — the index emits the union across *all* pages, and
+the untouched ones (`/en/`, `/en/contact`, …) still carry them. Clearing them needs a full-site
+reindex, not a partial one.
 
 That the sync surfaced this within a day of being built is the argument for keeping it on cron.
 
 ---
 
 ## 2. Redirect mapping for `/en/meetup-recaps/` → `/en/meetups/`
+
+> ### ✅ Done — 16 Aug 2026
+>
+> The move is executed and verified. `/en/meetups/` holds 8 pages, old URLs 301, images
+> render, and the index carries `status` and `date`. What follows is kept as the record of
+> how it was done and what bit us. **Four corrections to what this section originally said
+> are marked inline below.**
+>
+> The old `/en/meetup-recaps/` content was **left in place**, not deleted — the redirects
+> shadow it, so it is unreachable and harmless. Deleting it is a separate, deliberate step.
 
 ### Complete inventory
 
@@ -154,17 +171,29 @@ Fold the orphan into the move: repoint that image at the page's own media folder
 reference intact and move the folder as-is. Either is fine — silently moving the page and
 leaving the URL pointing at a path scheduled for deletion is not.
 
-### The third link is a ghost, not an unpublished page
+### The third link is a forward reference, not a ghost
 
-`aem-gdc-june-2026-eds-cdn-recap` 404s on `aem.page` *and* `aem.live`. If it were authored but
-unpublished it would render in preview. It doesn't — so it was never created, or was created
-under a different slug and the link never followed.
+> **Correction.** This section originally said `aem-gdc-june-2026-eds-cdn-recap` should be
+> repointed at the `20260625-…` slug. **That was wrong**, and the anchor text is what gave it
+> away.
 
-**Do not write a redirect for it.** Redirecting a URL that never existed to a page that isn't
-its content is worse than a 404. Fix the home-page link instead — it should point at the
-`20260625-…` slug, which is the recap it was presumably meant to reference.
+`aem-gdc-june-2026-eds-cdn-recap` 404s on `aem.page` *and* `aem.live`, so it was never
+created. But it is linked from *inside* the existing recap document (not only the home page),
+and its anchor text reads:
 
-Confirm that reading before changing it; I'm inferring from the slug, not from evidence.
+> AEM GDC June 2026 — EDS CDN Architecture & Advanced Search
+
+That is the **Cary NC meetup** — a different event from the page linking to it, and one of the
+three B2 blog conversions. The link was authored in anticipation of a page that hadn't been
+written yet.
+
+So the fix was to **create that page**, not repoint the link. It now exists at
+`/en/meetups/aem-gdc-june-2026-eds-cdn-recap`, keeping the slug the link already expected.
+
+**Open question for Tad:** the slug says June 2026 and the link text says June 2026, but the
+Arbory blog post reads as February 2026. I used 2026-06-25 to match the link and the sibling
+recap. **Confirm the real date** — if it's February, the slug and both dates need changing,
+and doing that before the corpus grows is much cheaper.
 
 ### Inbound links to update
 
@@ -194,6 +223,25 @@ Two options; pick one, don't do both:
 2. **Fastly VCL** — [config/fastly/www-aemdev-org/](../../config/fastly/www-aemdev-org/) is
    already versioned and synced daily. Correct for infrastructure-level redirects, heavier for
    two content URLs.
+
+### What actually bit us — three gotchas worth keeping
+
+**1. DA's copy API silently no-ops on hidden folders.** `da_copy_content` returned `{}` — a
+success-shaped response — for both `.`-prefixed media folders, and copied nothing. The source
+was untouched (so nothing was lost), but a script trusting that return value would have moved
+the documents and left the images behind. **Media had to be downloaded and re-uploaded file by
+file** via `POST /source/…` with multipart `data`. Verify copies by fetching the destination,
+never by trusting the response.
+
+**2. `admin.da.live/list` under-reports hidden folders.** It showed 1 file in
+`.20260625-…/` when there were 3. Direct source GETs found all of them. Enumerate media from
+the document's own `src`/`srcset` references, not from a listing.
+
+**3. Trailing slashes 404.** `/en/meetups/aem-gdc-june-2026-eds-cdn-recap/` 404s while the
+same path without the slash is 200. The pre-existing link carried a trailing slash, so it
+would have stayed broken even after the target page existed. Fixed at source.
+`/en/articles/aem-eds-content-modeling-deep-dive/` has the **same defect** and is still broken
+— that article is also unpublished, so it needs both fixes.
 
 ### Sequence
 
@@ -398,3 +446,51 @@ there'd be nothing to match against.
 
 **Do not author the namespace until question 1 is answered** — it determines whether tag values
 on pages are IDs or labels, and therefore what the picker writes.
+
+---
+
+## 4. Corpus status — 16 Aug 2026
+
+`/en/meetups/` now holds **8 published pages**, all carrying `status`, ISO dates and canonical
+`aemdev:` tags.
+
+| Status | Event date | Slug | Suggested tags (review these) |
+| --- | --- | --- | --- |
+| `recap` | 2026-06-26 | `20260625-bring-your-complicated-eds-integration-story-meetup` | topic/edge-delivery, topic/document-authoring, category/meetup, region/virtual |
+| `recap` | 2026-06-25 | `aem-gdc-june-2026-eds-cdn-recap` | topic/edge-delivery, topic/cdn, topic/document-authoring, topic/authoring-ux, category/meetup, region/north-america |
+| `recap` | **unknown** | `sites-optimizer-eds-localization-atlanta` | topic/localization, topic/document-authoring, topic/edge-delivery, topic/performance, category/meetup, region/north-america |
+| `recap` | **unknown** | `aem-65-lts-vs-eds-vs-aemaacs-columbus` | topic/6-5-lts, topic/aemaacs, topic/edge-delivery, topic/migration, category/meetup, region/north-america |
+| `upcoming` | 2026-09-28 | `adaptto-2026-berlin` | category/conference, region/emea, topic/document-authoring, topic/authoring-ux |
+| `upcoming` | 2026-10-23 | `adobe-developers-live-san-jose-2026` | category/conference, region/north-america, topic/edge-delivery |
+| `announced` | — | `aem-meetup-washington-dc` | category/meetup, region/north-america |
+| `announced` | — | `aem-meetup-munich` | category/meetup, region/emea |
+
+Tags are **notional** — assigned from what each session actually covered, but they are a
+starting point for review, not a decision.
+
+### Taxonomy gaps this exercise found
+
+Mapping real content onto the taxonomy surfaced two missing topics, both now added in
+`arbory-aemaacs/scripts/aemdev-taxonomy.json`:
+
+- **`topic/localization`** — the Atlanta session is half about translation on DA, and there
+  was nowhere to put it. Also needed by the S8 translation-tracker beat.
+- **`topic/governance`** — nothing covered preflight, publishing rules or content ops.
+
+This is the argument for authoring content before finalising a taxonomy rather than after.
+
+### Still open
+
+- **Two recap dates are unknown** (Atlanta, Columbus). Both pages have `event-date` empty
+  rather than guessed. A `recap` with no event date should arguably be a Preflight warning.
+- **B1 is not started.** The YouTube-derived recaps still need the channel enumerated — that
+  remains the gate on reaching 12–16 pages. Currently at 8.
+- **`speakers` values are bio slugs that have no fragments yet** (`tad-reeves`,
+  `laurel-timko`, `wilson-faure`). They resolve to nothing until S4's Bio Manager creates
+  them, which is the intended demo payoff — but the meetup block must degrade visibly, not
+  silently, until then.
+- **`/en/articles/aem-eds-content-modeling-deep-dive`** is authored, unpublished, and linked
+  with a trailing slash. Two defects, one page.
+- **The stale index columns persist.** Reindexing only the meetup pages left the 8 orphaned
+  columns in place, because the index emits the union across all pages. A full reindex would
+  clear them.

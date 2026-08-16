@@ -54,7 +54,7 @@ indices:
         select: head > meta[name="template"]
         value: |
           attribute(el, "content")
-      publicationDate:
+      date:
         select: head > meta[name="publication-date"]
         value: |
           attribute(el, "content")

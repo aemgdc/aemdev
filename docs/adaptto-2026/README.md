@@ -12,6 +12,7 @@ Demo surface: [www.aemdev.org](https://www.aemdev.org) — DA org/site `aemgdc/a
 | --- | --- |
 | [plan.md](plan.md) | Scope, tiering, the demo narrative, time budget, risks |
 | [subproducts.md](subproducts.md) | The build list: every tool/block, its source, state, owner, acceptance criteria |
+| [content-model.md](content-model.md) | Dates, redirect mapping, and the metadata/taxonomy proposal to settle |
 | [content-plan.md](content-plan.md) | Content that must exist on aemdev.org (and in AEM / Forms CS) before the demo works |
 | [schedule.md](schedule.md) | Week-by-week milestones and freeze gates |
 | [slides.md](slides.md) | Slide outline and speaker notes skeleton |

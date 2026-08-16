@@ -184,20 +184,6 @@ Also update the nav/footer document in DA, not just the home page body.
 
 ### Media moves with the pages
 
-Body images are referenced **relatively**:
-
-```html
-srcset="./media_12984561cd75341adc01c40d91ccc899ecbd376b2.jpg?width=2000&format=webply"
-```
-
-`./media_…` resolves against the page's own folder, so the references survive a folder move
-**provided the media moves with the documents**. At least three media files live under
-`/en/meetup-recaps/`. The absolute `og:image` URL is generated at publish time from the
-relative path, so it re-points itself.
-
-**Verify after the move:** load the moved recap and confirm the images render. A folder move
-that leaves media behind produces a page that looks fine in DA and broken on the site.
-
 ### Implementation
 
 Two options; pick one, don't do both:
@@ -228,59 +214,167 @@ page is that this list stays two rows long.
 
 ---
 
-## 3. Document metadata — proposal, not yet settled
+## 3. Document metadata — settled
 
-This is the piece to agree before the corpus and before the
-[`aemdev` tag namespace](content-plan.md#aem-taxonomy--the-aemdev-namespace) gets built,
-since the namespace should mirror whatever we settle here.
+All three open questions are answered. The rule that falls out of them:
+
+> **Taxonomy carries what a thing *is*. Metadata carries what state it's *in* and what it
+> *points at*.**
+
+Classification (topic, category, region) lives in the `aemdev` tag namespace as canonical IDs.
+Lifecycle (`status`), dates, and references (`speakers`, `rsvp-form`) stay plain metadata,
+because they change over the page's life or point at another document — neither is a taxonomy
+concept.
 
 ### Existing metadata, from the one real page
 
 `template`, `author`, `publication-date`, `category`, `event-date`, `recap-video`, `speakers`,
-`location`, plus `article:tag` × 6 (`AEM`, `EDS`, `Edge Delivery`, `Integrations`, `Meetup`, `GDC`).
+`location`, plus `article:tag` × 6 (`AEM`, `EDS`, `Edge Delivery`, `Integrations`, `Meetup`,
+`GDC`) — display labels, which is what changes below.
 
-Note `speakers: TBD` and `location: Virtual` — the fields exist and are already being used as
-free text.
+### The settled set for `/en/meetups/`
 
-### Proposed set for `/en/meetups/`
-
-| Field | Required | Values | Why |
+| Field | Required | Values | Note |
 | --- | --- | --- | --- |
 | `title` / `description` | yes | free text | og tags, already working |
-| `template` | yes | `meetup` | today's page says `blog`; a dedicated template drives the lifecycle block |
-| `status` | yes | `announced` \| `upcoming` \| `recap` | the [lifecycle model](content-plan.md#lifecycle-status); drives listing split and Preflight rules |
-| `event-type` | yes | `meetup` \| `conference` \| `webinar` \| `workshop` \| `lightning-talk` | mirrors the `event` tag category exactly |
+| `template` | yes | `meetup` | today's page says `blog` |
+| `status` | yes | `announced` \| `upcoming` \| `recap` | **metadata, not a tag** — it changes as the page ages; re-tagging a page through its lifecycle would abuse the taxonomy |
+| `publication-date` | yes | ISO `yyyy-mm-dd` | indexed as `date` |
 | `event-date` | if not `announced` | ISO `yyyy-mm-dd` | sorts upcoming vs past |
-| `publication-date` | yes | ISO `yyyy-mm-dd` | indexed as `date`; sorts the article stream |
 | `location` | if not `announced` | free text, or `Virtual` | already in use |
-| `speakers` | if not `announced` | comma-separated names | free text today; see the open question below |
+| `speakers` | if not `announced` | **bio slugs**, comma-separated: `tad-reeves, laurel-timko` | resolves to `/en/fragments/bios/<slug>` |
 | `recap-video` | if `recap` | YouTube URL | already in use |
 | `rsvp-form` | if `upcoming` | form id/path | [S6](subproducts.md#s6--form-picker) |
-| `category` | yes | `Meetup Recap`, `Meetup`, … | `insights` filters on it |
-| `article:tag` | yes | from the `aemdev` namespace | what [S2b](subproducts.md#s2b--tag-picker-configuration--page-tag-read-back) reads and writes |
+| `article:tag` | yes | **canonical IDs**: `aemdev:topic/edge-delivery` | includes the category tag |
 
-### Three open questions — these are yours to call
+**`event-type` is dropped.** It was going to duplicate the category tag exactly —
+`event-type: meetup` alongside `aemdev:category/meetup` is the same fact twice, and two copies
+of a fact drift. The category tag carries it.
 
-**1. Do tags carry canonical AEM tag IDs or display labels?**
-Today they're display labels (`Edge Delivery`, `AEM`). The tag picker's normalization is
-[lossy](subproducts.md#s2b--tag-picker-configuration--page-tag-read-back), so reversing a label
-back to a taxonomy node is guesswork — which is exactly what the read-back feature has to do.
-Storing `aemdev:topic/edge-delivery` and rendering a label at display time makes matching
-exact. It also changes every existing tag value and what the blocks render.
+### Tags: canonical IDs
 
-**This is the highest-leverage decision on the list**, because S2b's core feature depends on it
-and the corpus will bake in whichever we choose.
+Page metadata stores the AEM-canonical form, namespace included:
 
-**2. Is `speakers` free text or references to bio fragments?**
-Free text is simplest and works today. But [S4's Bio Manager](subproducts.md#s4--bio-manager)
-creates fragments at `/en/fragments/bios/<slug>`, and the demo's payoff is a page pulling in a
-real bio. If `speakers` held slugs, the meetup block could resolve them automatically. A middle
-path: keep `speakers` as display text, add `speaker-bios` as a comma-separated slug list.
+```html
+<meta property="article:tag" content="aemdev:topic/edge-delivery">
+<meta property="article:tag" content="aemdev:category/meetup">
+<meta property="article:tag" content="aemdev:region/emea">
+```
 
-**3. Does `category` survive, given `event-type` and tags?**
-Three overlapping classification axes is one too many. `insights` filters on `category`, so it
-can't just be dropped — but it may be that `category` is for the article stream and `event-type`
-for meetups, which is defensible if written down.
+This makes S2b's read-back exact instead of a guess. The
+[current picker normalisation](subproducts.md#s2b--tag-picker-configuration--page-tag-read-back)
+— lowercase, spaces→hyphens, `&`→"and" — is lossy and can't be reversed reliably; with IDs on
+the page there is nothing to reverse.
+
+#### Consequences, all real work
+
+1. **The picker's output format changes.** [tools/tagpicker/](../../tools/tagpicker/) currently
+   emits pipe-delimited `category|subcategory|tag` per its README. It must emit
+   `aemdev:topic/edge-delivery`. This is an [S2b](subproducts.md#s2b--tag-picker-configuration--page-tag-read-back)
+   work item that only exists because of this decision.
+2. **Blocks must resolve IDs to labels for display.** Nothing renders a raw
+   `aemdev:topic/edge-delivery` to a reader. See the label map below.
+3. **`insights`' authored filter values change.** The block filters on `tag | EDS, GDC` and
+   `category | Meetup Recap` matched case-insensitively against authored values. Those authored
+   rows must become IDs, or the block must resolve labels before matching. Pick one and write
+   it in the block's doc comment — it is authored config, so getting it wrong is silent.
+4. **The existing page's 6 tags get rewritten** to IDs. One page today.
+
+### Label translation — the mechanism already exists
+
+The reference implementation at `https://www.jmp.com/services/tagsservlet` is live and healthy,
+and it is worth Tad diffing against while fixing the Arbory one
+([S2a](subproducts.md#s2a--tagsservlet-fix--aemdev-tag-namespace)). Verified 16 Aug:
+
+| Request | Returns |
+| --- | --- |
+| `/services/tagsservlet` | HTTP 200, 24KB — full tree, namespaced under `/content/cq:tags/jmp/`, translations inline as `jcr:title.de`, `jcr:title.ja`, … |
+| `/services/tagsservlet.all` | flat array of category **titles**: `["Industry","Product","Capability",…]` |
+| `/services/tagsservlet.de` | **flat map, 128 entries, 6KB**: `{"country|france": "Frankreich", "resource-type|customer-story": "Kundenerfahrungen", …}` |
+| `/services/tagsservlet.industry\|academic.de` | plain text: `Akademisch` |
+
+**`.{lang}` is the label resolver.** One 6KB fetch returns every label for a language, keyed by
+pipe-delimited ID, with untranslated tags falling back to English. That is exactly what a block
+needs, and it is what makes the German beat in Berlin a config change rather than a feature.
+
+Two things the reference also demonstrates, both worth knowing before authoring:
+
+- **The two ID forms.** AEM-canonical is `jmp:industry/academic`; the servlet's map keys are
+  `industry|academic`. Conversion is mechanical — strip the `aemdev:` prefix, swap `/` for `|`.
+  Pages carry the canonical form; the label lookup converts. Do this in one shared helper, not
+  in each block.
+- **Translation coverage is patchy and language keys are inconsistent.** Only 5 of JMP's 14
+  categories have any translations, and `country` carries both `zh_cn` and `zh-hans`, both `ko`
+  and `ko_kr`. The aemdev picker README already documents a normalisation map for exactly this.
+  Expect to normalise, and expect fallback-to-English to be the common path, not the edge case.
+
+#### ⚠️ Don't resolve labels from AEM at render time
+
+Fetching the label map from AEM publish on every page view puts an AEM round-trip in front of
+every reader — in a talk arguing EDS is fast, on a site whose own tag rendering depends on an
+AEM instance being up. That is the opposite of the point.
+
+**Recommendation: sync the label map into the content bus** as `/en/tags-<lang>.json` (or one
+file keyed by language), refreshed by a scheduled job — the same pattern as
+[sync-site-configs](../../.github/workflows/sync-site-configs.yaml), which is already working
+and already surfaced a real problem within a day. Then label resolution is a local fetch of a
+cached 6KB JSON, the AEM dependency is build-time rather than request-time, and the tag picker's
+[cached fallback](subproducts.md#s2b--tag-picker-configuration--page-tag-read-back) can reuse
+the same artefact.
+
+This also means an AEM outage during the talk degrades label rendering to *nothing visible*
+rather than to a hang.
+
+### Speakers: bio slugs
+
+```html
+<meta name="speakers" content="tad-reeves, laurel-timko">
+```
+
+Each slug resolves to `/en/fragments/bios/<slug>`, which is exactly where
+[S4's Bio Manager](subproducts.md#s4--bio-manager) writes fragments — its `FRAGMENTS_FOLDER` is
+already `/en/fragments/bios` and its sheet already carries a `DA Fragment URL` column.
+
+So the meetup block resolves speakers automatically, and the demo's payoff is real: create a bio
+in the Bio Manager, add its slug to `speakers`, and the page pulls in the rendered bio.
+
+Two things to settle when building the block:
+
+- **A slug with no fragment must degrade visibly**, not silently vanish — the same
+  orphan-handling rule as unresolvable tags.
+- **Display names come from the fragment**, so a page can't show a speaker name until the bio
+  exists. The current page's `speakers: TBD` becomes either a real slug or empty; there is no
+  slug for "TBD".
+
+### Category as a tag
+
+`aemdev:category/meetup` rather than the free-text `Meetup Recap` in use today.
+
+The one snag: the `category` **index column** is populated from
+`head > meta[name="category"]`, and `insights` filters on it. With category moving into
+`article:tag`, either keep a `category` meta carrying the same ID (denormalised, but keeps the
+index column and the block working unchanged), or drop the column and teach `insights` to filter
+on tags. **Recommendation: keep the `category` meta carrying the canonical ID.** It is one
+duplicated value, it avoids touching a working block during build-out, and the index column is
+genuinely useful for filtering without parsing a tag list.
+
+### What the tag namespace must now contain
+
+This supersedes the category list in
+[content-plan.md](content-plan.md#aem-taxonomy--the-aemdev-namespace) — `event` becomes
+`category`, since `event-type` is gone:
+
+| Category | Tags |
+| --- | --- |
+| `aemdev:topic/*` | edge-delivery, document-authoring, aemaacs, 6-5-lts, migration, performance, forms, personalization, cdn, authoring-ux |
+| `aemdev:category/*` | meetup, conference, webinar, workshop, lightning-talk, article, news |
+| `aemdev:region/*` | emea, north-america, apac, virtual |
+
+German (`de`) titles on at least `topic` and `category` — that is what makes the
+`.de` label map worth demoing.
+
+[S2a](subproducts.md#s2a--tagsservlet-fix--aemdev-tag-namespace) is now unblocked: the ID format
+is decided, so the namespace can be authored.
 
 ### What the tag namespace should mirror
 

@@ -462,7 +462,8 @@ no video and may not have a date yet, so the model has to carry status.
    authors a dozen more. **Blocks all content work.**
 2. Rename the index in `helix-query.yaml`: `include: /en/meetups/**`,
    `target: /en/meetups/query-index.json`. Add `status` (`announced` | `upcoming` | `recap`),
-   `event-type`, `rsvp-form`, `event-end-date`. Keep `recap-video` — it just goes empty on
+   `rsvp-form`, `event-end-date`. Classification comes from the `aemdev:category/*` tag, not a
+   parallel field. Keep `recap-video` — it just goes empty on
    non-recap pages.
 3. **`meetup-hero` block** rendering all three states from one authored structure:
    date/venue/status header, with the agenda, speaker and RSVP regions degrading gracefully
@@ -637,11 +638,11 @@ a path to silently 404 mid-demo.
 What the single index does need for [S9](#s9--meetup-blocks--the-enmeetups-rename):
 
 - `status` (`announced` | `upcoming` | `recap`) — drives the lifecycle model
-- `event-type` — meetup / conference / webinar
+- classification via the `aemdev:category/*` tag (`event-type` was dropped as a duplicate)
 - a normalised `date` (Trap 3)
 - the `include` path updated when `/en/meetup-recaps/` → `/en/meetups/`
 
 **Acceptance:** one authoritative query config with the dead files removed; live config and
-repo copy diffed and reconciled; `/en/query-index.json` carries `status`, `event-type` and a
+repo copy diffed and reconciled; `/en/query-index.json` carries `status` and a
 working sort key; `insights` renders in correct date order against real content; a documented
 read-back path so the next drift is visible.

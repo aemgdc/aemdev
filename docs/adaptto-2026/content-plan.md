@@ -60,13 +60,13 @@ the split this rename exists to avoid. **Recommendation: collapse them — `/en/
 Consequences, all of them improvements:
 
 - The stage page becomes **`/en/meetups/2026-10-berlin-meetup`**, not `/en/events/...`.
-- One index in [helix-query.yaml](../../helix-query.yaml), not two.
+- One index in [config/sites/aemdev/query.yaml](../../config/sites/aemdev/query.yaml), not two.
 - The page the demo builds lands in the *same* corpus Advanced Search operates on in Act 3,
   which makes Act 3 a natural continuation instead of a change of subject.
-- Non-meetup events (DevLive, adaptTo(), a conference) still live here; `event-type`
-  distinguishes them, and it maps 1:1 onto the `event` category already specced in the
-  [`aemdev` taxonomy](#aem-taxonomy--the-aemdev-namespace) — meetup, conference, webinar,
-  workshop, lightning-talk. The taxonomy and the content model agree for free.
+- Non-meetup events (DevLive, adaptTo(), a conference) still live here, distinguished by their
+  `aemdev:category/*` tag — meetup, conference, webinar, workshop, lightning-talk. The
+  classification lives in the taxonomy rather than in a parallel metadata field; see
+  [content-model.md](content-model.md#3-document-metadata--settled).
 
 ### Lifecycle status
 
@@ -90,9 +90,9 @@ page with no video is a warning; an `announced` page is allowed to be sparse.
 
 | Item | Note |
 | --- | --- |
-| Move DA content `/en/meetup-recaps/*` → `/en/meetups/*` | One page today: `aem-gdc-june-2026-eds-cdn-recap` |
+| Move DA content `/en/meetup-recaps/*` → `/en/meetups/*` | One document today, `20260625-bring-your-complicated-eds-integration-story-meetup`, **plus two hidden media folders and a source rewrite** — see [content-model.md](content-model.md#2-redirect-mapping-for-enmeetup-recaps--enmeetups) |
 | 1:1 redirect old → new | EDS `redirects` sheet in DA is the simplest route. This repo also has Fastly VCL under [config/fastly/www-aemdev-org/](../../config/fastly/www-aemdev-org/) if a CDN-level redirect is preferred — pick one, don't do both |
-| Rename the `meetup-recaps` index in `helix-query.yaml` | `include: /en/meetups/**`, `target: /en/meetups/query-index.json`; add `status`, `event-type`, `rsvp-form` properties |
+| Rename the `meetup-recaps` index in **`config/sites/aemdev/query.yaml`** — *not* `helix-query.yaml`, which is dead config ([S11](subproducts.md#trap-1--helix-queryyaml-is-dead-config)) | `include: /en/meetups/**`, `target: /en/meetups/query-index.json`; add `status` and `rsvp-form` |
 | Nav + footer | Update the `/en/meetup-recaps` links (the home page links it twice) |
 | Verify the old URL 301s and the new one 200s | Before any bulk authoring starts |
 
@@ -149,7 +149,7 @@ Known already, from the home page's `speaking` block:
 | [`87PyVSF3Enc`](https://www.youtube.com/watch?v=87PyVSF3Enc) | EDS & AEM Infrastructure, CDN & Edge Workers, Safe Mass Search-Replace on DA (Cary, NC) |
 | [`riIwPPiK8NI`](https://www.youtube.com/watch?v=riIwPPiK8NI) | AEM 6.5 LTS vs Edge Delivery vs AEMaaCS (Columbus AUG) |
 
-Per-page generation: title, `event-date`, `event-location`, `event-speakers`, `event-type`,
+Per-page generation: title, `event-date`, `location`, `speakers` (bio slugs),
 `status: recap`, video embed (this repo already has [blocks/youtube/](../../blocks/youtube/) and
 [blocks/embed/](../../blocks/embed/)), a summary, and timestamped highlights where the
 description has chapters. Speaker bios come later — these pages are the **demo fuel for the
@@ -240,14 +240,20 @@ walking the whole tag repository.
 Verified 16 Aug: `/services/tagsservlet.aemdev` returns `ERROR: Invalid Tag Catgegory` — the
 namespace does not exist yet.
 
-| Category | Tags |
-| --- | --- |
-| `topic` | edge-delivery, document-authoring, aemaacs, 6-5-lts, migration, performance, forms, personalization, cdn, authoring-ux |
-| `event` | meetup, conference, webinar, workshop, lightning-talk |
-| `region` | emea, north-america, apac, virtual |
-| `format` | in-person, hybrid, virtual |
+> **Superseded** — the authoritative category list now lives in
+> [content-model.md](content-model.md#what-the-tag-namespace-must-now-contain). `event` became
+> `category` when `event-type` was dropped, and `format` was cut as unused. The table below is
+> kept only to show what changed.
 
-So `/content/cq:tags/aemdev/topic/edge-delivery`, and so on.
+| Category | Tags | Change |
+| --- | --- | --- |
+| `topic` | edge-delivery, document-authoring, aemaacs, 6-5-lts, migration, performance, forms, personalization, cdn, authoring-ux | unchanged |
+| ~~`event`~~ → `category` | meetup, conference, webinar, workshop, lightning-talk, **article**, **news** | renamed; absorbs the dropped `event-type` metadata field |
+| `region` | emea, north-america, apac, virtual | unchanged |
+| ~~`format`~~ | ~~in-person, hybrid, virtual~~ | **cut** — nothing consumes it, and `region/virtual` covers the only case that mattered |
+
+So `/content/cq:tags/aemdev/topic/edge-delivery`, tagged on pages as
+`aemdev:topic/edge-delivery`.
 
 Add German (`de`) titles on at least the `topic` tags — the servlet supports multi-language
 with English fallback, and it is a free, well-earned laugh in Berlin.
@@ -305,7 +311,7 @@ and the multi-language tag demo. Low effort, high Berlin value.
 
 ## The page built on stage
 
-**`/en/meetups/2026-10-berlin-meetup`** — `status: upcoming`, `event-type: meetup`.
+**`/en/meetups/2026-10-berlin-meetup`** — `status: upcoming`, tagged `aemdev:category/meetup`.
 
 - **Pre-staged:** the template, the two speakers' headshots in DAM, one of the two bios
   already in the sheet, the RSVP form published in Forms CS, the taxonomy authored.

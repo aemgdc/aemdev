@@ -3,7 +3,7 @@
 **Today:** Sun 16 Aug 2026. **Conference:** Mon 28 – Wed 30 Sep 2026, Berlin.
 **Build window:** Mon 17 Aug → Fri 25 Sep — **six weeks**, minus travel.
 
-Item codes (S1–S10) are from [subproducts.md](subproducts.md); content batches from
+Item codes (S1–S11) are from [subproducts.md](subproducts.md); content batches from
 [content-plan.md](content-plan.md).
 
 ## Freeze gates
@@ -47,9 +47,9 @@ plan — decide it then, not in September.
 | | Item | Owner |
 | --- | --- | --- |
 | ▢ | **S2a** — TagsServlet fix deployed to PRD sandbox; status-code contract corrected | Tad |
-| ▢ | **S2a** — `aemdev` tag namespace authored at `/content/cq:tags/aemdev` (`topic`/`event`/`region`/`format` + `de` on topics), activated to publish | Tad |
+| ▢ | **S2a** — `aemdev` tag namespace authored at `/content/cq:tags/aemdev` (`topic`/`category`/`region` + `de` titles), activated to publish. Tags are [canonical IDs](content-model.md#tags-canonical-ids); compare against the healthy reference at `jmp.com/services/tagsservlet` | Tad |
 | ▢ | **S2a** — real response captured to `tools/tagpicker/fixtures/tags.json` and committed — this is the handoff to Laurel | Tad |
-| ▢ | S9 — `meetups` index in `helix-query.yaml` (status/event-type); `meetup-hero` block started | Tad |
+| ▢ | S9 — `meetups` index in `config/sites/aemdev/query.yaml` (adds `status`); `meetup-hero` block started | Tad |
 | ▢ | B2 — three Arbory blog posts converted to vendor-neutral recaps | Tad |
 | ▢ | B3 — placeholder pages for DevLive San Jose, DC, Munich, adaptTo() | Tad |
 | ▢ | S3 — Icon Picker: icon set curated, manifest approach decided, grid UI started | Laurel |

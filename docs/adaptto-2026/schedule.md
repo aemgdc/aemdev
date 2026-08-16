@@ -30,7 +30,8 @@ the rest of the plan.
 | ▢ | **Spike: TagsServlet 500.** Reproduce in sandbox logs, identify root cause (R1) | Tad |
 | ▢ | **Spike: Forms CS.** Form-list endpoint, auth, CORS from an `aem.live` origin (R3) | Tad |
 | ▢ | S1 — DA plugin registration + `tools/shared/` bootstrap | Tad |
-| ▢ | Verify S2 tagpicker and S5 advanced-search open at all under `aemgdc/aemdev` | Laurel |
+| ▢ | Verify S2b tagpicker and S5 advanced-search open at all under `aemgdc/aemdev` | Laurel |
+| ▢ | **Agree the [S2 interface contract](subproducts.md#s2-interface-contract)** — endpoint shape, namespace root, fixture path. Locked 28 Aug. | Both |
 | ▢ | Demo script v0 — the beat sheet, no polish | Both |
 | ▢ | Slide skeleton — section titles and the argument only ([slides.md](slides.md)) | Tad |
 
@@ -42,11 +43,13 @@ plan — decide it then, not in September.
 
 | | Item | Owner |
 | --- | --- | --- |
-| ▢ | S2 — TagsServlet fix deployed to PRD sandbox | Tad |
-| ▢ | S2 — AEM taxonomy authored (`topic`/`event`/`region`/`format` + `de` on topics) | Tad |
+| ▢ | **S2a** — TagsServlet fix deployed to PRD sandbox; status-code contract corrected | Tad |
+| ▢ | **S2a** — `aemdev` tag namespace authored at `/content/cq:tags/aemdev` (`topic`/`event`/`region`/`format` + `de` on topics), activated to publish | Tad |
+| ▢ | **S2a** — real response captured to `tools/tagpicker/fixtures/tags.json` and committed — this is the handoff to Laurel | Tad |
 | ▢ | S9 — `events` index in `helix-query.yaml`; `event-invite` block started | Tad |
 | ▢ | S3 — Icon Picker: icon set curated, manifest approach decided, grid UI started | Laurel |
-| ▢ | S2 — page tag read-back ported from `jmp-da` | Laurel |
+| ▢ | **S2b** — picker configured for `aemdev` + namespace scoping; on-page tag format decided and written down | Laurel |
+| ▢ | **S2b** — page tag read-back ported from `jmp-da`, developed against the S2a fixture | Laurel |
 | ▢ | Content Batch A started | Tad |
 | ▢ | **Fri 28 Aug: tier decisions locked** — anything still Tier 3 stops getting build time | Both |
 
@@ -55,7 +58,7 @@ plan — decide it then, not in September.
 | | Item | Owner |
 | --- | --- | --- |
 | ▢ | S3 — **Icon Picker done** | Laurel |
-| ▢ | S2 — **Tag Picker done**, incl. cached-taxonomy fallback | Laurel + Tad |
+| ▢ | **S2b** — **Tag Picker done**, incl. orphan-tag handling and cached-taxonomy fallback, verified against the live servlet | Laurel |
 | ▢ | S9 — **Event blocks + DA template done** | Tad |
 | ▢ | S4 — Bio Manager port started (config hoist, retarget to `aemgdc/aemdev`) | Tad |
 | ▢ | S6 — Form Picker started (design settled off the week-0 spike) | Tad |

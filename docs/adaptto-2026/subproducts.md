@@ -12,7 +12,8 @@ needs porting).
 | # | Subproduct | Tier | State | Owner | Est. | Due |
 | --- | --- | --- | --- | --- | --- | --- |
 | S1 | DA plugin registration + tools shell | — | none | Tad | 0.5d | 23 Aug |
-| S2 | AEM Tag Picker (+ page tag read-back) | 1 | ported (broken backend) | Laurel + Tad | 2d + AEM | 5 Sep |
+| S2a | TagsServlet fix + `aemdev` tag namespace (AEM side) | 1 | broken backend | **Tad** | 1.5d | 28 Aug |
+| S2b | Tag Picker config + page tag read-back (DA plugin) | 1 | ported | **Laurel** | 2d | 5 Sep |
 | S3 | Icon Picker | 1 | none | Laurel | 2.5d | 5 Sep |
 | S4 | Bio Manager | 1 | external | Tad | 2d | 12 Sep |
 | S5 | Advanced Search | 2 | ported | Laurel | 1d | 12 Sep |
@@ -68,49 +69,139 @@ demo's running order, each opening without console errors.
 
 ---
 
-## S2 — AEM Tag Picker
+## S2 — AEM Tag Picker (split: S2a AEM / S2b plugin)
 
-**Tier:** 1. **Owner:** Laurel (UI) + Tad (AEM). **Est:** 2d + AEM-side work.
+Split into two independently-owned pieces so neither person blocks the other. **Tad owns
+everything on the AEM side of the wire (S2a); Laurel owns everything on the DA side (S2b).**
+The [interface contract](#s2-interface-contract) between them is fixed in week 0 so S2b can
+start before S2a lands.
 
-**State:** already in this repo at [tools/tagpicker/](../../tools/tagpicker/) — `tagpicker.js`
-(~4.1k), `tagpicker.css`, `tagpicker.html`, a thorough [README.md](../../tools/tagpicker/README.md),
-and the `TagsServlet.java` source. Hierarchical browse, breadcrumb, add-to-list, batch insert,
-pipe-delimited `category|subcategory|tag` output, 9 languages.
+**Shared starting state:** already in this repo at [tools/tagpicker/](../../tools/tagpicker/) —
+`tagpicker.js` (~4.1k), `tagpicker.css`, `tagpicker.html`, a thorough
+[README.md](../../tools/tagpicker/README.md), and the `TagsServlet.java` source. Hierarchical
+browse, breadcrumb, add-to-list, batch insert, pipe-delimited `category|subcategory|tag`
+output, 9 languages.
 
-**The backend is broken.** Verified 16 Aug 2026 against the PRD sandbox:
+**The backend is broken and there is no taxonomy.** Verified 16 Aug 2026 against the PRD
+sandbox:
 
 ```
-GET /services/tagsservlet          → HTTP 500
-GET /services/tagsservlet.all      → HTTP 500
-GET /services/tagsservlet.industry → HTTP 200, body: "ERROR: Invalid Tag Catgegory"
-GET /  (publish root)              → HTTP 200   (the instance itself is healthy)
+GET /services/tagsservlet           → HTTP 500
+GET /services/tagsservlet.all       → HTTP 500
+GET /services/tagsservlet.aemdev    → HTTP 200, body: "ERROR: Invalid Tag Catgegory"
+GET /services/tagsservlet.topic     → HTTP 200, body: "ERROR: Invalid Tag Catgegory"
+GET /services/tagsservlet.industry  → HTTP 200, body: "ERROR: Invalid Tag Catgegory"
+GET /   (publish root)              → HTTP 200   (the instance itself is healthy)
 ```
 
-The picker's init path calls the bare endpoint, so it currently renders nothing. The 200 on
-a named category with an error body also means the client can't distinguish "no such
-category" from success — worth fixing while we're in there.
+Two separate problems, and they map cleanly onto the split:
 
-**Work — AEM side (Tad), on `~/git/arbory-digital-inc/arbory-aemaacs`:**
-1. Reproduce the 500 in the sandbox logs. Likely the full-tree walk hitting a node type or
-   permission it doesn't expect.
-2. Author a real taxonomy at `/content/cq:tags` for this demo — `topic`, `event`, `region`,
-   `format` (see [content-plan.md](content-plan.md#aem-taxonomy)).
-3. Return proper HTTP status codes for the invalid-category case (400/404, JSON body).
-4. Re-verify the CDN rule allowing `/services/tagsservlet` through.
+1. The full-tree endpoints 500. That is the call the picker makes on init, so the picker
+   renders nothing today.
+2. *Every* named category — including `aemdev` — returns the invalid-category error, so there
+   is no namespace authored for this site at all. Nothing to pick even once the 500 is fixed.
 
-**Work — plugin side (Laurel):**
-5. **The enhancement** (the reason this is on the list): read the tags already present on the
-   current page via `DA_SDK` context, and render them as pre-selected in the hierarchy, so
-   the picker is an *editor* of the page's tags rather than an append-only inserter. This is
-   the work Laurel is doing on `~/git/jmphlx/jmp-da`; port it here rather than forking.
-6. Cached-taxonomy fallback (R1 mitigation): ship a committed
-   `tools/tagpicker/fixtures/tags.json` and fall back to it on any non-2xx or malformed
-   response, with a visible "using cached taxonomy" notice. This is both the outage
-   insurance and the conference-wifi insurance.
+Also note the servlet returns **HTTP 200 with an error body**, so the client cannot currently
+distinguish "no such category" from success. Fixing that is part of S2a.
+
+---
+
+### S2a — TagsServlet fix + `aemdev` tag namespace
+
+**Tier:** 1. **Owner:** Tad. **Est:** 1.5d. **Due:** Fri 28 Aug (matches the week-0 spike gate
+in [schedule.md](schedule.md#freeze-gates)). **Repo:** `~/git/arbory-digital-inc/arbory-aemaacs`,
+Arbory Digital PRD sandbox author → publish.
+
+1. **Root-cause the 500** on `/services/tagsservlet` and `.all`. Reproduce in the sandbox
+   logs first — do not guess from `TagsServlet.java`. Prime suspect is the full-tree walk
+   hitting a node type or a property it doesn't expect, or a permission boundary on
+   `/content/cq:tags` for the anonymous publish user.
+2. **Create the `aemdev` tag namespace** on the Arbory author at
+   `/content/cq:tags/aemdev`, with the category/tag structure in
+   [content-plan.md](content-plan.md#aem-taxonomy--the-aemdev-namespace). Namespacing it means the demo taxonomy is
+   isolated from whatever else lives in that sandbox, and the picker can be scoped to
+   `.aemdev` rather than pulling the whole repository.
+3. **Add German (`de`) titles** on at least the `topic` tags. The servlet already supports
+   multi-language with English fallback; it is a free Berlin moment.
+4. **Fix the status-code contract.** Invalid category → 404 (or 400) with a JSON body, not
+   HTTP 200 with a plain-text string. Laurel's fallback logic in S2b keys off this.
+5. **Activate to publish** and re-verify the CDN rule allowing `/services/tagsservlet`
+   through — the picker reads from publish, not author.
+6. **Hand off the fixture** (see contract below) — commit a real captured response to
+   `tools/tagpicker/fixtures/tags.json` so S2b is never blocked on sandbox availability.
+
+**Acceptance:**
+- `GET /services/tagsservlet.aemdev` returns HTTP 200 with the full `aemdev` hierarchy as JSON.
+- `GET /services/tagsservlet` and `.all` return 200, not 500.
+- `GET /services/tagsservlet.nonsense` returns 404 with a JSON error body.
+- `GET /services/tagsservlet.aemdev.de` returns German titles for the topic tags.
+- All four verified from outside the network, against the publish host, by 28 Aug.
+
+---
+
+### S2b — Tag Picker configuration + page tag read-back
+
+**Tier:** 1. **Owner:** Laurel. **Est:** 2d. **Due:** Fri 5 Sep. **Depends on:** the S2a
+fixture (not the live servlet — start against the fixture on day one).
+
+**1. Configure the picker for `aemdev`.**
+- Point `tagURL` at the PRD sandbox and scope the request to the `aemdev` namespace.
+- Decide and document the on-page output format (see the matching trap below).
+- Register in `tools/sidekick/config.json` per [S1](#s1--da-plugin-registration--tools-shell).
+
+**2. Page tag read-back — the actual feature.** Read the tags already on the current DA page
+and render them as pre-selected in the hierarchy, so the picker is an **editor** of the page's
+tags rather than an append-only inserter. This is the work Laurel is doing on
+`~/git/jmphlx/jmp-da` — port it here rather than maintaining a fork.
+
+Design decisions worth settling before writing code:
+
+- **Read from DA source, not the rendered page.** Fetch
+  `https://admin.da.live/source/{org}/{site}{path}.html` with the `DA_SDK` token and parse the
+  `metadata` block's tags row. Reading the `.aem.page` render instead would miss tags on a
+  page the author hasn't previewed yet — which is exactly the page they're editing.
+- **The matching trap.** Per the tagpicker README, values are display-normalized on the way
+  out: lowercased, spaces → hyphens, `&` → "and", and a `(intro-stats)-` prefix stripped.
+  That transform is **lossy**, so reversing a stored string back to a taxonomy node is
+  guesswork. Two options — pick one and write it down:
+  - *(preferred)* store the canonical AEM tagID on the page and render a friendly label from
+    the taxonomy at display time. Clean matching, but it changes the on-page format, so
+    check it against what [helix-query.yaml](../../helix-query.yaml) indexes from
+    `head > meta[property="article:tag"]` and what `blocks/` consume.
+  - normalize both sides at compare time and accept that collisions are possible.
+- **Unresolvable tags must survive.** A tag on the page that no longer exists in the taxonomy
+  has to be shown as an unknown/orphan chip, not silently dropped. Dropping an author's tags
+  on save is a data-loss bug, and on stage it would be a visible one.
+- **Write-back is replace, not append** — that is what makes it an editor. Confirm the insert
+  path replaces the whole tags row.
+
+**3. Cached-taxonomy fallback** (R1 mitigation). Fall back to the committed
+`tools/tagpicker/fixtures/tags.json` on any non-2xx, timeout, or malformed response, with a
+visible "using cached taxonomy" notice. Outage insurance *and* conference-wifi insurance;
+also what lets this plugin participate in fixture mode ([S10](#s10--fixture--offline-mode)).
 
 **Acceptance:** on `/en/events/2026-10-berlin-meetup`, opening the picker shows the page's
-existing tags pre-selected; adding two and inserting writes correct metadata; killing network
-access to the sandbox degrades to the cached taxonomy with a visible notice.
+existing tags pre-selected and any orphan tag flagged; adding two and inserting rewrites the
+metadata correctly; removing one removes it from the page; cutting network access to the
+sandbox degrades to the cached taxonomy with a visible notice rather than an empty panel.
+
+---
+
+### S2 interface contract
+
+Fix this in week 0 so S2a and S2b proceed in parallel. Neither side changes it unilaterally
+after **28 Aug**.
+
+| | |
+| --- | --- |
+| **Endpoint** | `GET https://publish-p121227-e1306133.adobeaemcloud.com/services/tagsservlet.aemdev[.{lang}]` |
+| **Success** | HTTP 200, JSON array of nodes: `{ "jcr:title", "jcr:title.{lang}", "path", "children": [] }` |
+| **Invalid category** | HTTP 404, JSON error body |
+| **Namespace root** | `/content/cq:tags/aemdev` |
+| **Fixture** | `tools/tagpicker/fixtures/tags.json` — a real captured response, committed by Tad, refreshed whenever the taxonomy changes |
+
+The fixture is the contract's teeth: Laurel builds and rehearses entirely against it, so an
+AEM-side delay slips S2a only, never S2b.
 
 ---
 

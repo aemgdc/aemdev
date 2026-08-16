@@ -98,10 +98,18 @@ Target page: `/en/events/2026-10-berlin-meetup`.
 
 ## Division of labour
 
-- **Laurel:** Tag Picker enhancement (page tag read-back), Advanced Search verification on
-  `aemgdc/aemdev`, Icon Picker. Drives the live demo.
-- **Tad:** Bio Manager port, Form Picker, Preflight + publish workflow, event blocks,
-  content build-out, slides, AEM-side (TagsServlet fix + taxonomy). Narrates.
+The tag picker is **split at the HTTP boundary** — Tad owns everything on the AEM side, Laurel
+owns everything on the DA side, and a committed fixture is the handoff so neither blocks the
+other. See [S2a](subproducts.md#s2a--tagsservlet-fix--aemdev-tag-namespace) /
+[S2b](subproducts.md#s2b--tag-picker-configuration--page-tag-read-back) and the
+[interface contract](subproducts.md#s2-interface-contract).
+
+- **Tad — AEM side:** TagsServlet fix and the `aemdev` tag namespace (S2a). Plus Bio Manager
+  port, Form Picker, Preflight + publish workflow, event blocks, content build-out, slides.
+  Narrates.
+- **Laurel — DA side:** Tag Picker configuration and the page tag read-back workflow (S2b),
+  Icon Picker, Advanced Search verification on `aemgdc/aemdev`, fixture mode. Drives the live
+  demo.
 - **Shared:** rehearsals, backup recording, freeze discipline.
 
 Estimated total ≈ 22–24 person-days over 6 weeks across two people. That is aggressive but
@@ -112,7 +120,7 @@ not fantasy — *provided* Tier 3 stays Tier 3 and the freeze gates in
 
 | # | Risk | Severity | Mitigation |
 | --- | --- | --- | --- |
-| **R1** | **TagsServlet returns 500 on `/services/tagsservlet` and `.all`; named categories return `ERROR: Invalid Tag Catgegory`.** The picker's init call fails. Verified 16 Aug. | **Critical** | Two-track: (a) fix the servlet + author a real taxonomy on the PRD sandbox — owner Tad, due 29 Aug; (b) ship a cached-JSON fallback in the picker so a servlet outage on stage degrades to a static taxonomy rather than an empty panel. Do **both**; (b) is also the conference-wifi insurance. |
+| **R1** | **TagsServlet returns 500 on `/services/tagsservlet` and `.all`; every named category — including `aemdev` — returns `ERROR: Invalid Tag Catgegory`.** The picker's init call fails, and no namespace exists to pick from. Verified 16 Aug. | **Critical** | Two-track, split by owner: (a) **Tad, S2a, due 28 Aug** — fix the servlet and author the `aemdev` namespace on the PRD sandbox; (b) **Laurel, S2b** — cached-JSON fallback so a servlet outage on stage degrades to a static taxonomy rather than an empty panel. Do **both**; (b) is also the conference-wifi insurance, and the fixture (a) produces is what unblocks (b) on day one. |
 | **R2** | aemdev.org is effectively unpublished (see [content-plan.md](content-plan.md)). Everything downstream — Advanced Search results, Preflight link checks, the events index — needs real pages to act on. | **High** | Content is a first-class workstream with its own owner and its own freeze date (18 Sep), not a week-5 scramble. |
 | **R3** | Forms Cloud Service form-list API, auth and CORS from a DA-hosted plugin are unproven. | **High** | Time-boxed spike in week 1 (by 23 Aug). If the live API can't be reached from the plugin, fall back to a published forms manifest sheet and say so honestly on the slide. |
 | **R4** | Live demo over conference wifi, against AEM publish + DA + Forms CS + Slack. | **High** | Full backup screen recording by 23 Sep. Local fixture mode for every plugin (a `?fixtures=1` flag reading committed JSON). Phone hotspot as backup uplink. Rehearse the *recording-fallback* switch itself. |

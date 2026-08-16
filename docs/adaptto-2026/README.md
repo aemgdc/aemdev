@@ -20,11 +20,14 @@ Demo surface: [www.aemdev.org](https://www.aemdev.org) — DA org/site `aemgdc/a
 
 Both verified on **16 Aug 2026**; both are on the critical path.
 
-1. **The TagsServlet is half-broken.** `/services/tagsservlet` and `/services/tagsservlet.all`
-   on the PRD sandbox return **HTTP 500**. Named-category requests return HTTP 200 but with a
-   plain-text body `ERROR: Invalid Tag Catgegory` (sic) — i.e. the sandbox has no usable
-   taxonomy authored, and the "load all tags" call the picker makes on init is failing outright.
-   The tag picker cannot be demoed today. See [subproducts.md](subproducts.md#s2--aem-tag-picker) and risk **R1**.
+1. **The TagsServlet is half-broken and there is no taxonomy.** `/services/tagsservlet` and
+   `/services/tagsservlet.all` on the PRD sandbox return **HTTP 500** — that's the call the
+   picker makes on init. Every named category, including `aemdev`, returns HTTP 200 with a
+   plain-text body `ERROR: Invalid Tag Catgegory` (sic), so no namespace is authored for this
+   site either. The tag picker cannot be demoed today. Split into
+   [S2a](subproducts.md#s2a--tagsservlet-fix--aemdev-tag-namespace) (Tad, AEM side) and
+   [S2b](subproducts.md#s2b--tag-picker-configuration--page-tag-read-back) (Laurel, DA side);
+   risk **R1**.
 
 2. **aemdev.org is almost empty.** Live has exactly two things: `/en/` and
    `/en/meetup-recaps/` (one recap). `/en/articles` exists in preview but not live.

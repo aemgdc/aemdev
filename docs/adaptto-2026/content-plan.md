@@ -70,10 +70,19 @@ Selector step. Point `DAM_DEFAULT_PATH` at it.
 
 ### Batch C — Backing services (due 12 Sep)
 
-#### AEM taxonomy
+#### AEM taxonomy — the `aemdev` namespace
 
-On the PRD sandbox at `/content/cq:tags`, authored to match the servlet's pipe-delimited
-`category|subcategory|tag` model. Blocked on the S2 servlet fix.
+**Owner: Tad ([S2a](subproducts.md#s2a--tagsservlet-fix--aemdev-tag-namespace)). Due 28 Aug**
+— earlier than the rest of Batch C, because Laurel's fixture and the picker's scoping both
+key off it.
+
+Authored on the Arbory Digital PRD sandbox author, under a dedicated namespace at
+**`/content/cq:tags/aemdev`**, then activated to publish. Namespacing keeps the demo taxonomy
+isolated from anything else in that sandbox and lets the picker request `.aemdev` instead of
+walking the whole tag repository.
+
+Verified 16 Aug: `/services/tagsservlet.aemdev` returns `ERROR: Invalid Tag Catgegory` — the
+namespace does not exist yet.
 
 | Category | Tags |
 | --- | --- |
@@ -82,8 +91,14 @@ On the PRD sandbox at `/content/cq:tags`, authored to match the servlet's pipe-d
 | `region` | emea, north-america, apac, virtual |
 | `format` | in-person, hybrid, virtual |
 
-Add German (`de`) translations on at least the `topic` tags — the servlet supports multi-language
-and it is a free, well-earned laugh in Berlin.
+So `/content/cq:tags/aemdev/topic/edge-delivery`, and so on.
+
+Add German (`de`) titles on at least the `topic` tags — the servlet supports multi-language
+with English fallback, and it is a free, well-earned laugh in Berlin.
+
+Once authored, capture a real response to `tools/tagpicker/fixtures/tags.json` and commit it.
+That fixture is the handoff to [S2b](subproducts.md#s2b--tag-picker-configuration--page-tag-read-back)
+and the cached fallback the picker degrades to on stage.
 
 #### Forms in Forms Cloud Service
 

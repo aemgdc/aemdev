@@ -12,7 +12,7 @@ demo runbook, not here.
 ## 1 — Title
 
 **Spiritually-Succeeding AEM: Advanced Author Customization in DA**
-Tad Reeves · Laurel Fulford · adaptTo() 2026
+Tad Reeves · Laurel Timko · adaptTo() 2026
 
 *Notes:* 20 seconds. Names, the repo URL on screen from slide one so people photograph it early.
 

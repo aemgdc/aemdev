@@ -20,7 +20,7 @@ needs porting).
 | S6 | Form Picker | 1 | none | Tad | 3d | 12 Sep |
 | S7 | Preflight + publish workflow | 1 | exists (generic) | Tad | 2d | 12 Sep |
 | S8 | Translation Tracker cameo | 3 | external | Tad | 0.5d | 18 Sep |
-| S9 | Event blocks + events index | — | none | Tad | 2d | 5 Sep |
+| S9 | Meetup blocks + `/en/meetups/` rename | — | none | Tad | 2.5d | 5 Sep |
 | S10 | Fixture/offline mode across plugins | — | none | Laurel | 1d | 18 Sep |
 
 ---
@@ -180,7 +180,7 @@ Design decisions worth settling before writing code:
 visible "using cached taxonomy" notice. Outage insurance *and* conference-wifi insurance;
 also what lets this plugin participate in fixture mode ([S10](#s10--fixture--offline-mode)).
 
-**Acceptance:** on `/en/events/2026-10-berlin-meetup`, opening the picker shows the page's
+**Acceptance:** on `/en/meetups/2026-10-berlin-meetup`, opening the picker shows the page's
 existing tags pre-selected and any orphan tag flagged; adding two and inserting rewrites the
 metadata correctly; removing one removes it from the page; cutting network access to the
 sandbox degrades to the cached taxonomy with a visible notice rather than an empty panel.
@@ -296,12 +296,16 @@ text modification, add/delete/merge rows, permissions sheet gating.
    `aemgdc/aemdev`.
 3. Confirm the `pagetree` modal (this repo has [tools/pagetree/](../../tools/pagetree/)) opens
    for custom-path selection.
-4. **Build the demo case:** the Act 3 bulk-replace needs 12–14 meetup pages that genuinely
-   contain the old form block. That's [content-plan.md](content-plan.md), and it gates this.
+4. **The demo case is now a bulk *append*, not a replace.** Every `/en/meetups/` page is
+   supposed to end with the *Join the Collective* form; the dozen pages generated from videos
+   and blog posts won't have one, because nothing put it there. So the operation is "add this
+   block to fourteen pages", which is a real content-operations task rather than a planted
+   one. See [content-plan.md](content-plan.md#this-gives-act-3-a-better-story) — and note the
+   corresponding instruction *not* to add the footer form when generating those pages.
 5. Rehearse the *undo* — showing undo is what makes bulk-edit demos land instead of terrify.
 
-**Acceptance:** a block+property search across `/en/meetup-recaps/` returns ≥12 pages,
-versions them, replaces, and undoes cleanly — in under 2 minutes with narration.
+**Acceptance:** a block+property search across `/en/meetups/` returns ≥12 pages, versions them,
+bulk-appends the form block, and undoes cleanly — in under 2 minutes with narration.
 
 ---
 
@@ -387,31 +391,50 @@ Check this explicitly at slide freeze.
 
 ---
 
-## S9 — Event blocks + events index
+## S9 — Meetup blocks + the `/en/meetups/` rename
 
-**Tier:** foundation. **Owner:** Tad. **Est:** 2d. **State:** none.
+**Tier:** foundation. **Owner:** Tad. **Est:** 2d (+0.5d rename). **State:** none.
 
-The demo builds an *event invitation*. This repo has `/en/articles/**` and
-`/en/meetup-recaps/**` indices in [helix-query.yaml](../../helix-query.yaml), with
-`event-date`, `event-location`, `event-speakers`, `recap-video` properties — but **no events
-or invitation path**. Recaps look backwards; an invitation looks forwards.
+**Scope changed** — this was "event blocks + a new `/en/events/` index". It is now the
+`/en/meetups/` lifecycle model: one folder for announced, upcoming and recapped events, with
+the rename done first. Rationale and the full work list are in
+[content-plan.md](content-plan.md#the-enmeetups-model). There is no `/en/events/` tree.
+
+Today this repo has `/en/articles/**` and `/en/meetup-recaps/**` indices in
+[helix-query.yaml](../../helix-query.yaml) with `event-date`, `event-location`,
+`event-speakers`, `recap-video` — a backward-looking shape. An announced or upcoming event has
+no video and may not have a date yet, so the model has to carry status.
 
 **Work:**
-1. Add an `events` index to `helix-query.yaml` for `/en/events/**` — reuse the meetup-recaps
-   property set plus `rsvp-form`, `capacity`, `event-end-date`.
-2. New `event-invite` block: date/time/venue header, agenda rows (icon + time + item — this
-   is what S3 feeds), speaker fragment slots (S4), RSVP slot (S6).
-3. `event-card` / listing block for `/en/events/` so the new page appears somewhere after publish.
-4. A DA **template** for the event page, so Act 1 starts from a template rather than a blank
-   doc. This is what makes the live build fit in 7 minutes.
-5. Reuse before building: this repo already has `blocks/schedule/`, `blocks/speaking/`,
-   `blocks/card/`, `blocks/author-rows/`, `blocks/callout/`, `blocks/step/`. Check each before
-   writing anything new.
+
+1. **Rename first, week 0.** `/en/meetup-recaps/` → `/en/meetups/`, 1:1 redirect, nav and
+   footer updated. One page exists today, so this is cheap now and expensive after Batch B
+   authors a dozen more. **Blocks all content work.**
+2. Rename the index in `helix-query.yaml`: `include: /en/meetups/**`,
+   `target: /en/meetups/query-index.json`. Add `status` (`announced` | `upcoming` | `recap`),
+   `event-type`, `rsvp-form`, `event-end-date`. Keep `recap-video` — it just goes empty on
+   non-recap pages.
+3. **`meetup-hero` block** rendering all three states from one authored structure:
+   date/venue/status header, with the agenda, speaker and RSVP regions degrading gracefully
+   when empty. Do **not** build three blocks; the whole point is a page that changes state in
+   place without being rebuilt.
+4. Agenda rows (icon + time + item) — this is what [S3](#s3--icon-picker) feeds. Speaker
+   fragment slots — [S4](#s4--bio-manager). RSVP / footer form slot — [S6](#s6--form-picker).
+5. `meetup-card` listing block for `/en/meetups/`, splitting upcoming from past off `status`
+   and `event-date`, so the page published on stage visibly appears in a list afterwards.
+6. A DA **template** carrying the three states, so Act 1 starts from a template rather than a
+   blank doc. This is what makes the live build fit in 7 minutes.
+7. Reuse before building: this repo already has `blocks/schedule/`, `blocks/speaking/`,
+   `blocks/card/`, `blocks/author-rows/`, `blocks/callout/`, `blocks/step/`,
+   `blocks/youtube/`, `blocks/embed/`. Check each before writing anything new — B1's recap
+   pages need video embeds and B2's need photo galleries, and both may already exist.
 
 Follow the repo's `content-driven-development` skill for this one — it touches `blocks/`.
 
-**Acceptance:** a hand-authored event page renders correctly at preview and appears in
-`/en/events/query-index.json`; the template opens clean in DA.
+**Acceptance:** the old `/en/meetup-recaps/...` URL 301s to `/en/meetups/...`; a page authored
+in each of the three states renders correctly at preview; all appear in
+`/en/meetups/query-index.json` with `status` populated; the listing block sorts upcoming above
+past; the template opens clean in DA.
 
 ---
 

@@ -32,6 +32,9 @@ the rest of the plan.
 | ▢ | S1 — DA plugin registration + `tools/shared/` bootstrap | Tad |
 | ▢ | Verify S2b tagpicker and S5 advanced-search open at all under `aemgdc/aemdev` | Laurel |
 | ▢ | **Agree the [S2 interface contract](subproducts.md#s2-interface-contract)** — endpoint shape, namespace root, fixture path. Locked 28 Aug. | Both |
+| ▢ | **Confirm the `/en/meetups/` decision**, then do the rename + redirect — blocks all Batch B authoring ([content-plan.md](content-plan.md#the-enmeetups-model)) | Tad |
+| ▢ | **Enumerate the YouTube list** (B1) — the page count is currently unknown and it drives whether we reach 12 | Tad |
+| ▢ | Chase DC and Munich meetup dates; `announced` with no date is an acceptable outcome | Tad |
 | ▢ | Demo script v0 — the beat sheet, no polish | Both |
 | ▢ | Slide skeleton — section titles and the argument only ([slides.md](slides.md)) | Tad |
 
@@ -46,7 +49,9 @@ plan — decide it then, not in September.
 | ▢ | **S2a** — TagsServlet fix deployed to PRD sandbox; status-code contract corrected | Tad |
 | ▢ | **S2a** — `aemdev` tag namespace authored at `/content/cq:tags/aemdev` (`topic`/`event`/`region`/`format` + `de` on topics), activated to publish | Tad |
 | ▢ | **S2a** — real response captured to `tools/tagpicker/fixtures/tags.json` and committed — this is the handoff to Laurel | Tad |
-| ▢ | S9 — `events` index in `helix-query.yaml`; `event-invite` block started | Tad |
+| ▢ | S9 — `meetups` index in `helix-query.yaml` (status/event-type); `meetup-hero` block started | Tad |
+| ▢ | B2 — three Arbory blog posts converted to vendor-neutral recaps | Tad |
+| ▢ | B3 — placeholder pages for DevLive San Jose, DC, Munich, adaptTo() | Tad |
 | ▢ | S3 — Icon Picker: icon set curated, manifest approach decided, grid UI started | Laurel |
 | ▢ | **S2b** — picker configured for `aemdev` + namespace scoping; on-page tag format decided and written down | Laurel |
 | ▢ | **S2b** — page tag read-back ported from `jmp-da`, developed against the S2a fixture | Laurel |

@@ -3,7 +3,7 @@
 Planning workspace for the 30-minute session at [adaptTo() 2026](https://adapt.to/2026/schedule/spiritually-succeeding-aem-advanced-author-customization-in-da),
 **Berlin, 28–30 September 2026** (exact slot TBC).
 
-Presenters: Tad Reeves, Laurel Fulford.
+Presenters: Tad Reeves, Laurel Timko.
 Demo surface: [www.aemdev.org](https://www.aemdev.org) — DA org/site `aemgdc/aemdev`, code in this repo.
 
 ## Documents

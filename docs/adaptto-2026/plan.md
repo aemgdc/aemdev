@@ -55,12 +55,15 @@ because Tier 3 items stop getting build time after that.
 **Scenario:** "The AEM Global Developer Collective is running a Berlin meetup the week after
 adaptTo(). I need an invitation page live before I leave this stage."
 
-Target page: `/en/events/2026-10-berlin-meetup`.
+Target page: **`/en/meetups/2026-10-berlin-meetup`** — the same folder as the dozen-plus real
+meetup pages from Batch B, which is what lets Act 3 follow on without changing the subject.
 
 ### Act 1 — Assemble the page (≈7 min)
 
-1. **Start from a template.** New page in DA from the event-invite template. Show the
-   unadorned DA surface first — *this is what you get out of the box* — so the contrast lands.
+1. **Start from a template.** New page in DA from the meetup template, `status: upcoming`.
+   Show the unadorned DA surface first — *this is what you get out of the box* — so the
+   contrast lands. One line on the lifecycle: this page will become its own recap after the
+   event, same URL, no rebuild.
 2. **Bio Manager.** The meetup has two speakers. Open the plugin, search existing bios, pull
    one in; create the second from scratch (name, headshot via Adobe Asset Selector, blurb).
    It writes a fragment and a row in the bios sheet. Reference the fragment on the page.
@@ -75,8 +78,8 @@ Target page: `/en/events/2026-10-berlin-meetup`.
 ### Act 2 — Make it do something (≈4 min)
 
 5. **Form Picker.** RSVP. Open the picker, see the real form list from Forms Cloud Service
-   (RSVP, CFP submission, newsletter, feedback), pick RSVP, it drops a configured block.
-   *Point: Forms CS and EDS are not separate products to your author.*
+   (RSVP, Join the Collective, Host an Event, CFP, newsletter), pick RSVP, it drops a
+   configured block. *Point: Forms CS and EDS are not separate products to your author.*
 
 ### Act 3 — Govern it (≈5 min)
 
@@ -85,9 +88,11 @@ Target page: `/en/events/2026-10-berlin-meetup`.
    *Point: this is where the "EDS has no governance" objection dies.*
 7. **Publish → workflow.** Publish kicks the post-publish hook: Slack/announcement + AEM
    workflow ping. Show the notification land.
-8. **Advanced Search (Tier 2).** "That form block I just used? Fourteen older meetup pages
-   still point at the retired one." Search by block + property across `/en/meetup-recaps/`,
-   version them, bulk-replace, show the undo. *Point: bulk safety at scale.*
+8. **Advanced Search (Tier 2).** "Every meetup page is supposed to end with the *Join the
+   Collective* form. Fourteen of them don't. I'm not opening fourteen pages." Search by block
+   across `/en/meetups/`, version all, bulk-append the form block, show the undo.
+   *Point: bulk safety at scale — and note this is a real gap in our own content, not a
+   planted one.*
 
 ### Close (≈2 min)
 
@@ -121,7 +126,7 @@ not fantasy — *provided* Tier 3 stays Tier 3 and the freeze gates in
 | # | Risk | Severity | Mitigation |
 | --- | --- | --- | --- |
 | **R1** | **TagsServlet returns 500 on `/services/tagsservlet` and `.all`; every named category — including `aemdev` — returns `ERROR: Invalid Tag Catgegory`.** The picker's init call fails, and no namespace exists to pick from. Verified 16 Aug. | **Critical** | Two-track, split by owner: (a) **Tad, S2a, due 28 Aug** — fix the servlet and author the `aemdev` namespace on the PRD sandbox; (b) **Laurel, S2b** — cached-JSON fallback so a servlet outage on stage degrades to a static taxonomy rather than an empty panel. Do **both**; (b) is also the conference-wifi insurance, and the fixture (a) produces is what unblocks (b) on day one. |
-| **R2** | aemdev.org is effectively unpublished (see [content-plan.md](content-plan.md)). Everything downstream — Advanced Search results, Preflight link checks, the events index — needs real pages to act on. | **High** | Content is a first-class workstream with its own owner and its own freeze date (18 Sep), not a week-5 scramble. |
+| **R2** | aemdev.org is effectively unpublished (see [content-plan.md](content-plan.md)). Everything downstream — Advanced Search results, Preflight link checks, the meetups index — needs real pages to act on. | **High** | Content is a first-class workstream with its own owner and its own freeze date (18 Sep), not a week-5 scramble. |
 | **R3** | Forms Cloud Service form-list API, auth and CORS from a DA-hosted plugin are unproven. | **High** | Time-boxed spike in week 1 (by 23 Aug). If the live API can't be reached from the plugin, fall back to a published forms manifest sheet and say so honestly on the slide. |
 | **R4** | Live demo over conference wifi, against AEM publish + DA + Forms CS + Slack. | **High** | Full backup screen recording by 23 Sep. Local fixture mode for every plugin (a `?fixtures=1` flag reading committed JSON). Phone hotspot as backup uplink. Rehearse the *recording-fallback* switch itself. |
 | **R5** | DA platform drift between now and 28 Sep — `da.live/nx/utils/sdk.js` is loaded live from a URL we don't control. | Medium | Re-verify every plugin against live DA at code freeze (21 Sep) and again the morning of the talk. Note in slides that the SDK is a hosted dependency. |

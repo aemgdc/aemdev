@@ -1,0 +1,28 @@
+{
+  "project": "AEM Global Developer Collective",
+  "editUrlLabel": "Document Authoring",
+  "editUrlPattern": "https://da.live/edit#/{{org}}/{{site}}{{pathname}}",
+  "plugins": [
+    {
+      "id": "tag-picker",
+      "title": "Tag Picker",
+      "environments": ["edit"],
+      "daLibrary": true,
+      "url": "https://main--aemdev--aemgdc.aem.live/tools/tagpicker/tagpicker.html"
+    },
+    {
+      "id": "preflight",
+      "title": "Preflight",
+      "environments": ["edit"],
+      "daLibrary": true,
+      "url": "https://main--aemdev--aemgdc.aem.live/tools/preflight/preflight.html"
+    },
+    {
+      "id": "advanced-search",
+      "title": "Advanced Search",
+      "environments": ["edit"],
+      "daLibrary": true,
+      "url": "https://main--aemdev--aemgdc.aem.live/tools/advanced-search.html"
+    }
+  ]
+}

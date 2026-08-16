@@ -22,6 +22,7 @@ needs porting).
 | S8 | Translation Tracker cameo | 3 | external | Tad | 0.5d | 18 Sep |
 | S9 | Meetup blocks + `/en/meetups/` rename | — | none | Tad | 2.5d | 5 Sep |
 | S10 | Fixture/offline mode across plugins | — | none | Laurel | 1d | 18 Sep |
+| S11 | Query index & config hygiene | — | partial | Tad | 1d | 28 Aug |
 
 ---
 
@@ -29,40 +30,77 @@ needs porting).
 
 **Tier:** foundation (nothing else demos without it). **Owner:** Tad. **Est:** 0.5d.
 
-This repo has no `tools/sidekick/config.json`. `tools/sidekick/sidekick.js` is an *AEM
-Sidekick* customization (it wires `custom:scheduler` and `custom:quick-edit` events) — that
-is a different surface from DA's plugin/library panel, and the session is about the latter.
+**Status: config written, awaiting deploy verification.**
+[`tools/sidekick/config.json`](../../tools/sidekick/config.json) now exists with the three
+plugins that are already live.
 
-Reference pattern, from `arbory-da` (`origin/bio-list:tools/sidekick/config.json`):
+### How registration actually works (verified 16 Aug)
 
-```json
-{
-  "project": "AEM Global Developer Collective",
-  "editUrlLabel": "Document Authoring",
-  "editUrlPattern": "https://da.live/edit#/{{org}}/{{site}}{{pathname}}",
-  "plugins": [
-    {
-      "id": "da-tags",
-      "title": "Tag Browser",
-      "environments": ["edit"],
-      "daLibrary": true,
-      "url": "https://main--arbory-da--arbory-digital-inc.hlx.live/tools/tags.html"
-    }
-  ]
-}
+An earlier draft of this doc said DA reads its config from the content bus and the repo file
+"has to be synced/published". **That was wrong — the repo file is picked up automatically.**
+The config service merges `tools/sidekick/config.json` from the code repo with the
+auto-derived hosts and serves the result at:
+
+```
+https://admin.hlx.page/sidekick/{org}/{site}/{ref}/config.json
 ```
 
-**Work:**
-- Create `tools/sidekick/config.json` registering all six live plugins, pointed at
-  `https://main--aemdev--aemgdc.aem.live/tools/<name>.html`.
-- Confirm the DA-side config location for `aemgdc/aemdev` (DA reads a config from the
-  content bus, not from git — the repo file is the source, but it has to be synced/published).
-  Document the exact sync step here once verified; this is the kind of thing that silently
-  doesn't take effect.
-- Establish plugin ordering — it is the demo's running order, and reordering on stage is a
-  fumble.
-- One shared `tools/shared/` module: `DA_SDK` bootstrap, auth headers, error banner, the
-  fixture-mode flag (S10). Every plugin below imports it rather than re-implementing.
+Confirmed against a working reference — `arbory-da`'s resolved config returns its `plugins`
+array verbatim from the repo file, alongside `previewHost` / `liveHost` / `host` /
+`contentSourceUrl`. No config-service POST, and **none of the `update-*-configuration`
+workflows apply to it** — those push `config/sites/aemdev/*` (see [S11](#s11--query-index--config-hygiene)).
+
+aemdev's resolved config before this change:
+
+```json
+{"previewHost":"main--aemdev--aemgdc.aem.page","liveHost":"main--aemdev--aemgdc.aem.live",
+ "host":"www.aemdev.org","contentSourceUrl":"https://content.da.live/aemgdc/aemdev/",
+ "contentSourceType":"markup"}
+```
+
+No `plugins` key at all, which is why the DA library panel is empty today.
+
+### ⚠️ Use `aem.live`, not `hlx.live`
+
+The `arbory-da` config we modelled this on points its plugin at
+`main--arbory-da--arbory-digital-inc.hlx.live/tools/tags.html`, and **that URL returns 403**.
+The same path on `aem.live` returns 200. So the reference implementation's Tag Browser plugin
+is almost certainly broken in DA right now — worth fixing in `arbory-da` separately, and worth
+not copying here. All three URLs in our config use `aem.live` and were verified 200.
+
+### Registered now
+
+| Order | Plugin | URL | Live |
+| --- | --- | --- | --- |
+| 1 | Tag Picker | `/tools/tagpicker/tagpicker.html` | 200 |
+| 2 | Preflight | `/tools/preflight/preflight.html` | 200 |
+| 3 | Advanced Search | `/tools/advanced-search.html` | 200 |
+
+Note the path shapes differ — `advanced-search.html` sits at `tools/` root while the other two
+are inside their own directories. Both work; don't "fix" one to match the other without
+checking the relative imports inside each HTML file.
+
+### Still to add
+
+Bio Manager (S4), Icon Picker (S3) and Form Picker (S6) don't exist yet. Each is a 6-line
+addition to the `plugins` array when it lands.
+
+**Final running order** — plugins render in array order, and reordering on stage is a fumble,
+so land this order before rehearsal #1: Bio Manager → Icon Picker → Tag Picker → Form Picker →
+Preflight → Advanced Search. The current three are already in their correct relative order.
+
+### Remaining work
+
+- **Verify in DA.** Open `da.live/edit#/aemgdc/aemdev/...` and confirm all three appear in the
+  Library panel and open without console errors. This is the acceptance test and it can't be
+  done from the CLI — it needs a browser and a DA login.
+- **Decide on `scheduler` / `quick-edit`.** [tools/sidekick/sidekick.js](../../tools/sidekick/sidekick.js)
+  wires `custom:scheduler` and `custom:quick-edit` listeners, but nothing has ever fired them —
+  there was no config.json to declare those plugins. They are currently dead code. Either
+  register them or accept they stay dormant through the talk; deliberately left out of the
+  config for now to keep the demo panel to demo plugins.
+- **One shared `tools/shared/` module:** `DA_SDK` bootstrap, auth headers, error banner, the
+  fixture-mode flag (S10). Every plugin should import it rather than re-implementing.
 
 **Acceptance:** all six plugins appear in the DA library panel for `aemgdc/aemdev`, in the
 demo's running order, each opening without console errors.
@@ -453,3 +491,145 @@ fixtures without knowing it).
 
 Rehearsal #2 (**21 Sep**) is run entirely in fixture mode with the laptop's network disabled.
 If that rehearsal passes, conference wifi cannot ruin the talk.
+
+---
+
+## S11 — Query index & config hygiene
+
+**Tier:** foundation. **Owner:** Tad. **Est:** 1d. **State:** partially working, with traps.
+
+### Correction: the index is not missing
+
+An earlier draft of [content-plan.md](content-plan.md) said "no published `query-index.json`
+at any path". **That was wrong** — I probed `/query-index.json`,
+`/en/articles/query-index.json` and `/en/meetup-recaps/query-index.json` but not the one that
+actually exists. Verified 16 Aug:
+
+```
+GET /en/query-index.json  → HTTP 200, 4 rows, 25 columns
+GET /en/sitemap.xml       → HTTP 200
+```
+
+The four indexed pages are `/en/`, `/en/contact`, `/en/meetup-recaps`, and one recap:
+`/en/meetup-recaps/20260625-bring-your-complicated-eds-integration-story-meetup`
+(`template: blog`, `category: Meetup Recap`, tags `AEM, EDS, Edge Delivery, Integrations,
+Meetup, GDC`).
+
+So the machinery works. The problem is that four rows can't feed a demo — and there are three
+config traps underneath it.
+
+### Trap 1 — `helix-query.yaml` is dead config
+
+This site is `version: 8` with `content.source.type: markup` (DA). Its index config is served
+from the **config API**, pushed by
+[.github/workflows/update-index-configuration.yaml](../../.github/workflows/update-index-configuration.yaml)
+→ [scripts/update-configs.mjs](../../scripts/update-configs.mjs) →
+`POST https://admin.hlx.page/config/aemgdc/sites/aemdev/content/query.yaml`,
+sourced from **[config/sites/aemdev/query.yaml](../../config/sites/aemdev/query.yaml)**.
+
+There are three query configs in this repo and **only one is live**:
+
+| File | Lines | Status |
+| --- | --- | --- |
+| `config/sites/aemdev/query.yaml` | 76 | **authoritative** — pushed by the workflow |
+| `helix-query.yaml` | 98 | **dead** — legacy `fstab`-era location, not read for a v8/DA site |
+| `config/query.yaml` | 46 | **dead** — not referenced by any workflow |
+
+This matters because earlier planning docs told you to edit `helix-query.yaml` for the
+`articles`, `meetup-recaps` and new `meetups` indices. Editing it would have had **no effect**
+and the failure would have been silent. All of [S9](#s9--meetup-blocks--the-enmeetups-rename)
+and the `/en/meetups/` rename must target `config/sites/aemdev/query.yaml` instead.
+
+**Action:** delete or clearly comment the two dead files. A repo with three query configs and
+no marking of which is real will burn someone again — probably during freeze week.
+
+### Trap 2 — the repo copy has drifted from what's deployed
+
+`config/sites/aemdev/query.yaml` is marked `auto-generated: true` but is **not** a faithful
+copy of the live config. The deployed index emits 8 properties the repo file doesn't define:
+
+```
+bookAuthor, bookPublishDate, bookTypeTitle, displayLabel,
+eventDateTime, eventDisplayLabel, eventDisplayTime, offDateTime
+```
+
+(Nothing goes the other way — the repo file is a strict subset.)
+
+**So running `update-index-configuration` today would silently drop 8 columns and trigger a
+full reindex.** That may well be desirable — the `book*` fields look like boilerplate
+inherited from another project — but it must be a decision, not a surprise, and not something
+discovered mid-rehearsal.
+
+#### Why the drift was invisible — and the fix
+
+The `update-*-configuration` workflows are **push-only**. `sync-site-json` reads `site.json`
+back, but nothing read back `query.yaml`, `headers.json`, `robots.txt` or `sitemap.yaml`. So
+the repo could diverge from the deployed config indefinitely with no signal, and the first
+symptom would be a push silently deleting live config.
+
+**Built:** [scripts/sync-site-configs.mjs](../../scripts/sync-site-configs.mjs) +
+[.github/workflows/sync-site-configs.yaml](../../.github/workflows/sync-site-configs.yaml) —
+the read-back counterpart, modelled on the Fastly pattern already in this repo: daily cron,
+fetch each config, write it into `config/sites/<site>/`, commit if anything changed. Drift now
+shows up as a commit instead of as a surprise.
+
+Two details worth knowing:
+
+- **The API path is not always the local filename.** `query.yaml` → `content/query.yaml` and
+  `sitemap.yaml` → `content/sitemap.yaml`, while `headers.json` and `robots.txt` map
+  straight through. The mapping lives in one table at the top of the script; keep it in step
+  with the `CONFIG_NAME` values in the `update-*` workflows.
+- **A 404 is treated as "not set" and skips the file** rather than truncating the local copy,
+  and an empty 200 body is a hard error for the same reason. A sync job that can blank your
+  versioned config is worse than no sync job.
+
+**Untested against the live API** — it needs `secrets.AUTH_TOKEN`, which isn't available
+locally. Syntax and lint are clean. First run should be a manual `workflow_dispatch` with the
+diff reviewed by hand before trusting the cron.
+
+**Action, in this order:**
+1. Run `sync-site-configs` manually. The resulting diff *is* the drift report.
+2. Decide on those 8 properties — keep (reconcile the repo file) or drop (accept the deletion
+   deliberately).
+3. Only then make index changes and push with `update-index-configuration`.
+
+Doing it in the other order pushes a stale file and the drift is gone before you've seen it.
+
+### Trap 3 — `insights` sorts on a column that doesn't exist
+
+[blocks/insights/insights.js:200](../../blocks/insights/insights.js) sorts with
+`dateValue(b.date) - dateValue(a.date)`, but the index has **no `date` column** — it has
+`publicationDate`, `eventDate` and `releaseDate`. `dateValue(undefined)` returns `0`, so every
+row ties and the sort is a silent no-op; ordering is whatever the index happens to return.
+
+There's a format inconsistency alongside it: [scripts/utils/date.js](../../scripts/utils/date.js)
+documents ISO `yyyy-mm-dd`, while the live recap row carries `eventDate: 06-26-2026`
+(MM-DD-YYYY). The ISO branch won't match, so it falls through to native `Date` parsing.
+
+**Action:** pick one — add a `date` property to the index config, or change the block to sort
+on `publicationDate`. Standardise the metadata on ISO while the corpus is still four pages;
+doing it after Batch B authors a dozen more is much worse.
+
+Also note [blocks/article-feed/article-feed.js:18](../../blocks/article-feed/article-feed.js)
+documents `index | /en/articles/query-index.json` as an authored option — that path 404s.
+Either create the index or fix the doc comment before someone authors it during Batch B.
+
+### Design decision — one index or several?
+
+Both consumers (`insights`, `article-feed`) default to `/en/query-index.json`, which already
+covers `/en/**` minus drafts, sandbox and fragments. **Recommendation: keep the single index**
+and let blocks filter by `category` / `template` / `tags`, which `insights` already supports.
+Adding per-section indices means more config surface, more reindex triggers, and more ways for
+a path to silently 404 mid-demo.
+
+What the single index does need for [S9](#s9--meetup-blocks--the-enmeetups-rename):
+
+- `status` (`announced` | `upcoming` | `recap`) — drives the lifecycle model
+- `event-type` — meetup / conference / webinar
+- a normalised `date` (Trap 3)
+- the `include` path updated when `/en/meetup-recaps/` → `/en/meetups/`
+
+**Acceptance:** one authoritative query config with the dead files removed; live config and
+repo copy diffed and reconciled; `/en/query-index.json` carries `status`, `event-type` and a
+working sort key; `insights` renders in correct date order against real content; a documented
+read-back path so the next drift is visible.

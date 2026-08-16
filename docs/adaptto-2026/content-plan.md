@@ -12,22 +12,33 @@ Verified 16 Aug 2026 against `www.aemdev.org`, `main--aemdev--aemgdc.aem.live` a
 | --- | --- | --- | --- |
 | `/` | 301 → `/en/` | 301 | fine |
 | `/en/` | 200 | 200 | home page renders |
-| `/en/meetup-recaps` | 200 | 200 | **one** recap: `aem-gdc-june-2026-eds-cdn-recap` |
+| `/en/contact` | 200 | — | exists |
+| `/en/meetup-recaps` | 200 | 200 | landing page |
+| `/en/meetup-recaps/20260625-bring-your-complicated-eds-integration-story-meetup` | 200 | — | **the only real body content on the site** |
+| `/en/meetup-recaps/aem-gdc-june-2026-eds-cdn-recap` | **404** | — | **linked from the home page — broken** |
 | `/en/articles` | **404** | 200 | authored, never published |
 | `/en/insights` | **404** | **404** | **linked from the home-page CTA — a live broken link** |
 | `/en/meetups` | 404 | 404 | doesn't exist yet — the rename target |
 | `/en/fragments/rapid-drop-articles` | — | **404** | referenced by the home hero's `rapid-fragment` row |
-| `/en/articles/query-index.json` | 404 | — | no published index |
-| `/en/meetup-recaps/query-index.json` | 404 | — | no published index |
-| `/sitemap.xml` | 200 | — | **empty** `<urlset>` |
+| **`/en/query-index.json`** | **200** | — | **works** — 4 rows, 25 columns |
+| `/en/articles/query-index.json` | 404 | — | doesn't exist; `article-feed`'s doc comment points at it |
+| `/en/sitemap.xml` | 200 | — | generated from `/en/query-index.json` |
+| `/sitemap.xml` | 200 | — | empty `<urlset>` — the real one is `/en/sitemap.xml` |
 
-So: the home page renders and links to two things that 404, no index is published anywhere,
-and there is one piece of real body content on the whole site.
+**Correction:** an earlier version of this table said no `query-index.json` was published
+anywhere. That was wrong — I checked `/query-index.json` and two per-section paths, but not
+`/en/query-index.json`, which is the one the deployed config actually produces. The indexing
+machinery works; it just has four rows in it. Details and the config traps underneath it are
+in [S11](subproducts.md#s11--query-index--config-hygiene).
+
+So: the home page renders and links to **three** things that 404, and there is one piece of
+real body content on the whole site.
 
 Two of those broken links are *useful* — `/en/insights` is exactly the kind of thing Preflight
 should catch (S7). **Do not fix `/en/insights` until after the talk.** Note it here so nobody
-"helpfully" repairs the demo's planted failure. (Do fix the hero fragment reference — a
-broken hero is just a broken hero.)
+"helpfully" repairs the demo's planted failure. Do fix the other two: the hero fragment
+reference and the stale recap link (the real recap is at the `20260625-...` slug) — a broken
+hero and a dead nav link are just breakage, and Preflight only needs one planted failure.
 
 ## The `/en/meetups/` model
 

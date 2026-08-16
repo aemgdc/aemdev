@@ -11,7 +11,7 @@ needs porting).
 
 | # | Subproduct | Tier | State | Owner | Est. | Due |
 | --- | --- | --- | --- | --- | --- | --- |
-| S1 | DA plugin registration + tools shell | — | none | Tad | 0.5d | 23 Aug |
+| S1 | DA plugin registration + tools shell | — | **3 of 6 live** | Tad | 0.5d | 23 Aug |
 | S2a | TagsServlet fix + `aemdev` tag namespace (AEM side) | 1 | broken backend | **Tad** | 1.5d | 28 Aug |
 | S2b | Tag Picker config + page tag read-back (DA plugin) | 1 | ported | **Laurel** | 2d | 5 Sep |
 | S3 | Icon Picker | 1 | none | Laurel | 2.5d | 5 Sep |
@@ -30,9 +30,21 @@ needs porting).
 
 **Tier:** foundation (nothing else demos without it). **Owner:** Tad. **Est:** 0.5d.
 
-**Status: config written, awaiting deploy verification.**
-[`tools/sidekick/config.json`](../../tools/sidekick/config.json) now exists with the three
-plugins that are already live.
+**Status: registered and live server-side. Browser check outstanding.**
+[`tools/sidekick/config.json`](../../tools/sidekick/config.json) is deployed — the resolved
+config now returns all three plugins:
+
+```
+$ curl -s https://admin.hlx.page/sidekick/aemgdc/aemdev/main/config.json
+  plugins: 3
+  - tag-picker       .../tools/tagpicker/tagpicker.html
+  - preflight        .../tools/preflight/preflight.html
+  - advanced-search  .../tools/advanced-search.html
+```
+
+What that proves: the file deployed, the config service merged it, and the plugin URLs
+resolve. What it does *not* prove: that they render and run inside DA's Library panel — that
+needs a browser and a DA login. See [Remaining work](#remaining-work).
 
 ### How registration actually works (verified 16 Aug)
 
@@ -58,7 +70,7 @@ aemdev's resolved config before this change:
  "contentSourceType":"markup"}
 ```
 
-No `plugins` key at all, which is why the DA library panel is empty today.
+No `plugins` key at all, which is why the DA library panel was empty.
 
 ### ⚠️ Use `aem.live`, not `hlx.live`
 
@@ -89,7 +101,7 @@ addition to the `plugins` array when it lands.
 so land this order before rehearsal #1: Bio Manager → Icon Picker → Tag Picker → Form Picker →
 Preflight → Advanced Search. The current three are already in their correct relative order.
 
-### Remaining work
+### Remaining work {#remaining-work}
 
 - **Verify in DA.** Open `da.live/edit#/aemgdc/aemdev/...` and confirm all three appear in the
   Library panel and open without console errors. This is the acceptance test and it can't be

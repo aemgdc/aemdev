@@ -1,6 +1,6 @@
 auto-generated: true
 indices:
-#aemdev EN CONTENT#
+  #aemdev EN CONTENT#
   aemdev-en:
     include:
       - /en/**

@@ -22,7 +22,7 @@ Demo surface: [www.aemdev.org](https://www.aemdev.org) — DA org/site `aemgdc/a
 Both verified on **16 Aug 2026**; both are on the critical path.
 
 1. **The TagsServlet is half-broken and there is no taxonomy.** `/services/tagsservlet` and
-   `/services/tagsservlet.all` on the PRD sandbox return **HTTP 500** — that's the call the
+   `/services/tagsservlet.all` on the DEV publisher return **HTTP 500** — that's the call the
    picker makes on init. Every named category, including `aemdev`, returns HTTP 200 with a
    plain-text body `ERROR: Invalid Tag Catgegory` (sic), so no namespace is authored for this
    site either. The tag picker cannot be demoed today. Split into

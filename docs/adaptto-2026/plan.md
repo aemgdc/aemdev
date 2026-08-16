@@ -70,7 +70,7 @@ meetup pages from Batch B, which is what lets Act 3 follow on without changing t
    *Point: structured people-data with a real editor, no AEM content fragment model.*
 3. **Icon Picker.** Agenda / venue / what-to-bring rows each need an icon. Browse the SVG
    library, filter, insert. *Point: 200 lines of static JS replaces an asset-picker project.*
-4. **Tag Picker.** Tag the page from the AEM taxonomy on the PRD sandbox —
+4. **Tag Picker.** Tag the page from the AEM taxonomy on the DEV instance —
    `topic|edge-delivery`, `event|meetup`, `region|emea`. Laurel's enhancement reads the tags
    already on the page and shows them as pre-selected, so this is edit, not re-enter.
    *Point: your AEM taxonomy is the source of truth; EDS pages consume it live over HTTP.*
@@ -125,7 +125,7 @@ not fantasy — *provided* Tier 3 stays Tier 3 and the freeze gates in
 
 | # | Risk | Severity | Mitigation |
 | --- | --- | --- | --- |
-| **R1** | **TagsServlet returns 500 on `/services/tagsservlet` and `.all`; every named category — including `aemdev` — returns `ERROR: Invalid Tag Catgegory`.** The picker's init call fails, and no namespace exists to pick from. Verified 16 Aug. | **Critical** | Two-track, split by owner: (a) **Tad, S2a, due 28 Aug** — fix the servlet and author the `aemdev` namespace on the PRD sandbox; (b) **Laurel, S2b** — cached-JSON fallback so a servlet outage on stage degrades to a static taxonomy rather than an empty panel. Do **both**; (b) is also the conference-wifi insurance, and the fixture (a) produces is what unblocks (b) on day one. |
+| **R1** | **TagsServlet returns 500 on `/services/tagsservlet` and `.all`; every named category — including `aemdev` — returns `ERROR: Invalid Tag Catgegory`.** The picker's init call fails, and no namespace exists to pick from. Verified 16 Aug. | **Critical** | Two-track, split by owner: (a) **Tad, S2a, due 28 Aug** — fix the servlet (root cause found: `TAGS_PATH` hard-coded to JMP's namespace) and author the `aemdev` namespace on DEV; (b) **Laurel, S2b** — cached-JSON fallback so a servlet outage on stage degrades to a static taxonomy rather than an empty panel. Do **both**; (b) is also the conference-wifi insurance, and the fixture (a) produces is what unblocks (b) on day one. |
 | **R2** | aemdev.org is effectively unpublished (see [content-plan.md](content-plan.md)). Everything downstream — Advanced Search results, Preflight link checks, the meetups index — needs real pages to act on. | **High** | Content is a first-class workstream with its own owner and its own freeze date (18 Sep), not a week-5 scramble. |
 | **R3** | Forms Cloud Service form-list API, auth and CORS from a DA-hosted plugin are unproven. | **High** | Time-boxed spike in week 1 (by 23 Aug). If the live API can't be reached from the plugin, fall back to a published forms manifest sheet and say so honestly on the slide. |
 | **R4** | Live demo over conference wifi, against AEM publish + DA + Forms CS + Slack. | **High** | Full backup screen recording by 23 Sep. Local fixture mode for every plugin (a `?fixtures=1` flag reading committed JSON). Phone hotspot as backup uplink. Rehearse the *recording-fallback* switch itself. |

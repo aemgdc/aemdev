@@ -308,22 +308,34 @@ Two things the reference also demonstrates, both worth knowing before authoring:
   and `ko_kr`. The aemdev picker README already documents a normalisation map for exactly this.
   Expect to normalise, and expect fallback-to-English to be the common path, not the edge case.
 
-#### ⚠️ Don't resolve labels from AEM at render time
+#### Labels are synced, not fetched at render time — settled
 
-Fetching the label map from AEM publish on every page view puts an AEM round-trip in front of
-every reader — in a talk arguing EDS is fast, on a site whose own tag rendering depends on an
-AEM instance being up. That is the opposite of the point.
+**Agreed (Tad).** The client pulls translated labels from AEM directly only in rare cases; the
+normal path is a synced artefact.
 
-**Recommendation: sync the label map into the content bus** as `/en/tags-<lang>.json` (or one
-file keyed by language), refreshed by a scheduled job — the same pattern as
+Fetching the label map from AEM publish on every page view would put an AEM round-trip in front
+of every reader — in a talk arguing EDS is fast, on a site whose own tag rendering would then
+depend on an AEM instance being up.
+
+**Instead: sync the label map into the content bus** as `/en/tags-<lang>.json` (or one file
+keyed by language), refreshed by a scheduled job — the same pattern as
 [sync-site-configs](../../.github/workflows/sync-site-configs.yaml), which is already working
-and already surfaced a real problem within a day. Then label resolution is a local fetch of a
-cached 6KB JSON, the AEM dependency is build-time rather than request-time, and the tag picker's
-[cached fallback](subproducts.md#s2b--tag-picker-configuration--page-tag-read-back) can reuse
-the same artefact.
+and surfaced a real problem within a day of being built. Label resolution becomes a local fetch
+of a cached ~6KB JSON, the AEM dependency moves to build time, and the tag picker's
+[cached fallback](subproducts.md#s2b--tag-picker-configuration--page-tag-read-back) reuses the
+same artefact rather than maintaining a second one.
 
-This also means an AEM outage during the talk degrades label rendering to *nothing visible*
-rather than to a hang.
+An AEM outage during the talk then degrades label rendering to nothing visible, rather than to
+a hang.
+
+**Note the dependency:** the sync source is `/services/tagsservlet.{lang}`, which is one of the
+three endpoints currently returning **HTTP 500**
+([S2a root cause](subproducts.md#-root-cause-found--its-one-hard-coded-line)). The label-map
+sync cannot be built until that fix lands.
+
+This is a third artefact following the same shape — Fastly config, site config, and now tag
+labels. Worth factoring the "fetch, write, commit if changed" scaffolding once rather than a
+third time.
 
 ### Speakers: bio slugs
 

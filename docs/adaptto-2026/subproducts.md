@@ -12,7 +12,7 @@ needs porting).
 | # | Subproduct | Tier | State | Owner | Est. | Due |
 | --- | --- | --- | --- | --- | --- | --- |
 | S1 | DA plugin registration + tools shell | — | **3 of 6 live** | Tad | 0.5d | 23 Aug |
-| S2a | TagsServlet fix + `aemdev` tag namespace (AEM side) | 1 | broken backend | **Tad** | 1.5d | 28 Aug |
+| S2a | TagsServlet fix + `aemdev` tag namespace (AEM side) | 1 | **root cause found** | **Tad** | 1d | 28 Aug |
 | S2b | Tag Picker config + page tag read-back (DA plugin) | 1 | ported | **Laurel** | 2d | 5 Sep |
 | S3 | Icon Picker | 1 | none | Laurel | 2.5d | 5 Sep |
 | S4 | Bio Manager | 1 | external | Tad | 2d | 12 Sep |
@@ -132,53 +132,116 @@ start before S2a lands.
 browse, breadcrumb, add-to-list, batch insert, pipe-delimited `category|subcategory|tag`
 output, 9 languages.
 
-**The backend is broken and there is no taxonomy.** Verified 16 Aug 2026 against the PRD
-sandbox:
+### Environments — DEV, not PRD
+
+**Design decision (Tad):** aemdev.org points DA at the **DEV** publisher, not PRD. This is a
+demo site, and pointing at DEV keeps the whole loop in one environment.
+
+| Role | Host |
+| --- | --- |
+| Author (tag authoring) | `https://author-p121227-e1183758.adobeaemcloud.com/ui#/aem/` |
+| Publish (what the picker reads) | `https://publish-p121227-e1183758.adobeaemcloud.com` |
+| Deploys from | `develop` branch of `~/git/arbory-digital-inc/arbory-aemaacs` |
+
+Same program (`p121227`), different environment — PRD was `e1306133`, DEV is `e1183758`. Every
+endpoint in this doc that used to say PRD now means DEV.
+
+**Workflow:** feature branch → PR into `develop` → deploys to DEV AEMaaCS. Authoring the tags
+themselves can be done directly against author via the AEM MCP, no deploy needed.
+
+### The backend is broken and there is no taxonomy
+
+Verified 16 Aug 2026 against **DEV** publish (PRD behaves identically):
 
 ```
-GET /services/tagsservlet           → HTTP 500
-GET /services/tagsservlet.all       → HTTP 500
-GET /services/tagsservlet.aemdev    → HTTP 200, body: "ERROR: Invalid Tag Catgegory"
-GET /services/tagsservlet.topic     → HTTP 200, body: "ERROR: Invalid Tag Catgegory"
-GET /services/tagsservlet.industry  → HTTP 200, body: "ERROR: Invalid Tag Catgegory"
-GET /   (publish root)              → HTTP 200   (the instance itself is healthy)
+GET /services/tagsservlet             → HTTP 500
+GET /services/tagsservlet.all         → HTTP 500
+GET /services/tagsservlet.de|.en|.es  → HTTP 500      ← language selectors also fail
+GET /services/tagsservlet.aemdev      → HTTP 200, "ERROR: Invalid Tag Catgegory"
+GET /services/tagsservlet.topic|foo   → HTTP 200, "ERROR: Invalid Tag Name"
+GET /   (publish root)                → HTTP 200      (the instance itself is healthy)
 ```
 
-Two separate problems, and they map cleanly onto the split:
+### 🔎 Root cause found — it's one hard-coded line
 
-1. The full-tree endpoints 500. That is the call the picker makes on init, so the picker
-   renders nothing today.
-2. *Every* named category — including `aemdev` — returns the invalid-category error, so there
-   is no namespace authored for this site at all. Nothing to pick even once the 500 is fixed.
+No log-diving needed. [`TagsServlet.java:46`](https://github.com/arbory-digital-inc/arbory-aemaacs/blob/develop/core/src/main/java/com/arborydigital/core/servlets/TagsServlet.java)
+on `develop`:
 
-Also note the servlet returns **HTTP 200 with an error body**, so the client cannot currently
-distinguish "no such category" from success. Fixing that is part of S2a.
+```java
+private static final String TAGS_PATH = "/content/cq:tags/jmp";
+```
+
+**The servlet is hard-coded to JMP's tag namespace.** It was lifted from JMP's implementation —
+the OSGi component still declares `Constants.SERVICE_VENDOR + "=JMP"`. There is no
+`/content/cq:tags/jmp` node on the Arbory instance, so `resolver.getResource(TAGS_PATH)` returns
+`null`.
+
+Three methods then call `.adaptTo(Node.class)` on that null without a guard:
+
+| Method | Line | Endpoint it serves |
+| --- | --- | --- |
+| `getAllTags` | 194–196 | `/services/tagsservlet` — **the picker's init call** |
+| `getAllTagCategories` | 200–201 | `.all` |
+| `getTagsByLanguage` | 291–292 | `.{lang}` — **the label map** |
+
+Each NPEs. The `catch` block only handles `RepositoryException`, so the NPE escapes the servlet
+and Sling turns it into a 500.
+
+By contrast `getTagsByCategory` (215) and `getTagByName` (233) *do* null-check — which is
+exactly why those return HTTP 200 with an error string instead of failing. That asymmetry
+explains the whole observed behaviour, and it means the 500 and the misleading-200 are two
+separate defects in the same file.
+
+Note the third row: **`.{lang}` is the label-map endpoint** the whole translation design depends
+on. It is currently a 500, so fixing this is not optional polish.
+
+### The fix
+
+Small, and all in one file:
+
+1. **`TAGS_PATH` → `/content/cq:tags/aemdev`.** Better: make it an OSGi config property so the
+   namespace isn't a recompile. It is the reason this servlet isn't reusable, and the talk is
+   partly about reusable authoring tooling.
+2. **Null-guard the three lookups** — return 404 with a JSON error body, not an NPE.
+3. **Fix the status-code contract** — invalid category should be 404 + JSON, not 200 +
+   plain text. Laurel's fallback logic keys off this.
+4. **Fix the typo** — `Invalid Tag Catgegory`, twice. It ships in the response body.
+5. **`SERVICE_VENDOR`** → Arbory, while you're in there.
+
+Compare against the healthy reference throughout: `https://www.jmp.com/services/tagsservlet`
+is the same servlet working correctly, and its response shapes are documented in
+[content-model.md](content-model.md#label-translation--the-mechanism-already-exists).
 
 ---
 
 ### S2a — TagsServlet fix + `aemdev` tag namespace
 
-**Tier:** 1. **Owner:** Tad. **Est:** 1.5d. **Due:** Fri 28 Aug (matches the week-0 spike gate
-in [schedule.md](schedule.md#freeze-gates)). **Repo:** `~/git/arbory-digital-inc/arbory-aemaacs`,
-Arbory Digital PRD sandbox author → publish.
+**Tier:** 1. **Owner:** Tad. **Est:** 1d (down from 1.5 — the root cause is found).
+**Due:** Fri 28 Aug. **Repo:** `~/git/arbory-digital-inc/arbory-aemaacs`, **DEV** author →
+publish.
 
-1. **Root-cause the 500** on `/services/tagsservlet` and `.all`. Reproduce in the sandbox
-   logs first — do not guess from `TagsServlet.java`. Prime suspect is the full-tree walk
-   hitting a node type or a property it doesn't expect, or a permission boundary on
-   `/content/cq:tags` for the anonymous publish user.
-2. **Create the `aemdev` tag namespace** on the Arbory author at
-   `/content/cq:tags/aemdev`, with the category/tag structure in
-   [content-plan.md](content-plan.md#aem-taxonomy--the-aemdev-namespace). Namespacing it means the demo taxonomy is
-   isolated from whatever else lives in that sandbox, and the picker can be scoped to
-   `.aemdev` rather than pulling the whole repository.
-3. **Add German (`de`) titles** on at least the `topic` tags. The servlet already supports
-   multi-language with English fallback; it is a free Berlin moment.
-4. **Fix the status-code contract.** Invalid category → 404 (or 400) with a JSON body, not
-   HTTP 200 with a plain-text string. Laurel's fallback logic in S2b keys off this.
-5. **Activate to publish** and re-verify the CDN rule allowing `/services/tagsservlet`
-   through — the picker reads from publish, not author.
-6. **Hand off the fixture** (see contract below) — commit a real captured response to
-   `tools/tagpicker/fixtures/tags.json` so S2b is never blocked on sandbox availability.
+The two halves are independent and can go in either order — the namespace is authored
+through the UI/MCP and needs no deploy; the servlet fix needs a PR.
+
+**Servlet (feature branch → PR into `develop` → deploys to DEV):**
+
+1. Apply [the fix above](#the-fix) — `TAGS_PATH`, the three null guards, the status-code
+   contract, the typo. Root-causing is done; this is a patch, not an investigation.
+2. Verify against DEV publish, from outside the network.
+3. Re-check the CDN rule allowing `/services/tagsservlet` through — the picker reads from
+   publish, not author.
+
+**Namespace (directly against DEV author, via the AEM MCP or the UI):**
+
+4. **Create `/content/cq:tags/aemdev`** with `topic` / `category` / `region` and the tags in
+   [content-model.md](content-model.md#what-the-tag-namespace-must-now-contain). Note this
+   supersedes the older `event`/`format` list.
+5. **Add German (`de`) titles** on at least `topic` and `category` — this is what makes the
+   `.de` label map worth demoing, and `.{lang}` is one of the endpoints the fix repairs.
+6. **Activate to publish.**
+7. **Hand off the fixture** — capture a real response to
+   `tools/tagpicker/fixtures/tags.json` and commit it. That unblocks S2b regardless of
+   environment availability.
 
 **Acceptance:**
 - `GET /services/tagsservlet.aemdev` returns HTTP 200 with the full `aemdev` hierarchy as JSON.
@@ -195,7 +258,7 @@ Arbory Digital PRD sandbox author → publish.
 fixture (not the live servlet — start against the fixture on day one).
 
 **1. Configure the picker for `aemdev`.**
-- Point `tagURL` at the PRD sandbox and scope the request to the `aemdev` namespace.
+- Point `tagURL` at **DEV publish** (`publish-p121227-e1183758`) and scope to the `aemdev` namespace.
 - Decide and document the on-page output format (see the matching trap below).
 - Register in `tools/sidekick/config.json` per [S1](#s1--da-plugin-registration--tools-shell).
 
@@ -244,7 +307,7 @@ after **28 Aug**.
 
 | | |
 | --- | --- |
-| **Endpoint** | `GET https://publish-p121227-e1306133.adobeaemcloud.com/services/tagsservlet.aemdev[.{lang}]` |
+| **Endpoint** | `GET https://publish-p121227-e1183758.adobeaemcloud.com/services/tagsservlet.aemdev[.{lang}]` — **DEV**, not PRD |
 | **Success** | HTTP 200, JSON array of nodes: `{ "jcr:title", "jcr:title.{lang}", "path", "children": [] }` |
 | **Invalid category** | HTTP 404, JSON error body |
 | **Namespace root** | `/content/cq:tags/aemdev` |
@@ -309,7 +372,7 @@ const COL_EMAIL = 'Email'; COL_PATH = 'DA Fragment URL'; COL_NAME = 'Name'; COL_
 **Work:**
 1. Copy to `tools/bio-manager/`, hoist the constants above into a single `CONFIG` object at
    the top of the file, retarget to `aemgdc/aemdev` paths.
-2. Point `DAM_DEFAULT_PATH` at a DAM folder on the PRD sandbox that actually has headshots
+2. Point `DAM_DEFAULT_PATH` at a DAM folder on **DEV** that actually has headshots
    in it — the Asset Selector opening on an empty folder is a bad stage moment.
 3. Extend the schema for the demo's needs: `Role`, `Company`, `Talk Title`, `Social`.
    Podcast-guest fields from the Arbory version can stay if harmless, but don't demo them.
@@ -415,7 +478,7 @@ collapsible category results with success/info/warn/error badges. Solid foundati
 2. **Rules as content, not code.** Drive them from a config sheet in DA so the slide can say
    "your governance team edits this, not your developers." Strong beat.
 3. **Publish hook.** On publish, fire a webhook → Slack post announcing the new event page,
-   and an AEM workflow kickoff on the PRD sandbox. Implement in `workers/` (this repo already
+   and an AEM workflow kickoff on **DEV**. Implement in `workers/` (this repo already
    has a `workers/` directory and Fastly config under `config/fastly/`) or as a small
    listener. **Show the notification arrive on screen** — an unobserved webhook is not a demo.
 4. Blocking vs. advisory: demo it as advisory-with-teeth (publish allowed, warnings logged).

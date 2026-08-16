@@ -221,7 +221,7 @@ hasn't offered one; fill any remainder with clearly-fictional entries. The Bio M
 row's needs (calendar, clock, map-pin, ticket, coffee, mic, laptop, beer) plus enough breadth
 that search is meaningful. A 12-icon picker doesn't demonstrate a picker.
 
-**Headshots in DAM** — 8–10 images in a dedicated folder on the PRD sandbox for the Asset
+**Headshots in DAM** — 8–10 images in a dedicated folder on **DEV** for the Asset
 Selector step. Point `DAM_DEFAULT_PATH` at it.
 
 ### Batch C — Backing services (due 12 Sep)
@@ -232,7 +232,7 @@ Selector step. Point `DAM_DEFAULT_PATH` at it.
 — earlier than the rest of Batch C, because Laurel's fixture and the picker's scoping both
 key off it.
 
-Authored on the Arbory Digital PRD sandbox author, under a dedicated namespace at
+Authored on the **DEV** author (`author-p121227-e1183758`), under a dedicated namespace at
 **`/content/cq:tags/aemdev`**, then activated to publish. Namespacing keeps the demo taxonomy
 isolated from anything else in that sandbox and lets the picker request `.aemdev` instead of
 walking the whole tag repository.

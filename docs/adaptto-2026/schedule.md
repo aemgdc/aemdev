@@ -27,7 +27,7 @@ the rest of the plan.
 | | Item | Owner |
 | --- | --- | --- |
 | ▢ | **Confirm the exact session slot** with adaptTo() organizers; update [plan.md](plan.md) | Tad |
-| ▢ | **Spike: TagsServlet 500.** Reproduce in sandbox logs, identify root cause (R1) | Tad |
+| ▢ | ~~**Spike: TagsServlet 500**~~ — **done**, root cause is `TAGS_PATH` hard-coded to `/content/cq:tags/jmp` ([S2a](subproducts.md#-root-cause-found--its-one-hard-coded-line)) | — |
 | ▢ | **Spike: Forms CS.** Form-list endpoint, auth, CORS from an `aem.live` origin (R3) | Tad |
 | ▢ | S1 — DA plugin registration + `tools/shared/` bootstrap | Tad |
 | ▢ | Verify S2b tagpicker and S5 advanced-search open at all under `aemgdc/aemdev` | Laurel |
@@ -46,7 +46,7 @@ plan — decide it then, not in September.
 
 | | Item | Owner |
 | --- | --- | --- |
-| ▢ | **S2a** — TagsServlet fix deployed to PRD sandbox; status-code contract corrected | Tad |
+| ▢ | **S2a** — TagsServlet fix (feature branch → PR into `develop`) deployed to **DEV**; `TAGS_PATH`, null guards, status-code contract | Tad |
 | ▢ | **S2a** — `aemdev` tag namespace authored at `/content/cq:tags/aemdev` (`topic`/`category`/`region` + `de` titles), activated to publish. Tags are [canonical IDs](content-model.md#tags-canonical-ids); compare against the healthy reference at `jmp.com/services/tagsservlet` | Tad |
 | ▢ | **S2a** — real response captured to `tools/tagpicker/fixtures/tags.json` and committed — this is the handoff to Laurel | Tad |
 | ▢ | S9 — `meetups` index in `config/sites/aemdev/query.yaml` (adds `status`); `meetup-hero` block started | Tad |

@@ -26,17 +26,34 @@ the rest of the plan.
 
 | | Item | Owner |
 | --- | --- | --- |
-| ▢ | **Confirm the exact session slot** with adaptTo() organizers; update [plan.md](plan.md) | Tad |
+| ▢ | ~~**Confirm the exact session slot**~~ — **done: Tuesday 29 Sep** | — |
 | ▢ | ~~**Spike: TagsServlet 500**~~ — **done**, root cause is `TAGS_PATH` hard-coded to `/content/cq:tags/jmp` ([S2a](subproducts.md#-root-cause-found--its-one-hard-coded-line)) | — |
 | ▢ | **Spike: Forms CS.** Form-list endpoint, auth, CORS from an `aem.live` origin (R3) | Tad |
 | ▢ | S1 — DA plugin registration + `tools/shared/` bootstrap | Tad |
 | ▢ | Verify S2b tagpicker and S5 advanced-search open at all under `aemgdc/aemdev` | Laurel |
 | ▢ | **Agree the [S2 interface contract](subproducts.md#s2-interface-contract)** — endpoint shape, namespace root, fixture path. Locked 28 Aug. | Both |
 | ▢ | **Confirm the `/en/meetups/` decision**, then do the rename + redirect — blocks all Batch B authoring ([content-plan.md](content-plan.md#the-enmeetups-model)) | Tad |
-| ▢ | **Enumerate the YouTube list** (B1) — the page count is currently unknown and it drives whether we reach 12 | Tad |
-| ▢ | Chase DC and Munich meetup dates; `announced` with no date is an acceptable outcome | Tad |
+| ▢ | ~~**Enumerate the YouTube list** (B1)~~ — **done**: 5 videos supplied, pages built. Corpus is at **14**, inside the 12–16 target | — |
+| ▢ | ~~Chase DC and Munich meetup dates~~ — **done: DC 27 Aug, Munich 2 Oct** | — |
 | ▢ | Demo script v0 — the beat sheet, no polish | Both |
 | ▢ | Slide skeleton — section titles and the argument only ([slides.md](slides.md)) | Tad |
+
+> ### ⚠️ Schedule collision — the DC meetup
+>
+> Tad speaks at the **AEM GDC Meetup in Washington DC on Thu 27 Aug** on Adobe's new
+> Experience Workspace ("DA 2.0"), subject locked. That is **11 days from now** and it lands
+> the day before the **Fri 28 Aug** gate that carries S2a, S11 and the tier decisions.
+>
+> Two consequences worth deciding on now rather than on the 27th:
+>
+> - **Week 1 has less Tad-time than this plan assumes.** Either pull the 28 Aug gate forward
+>   to Tue 25 Aug, or accept it slipping into the following week and compress week 2.
+> - **DA 2.0 may change the talk.** If Experience Workspace materially changes the DA plugin
+>   surface, some of what we demo could be dated by 29 Sep — and the DC prep is where that
+>   will become obvious. Worth a deliberate read after DC, while there is still time to adjust
+>   the framing.
+>
+> The DC talk is also free reconnaissance: it is the same audience, four weeks earlier.
 
 **End-of-week checkpoint (Fri 21 Aug):** do we know why the servlet 500s, and can a browser
 plugin reach Forms CS? If either answer is "no", the fallback path for that item becomes the
@@ -113,7 +130,7 @@ what the 16th is for.
 | ▢ | **Fri 25 Sep — SLIDES FINAL.** PDF export + offline copy + USB stick | Tad |
 | ▢ | Travel kit assembled (below) | Both |
 | ▢ | Re-verify all plugins against live DA — SDK drift check (R5) | Laurel |
-| ▢ | Travel to Berlin (Sun 27) | Both |
+| ▢ | Travel to Berlin (Sun 27 / Mon 28) — **talk is Tue 29**, so there is a day of buffer on arrival | Both |
 
 ## Conference — Mon 28 – Wed 30 Sep
 

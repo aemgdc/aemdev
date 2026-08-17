@@ -1,7 +1,7 @@
 # adaptTo() 2026 — "Spiritually-Succeeding AEM: Advanced Author Customization in DA"
 
 Planning workspace for the 30-minute session at [adaptTo() 2026](https://adapt.to/2026/schedule/spiritually-succeeding-aem-advanced-author-customization-in-da),
-**Berlin, 28–30 September 2026** (exact slot TBC).
+**Berlin — Tuesday 29 September 2026** (conference runs 28–30 Sep).
 
 Presenters: Tad Reeves, Laurel Timko.
 Demo surface: [www.aemdev.org](https://www.aemdev.org) — DA org/site `aemgdc/aemdev`, code in this repo.

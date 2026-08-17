@@ -2,7 +2,7 @@
 
 ## The session
 
-- **Slot:** 30 minutes, adaptTo() 2026, Berlin, 28–30 Sep 2026 (exact day/time TBC — confirm with organizers and update this line).
+- **Slot:** 30 minutes, adaptTo() 2026, Berlin. **Tuesday 29 September 2026** — confirmed. (Conference runs 28–30 Sep.)
 - **Thesis:** DA's authoring surface is not a fixed product. It is a plugin host. Anything
   your authors need — taxonomy, iconography, structured people data, forms, governance —
   can be built as a small static app and dropped into the authoring experience, in days,

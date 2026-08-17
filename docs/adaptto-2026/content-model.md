@@ -451,46 +451,70 @@ on pages are IDs or labels, and therefore what the picker writes.
 
 ## 4. Corpus status — 16 Aug 2026
 
-`/en/meetups/` now holds **8 published pages**, all carrying `status`, ISO dates and canonical
-`aemdev:` tags.
+`/en/meetups/` holds **14 published pages**, inside the 12–16 target. All carry `status`, ISO
+dates and canonical `aemdev:` tags, and all appear in `/en/query-index.json`.
 
-| Status | Event date | Slug | Suggested tags (review these) |
+### Upcoming and announced — from Tad's confirmed schedule
+
+| Status | Event date | Slug | Note |
 | --- | --- | --- | --- |
-| `recap` | 2026-06-26 | `20260625-bring-your-complicated-eds-integration-story-meetup` | topic/edge-delivery, topic/document-authoring, category/meetup, region/virtual |
-| `recap` | 2026-06-25 | `aem-gdc-june-2026-eds-cdn-recap` | topic/edge-delivery, topic/cdn, topic/document-authoring, topic/authoring-ux, category/meetup, region/north-america |
-| `recap` | **unknown** | `sites-optimizer-eds-localization-atlanta` | topic/localization, topic/document-authoring, topic/edge-delivery, topic/performance, category/meetup, region/north-america |
-| `recap` | **unknown** | `aem-65-lts-vs-eds-vs-aemaacs-columbus` | topic/6-5-lts, topic/aemaacs, topic/edge-delivery, topic/migration, category/meetup, region/north-america |
-| `upcoming` | 2026-09-28 | `adaptto-2026-berlin` | category/conference, region/emea, topic/document-authoring, topic/authoring-ux |
-| `upcoming` | 2026-10-23 | `adobe-developers-live-san-jose-2026` | category/conference, region/north-america, topic/edge-delivery |
-| `announced` | — | `aem-meetup-washington-dc` | category/meetup, region/north-america |
-| `announced` | — | `aem-meetup-munich` | category/meetup, region/emea |
+| `upcoming` | 2026-08-27 | `aem-meetup-washington-dc` | Adobe's new Experience Workspace / "DA 2.0" — subject locked |
+| `upcoming` | 2026-09-28 | `adaptto-2026-berlin` | **our talk is Tue 29 Sep** |
+| `upcoming` | 2026-10-02 | `aem-meetup-munich` | adapted adaptTo() themes; topic TBC |
+| `upcoming` | 2026-10-23 | `adobe-developers-live-san-jose-2026` | developer architecture focus; topic TBC |
+| `announced` | — | `aem-meetup-miami` | tentative Nov 2026; Tad Reeves + Rick Reich (Better Digital) |
 
-Tags are **notional** — assigned from what each session actually covered, but they are a
-starting point for review, not a decision.
+### Recaps
+
+| Event date | Slug | Source |
+| --- | --- | --- |
+| 2026-06-26 | `20260625-bring-your-complicated-eds-integration-story-meetup` | pre-existing, migrated |
+| 2026-06-25 | `aem-gdc-june-2026-eds-cdn-recap` | Arbory blog — Cary NC |
+| — | `sites-optimizer-eds-localization-atlanta` | Arbory blog — Atlanta |
+| — | `aem-65-lts-vs-eds-vs-aemaacs-columbus` | Arbory blog — Columbus |
+| 2025-03-26 | `aemug-midwest-summit-2025-insights` | YouTube `jl4QcE7MSxE` |
+| — | `post-adaptto-2025-meetup` | YouTube `LcaELGePm70` |
+| — | `champions-office-hours-sites-optimizer-agentic-ai` | YouTube `K8OMHxffUK8` |
+| — | `champions-office-hours-2025-wrap-up` | YouTube `q4bzAhUxOO8` |
+| — | `aem-frontend-showdown-classic-jamstack-eds` | YouTube `WpmKqMaqdb0` |
+
+Tags are **notional** — assigned from what each session actually covered. Review them; they are
+a starting point, not a decision.
+
+### On the missing event dates
+
+Seven recaps have no `event-date`. That is deliberate, not an oversight: for the YouTube-derived
+pages the only hard date is the video's *publish* date, which sits in `publication-date`. A
+recorded meetup is usually uploaded days after it happened, so deriving one from the other would
+be inventing data. `aemug-midwest-summit-2025-insights` has a real event date only because the
+video title states it.
+
+They can be backfilled from the AEM AUG event listings. Until then, a `recap` with no
+`event-date` is a good candidate for a Preflight **warning** — which is a better demo than a
+contrived rule, because it is a real gap in real content.
 
 ### Taxonomy gaps this exercise found
 
-Mapping real content onto the taxonomy surfaced two missing topics, both now added in
+Mapping real content onto the taxonomy surfaced three missing topics, all now in
 `arbory-aemaacs/scripts/aemdev-taxonomy.json`:
 
-- **`topic/localization`** — the Atlanta session is half about translation on DA, and there
-  was nowhere to put it. Also needed by the S8 translation-tracker beat.
+- **`topic/localization`** — the Atlanta session is half about translation on DA.
 - **`topic/governance`** — nothing covered preflight, publishing rules or content ops.
+- **`topic/ai`** ("AI & Agentic AEM" / "KI & Agentic AEM") — **two of the five** YouTube
+  sessions are about Sites Optimizer and agentic AI, and there was nowhere to put them.
 
-This is the argument for authoring content before finalising a taxonomy rather than after.
+The taxonomy is now 13 topics / 7 categories / 4 regions = 27 label-map entries. Every one of
+those gaps came from authoring content, not from planning the taxonomy — which is the argument
+for doing them in this order.
 
 ### Still open
 
-- **Two recap dates are unknown** (Atlanta, Columbus). Both pages have `event-date` empty
-  rather than guessed. A `recap` with no event date should arguably be a Preflight warning.
-- **B1 is not started.** The YouTube-derived recaps still need the channel enumerated — that
-  remains the gate on reaching 12–16 pages. Currently at 8.
-- **`speakers` values are bio slugs that have no fragments yet** (`tad-reeves`,
-  `laurel-timko`, `wilson-faure`). They resolve to nothing until S4's Bio Manager creates
-  them, which is the intended demo payoff — but the meetup block must degrade visibly, not
-  silently, until then.
+- **`speakers` slugs have no bio fragments yet** — `tad-reeves`, `laurel-timko`,
+  `wilson-faure`, `rick-reich`. They resolve to nothing until S4's Bio Manager creates them,
+  which is the intended demo payoff; the meetup block must degrade visibly, not silently.
 - **`/en/articles/aem-eds-content-modeling-deep-dive`** is authored, unpublished, and linked
   with a trailing slash. Two defects, one page.
-- **The stale index columns persist.** Reindexing only the meetup pages left the 8 orphaned
-  columns in place, because the index emits the union across all pages. A full reindex would
-  clear them.
+- **The stale index columns persist.** A partial reindex does not clear them, since the index
+  emits the union across all pages.
+- **Old `/en/meetup-recaps/` content is still in place**, shadowed by redirects. Deleting it is
+  a separate deliberate step.

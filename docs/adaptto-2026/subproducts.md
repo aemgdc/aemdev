@@ -12,7 +12,7 @@ needs porting).
 | # | Subproduct | Tier | State | Owner | Est. | Due |
 | --- | --- | --- | --- | --- | --- | --- |
 | S1 | DA plugin registration + tools shell | — | **3 of 6 live** | Tad | 0.5d | 23 Aug |
-| S2a | TagsServlet fix + `aemdev` tag namespace (AEM side) | 1 | **root cause found** | **Tad** | 1d | 28 Aug |
+| S2a | TagsServlet fix + `aemdev` tag namespace (AEM side) | 1 | **servlet on DEV; namespace blocked** | **Tad** | 1d | 28 Aug |
 | S2b | Tag Picker config + page tag read-back (DA plugin) | 1 | ported | **Laurel** | 2d | 5 Sep |
 | S3 | Icon Picker | 1 | none | Laurel | 2.5d | 5 Sep |
 | S4 | Bio Manager | 1 | external | Tad | 2d | 12 Sep |
@@ -242,6 +242,55 @@ through the UI/MCP and needs no deploy; the servlet fix needs a PR.
 7. **Hand off the fixture** — capture a real response to
    `tools/tagpicker/fixtures/tags.json` and commit it. That unblocks S2b regardless of
    environment availability.
+
+### Deploy status — 16 Aug 2026
+
+**PR [#21](https://github.com/arbory-digital-inc/arbory-aemaacs/pull/21) merged; DEV deploy landed (~13 min).**
+The new contract is live on DEV publish:
+
+| Request | Before | Now |
+| --- | --- | --- |
+| `.nope` | 200 + `ERROR: Invalid Tag Catgegory` | **404** + `{"error":"Invalid tag category: nope"}` |
+| `.topic\|foo` | 200 + `ERROR: Invalid Tag Name` | **404** + `{"error":"Invalid tag name: topic\|foo"}` |
+| `.a.b.c` | 200 + `Error: Invalid Request` | **400** + `{"error":"Invalid request"}` |
+| root / `.all` / `.{lang}` | 500 (NPE) | **500, correctly** — the namespace isn't authored on DEV yet |
+
+Those last three are the *expected* state, not a regression: `requireNamespaceRoot` now fails
+cleanly because `/content/cq:tags/aemdev` doesn't exist on DEV. Confirmed by reading the tag
+root — DEV has `workflow`, `experience-fragments`, `default`, `properties` and **no `jmp`
+namespace either**, which is exactly why the old hard-coded path 500'd everywhere.
+
+> **AEMaaCS replaces 5xx response bodies.** The 404 and 400 JSON bodies pass through the CDN
+> intact, but a 500 is served as Adobe's branded HTML error page — so the "Configured tag
+> namespace root not found: /content/cq:tags/aemdev" message is **invisible on publish**. It is
+> still in the logs and on author.
+>
+> No functional impact (S2b's fallback keys off non-2xx), but don't debug a 500 from the publish
+> response body — there won't be one. Not a reason to downgrade the status to 4xx: it is
+> genuinely a server misconfiguration, and lying about the code to get a readable body would be
+> worse.
+
+### ⛔ Blocked: authoring the namespace on DEV
+
+The taxonomy is authored and verified **locally** (27 tags, German labels, all endpoints green),
+but **not yet on DEV**.
+
+The AEM MCP can read DEV author but is **path-restricted for writes** to `/content/cq:tags`:
+
+```
+403 — "The MCP Server is restricted and isn't able to operate on this path."
+```
+
+So this last step needs a human with a token. From `arbory-aemaacs`:
+
+```bash
+AEM_URL=https://author-p121227-e1183758.adobeaemcloud.com \
+AEM_AUTH="Bearer $DEV_AUTHOR_TOKEN" \
+./scripts/create-aemdev-tags.sh
+```
+
+Then activate to publish and re-check `/services/tagsservlet` — root, `.all` and `.de` should go
+200, and `.de` should return a 27-entry label map.
 
 **Acceptance:**
 - `GET /services/tagsservlet.aemdev` returns HTTP 200 with the full `aemdev` hierarchy as JSON.

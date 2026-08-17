@@ -579,34 +579,73 @@ Verified against the live index: the filter selects **9 real recaps** in correct
 The home page's stale `/en/meetup-recaps/` CTA was repointed to `/en/meetups` at source, so the
 page no longer relies on a 301.
 
-### Open question: a `recap` tag as well as `status: recap`?
+### `recap` tag — decided: `status` only
 
-The ask was for a `recap` **tag in the taxonomy**, "so that we can differentiate them from
-upcoming events". That differentiation already exists — `status` is an index column, populated
-on all 14 pages, and it is what the feed now filters on. No taxonomy change was needed.
+Confirmed: build on `status`, no `recap` tag. One source of truth. `status` is an index column,
+populated on every page, and it is what both feeds filter on.
 
-Adding a `recap` tag *in addition* would put one fact in two places, which is the same argument
-that removed `event-type`: a page moving `upcoming → recap` would need both updated, and
-whichever is forgotten becomes wrong. `status` also changes over a page's life, which is why it
-was kept out of the taxonomy in the first place.
+### `insights` — all articles and meetups, upcoming flagged
 
-**So this is a genuine fork, not an oversight:**
+The home page's `insights` block now lists **everything** — articles and meetups — with future
+events badged **UPCOMING EVENT**, given a persistent accent border, and a run-in of
+"Event details →" rather than "Read more →".
 
-- *Keep `status` only* (current state) — one source of truth, already working.
-- *Add the tag too* — better if authors classify exclusively through the tag picker and should
-  never touch a raw metadata field. Roughly 10 minutes: one taxonomy entry, a re-run of the
-  authoring script, and 9 pages retagged.
+**It was silently broken before this.** The filter read:
 
-Worth deciding before the corpus grows past 14.
+```js
+(!a.template || a.template === 'blog')
+```
+
+which admitted every page with *no* template — `/en/`, `/en/contact`, the section landings —
+and excluded all 14 meetup pages, which are `template: meetup`. The home page feed was listing
+landing pages and none of the actual content.
+
+Templates are now a configurable list (`blog, meetup, article`) and a template is **required**;
+requiring one is exactly what keeps landing pages out, since they carry none.
+
+**Sort: upcoming first (soonest first), then everything by recency.** An event that hasn't
+happened is the actionable item on the page — burying next month's meetup under last year's
+recap reads as an archive. An `announced` event with no date (Miami) sorts last within the
+upcoming group rather than jumping to the front.
+
+Live result: **15 cards** — 5 upcoming, then 10 recaps and articles in date order.
+
+### Ordering the corpus cleanup
+
+Validating the feeds surfaced two things the corpus needed, both now done:
+
+- **The stale `/en/meetup-recaps/` pages were still in the index**, and the recap carried
+  `template: blog`, so it passed the filter and rendered **twice**. Redirects shadow a URL for
+  visitors but not for the index. Both stale entries are now unpublished from preview and live;
+  the redirects still 301 correctly. **The DA source was left in place** — unpublishing is
+  reversible, deleting is not.
+- **The one pre-existing article was on the old model** — `06-26-2026` and `category: AEM EDS`.
+  Migrated to ISO and canonical IDs, matching what was done for the pre-existing recap. Its
+  `image` row holds a real `<picture>` with its own hero and was left untouched — checked
+  first, having already made that mistake once.
+
+`/en/articles` and `/en/articles/aem-eds-content-modeling-deep-dive` are now published (they
+were authored-but-unpublished, and the home page had been linking to a 404).
+
+> **Content bug, not fixed — needs a human call.** That article's `title` is *"Meetup: Bring
+> Your Complicated EDS Implementation Story"*, but its slug is
+> `aem-eds-content-modeling-deep-dive` and its description is "A field guide to structuring
+> content in AEM Edge Delivery". The title looks copy-pasted from the meetup recap. Two rows in
+> the feed now read almost identically. I don't know which is intended, so I changed nothing.
 
 ### Still open
 
-- **`speakers` slugs have no bio fragments yet** — `tad-reeves`, `laurel-timko`,
-  `wilson-faure`, `rick-reich`. They resolve to nothing until S4's Bio Manager creates them,
-  which is the intended demo payoff; the meetup block must degrade visibly, not silently.
-- **`/en/articles/aem-eds-content-modeling-deep-dive`** is authored, unpublished, and linked
-  with a trailing slash. Two defects, one page.
-- **The stale index columns persist.** A partial reindex does not clear them, since the index
-  emits the union across all pages.
-- **Old `/en/meetup-recaps/` content is still in place**, shadowed by redirects. Deleting it is
-  a separate deliberate step.
+- **Two recap dates unknown** (Atlanta, Columbus) and seven YouTube-derived recaps have no
+  `event-date` — deliberate, since only the video publish date is hard. Backfillable from the
+  AUG listings; until then a `recap` with no `event-date` is a real Preflight warning.
+- **The Cary date conflict** — slug and link say June 2026, the Arbory post reads February.
+- **`speakers` slugs have no bio fragments yet** (`tad-reeves`, `laurel-timko`, `wilson-faure`,
+  `rick-reich`). Intended — that is S4's payoff — but the meetup block must degrade visibly.
+- **The article title bug** above.
+- **Stale index columns** — the 8 orphaned ones persist; the index emits the union across all
+  pages, so it needs a full-site reindex, not a partial one.
+- **Old `/en/meetup-recaps/` DA source** still exists, now unpublished. Deleting it is a
+  separate deliberate step.
+- **Label map not built** — blocked until now on the servlet; that is unblocked as of today, so
+  `/en/tags-<lang>.json` and its sync job are the next piece. Both feeds currently use a
+  last-segment fallback for labels.

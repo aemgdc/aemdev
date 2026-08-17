@@ -12,7 +12,7 @@ needs porting).
 | # | Subproduct | Tier | State | Owner | Est. | Due |
 | --- | --- | --- | --- | --- | --- | --- |
 | S1 | DA plugin registration + tools shell | — | **3 of 6 live** | Tad | 0.5d | 23 Aug |
-| S2a | TagsServlet fix + `aemdev` tag namespace (AEM side) | 1 | **servlet on DEV; namespace blocked** | **Tad** | 1d | 28 Aug |
+| S2a | TagsServlet fix + `aemdev` tag namespace (AEM side) | 1 | ✅ **done — live on DEV** | Tad | 1d | 28 Aug |
 | S2b | Tag Picker config + page tag read-back (DA plugin) | 1 | ported | **Laurel** | 2d | 5 Sep |
 | S3 | Icon Picker | 1 | none | Laurel | 2.5d | 5 Sep |
 | S4 | Bio Manager | 1 | external | Tad | 2d | 12 Sep |
@@ -270,27 +270,27 @@ namespace either**, which is exactly why the old hard-coded path 500'd everywher
 > genuinely a server misconfiguration, and lying about the code to get a readable body would be
 > worse.
 
-### ⛔ Blocked: authoring the namespace on DEV
+### ✅ Namespace authored on DEV — S2a complete
 
-The taxonomy is authored and verified **locally** (27 tags, German labels, all endpoints green),
-but **not yet on DEV**.
+Authored via `scripts/create-aemdev-tags.sh` against DEV author (28 nodes), then activated.
+All endpoints now serve on DEV publish:
 
-The AEM MCP can read DEV author but is **path-restricted for writes** to `/content/cq:tags`:
+| Request | Result |
+| --- | --- |
+| root | 200 — `topic` (13), `category` (7), `region` (4) |
+| `.all` | `["Topic","Category","Region"]` |
+| `.de` | 27-entry label map — `topic\|forms` → `Formulare`, `region\|north-america` → `Nordamerika` |
+| `.nope` | 404 + JSON |
 
-```
-403 — "The MCP Server is restricted and isn't able to operate on this path."
-```
+Two things that cost time and will cost it again:
 
-So this last step needs a human with a token. From `arbory-aemaacs`:
-
-```bash
-AEM_URL=https://author-p121227-e1183758.adobeaemcloud.com \
-AEM_AUTH="Bearer $DEV_AUTHOR_TOKEN" \
-./scripts/create-aemdev-tags.sh
-```
-
-Then activate to publish and re-check `/services/tagsservlet` — root, `.all` and `.de` should go
-200, and `.de` should return a 27-entry label map.
+- **`/bin/replicate.json` activates one node, not a tree.** The first activation of
+  `/content/cq:tags/aemdev` returned 200 and replicated only the root, so publish served `[]`
+  — looking exactly like a broken servlet. All 28 paths had to be activated individually.
+- **The CDN caches these responses.** Straight after activation `.all` still returned `[]`
+  from a cached pre-authoring response, while a cache-busted request was correct. Purge or
+  wait after taxonomy changes, and expect it during the demo if the taxonomy is edited live.
+  Worth [S2b](#s2b--tag-picker-configuration--page-tag-read-back) knowing about.
 
 **Acceptance:**
 - `GET /services/tagsservlet.aemdev` returns HTTP 200 with the full `aemdev` hierarchy as JSON.

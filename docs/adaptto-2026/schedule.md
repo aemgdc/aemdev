@@ -29,7 +29,10 @@ the rest of the plan.
 | ▢ | ~~**Confirm the exact session slot**~~ — **done: Tuesday 29 Sep** | — |
 | ▢ | ~~**Spike: TagsServlet 500**~~ — **done**, root cause is `TAGS_PATH` hard-coded to `/content/cq:tags/jmp` ([S2a](subproducts.md#-root-cause-found--its-one-hard-coded-line)) | — |
 | ▢ | **Spike: Forms CS.** Form-list endpoint, auth, CORS from an `aem.live` origin (R3) | Tad |
-| ▢ | S1 — DA plugin registration + `tools/shared/` bootstrap | Tad |
+| ✅ | S1 — DA plugin registration (3 of 6 plugins live; browser check outstanding) | Tad |
+| ✅ | **S2a — done.** Servlet fixed, merged, deployed to DEV; `aemdev` namespace authored and activated | Tad |
+| ✅ | S11 — query index: `date` + `status` columns live; config read-back sync on cron | Tad |
+| ✅ | `/en/meetups/` rename executed; 15-page corpus published; both home-page feeds index-driven | Tad |
 | ▢ | Verify S2b tagpicker and S5 advanced-search open at all under `aemgdc/aemdev` | Laurel |
 | ▢ | **Agree the [S2 interface contract](subproducts.md#s2-interface-contract)** — endpoint shape, namespace root, fixture path. Locked 28 Aug. | Both |
 | ▢ | **Confirm the `/en/meetups/` decision**, then do the rename + redirect — blocks all Batch B authoring ([content-plan.md](content-plan.md#the-enmeetups-model)) | Tad |

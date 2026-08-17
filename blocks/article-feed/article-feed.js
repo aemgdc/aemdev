@@ -15,14 +15,51 @@
  *   | card-1-author   | Tad Reeves |
  *
  * Dynamic mode (falls back to index fetch when no card rows present):
- *   | index | /en/articles/query-index.json |
- *   | limit | 4 |
- *   | badge | ... |
- *   | title | ... |
- *   | cta   | ... |
+ *   | index  | /en/query-index.json |
+ *   | path   | /en/meetups/         |  (optional) only paths under these prefixes
+ *   | status | recap                |  (optional) only these `status` values
+ *   | limit  | 4 |
+ *   | badge  | ... |
+ *   | title  | ... |
+ *   | cta    | ... |
+ *
+ * `path` and `status` accept comma-separated lists and are matched
+ * case-insensitively; values within a key are OR'd, and the two keys are AND'd.
+ * Without them the feed shows everything in the index, which for a site-wide
+ * index means landing pages and the home page too.
+ *
+ * Sort is by `eventDate` where present, else `date`, descending — an event that
+ * happened has a more meaningful recency than the day it was written up. Most
+ * recaps carry only `date`, so this degrades to publication order.
  */
 
 import { formatDate, dateValue } from '../../scripts/utils/date.js';
+
+// Split an authored comma-separated cell into a lowercased list for matching.
+function splitList(val) {
+  return (val || '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
+}
+
+/*
+ * Tags and categories are stored as canonical AEM ids (aemdev:category/meetup),
+ * which must never reach a reader. Until the synced label map exists, derive a
+ * readable label from the id's last segment.
+ */
+function labelFromTag(value) {
+  const raw = Array.isArray(value) ? value[0] : value;
+  if (!raw) return '';
+  const afterSlash = String(raw).split('/').pop();
+  const leaf = afterSlash.split(':').pop();
+  return leaf
+    .split('-')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
+// Recency for an event: when it happened, else when it was written up.
+function recencyOf(article) {
+  return dateValue(article.eventDate || article.date);
+}
 
 function parseRows(block) {
   const config = {
@@ -30,6 +67,8 @@ function parseRows(block) {
     title: '',
     cta: null,
     indexPath: '',
+    paths: null,
+    statuses: null,
     limit: 4,
     cards: [],
   };
@@ -64,6 +103,10 @@ function parseRows(block) {
       case 'index':
       case 'index path': config.indexPath = value; break;
       case 'limit': config.limit = parseInt(value, 10) || 4; break;
+      case 'path':
+      case 'paths': config.paths = splitList(value); break;
+      case 'status':
+      case 'statuses': config.statuses = splitList(value); break;
       case 'cta':
       case 'link': {
         const link = valueCell.querySelector('a[href]');
@@ -155,23 +198,31 @@ function buildGrid(cards) {
   return grid;
 }
 
-async function loadArticles(indexPath) {
+async function loadArticles(indexPath, { paths, statuses } = {}) {
   const resp = await fetch(indexPath);
   if (!resp.ok) throw new Error(`Failed to fetch ${indexPath}`);
   const json = await resp.json();
   const articles = (json.data || [])
-    .filter((a) => a.pagetype !== 'page' && !a.path.endsWith('/index'));
-  articles.sort((a, b) => dateValue(b.date) - dateValue(a.date));
+    .filter((a) => a.pagetype !== 'page' && !a.path.endsWith('/index'))
+    .filter((a) => {
+      if (!paths) return true;
+      const path = (a.path || '').toLowerCase();
+      // A prefix match on the folder, excluding the folder's own landing page.
+      return paths.some((prefix) => path.startsWith(prefix) && path !== prefix.replace(/\/$/, ''));
+    })
+    .filter((a) => !statuses || statuses.includes((a.status || '').toLowerCase()));
+  articles.sort((a, b) => recencyOf(b) - recencyOf(a));
   return articles;
 }
 
 function articleToCard(article) {
+  const when = article.eventDate || article.date;
   return {
-    category: article.tags || article.category || '',
+    category: labelFromTag(article.category || article.tags),
     title: article.title || '',
     dek: article.description || '',
     url: article.path || '#',
-    date: article.date ? formatDate(article.date) : '',
+    date: when ? formatDate(when) : '',
     author: article.author || '',
   };
 }
@@ -191,7 +242,7 @@ export default async function init(el) {
     inner.append(buildGrid(config.cards));
   } else if (config.indexPath) {
     try {
-      const articles = (await loadArticles(config.indexPath))
+      const articles = (await loadArticles(config.indexPath, config))
         .slice(0, config.limit)
         .map(articleToCard);
       if (articles.length) {

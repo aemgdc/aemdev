@@ -8,19 +8,31 @@
    Optional authored config rows (key | value):
    - limit    | 6                      (cards per page, default 9)
    - index    | /en/query-index.json   (query index path)
-   - category | Meetup Recap, News     (only show articles in these categories)
-   - tag      | EDS, GDC               (only show articles with any of these tags)
+   - category | aemdev:category/meetup (only show articles in these categories)
+   - tag      | aemdev:topic/cdn       (only show articles with any of these tags)
+   - template | blog, meetup           (which templates to include; default blog+meetup+article)
 
    `category` and `tag` accept a comma-separated list (matched case-insensitively;
    values within a key are OR'd). If both are given, an article must match both.
 
-   Sort: by `date` descending.
+   Sort: upcoming events first (soonest first), then everything else by date
+   descending. An event that hasn't happened yet is the actionable item on the
+   page; burying next month's meetup under last year's recap reads as an archive.
+
+   Pages with `status` of `upcoming` or `announced` are badged UPCOMING EVENT.
 */
 
 import { dateValue } from '../../scripts/utils/date.js';
 
 const DEFAULT_INDEX = '/en/query-index.json';
 const DEFAULT_PAGE_SIZE = 9;
+/*
+ * Landing pages carry no `template`, so requiring one is what keeps /en/,
+ * /en/contact and the section landing pages out of an article list. The previous
+ * `!a.template || a.template === 'blog'` did the opposite: it admitted every
+ * landing page and excluded all 14 meetup pages, which are `template: meetup`.
+ */
+const DEFAULT_TEMPLATES = ['blog', 'meetup', 'article'];
 const DA_HOST = 'https://content.da.live';
 
 function cleanValue(s) {
@@ -62,10 +74,48 @@ function matchesFilters(article, { categories, tags }) {
   return true;
 }
 
+/*
+ * Tags and categories are canonical AEM ids (aemdev:category/meetup) and must
+ * never reach a reader. Derive a label from the id's last segment until the
+ * synced label map exists.
+ */
+function labelFromTag(value) {
+  const raw = Array.isArray(value) ? value[0] : value;
+  if (!raw) return '';
+  const afterSlash = String(raw).split('/').pop();
+  const leaf = afterSlash.split(':').pop();
+  return leaf
+    .split('-')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
+const UPCOMING_STATUSES = ['upcoming', 'announced'];
+
+function isUpcoming(article) {
+  return UPCOMING_STATUSES.includes(cleanValue(article.status).toLowerCase());
+}
+
 function deriveTag(article) {
-  if (article.category && article.category.trim()) return `// ${article.category.trim()}`;
-  const [first] = articleTags(article);
-  return first ? `// ${first}` : '// Field Notes';
+  const label = labelFromTag(article.category) || labelFromTag(articleTags(article));
+  return label ? `// ${label}` : '// Field Notes';
+}
+
+/*
+ * Upcoming events sort ascending (soonest first) ahead of everything else, which
+ * sorts descending by recency. An `announced` event with no date sorts last
+ * within the upcoming group rather than jumping to the front.
+ */
+function compareArticles(a, b) {
+  const ua = isUpcoming(a);
+  const ub = isUpcoming(b);
+  if (ua !== ub) return ua ? -1 : 1;
+  if (ua) {
+    const da = dateValue(a.eventDate) || Number.MAX_SAFE_INTEGER;
+    const db = dateValue(b.eventDate) || Number.MAX_SAFE_INTEGER;
+    return da - db;
+  }
+  return (dateValue(b.eventDate || b.date)) - (dateValue(a.eventDate || a.date));
 }
 
 function resolveImage(src) {
@@ -100,6 +150,9 @@ function buildCard(article, withImage) {
   const body = document.createElement('div');
   body.className = 'insights-card-body';
 
+  const upcoming = isUpcoming(article);
+  if (upcoming) card.classList.add('insights-card-upcoming');
+
   const tag = document.createElement('div');
   tag.className = 'insights-tag';
   tag.textContent = deriveTag(article);
@@ -114,7 +167,14 @@ function buildCard(article, withImage) {
 
   const link = document.createElement('span');
   link.className = 'insights-link';
-  link.textContent = 'Read more →';
+  link.textContent = upcoming ? 'Event details →' : 'Read more →';
+
+  if (upcoming) {
+    const badge = document.createElement('div');
+    badge.className = 'insights-upcoming-badge';
+    badge.textContent = 'Upcoming Event';
+    body.append(badge);
+  }
 
   body.append(tag, title, dek, link);
   card.appendChild(body);
@@ -122,7 +182,7 @@ function buildCard(article, withImage) {
 }
 
 function readConfig(block) {
-  const config = { limit: DEFAULT_PAGE_SIZE, index: DEFAULT_INDEX };
+  const config = { limit: DEFAULT_PAGE_SIZE, index: DEFAULT_INDEX, templates: DEFAULT_TEMPLATES };
   const rows = [...block.querySelectorAll(':scope > div')];
   rows.forEach((row) => {
     const cells = [...row.children];
@@ -141,6 +201,9 @@ function readConfig(block) {
     } else if (key === 'tag' || key === 'tags') {
       const list = splitList(val);
       if (list.length) config.tags = list;
+    } else if (key === 'template' || key === 'templates') {
+      const list = splitList(val);
+      if (list.length) config.templates = list;
     }
   });
   return config;
@@ -195,9 +258,9 @@ export default async function decorate(block) {
       .filter((a) => a.path
         && !a.path.endsWith('/index')
         && !a.redirectTarget
-        && (!a.template || a.template === 'blog')
+        && config.templates.includes(cleanValue(a.template).toLowerCase())
         && matchesFilters(a, config))
-      .sort((a, b) => dateValue(b.date) - dateValue(a.date));
+      .sort(compareArticles);
   } catch (e) {
     const err = document.createElement('p');
     err.className = 'insights-error';

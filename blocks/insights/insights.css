@@ -189,3 +189,41 @@
   font-family: var(--mono-font-family);
   font-size: 0.9rem;
 }
+
+/* Upcoming events -------------------------------------------------------- */
+
+/*
+ * An event that hasn't happened yet is the actionable card on the page, so it
+ * gets the accent treatment a hovered card gets — persistent rather than on
+ * hover — plus an explicit badge. The left border is what carries the signal
+ * when the grid is scanned quickly.
+ */
+.insights-card-upcoming {
+  border-left-color: var(--orange);
+  background: #162932;
+}
+
+.insights-upcoming-badge {
+  align-self: flex-start;
+  font-family: var(--mono-font-family);
+  font-size: 0.64rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: var(--ink-2, #10222b);
+  background: var(--orange);
+  padding: 4px 9px;
+  margin-bottom: 12px;
+  border-radius: 2px;
+}
+
+/* The card already reads as upcoming; a second orange run-in competes with it. */
+.insights-card-upcoming .insights-link {
+  color: var(--teal, #39aab5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .insights-card {
+    transition: none;
+  }
+}

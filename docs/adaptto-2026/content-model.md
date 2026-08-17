@@ -542,6 +542,63 @@ was added, which DA's own output omits.
 > briefly overwrote the pre-existing recap's hero on exactly that misreading. When auditing
 > metadata, check for child elements, not just text.
 
+### Home page feed — index-driven, filtered on `status`
+
+The home page's `article-feed` carried **four hand-authored cards of invented content** — an
+Austin TX meetup, an AEMaaCS migration panel, a Universal Editor deep dive. None happened. It
+now reads the index.
+
+Authored model:
+
+```
+| article-feed |                       |
+| badge        | // Community Events   |
+| title        | Recent meetup recaps. |
+| cta          | All recaps  → /en/meetups |
+| index        | /en/query-index.json  |
+| path         | /en/meetups/          |
+| status       | recap                 |
+| limit        | 4                     |
+```
+
+Three block changes were needed ([blocks/article-feed/article-feed.js](../../blocks/article-feed/article-feed.js)):
+
+- **`path` and `status` filters** — comma-separated, case-insensitive, mirroring the convention
+  `insights` already uses. Without them a site-wide index feed also shows landing pages and the
+  home page itself. The `path` filter excludes the folder's own landing page.
+- **Sort by `eventDate` where present, else `date`.** An event that happened has a more
+  meaningful recency than the day it was written up. Most recaps carry only `date`, so it
+  degrades to publication order.
+- **`labelFromTag()`** — cards rendered `article.tags || article.category` raw, which now means
+  canonical IDs. A reader would have seen `aemdev:category/meetup`. It derives a label from the
+  ID's last segment as a stopgap until the
+  [synced label map](#labels-are-synced-not-fetched-at-render-time--settled) exists, which is
+  blocked on the servlet fix reaching a populated namespace.
+
+Verified against the live index: the filter selects **9 real recaps** in correct recency order.
+The home page's stale `/en/meetup-recaps/` CTA was repointed to `/en/meetups` at source, so the
+page no longer relies on a 301.
+
+### Open question: a `recap` tag as well as `status: recap`?
+
+The ask was for a `recap` **tag in the taxonomy**, "so that we can differentiate them from
+upcoming events". That differentiation already exists — `status` is an index column, populated
+on all 14 pages, and it is what the feed now filters on. No taxonomy change was needed.
+
+Adding a `recap` tag *in addition* would put one fact in two places, which is the same argument
+that removed `event-type`: a page moving `upcoming → recap` would need both updated, and
+whichever is forgotten becomes wrong. `status` also changes over a page's life, which is why it
+was kept out of the taxonomy in the first place.
+
+**So this is a genuine fork, not an oversight:**
+
+- *Keep `status` only* (current state) — one source of truth, already working.
+- *Add the tag too* — better if authors classify exclusively through the tag picker and should
+  never touch a raw metadata field. Roughly 10 minutes: one taxonomy entry, a re-run of the
+  authoring script, and 9 pages retagged.
+
+Worth deciding before the corpus grows past 14.
+
 ### Still open
 
 - **`speakers` slugs have no bio fragments yet** — `tad-reeves`, `laurel-timko`,

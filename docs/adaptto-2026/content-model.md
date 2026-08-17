@@ -507,6 +507,41 @@ The taxonomy is now 13 topics / 7 categories / 4 regions = 27 label-map entries.
 those gaps came from authoring content, not from planning the taxonomy — which is the argument
 for doing them in this order.
 
+### Default hero image
+
+All 13 generated pages carry a shared default `image` in page metadata, resolving to a single
+`media_178a75fe…` asset. The pre-existing recap keeps **its own** hero — a generic placeholder
+would have been a downgrade on the one page with real, specific imagery.
+
+**The asset lives in a shared folder, not a page's own.** It was first uploaded to
+`/en/meetups/.sites-optimizer-eds-localization-atlanta/image(1).jpg` — inside one page's
+`.{slug}` media folder. Pointing thirteen other pages at that would recreate exactly the
+failure we already had to clean up here: `.aem-gdc-complicated-eds-integration-recap/` is an
+orphaned folder for a page that no longer exists, still referenced by a live document. So the
+canonical copy is now:
+
+```
+/en/meetups/.shared/default-hero.jpg
+```
+
+Rename or delete any single page and the other twelve are unaffected. EDS deduplicates on
+content, so one source copy also means one served asset — every page resolves to the same
+`media_` hash.
+
+The `image` row holds DA's native `<picture>` markup (two `<source>` elements plus an `<img>`),
+matching what DA itself writes, so the row round-trips through the editor unchanged. An `alt`
+was added, which DA's own output omits.
+
+> **Gotcha — an empty `image` row is not the same as no `image` row.** Emptying it yields
+> `<meta property="og:image" content="">`, which is worse than absent: it suppresses the
+> fallback to the page's first body image. If a page should use its own imagery, the row must
+> contain that image or not exist at all.
+>
+> This also bit my own tooling. A metadata dump that strips tags renders a `<picture>` cell as
+> blank, so a page with a perfectly good hero *looks* like it has an empty `image` field. I
+> briefly overwrote the pre-existing recap's hero on exactly that misreading. When auditing
+> metadata, check for child elements, not just text.
+
 ### Still open
 
 - **`speakers` slugs have no bio fragments yet** — `tad-reeves`, `laurel-timko`,

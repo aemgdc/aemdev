@@ -1,38 +1,38 @@
 [
   {
-    "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
-    "id": "KrnUcLo7v680MsQHAgW4j1",
     "content": "set bereq.http.X-BYO-CDN-Type = \"fastly\";\nset bereq.http.X-Push-Invalidation = \"enabled\";",
-    "priority": "100",
     "name": "set byocdn var for miss",
     "dynamic": "0",
+    "id": "KrnUcLo7v680MsQHAgW4j1",
+    "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
+    "priority": "100",
     "type": "miss"
   },
   {
+    "dynamic": "0",
+    "name": "set byocdn var for pass",
     "id": "eSJ8CzXLe2yjQrEJTbflk3",
     "content": "set bereq.http.X-BYO-CDN-Type = \"fastly\";\nset bereq.http.X-Push-Invalidation = \"enabled\";",
     "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
-    "name": "set byocdn var for pass",
     "priority": "100",
-    "type": "pass",
-    "dynamic": "0"
+    "type": "pass"
   },
   {
-    "name": "strip age header",
+    "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
     "priority": "100",
-    "type": "deliver",
     "dynamic": "0",
+    "name": "strip age header",
     "id": "Pio3zDR4baXZ6XK7KP2z07",
     "content": "unset resp.http.Age;",
-    "service_id": "tTSyFJgoN3lZqBOA0n3Rd7"
+    "type": "deliver"
   },
   {
-    "type": "recv",
+    "content": "if (req.url.path !~ \"/media_[0-9a-f]{40,}[/a-zA-Z0-9_-]*\\.[0-9a-z]+$\"\n  && req.url.ext !~ \"(?i)^(gif|png|jpe?g|webp)$\"\n  && req.url.ext != \"json\"\n  && req.url.path !~ \"^/services/\"\n  && req.url.path != \"/.auth\") {\n  // strip query string from request url\n  set req.url = req.url.path;\n}",
     "dynamic": "0",
     "name": "strip query string on vcl_rcv",
-    "priority": "100",
-    "content": "if (req.url.path !~ \"/media_[0-9a-f]{40,}[/a-zA-Z0-9_-]*\\.[0-9a-z]+$\"\n  && req.url.ext !~ \"(?i)^(gif|png|jpe?g|webp)$\"\n  && req.url.ext != \"json\"\n  && req.url.path !~ \"^/services/\"\n  && req.url.path != \"/.auth\") {\n  // strip query string from request url\n  set req.url = req.url.path;\n}",
     "id": "Nf9QmSFmkXvPDXnFyBmAM2",
-    "service_id": "tTSyFJgoN3lZqBOA0n3Rd7"
+    "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
+    "priority": "100",
+    "type": "recv"
   }
 ]

@@ -1,4 +1,5 @@
 import { loadArea, setConfig } from './ak.js';
+import decorateLinkTargets from './utils/link-target.js';
 
 const hostnames = ['authorkit.dev'];
 
@@ -53,6 +54,11 @@ const decorateArea = ({ area = document }) => {
   };
 
   eagerLoad(area, 'img');
+  // Same window for everything but a PDF, plus the `#_blank`/`#_self`/`#_parent`/`#_top`
+  // authoring language. Must stay HERE rather than in ak.js's decorateLink: loadArea runs
+  // decorateArea over the whole area before decorateSections walks it, so this is the one
+  // hook that also reaches fragments (header, footer, nav) and any anchor outside `main`.
+  decorateLinkTargets(area);
 };
 
 export async function loadPage() {

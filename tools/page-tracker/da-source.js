@@ -135,11 +135,23 @@ const PATH_COLUMN = 'page-path';
  * da.live collapses a single-tab sheet to single-sheet form on save, so every freshly
  * scaffolded group carries a placeholder that is not a page (`countsAsPage()` agrees).
  */
-export async function readGroupSheet(group) {
+export async function readGroupSheet(group, { fresh = false } = {}) {
   const url = sheetUrl(group);
   let res;
   try {
-    res = await requireFetch()(url);
+    /*
+     * `fresh` bypasses the HTTP cache, and it exists for exactly one caller: the
+     * read-back that confirms a write.
+     *
+     * This is the one place the app CANNOT share the pipeline's code path and get the
+     * same answer. Node's fetch has no HTTP cache, so `updateStatusDoc`'s identical
+     * confirm read always sees the write it just made. A browser's fetch does have one,
+     * so the confirm read was served the PRE-WRITE body and every successful write
+     * reported "the write reported success but <column> did not land" — a false negative
+     * on a write that had in fact landed, which is the worst possible way for this to
+     * fail: it teaches an author to distrust a guard that is working.
+     */
+    res = await requireFetch()(url, fresh ? { cache: 'no-store' } : undefined);
   } catch (e) {
     return { exists: false, error: `${url} → ${e.message}`, where: url };
   }
@@ -428,7 +440,7 @@ async function updateSheet(group, {
     previewError = e.message;
   }
 
-  const after = await readGroupSheet(group);
+  const after = await readGroupSheet(group, { fresh: true });
   const saved = after.exists
     ? sheetRows(after.doc, tab).find((r) => normalizePath(r?.[PATH_COLUMN]) === path)
     : null;

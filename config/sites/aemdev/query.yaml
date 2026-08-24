@@ -78,3 +78,916 @@ indices:
         select: head > meta[name="location"]
         value: |
           attribute(el, "content")
+      robots:
+        select: head > meta[name="robots"]
+        value: |
+          attribute(el, "content")
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# ADDED BY THE TRACKER BRANCH — NOT YET DEPLOYED.
+#
+# Read docs/adaptto-2026/subproducts.md#s11 before pushing ANY of this. The repo
+# copy of this file is a strict SUBSET of what is deployed: the live config emits
+# eight properties defined nowhere here (bookAuthor, bookPublishDate,
+# bookTypeTitle, displayLabel, eventDateTime, eventDisplayLabel, eventDisplayTime,
+# offDateTime). Because `update-index-configuration` is a blind PUSH, deploying
+# this file as it stands DELETES those eight and triggers a full reindex.
+#
+# The order is not optional:
+#   1. run the `Sync site configs` workflow  — the diff it produces IS the drift report
+#   2. decide, deliberately, to keep or drop those eight properties
+#   3. only then run `Update Index Configuration File` with site: aemdev
+#   4. re-preview the affected paths — pushing config does NOT backfill
+#   5. run `Sync site configs` again to prove no drift remains
+# ═══════════════════════════════════════════════════════════════════════════════
+
+  #aemdev TRACKER# — the QA / translation tracker's own documents.
+  # /tracker/** is outside aemdev-en's `include: /en/**`, so these are indexed here
+  # and nowhere else, and they stay out of /en/sitemap.xml by construction.
+  #
+  # This index is the reason the review documents carry a metadata block at all: it
+  # lets the Page Tracker and the boards read every page's stored verdict in ONE
+  # fetch per group, instead of one document read per page.
+  #
+  # These pages are noindex four ways over (per-page metadata row, absence from
+  # aemdev-en, an x-robots-tag on /tracker/* in headers.json, and a robots.txt
+  # Disallow). `robots` is indexed so a feed block can prove that, not assume it.
+  aemdev-tracker:
+    include:
+      - /tracker/qa/**
+      - /tracker/tx/**
+    target: /tracker/query-index.json
+    properties:
+      title:
+        select: head > meta[property="og:title"]
+        value: |
+          attribute(el, "content")
+      robots:
+        select: head > meta[name="robots"]
+        value: |
+          attribute(el, "content")
+      pagePath:
+        select: head > meta[name="page-path"]
+        value: |
+          attribute(el, "content")
+      locale:
+        select: head > meta[name="locale"]
+        value: |
+          attribute(el, "content")
+      reviewStatus:
+        select: head > meta[name="review-status"]
+        value: |
+          attribute(el, "content")
+      reviewActor:
+        select: head > meta[name="review-actor"]
+        value: |
+          attribute(el, "content")
+      reviewUpdated:
+        select: head > meta[name="review-updated"]
+        value: |
+          attribute(el, "content")
+      translationStatus:
+        select: head > meta[name="translation-status"]
+        value: |
+          attribute(el, "content")
+      sentAt:
+        select: head > meta[name="sent-at"]
+        value: |
+          attribute(el, "content")
+      contentEscalation:
+        select: head > meta[name="content-escalation"]
+        value: |
+          attribute(el, "content")
+      lastModified:
+        select: none
+        value: |
+          parseTimestamp(headers['last-modified'], 'ddd, DD MMM YYYY hh:mm:ss GMT')
+
+  # ─── Per-locale mirrors of aemdev-en ────────────────────────────────────────
+  # Identical property sets by construction (generated from the block above), so a
+  # locale index cannot drift from the English one and a block written against
+  # /en/query-index.json works unchanged against any locale.
+  #
+  # Each of these is EMPTY until content exists in that locale. That is fine and it
+  # is why the matching sitemap.yaml language block is safe to add now: a `source`
+  # that 404s yields an empty <urlset>, not an error.
+
+  aemdev-de:
+    include:
+      - /de/**
+    exclude:
+      - /de/drafts/**
+      - /de/sandbox/**
+      - /de/fragments/**
+    target: /de/query-index.json
+    properties:
+      author:
+        select: head > meta[name="author"]
+        value: |
+          attribute(el, "content")
+      title:
+        select: head > meta[property="og:title"]
+        value: |
+          attribute(el, "content")
+      image:
+        select: head > meta[property="og:image"]
+        value: |
+          match(attribute(el, "content"), "https:\/\/[^/]+(/.*)")
+      description:
+        select: head > meta[name="description"]
+        value: |
+          attribute(el, "content")
+      displayDescription:
+        select: head > meta[name="displaydescription"]
+        value: |
+          attribute(el, "content")
+      releaseDate:
+        select: head > meta[name="releasedate"]
+        value: |
+          attribute(el, "content")
+      redirectTarget:
+        select: head > meta[name="redirecttarget"]
+        value: |
+          attribute(el, "content")
+      displayImage:
+        select: head > meta[name="displayimage"]
+        value: |
+          attribute(el, "content")
+      tags:
+        select: head > meta[property="article:tag"]
+        values: |
+          attribute(el, "content")
+      category:
+        select: head > meta[name="category"]
+        value: |
+          attribute(el, "content")
+      template:
+        select: head > meta[name="template"]
+        value: |
+          attribute(el, "content")
+      date:
+        select: head > meta[name="publication-date"]
+        value: |
+          attribute(el, "content")
+      status:
+        select: head > meta[name="status"]
+        value: |
+          attribute(el, "content")
+      eventDate:
+        select: head > meta[name="event-date"]
+        value: |
+          attribute(el, "content")
+      recapVideo:
+        select: head > meta[name="recap-video"]
+        value: |
+          attribute(el, "content")
+      speakers:
+        select: head > meta[name="speakers"]
+        value: |
+          attribute(el, "content")
+      location:
+        select: head > meta[name="location"]
+        value: |
+          attribute(el, "content")
+      robots:
+        select: head > meta[name="robots"]
+        value: |
+          attribute(el, "content")
+
+  aemdev-fr:
+    include:
+      - /fr/**
+    exclude:
+      - /fr/drafts/**
+      - /fr/sandbox/**
+      - /fr/fragments/**
+    target: /fr/query-index.json
+    properties:
+      author:
+        select: head > meta[name="author"]
+        value: |
+          attribute(el, "content")
+      title:
+        select: head > meta[property="og:title"]
+        value: |
+          attribute(el, "content")
+      image:
+        select: head > meta[property="og:image"]
+        value: |
+          match(attribute(el, "content"), "https:\/\/[^/]+(/.*)")
+      description:
+        select: head > meta[name="description"]
+        value: |
+          attribute(el, "content")
+      displayDescription:
+        select: head > meta[name="displaydescription"]
+        value: |
+          attribute(el, "content")
+      releaseDate:
+        select: head > meta[name="releasedate"]
+        value: |
+          attribute(el, "content")
+      redirectTarget:
+        select: head > meta[name="redirecttarget"]
+        value: |
+          attribute(el, "content")
+      displayImage:
+        select: head > meta[name="displayimage"]
+        value: |
+          attribute(el, "content")
+      tags:
+        select: head > meta[property="article:tag"]
+        values: |
+          attribute(el, "content")
+      category:
+        select: head > meta[name="category"]
+        value: |
+          attribute(el, "content")
+      template:
+        select: head > meta[name="template"]
+        value: |
+          attribute(el, "content")
+      date:
+        select: head > meta[name="publication-date"]
+        value: |
+          attribute(el, "content")
+      status:
+        select: head > meta[name="status"]
+        value: |
+          attribute(el, "content")
+      eventDate:
+        select: head > meta[name="event-date"]
+        value: |
+          attribute(el, "content")
+      recapVideo:
+        select: head > meta[name="recap-video"]
+        value: |
+          attribute(el, "content")
+      speakers:
+        select: head > meta[name="speakers"]
+        value: |
+          attribute(el, "content")
+      location:
+        select: head > meta[name="location"]
+        value: |
+          attribute(el, "content")
+      robots:
+        select: head > meta[name="robots"]
+        value: |
+          attribute(el, "content")
+
+  aemdev-es:
+    include:
+      - /es/**
+    exclude:
+      - /es/drafts/**
+      - /es/sandbox/**
+      - /es/fragments/**
+    target: /es/query-index.json
+    properties:
+      author:
+        select: head > meta[name="author"]
+        value: |
+          attribute(el, "content")
+      title:
+        select: head > meta[property="og:title"]
+        value: |
+          attribute(el, "content")
+      image:
+        select: head > meta[property="og:image"]
+        value: |
+          match(attribute(el, "content"), "https:\/\/[^/]+(/.*)")
+      description:
+        select: head > meta[name="description"]
+        value: |
+          attribute(el, "content")
+      displayDescription:
+        select: head > meta[name="displaydescription"]
+        value: |
+          attribute(el, "content")
+      releaseDate:
+        select: head > meta[name="releasedate"]
+        value: |
+          attribute(el, "content")
+      redirectTarget:
+        select: head > meta[name="redirecttarget"]
+        value: |
+          attribute(el, "content")
+      displayImage:
+        select: head > meta[name="displayimage"]
+        value: |
+          attribute(el, "content")
+      tags:
+        select: head > meta[property="article:tag"]
+        values: |
+          attribute(el, "content")
+      category:
+        select: head > meta[name="category"]
+        value: |
+          attribute(el, "content")
+      template:
+        select: head > meta[name="template"]
+        value: |
+          attribute(el, "content")
+      date:
+        select: head > meta[name="publication-date"]
+        value: |
+          attribute(el, "content")
+      status:
+        select: head > meta[name="status"]
+        value: |
+          attribute(el, "content")
+      eventDate:
+        select: head > meta[name="event-date"]
+        value: |
+          attribute(el, "content")
+      recapVideo:
+        select: head > meta[name="recap-video"]
+        value: |
+          attribute(el, "content")
+      speakers:
+        select: head > meta[name="speakers"]
+        value: |
+          attribute(el, "content")
+      location:
+        select: head > meta[name="location"]
+        value: |
+          attribute(el, "content")
+      robots:
+        select: head > meta[name="robots"]
+        value: |
+          attribute(el, "content")
+
+  aemdev-it:
+    include:
+      - /it/**
+    exclude:
+      - /it/drafts/**
+      - /it/sandbox/**
+      - /it/fragments/**
+    target: /it/query-index.json
+    properties:
+      author:
+        select: head > meta[name="author"]
+        value: |
+          attribute(el, "content")
+      title:
+        select: head > meta[property="og:title"]
+        value: |
+          attribute(el, "content")
+      image:
+        select: head > meta[property="og:image"]
+        value: |
+          match(attribute(el, "content"), "https:\/\/[^/]+(/.*)")
+      description:
+        select: head > meta[name="description"]
+        value: |
+          attribute(el, "content")
+      displayDescription:
+        select: head > meta[name="displaydescription"]
+        value: |
+          attribute(el, "content")
+      releaseDate:
+        select: head > meta[name="releasedate"]
+        value: |
+          attribute(el, "content")
+      redirectTarget:
+        select: head > meta[name="redirecttarget"]
+        value: |
+          attribute(el, "content")
+      displayImage:
+        select: head > meta[name="displayimage"]
+        value: |
+          attribute(el, "content")
+      tags:
+        select: head > meta[property="article:tag"]
+        values: |
+          attribute(el, "content")
+      category:
+        select: head > meta[name="category"]
+        value: |
+          attribute(el, "content")
+      template:
+        select: head > meta[name="template"]
+        value: |
+          attribute(el, "content")
+      date:
+        select: head > meta[name="publication-date"]
+        value: |
+          attribute(el, "content")
+      status:
+        select: head > meta[name="status"]
+        value: |
+          attribute(el, "content")
+      eventDate:
+        select: head > meta[name="event-date"]
+        value: |
+          attribute(el, "content")
+      recapVideo:
+        select: head > meta[name="recap-video"]
+        value: |
+          attribute(el, "content")
+      speakers:
+        select: head > meta[name="speakers"]
+        value: |
+          attribute(el, "content")
+      location:
+        select: head > meta[name="location"]
+        value: |
+          attribute(el, "content")
+      robots:
+        select: head > meta[name="robots"]
+        value: |
+          attribute(el, "content")
+
+  aemdev-pt:
+    include:
+      - /pt/**
+    exclude:
+      - /pt/drafts/**
+      - /pt/sandbox/**
+      - /pt/fragments/**
+    target: /pt/query-index.json
+    properties:
+      author:
+        select: head > meta[name="author"]
+        value: |
+          attribute(el, "content")
+      title:
+        select: head > meta[property="og:title"]
+        value: |
+          attribute(el, "content")
+      image:
+        select: head > meta[property="og:image"]
+        value: |
+          match(attribute(el, "content"), "https:\/\/[^/]+(/.*)")
+      description:
+        select: head > meta[name="description"]
+        value: |
+          attribute(el, "content")
+      displayDescription:
+        select: head > meta[name="displaydescription"]
+        value: |
+          attribute(el, "content")
+      releaseDate:
+        select: head > meta[name="releasedate"]
+        value: |
+          attribute(el, "content")
+      redirectTarget:
+        select: head > meta[name="redirecttarget"]
+        value: |
+          attribute(el, "content")
+      displayImage:
+        select: head > meta[name="displayimage"]
+        value: |
+          attribute(el, "content")
+      tags:
+        select: head > meta[property="article:tag"]
+        values: |
+          attribute(el, "content")
+      category:
+        select: head > meta[name="category"]
+        value: |
+          attribute(el, "content")
+      template:
+        select: head > meta[name="template"]
+        value: |
+          attribute(el, "content")
+      date:
+        select: head > meta[name="publication-date"]
+        value: |
+          attribute(el, "content")
+      status:
+        select: head > meta[name="status"]
+        value: |
+          attribute(el, "content")
+      eventDate:
+        select: head > meta[name="event-date"]
+        value: |
+          attribute(el, "content")
+      recapVideo:
+        select: head > meta[name="recap-video"]
+        value: |
+          attribute(el, "content")
+      speakers:
+        select: head > meta[name="speakers"]
+        value: |
+          attribute(el, "content")
+      location:
+        select: head > meta[name="location"]
+        value: |
+          attribute(el, "content")
+      robots:
+        select: head > meta[name="robots"]
+        value: |
+          attribute(el, "content")
+
+  aemdev-pl:
+    include:
+      - /pl/**
+    exclude:
+      - /pl/drafts/**
+      - /pl/sandbox/**
+      - /pl/fragments/**
+    target: /pl/query-index.json
+    properties:
+      author:
+        select: head > meta[name="author"]
+        value: |
+          attribute(el, "content")
+      title:
+        select: head > meta[property="og:title"]
+        value: |
+          attribute(el, "content")
+      image:
+        select: head > meta[property="og:image"]
+        value: |
+          match(attribute(el, "content"), "https:\/\/[^/]+(/.*)")
+      description:
+        select: head > meta[name="description"]
+        value: |
+          attribute(el, "content")
+      displayDescription:
+        select: head > meta[name="displaydescription"]
+        value: |
+          attribute(el, "content")
+      releaseDate:
+        select: head > meta[name="releasedate"]
+        value: |
+          attribute(el, "content")
+      redirectTarget:
+        select: head > meta[name="redirecttarget"]
+        value: |
+          attribute(el, "content")
+      displayImage:
+        select: head > meta[name="displayimage"]
+        value: |
+          attribute(el, "content")
+      tags:
+        select: head > meta[property="article:tag"]
+        values: |
+          attribute(el, "content")
+      category:
+        select: head > meta[name="category"]
+        value: |
+          attribute(el, "content")
+      template:
+        select: head > meta[name="template"]
+        value: |
+          attribute(el, "content")
+      date:
+        select: head > meta[name="publication-date"]
+        value: |
+          attribute(el, "content")
+      status:
+        select: head > meta[name="status"]
+        value: |
+          attribute(el, "content")
+      eventDate:
+        select: head > meta[name="event-date"]
+        value: |
+          attribute(el, "content")
+      recapVideo:
+        select: head > meta[name="recap-video"]
+        value: |
+          attribute(el, "content")
+      speakers:
+        select: head > meta[name="speakers"]
+        value: |
+          attribute(el, "content")
+      location:
+        select: head > meta[name="location"]
+        value: |
+          attribute(el, "content")
+      robots:
+        select: head > meta[name="robots"]
+        value: |
+          attribute(el, "content")
+
+  aemdev-ja:
+    include:
+      - /ja/**
+    exclude:
+      - /ja/drafts/**
+      - /ja/sandbox/**
+      - /ja/fragments/**
+    target: /ja/query-index.json
+    properties:
+      author:
+        select: head > meta[name="author"]
+        value: |
+          attribute(el, "content")
+      title:
+        select: head > meta[property="og:title"]
+        value: |
+          attribute(el, "content")
+      image:
+        select: head > meta[property="og:image"]
+        value: |
+          match(attribute(el, "content"), "https:\/\/[^/]+(/.*)")
+      description:
+        select: head > meta[name="description"]
+        value: |
+          attribute(el, "content")
+      displayDescription:
+        select: head > meta[name="displaydescription"]
+        value: |
+          attribute(el, "content")
+      releaseDate:
+        select: head > meta[name="releasedate"]
+        value: |
+          attribute(el, "content")
+      redirectTarget:
+        select: head > meta[name="redirecttarget"]
+        value: |
+          attribute(el, "content")
+      displayImage:
+        select: head > meta[name="displayimage"]
+        value: |
+          attribute(el, "content")
+      tags:
+        select: head > meta[property="article:tag"]
+        values: |
+          attribute(el, "content")
+      category:
+        select: head > meta[name="category"]
+        value: |
+          attribute(el, "content")
+      template:
+        select: head > meta[name="template"]
+        value: |
+          attribute(el, "content")
+      date:
+        select: head > meta[name="publication-date"]
+        value: |
+          attribute(el, "content")
+      status:
+        select: head > meta[name="status"]
+        value: |
+          attribute(el, "content")
+      eventDate:
+        select: head > meta[name="event-date"]
+        value: |
+          attribute(el, "content")
+      recapVideo:
+        select: head > meta[name="recap-video"]
+        value: |
+          attribute(el, "content")
+      speakers:
+        select: head > meta[name="speakers"]
+        value: |
+          attribute(el, "content")
+      location:
+        select: head > meta[name="location"]
+        value: |
+          attribute(el, "content")
+      robots:
+        select: head > meta[name="robots"]
+        value: |
+          attribute(el, "content")
+
+  aemdev-ko:
+    include:
+      - /ko/**
+    exclude:
+      - /ko/drafts/**
+      - /ko/sandbox/**
+      - /ko/fragments/**
+    target: /ko/query-index.json
+    properties:
+      author:
+        select: head > meta[name="author"]
+        value: |
+          attribute(el, "content")
+      title:
+        select: head > meta[property="og:title"]
+        value: |
+          attribute(el, "content")
+      image:
+        select: head > meta[property="og:image"]
+        value: |
+          match(attribute(el, "content"), "https:\/\/[^/]+(/.*)")
+      description:
+        select: head > meta[name="description"]
+        value: |
+          attribute(el, "content")
+      displayDescription:
+        select: head > meta[name="displaydescription"]
+        value: |
+          attribute(el, "content")
+      releaseDate:
+        select: head > meta[name="releasedate"]
+        value: |
+          attribute(el, "content")
+      redirectTarget:
+        select: head > meta[name="redirecttarget"]
+        value: |
+          attribute(el, "content")
+      displayImage:
+        select: head > meta[name="displayimage"]
+        value: |
+          attribute(el, "content")
+      tags:
+        select: head > meta[property="article:tag"]
+        values: |
+          attribute(el, "content")
+      category:
+        select: head > meta[name="category"]
+        value: |
+          attribute(el, "content")
+      template:
+        select: head > meta[name="template"]
+        value: |
+          attribute(el, "content")
+      date:
+        select: head > meta[name="publication-date"]
+        value: |
+          attribute(el, "content")
+      status:
+        select: head > meta[name="status"]
+        value: |
+          attribute(el, "content")
+      eventDate:
+        select: head > meta[name="event-date"]
+        value: |
+          attribute(el, "content")
+      recapVideo:
+        select: head > meta[name="recap-video"]
+        value: |
+          attribute(el, "content")
+      speakers:
+        select: head > meta[name="speakers"]
+        value: |
+          attribute(el, "content")
+      location:
+        select: head > meta[name="location"]
+        value: |
+          attribute(el, "content")
+      robots:
+        select: head > meta[name="robots"]
+        value: |
+          attribute(el, "content")
+
+  aemdev-zh-cn:
+    include:
+      - /zh-cn/**
+    exclude:
+      - /zh-cn/drafts/**
+      - /zh-cn/sandbox/**
+      - /zh-cn/fragments/**
+    target: /zh-cn/query-index.json
+    properties:
+      author:
+        select: head > meta[name="author"]
+        value: |
+          attribute(el, "content")
+      title:
+        select: head > meta[property="og:title"]
+        value: |
+          attribute(el, "content")
+      image:
+        select: head > meta[property="og:image"]
+        value: |
+          match(attribute(el, "content"), "https:\/\/[^/]+(/.*)")
+      description:
+        select: head > meta[name="description"]
+        value: |
+          attribute(el, "content")
+      displayDescription:
+        select: head > meta[name="displaydescription"]
+        value: |
+          attribute(el, "content")
+      releaseDate:
+        select: head > meta[name="releasedate"]
+        value: |
+          attribute(el, "content")
+      redirectTarget:
+        select: head > meta[name="redirecttarget"]
+        value: |
+          attribute(el, "content")
+      displayImage:
+        select: head > meta[name="displayimage"]
+        value: |
+          attribute(el, "content")
+      tags:
+        select: head > meta[property="article:tag"]
+        values: |
+          attribute(el, "content")
+      category:
+        select: head > meta[name="category"]
+        value: |
+          attribute(el, "content")
+      template:
+        select: head > meta[name="template"]
+        value: |
+          attribute(el, "content")
+      date:
+        select: head > meta[name="publication-date"]
+        value: |
+          attribute(el, "content")
+      status:
+        select: head > meta[name="status"]
+        value: |
+          attribute(el, "content")
+      eventDate:
+        select: head > meta[name="event-date"]
+        value: |
+          attribute(el, "content")
+      recapVideo:
+        select: head > meta[name="recap-video"]
+        value: |
+          attribute(el, "content")
+      speakers:
+        select: head > meta[name="speakers"]
+        value: |
+          attribute(el, "content")
+      location:
+        select: head > meta[name="location"]
+        value: |
+          attribute(el, "content")
+      robots:
+        select: head > meta[name="robots"]
+        value: |
+          attribute(el, "content")
+
+  aemdev-zh-tw:
+    include:
+      - /zh-tw/**
+    exclude:
+      - /zh-tw/drafts/**
+      - /zh-tw/sandbox/**
+      - /zh-tw/fragments/**
+    target: /zh-tw/query-index.json
+    properties:
+      author:
+        select: head > meta[name="author"]
+        value: |
+          attribute(el, "content")
+      title:
+        select: head > meta[property="og:title"]
+        value: |
+          attribute(el, "content")
+      image:
+        select: head > meta[property="og:image"]
+        value: |
+          match(attribute(el, "content"), "https:\/\/[^/]+(/.*)")
+      description:
+        select: head > meta[name="description"]
+        value: |
+          attribute(el, "content")
+      displayDescription:
+        select: head > meta[name="displaydescription"]
+        value: |
+          attribute(el, "content")
+      releaseDate:
+        select: head > meta[name="releasedate"]
+        value: |
+          attribute(el, "content")
+      redirectTarget:
+        select: head > meta[name="redirecttarget"]
+        value: |
+          attribute(el, "content")
+      displayImage:
+        select: head > meta[name="displayimage"]
+        value: |
+          attribute(el, "content")
+      tags:
+        select: head > meta[property="article:tag"]
+        values: |
+          attribute(el, "content")
+      category:
+        select: head > meta[name="category"]
+        value: |
+          attribute(el, "content")
+      template:
+        select: head > meta[name="template"]
+        value: |
+          attribute(el, "content")
+      date:
+        select: head > meta[name="publication-date"]
+        value: |
+          attribute(el, "content")
+      status:
+        select: head > meta[name="status"]
+        value: |
+          attribute(el, "content")
+      eventDate:
+        select: head > meta[name="event-date"]
+        value: |
+          attribute(el, "content")
+      recapVideo:
+        select: head > meta[name="recap-video"]
+        value: |
+          attribute(el, "content")
+      speakers:
+        select: head > meta[name="speakers"]
+        value: |
+          attribute(el, "content")
+      location:
+        select: head > meta[name="location"]
+        value: |
+          attribute(el, "content")
+      robots:
+        select: head > meta[name="robots"]
+        value: |
+          attribute(el, "content")

@@ -16,3 +16,26 @@ fragments/
 blog/
 templates/
 index.plain.html
+
+# ── Tracker (QA + translation) ────────────────────────────────────────────────
+# Committed: .tracker/orchestrator.json, hosts/, qa-baselines/, qa-requirements/,
+# state/*-ledger.json, state/*.jsonl, reports/qa + reports/tx. Those ARE the shared
+# state — the pipeline syncs them through git so two machines agree.
+# Ignored below: per-machine and re-derivable output only.
+.tracker/state/harness-fixtures/
+.tracker/state/run.log
+.tracker/state/run.pid
+# --validate-only output: one machine's one-off opinion, never batch state.
+.tracker/reports/qa-local/
+# Transient per-run batch lists. The tracked list is pairs-*.txt.
+.tracker/urls/pending-*.txt
+visual-compare-out/
+
+# Tracker PAGES live in DA, same as the rest of the content.
+#
+# Root-anchored on purpose. A pattern with no leading slash matches a directory of
+# that name at ANY depth, so the unanchored `tracker/` also ignored the port's entire
+# source: scripts/tracker/, tools/tracker/, test/scripts/tracker/ and docs/tracker/
+# were all unstageable. Anchoring it restricts the rule to the /tracker content tree
+# it was written for. Verified with `git check-ignore -v`.
+/tracker/

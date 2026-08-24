@@ -2,3 +2,7 @@
 User-agent: *
 Allow: /
 
+# The QA / translation tracker is an internal board. noindex is set four ways:
+# a per-page metadata row, absence from every query index, an x-robots-tag response
+# header (the only layer that reaches the JSON feeds), and this line.
+Disallow: /tracker/

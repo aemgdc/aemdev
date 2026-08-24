@@ -1,4 +1,14 @@
 {
+  "/tracker/*": [
+    {
+      "key": "x-robots-tag",
+      "value": "noindex, nofollow"
+    },
+    {
+      "key": "access-control-allow-origin",
+      "value": "*"
+    }
+  ],
   "/content/*": [
     {
       "key": "access-control-allow-origin",

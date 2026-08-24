@@ -1,0 +1,267 @@
+{
+  "_comment": [
+    "SOURCE OF TRUTH for DA's built-in Translate app config on aemgdc/aemdev.",
+    "",
+    "*** THIS FILE IS ANNOTATED SOURCE, NOT THE PAYLOAD. ***",
+    "`npm run tx:config` MUST strip every `_comment` (top level and per sheet) and every",
+    "`_why` (per row) before POSTing. Two different reasons, both non-obvious:",
+    "  - A DA sheet document may carry ONLY `:`-prefixed top-level keys or",
+    "    {total,limit,offset,data} sheet objects. `_comment` is neither, so the write is",
+    "    refused by the content bus — and it is refused at PREVIEW, not at",
+    "    admin.da.live, so DA is left holding a file every reader 404s.",
+    "  - `_why` inside a data row becomes a real sheet COLUMN. It would show up in the",
+    "    sheet UI and be handed to the connector as data.",
+    "The annotations live here because a rule table nobody can read is a rule table",
+    "nobody maintains — the reasoning is worth more in git than the payload is.",
+    "",
+    "Pushed to DA at /aemgdc/aemdev/.da/translate.json by `npm run tx:config -- --apply`.",
+    "DA resolves this path first, then /aemgdc/.da/translate.json, then the bundled",
+    "Google-connector default. Schema verified against adobe/da-nx at",
+    "nx/blocks/loc/connectors/google/translate.json, parsed by nx/blocks/loc/dnt/dnt.js",
+    "(parseConfig) — the public docs cover only the four `*.conflict.behavior` keys and",
+    "describe none of the other four sheets.",
+    "",
+    "`custom-doc-rules.rule` is a near-English query parsed by nx/blocks/loc/dnt/",
+    "parseQuery.js. Grammar: directives `translate` | `dnt`; targets `row` / `col` /",
+    "`cell` with 1-BASED indices (ranges `1-4`, negatives count from the end, `*` = all);",
+    "operators `is`, `not-is`, `startswith`, `contains`, `has-element` and their `not-`",
+    "forms; `if` / `unless` introduce a condition. Column numbers refer to the AUTHORED",
+    "table, so they change if a block's authoring shape changes — that is the one way",
+    "these rules rot silently, because an out-of-range column is a no-op, not an error.",
+    "",
+    "Default is TRANSLATE. A block absent from custom-doc-rules has all its prose sent.",
+    "So the rules below are the exceptions, and the bias is deliberate: forgetting to",
+    "list a prose block costs a little money, while forgetting to DNT a path or an",
+    "identifier silently corrupts a page in ten locales."
+  ],
+
+  "config": {
+    "total": 8,
+    "limit": 8,
+    "offset": 0,
+    "data": [
+      {
+        "key": "sync.conflict.behavior",
+        "value": "merge",
+        "description": "Pulling source content into the send-for-translation folder. `merge` so a hand-edit made in staging is not silently discarded by a re-sync."
+      },
+      {
+        "key": "translate.conflict.behavior",
+        "value": "overwrite",
+        "description": "Content returning FROM translation wins. This is machine translation into a tree nobody hand-edits before QA, so `merge` would only create phantom conflicts."
+      },
+      {
+        "key": "rollout.conflict.behavior",
+        "value": "merge",
+        "description": "Rolling out to the locale. `merge` because by this point a native reviewer may have corrected the locale document, and a re-rollout must not throw that away — the review verdict in the tracker would then be attached to text that no longer exists."
+      },
+      {
+        "key": "copy.conflict.behavior",
+        "value": "merge",
+        "description": "Copying source into a region without translating."
+      },
+      { "key": "translation.service.name", "value": "Google", "description": "Machine translation. Every locale is `Machine Translation` in the languages sheet below; the human pass is the tracker's native-review stage, not the connector's." },
+      { "key": "translation.service.all.env", "value": "prod", "description": "First entry is the default." },
+      { "key": "translation.service.prod.link", "value": "https://cloud.google.com/translate/docs/overview", "description": "" },
+      { "key": "translation.service.prod.origin", "value": "https://translate.da.live/google", "description": "" }
+    ]
+  },
+
+  "languages": {
+    "total": 11,
+    "limit": 11,
+    "offset": 0,
+    "data": [
+      { "name": "English", "code": "en", "translate type": "Machine Translation", "location": "/en", "actions": "Skip" },
+      { "name": "German", "code": "de", "translate type": "Machine Translation", "location": "/de", "actions": "Translate" },
+      { "name": "French", "code": "fr", "translate type": "Machine Translation", "location": "/fr", "actions": "Translate" },
+      { "name": "Spanish", "code": "es", "translate type": "Machine Translation", "location": "/es", "actions": "Translate" },
+      { "name": "Italian", "code": "it", "translate type": "Machine Translation", "location": "/it", "actions": "Translate" },
+      { "name": "Portuguese", "code": "pt", "translate type": "Machine Translation", "location": "/pt", "actions": "Translate" },
+      { "name": "Polish", "code": "pl", "translate type": "Machine Translation", "location": "/pl", "actions": "Translate" },
+      { "name": "Japanese", "code": "ja", "translate type": "Machine Translation", "location": "/ja", "actions": "Translate" },
+      { "name": "Korean", "code": "ko", "translate type": "Machine Translation", "location": "/ko", "actions": "Translate" },
+      { "name": "Chinese (Simplified)", "code": "zh-CN", "translate type": "Machine Translation", "location": "/zh-cn", "actions": "Translate" },
+      { "name": "Chinese (Traditional)", "code": "zh-TW", "translate type": "Machine Translation", "location": "/zh-tw", "actions": "Translate" }
+    ],
+    "_comment": [
+      "`code` is what the connector is told; `location` is the URL prefix. For the two",
+      "Chinese entries they differ in CASE ONLY (zh-CN vs /zh-cn) and that near-miss is",
+      "exactly the kind that fails silently — the connector accepts an unknown code and",
+      "hands back the source text untranslated. scripts/tracker/locales.js holds both",
+      "spellings per locale (`serviceCode` vs `code`) so one place knows the difference.",
+      "",
+      "`en` is `Skip`, not `Translate`: it is the source."
+    ]
+  },
+
+  "custom-doc-rules": {
+    "total": 16,
+    "limit": 16,
+    "offset": 0,
+    "data": [
+      {
+        "block": "metadata",
+        "rule": "translate col 2 if col 1 is \"title\" or \"description\" or \"displaydescription\" or \"og:title\"",
+        "_why": "Only the prose metadata. Everything else in this block is machine-read: template, status, category, tags, robots, speakers, event-date, location, recap-video, author, image, publication-date. Translating `status` from `upcoming` to `bevorstehend` breaks the lifecycle model AND the query index in one step."
+      },
+      {
+        "block": "section-metadata",
+        "rule": "do-not-translate",
+        "_why": "Pure layout directives — grid, columns, gap, spacing, background, color scheme. No prose at all."
+      },
+      {
+        "block": "search-config",
+        "rule": "do-not-translate",
+        "_why": "A headless config block; blocks/header/header.js reads its key/value rows and removes it. Nothing here is ever displayed."
+      },
+      {
+        "block": "code",
+        "rule": "do-not-translate",
+        "_why": "THE most important rule here. A translated identifier, flag, or shell command is not a lower-quality translation, it is a defect that produces broken instructions — and technical-articles is the group where this block appears most. The label row goes untranslated with it, which is the right trade for never corrupting the body."
+      },
+      {
+        "block": "fragment",
+        "rule": "do-not-translate",
+        "_why": "The cell holds a document path. scripts/scripts.js auto-blocks any href containing /fragments/, so a translated path resolves to nothing and the fragment silently vanishes from the page."
+      },
+      {
+        "block": "embed, youtube, spotify",
+        "rule": "do-not-translate",
+        "_why": "URLs and media ids."
+      },
+      {
+        "block": "speaking",
+        "rule": "dnt col 3",
+        "_why": "Authored as | event label | title | youtube url |. Column 3 is the video URL. The label and the talk title do translate."
+      },
+      {
+        "block": "insights, article-feed",
+        "rule": "dnt col 2 if col 1 is \"index\" or \"limit\" or \"category\" or \"tag\" or \"template\" or \"path\" or \"status\" or \"card-1-url\" or \"card-2-url\" or \"card-3-url\" or \"card-4-url\"",
+        "_why": "These blocks mix authored prose (badge, title, dek, cta) with query configuration. The config values are index paths, tag ids, template names and numbers — a translated `aemdev:category/meetup` matches nothing and the feed renders empty, which reads as a content problem rather than a translation one."
+      },
+      {
+        "block": "article-feed",
+        "rule": "dnt col 2 if col 1 contains \"-date\"",
+        "_why": "card-N-date is a rendered date string the feed prints verbatim; the locale tree wants a localized date, but a machine-translated one is unparseable rather than localized. Left in English until a real date-formatting pass exists."
+      },
+      {
+        "block": "author-rows",
+        "rule": "dnt row 1 col 1",
+        "_why": "Column 1 of the first row is the headshot image. Names and LinkedIn URLs are handled by dnt-content-rules and dnt-sheet-rules respectively."
+      },
+      {
+        "block": "schedule",
+        "rule": "do-not-translate",
+        "_why": "Scheduled-content control rows — dates and paths driving when content appears."
+      },
+      {
+        "block": "table",
+        "rule": "translate",
+        "_why": "Stated explicitly rather than left to the default, because `table`'s first authored row is consumed as a BLOCK NAME (see blocks/table/table.js) and it would be easy to add a `dnt row 1` rule here by analogy with other blocks. Don't: row 1 is a real header row by the time DA sees it."
+      },
+      {
+        "block": "carousel, advanced-tabs, columns, card, mtb-card, callout, pullquote, hero, home-hero, blog-post-hero, figure, step, ticker, update, qa",
+        "rule": "translate",
+        "_why": "Prose blocks, listed explicitly so a reader of this sheet can see they were considered rather than forgotten. Same as the default."
+      },
+      {
+        "block": "dam-display",
+        "rule": "dnt col 1",
+        "_why": "Asset path."
+      },
+      {
+        "block": "results-panel, search-tab, search-tabs",
+        "rule": "dnt cell if cell startswith \"/\"",
+        "_why": "Search scaffolding: labels translate, the paths and index references in them must not."
+      },
+      {
+        "block": "tracker-summary, translation-matrix, group-progress, work-queue, escalation-list, status-primer",
+        "rule": "do-not-translate",
+        "_why": "The tracker's own boards. They live under /tracker/, which is never sent for translation at all — this rule is a second line of defence in case a /tracker/ path is ever added to a project by hand."
+      }
+    ]
+  },
+
+  "dnt-content-rules": {
+    "total": 12,
+    "limit": 12,
+    "offset": 0,
+    "data": [
+      { "content": "AEM Global Development Collective" },
+      { "content": "AEM GDC" },
+      { "content": "Edge Delivery Services" },
+      { "content": "Document Authoring" },
+      { "content": "Adobe Experience Manager" },
+      { "content": "AEMaaCS" },
+      { "content": "adaptTo()" },
+      { "content": "Adobe Developers Live" },
+      { "content": "aemdev.org" },
+      { "content": "Tad Reeves" },
+      { "content": "Laurel Timko" },
+      { "content": "Wilson Faure" }
+    ],
+    "_comment": [
+      "Literal strings wrapped in translate=\"no\" wherever they appear in body text.",
+      "",
+      "Two categories, both deliberate. PRODUCT AND EVENT NAMES are proper nouns whose",
+      "translation is a defect the judge is configured to fail — `Edge Delivery Services`",
+      "rendered as `Servicios de entrega perimetral` is wrong in every locale, and it is",
+      "the single most common machine-translation failure on a technical site.",
+      "",
+      "PERSON NAMES are here because the meetups and bios groups make speaker names",
+      "load-bearing content, and a transliterated name into a CJK locale is both wrong",
+      "and hard to spot in review. This list must grow as bios are authored — the bios",
+      "roster sheet (/bios.json, column `Name`) is the source, and keeping the two in",
+      "step is a real maintenance cost. The alternative, translating names, is worse.",
+      "",
+      "Note the matcher is a substring XPath contains(), so a short string here has wide",
+      "reach: do not add a common word."
+    ]
+  },
+
+  "dnt-sheet-rules": {
+    "total": 4,
+    "limit": 4,
+    "offset": 0,
+    "data": [
+      { "pattern": "beginsWith(http:// || https://)", "action": "dnt" },
+      { "pattern": "beginsWith(/)", "action": "dnt" },
+      { "pattern": "beginsWith(aemdev:)", "action": "dnt" },
+      { "pattern": "beginsWith(#)", "action": "dnt" }
+    ],
+    "_comment": [
+      "Applied to sheet cells. Absolute URLs, site-root-relative paths, taxonomy tag ids",
+      "(`aemdev:topic/edge-delivery`), and the hash authoring language this site uses",
+      "(`#_blank`, `#_dnt`, `#_self` — see scripts/utils/link-target.js). Every one is an",
+      "identifier that must survive byte-identical."
+    ]
+  },
+
+  "dnt": {
+    "total": 3,
+    "limit": 3,
+    "offset": 0,
+    "data": [
+      { "dnt-sheet": "*", "dnt-columns": "Slug, Path, Image, LinkedIn, Updated" },
+      { "dnt-sheet": "redirects", "dnt-columns": "*" },
+      { "dnt-sheet": "*", "dnt-columns": "page-path, locale, locale-path, sent-at, previewed, online, translation-status, review-status, review-updated, subgroup, template, en-status, content-escalation" }
+    ],
+    "_comment": [
+      "Row 1 covers the bios roster (/bios.json) — its structural columns. `Name` is NOT",
+      "listed here because it is covered by dnt-content-rules instead, which also catches",
+      "the name where it appears in body prose; a column rule would only catch the cell.",
+      "",
+      "Row 2: the redirects sheet is entirely paths.",
+      "",
+      "Row 3: every column of the tracker's own group sheets, as defence in depth. Those",
+      "sheets live under /tracker/ and are never in a translation project, but a status",
+      "value silently translated from `en-published` to `en-veröffentlicht` would not",
+      "fail loudly — it would classify as `unknown en-status` and quietly stop counting."
+    ]
+  },
+
+  ":names": ["config", "languages", "custom-doc-rules", "dnt-content-rules", "dnt-sheet-rules", "dnt"],
+  ":version": 3,
+  ":type": "multi-sheet"
+}

@@ -1,3 +1,7 @@
+# Language blocks below are generated from scripts/tracker/locales.js — the one
+# registry. A locale appears here only once it has a query index in query.yaml;
+# a `source` that 404s yields an empty <urlset>, not an error, so a missing index
+# is silent. Add the index first, then the language block.
 version: 2
 
 sitemaps:
@@ -10,3 +14,53 @@ sitemaps:
         destination: /en/sitemap.xml
         hreflang: en
         alternate: /en/{path}
+      de:
+        source: /de/query-index.json
+        destination: /de/sitemap.xml
+        hreflang: de
+        alternate: /de/{path}
+      fr:
+        source: /fr/query-index.json
+        destination: /fr/sitemap.xml
+        hreflang: fr
+        alternate: /fr/{path}
+      es:
+        source: /es/query-index.json
+        destination: /es/sitemap.xml
+        hreflang: es
+        alternate: /es/{path}
+      it:
+        source: /it/query-index.json
+        destination: /it/sitemap.xml
+        hreflang: it
+        alternate: /it/{path}
+      pt:
+        source: /pt/query-index.json
+        destination: /pt/sitemap.xml
+        hreflang: pt
+        alternate: /pt/{path}
+      pl:
+        source: /pl/query-index.json
+        destination: /pl/sitemap.xml
+        hreflang: pl
+        alternate: /pl/{path}
+      ja:
+        source: /ja/query-index.json
+        destination: /ja/sitemap.xml
+        hreflang: ja
+        alternate: /ja/{path}
+      ko:
+        source: /ko/query-index.json
+        destination: /ko/sitemap.xml
+        hreflang: ko
+        alternate: /ko/{path}
+      zh-cn:
+        source: /zh-cn/query-index.json
+        destination: /zh-cn/sitemap.xml
+        hreflang: zh-cn
+        alternate: /zh-cn/{path}
+      zh-tw:
+        source: /zh-tw/query-index.json
+        destination: /zh-tw/sitemap.xml
+        hreflang: zh-tw
+        alternate: /zh-tw/{path}

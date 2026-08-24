@@ -140,18 +140,33 @@ export async function readGroupSheet(group, { fresh = false } = {}) {
   let res;
   try {
     /*
-     * `fresh` bypasses the HTTP cache, and it exists for exactly one caller: the
-     * read-back that confirms a write.
+     * `fresh` defeats every cache between here and DA, and it exists for exactly one
+     * caller: the read-back that confirms a write.
      *
      * This is the one place the app CANNOT share the pipeline's code path and get the
      * same answer. Node's fetch has no HTTP cache, so `updateStatusDoc`'s identical
      * confirm read always sees the write it just made. A browser's fetch does have one,
      * so the confirm read was served the PRE-WRITE body and every successful write
      * reported "the write reported success but <column> did not land" — a false negative
-     * on a write that had in fact landed, which is the worst possible way for this to
-     * fail: it teaches an author to distrust a guard that is working.
+     * on a guard that was working, which is the worst way for it to fail: it teaches an
+     * author to distrust the one check standing between them and silent data loss.
+     *
+     * BOTH mechanisms, deliberately, because they defeat different caches:
+     *   `cache: 'no-store'`  the BROWSER's HTTP cache. `daFetch(url, opts)` forwards
+     *                        opts straight to `fetch`, so this reaches it.
+     *   `?nocache=<now>`     everything keyed on the URL — and Cloudflare sits in front
+     *                        of admin.da.live (it is what rewrites the strong ETag into
+     *                        a weak one; see `strongEtag` above). `no-store` governs
+     *                        this browser, not an intermediary. DA's own client uses
+     *                        exactly this param for exactly this reason
+     *                        (`nx2/utils/api.js`, its `cachebust` option).
+     * Verified against the live API: `/source/...json?nocache=<n>` returns 200 with the
+     * same body and the same ETag as the plain URL, so the param is inert to DA.
      */
-    res = await requireFetch()(url, fresh ? { cache: 'no-store' } : undefined);
+    const target = fresh
+      ? `${url}${url.includes('?') ? '&' : '?'}nocache=${Date.now()}`
+      : url;
+    res = await requireFetch()(target, fresh ? { cache: 'no-store' } : undefined);
   } catch (e) {
     return { exists: false, error: `${url} → ${e.message}`, where: url };
   }

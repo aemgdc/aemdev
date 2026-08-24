@@ -12,7 +12,11 @@
 (() => {
   const SOURCE = 'https://admin.da.live/source/aemgdc/aemdev';
   const AEM = 'https://admin.hlx.page';
-  const PHOTO = '/tools/bio-manager/fixtures/headshot.svg';
+  // A content.da.live URL on purpose: that is what the app stores, and it is
+  // NOT publicly readable, so this exercises the authenticated image path
+  // rather than quietly passing a public URL straight through.
+  const PHOTO = 'https://content.da.live/aemgdc/aemdev/media/bios/headshot.svg';
+  const PHOTO_FILE = '/tools/bio-manager/fixtures/headshot.svg';
 
   const FIXTURES = [
     {
@@ -122,8 +126,12 @@
       return ok('{}');
     }
 
-    // Media upload — hand back a URL the browser can actually render.
     if (/\.(jpe?g|png|gif|svg)$/.test(rel)) {
+      // GET is the app fetching a headshot for display; POST is an upload.
+      if (method === 'GET') {
+        const svg = await realFetch(PHOTO_FILE).then((r) => r.text());
+        return ok(svg, 'image/svg+xml');
+      }
       return ok(JSON.stringify({ source: { contentUrl: PHOTO } }));
     }
 

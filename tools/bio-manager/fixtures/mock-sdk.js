@@ -18,8 +18,16 @@ const actions = {
   closeLibrary: () => console.log('[mock] closeLibrary'),
 };
 
+// `view` is the real discriminator: DA's library palette posts 'edit', the
+// fullscreen app host does not. `actions` is always present either way,
+// exactly as the live SDK behaves.
 export default Promise.resolve({
-  context: { org: 'aemgdc', site: 'aemdev', path: '/en/meetups/2026-10-berlin-meetup' },
+  context: {
+    view: asPlugin ? 'edit' : 'app',
+    org: 'aemgdc',
+    site: 'aemdev',
+    path: asPlugin ? '/en/meetups/2026-10-berlin-meetup' : '/',
+  },
   token: 'mock-token',
-  actions: asPlugin ? actions : undefined,
+  actions,
 });

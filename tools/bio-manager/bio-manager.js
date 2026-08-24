@@ -37,6 +37,7 @@ import {
 const CONFIG = BIO_PATHS;
 
 const DA_SOURCE = 'https://admin.da.live/source';
+const DA_CONTENT = 'https://content.da.live';
 const DA_EDIT = 'https://da.live/edit#';
 const DA_SHEET_UI = 'https://da.live/sheet#';
 const AEM_ADMIN = 'https://admin.hlx.page';
@@ -107,6 +108,30 @@ function isHttpUrl(value) {
   } catch (e) {
     return false;
   }
+}
+
+/**
+ * content.da.live requires auth — an unauthenticated GET is a 401 — and this
+ * app runs on aem.live, a different origin, so a plain <img src> can never
+ * load a headshot. Pull the bytes through the Source API with the token we
+ * already hold and hand back a blob URL. Cached: the roster re-renders on
+ * every keystroke in the search box.
+ *
+ * (`actions.daFetch` from the SDK would also work, but it is an undocumented
+ * member of a hosted dependency — see R5 — and this is three lines.)
+ */
+const imageCache = new Map();
+
+async function displayableImage(url) {
+  if (!url || !url.startsWith(DA_CONTENT)) return url;
+  if (imageCache.has(url)) return imageCache.get(url);
+  const prefix = `${DA_CONTENT}/${state.org}/${state.site}`;
+  if (!url.startsWith(prefix)) return url;
+  const resp = await fetch(sourceUrl(url.slice(prefix.length)), { headers: authHeaders() });
+  if (!resp.ok) throw new Error(`Headshot fetch failed (${resp.status})`);
+  const objectUrl = URL.createObjectURL(await resp.blob());
+  imageCache.set(url, objectUrl);
+  return objectUrl;
 }
 
 /* --------------------------------------------------------------- banner */
@@ -411,16 +436,20 @@ function filteredRows() {
 }
 
 function avatarEl(bio) {
-  if (bio.image) {
+  // Initials render immediately; the headshot replaces them once its
+  // authenticated fetch lands, so a slow or failed image never blocks or
+  // breaks the roster.
+  const holder = avatarFallback(bio);
+  if (!bio.image) return holder;
+  displayableImage(bio.image).then((src) => {
+    if (!src || !holder.isConnected) return;
     const img = document.createElement('img');
     img.className = 'bm-avatar';
-    img.src = bio.image;
+    img.src = src;
     img.alt = '';
-    img.loading = 'lazy';
-    img.addEventListener('error', () => img.replaceWith(avatarFallback(bio)));
-    return img;
-  }
-  return avatarFallback(bio);
+    holder.replaceWith(img);
+  }).catch(() => { /* keep the initials */ });
+  return holder;
 }
 
 function avatarFallback(bio) {
@@ -583,7 +612,8 @@ function currentDraft() {
     company: els.company.value.trim(),
     linkedin: els.linkedin.value.trim(),
     status: els.status.value,
-    image: state.photo?.url || '',
+    // `stored` is what belongs in the document; `url` may be a local blob.
+    image: state.photo?.stored || state.photo?.url || '',
     // Sanitised here, not at save time, so the preview shows exactly what the
     // document will contain — including anything a paste just lost.
     body: sanitiseBodyHtml(els.body.innerHTML),
@@ -642,7 +672,9 @@ function acceptPhotoFile(file) {
     return;
   }
   // Preview locally; the upload happens on save, once the slug is settled.
-  setPhoto({ url: URL.createObjectURL(file), name: file.name, file, path: '' });
+  setPhoto({
+    url: URL.createObjectURL(file), stored: '', name: file.name, file, path: '',
+  });
 }
 
 /**
@@ -904,12 +936,21 @@ function buildEditor(bio) {
     els.linkedin.value = bio.linkedin;
     els.status.value = bio.status === 'approved' ? 'approved' : 'placeholder';
     els.body.innerHTML = bio.body;
-    setPhoto(bio.image ? {
-      url: bio.image,
-      name: bio.image.split('/').pop(),
-      path: bio.image.replace(/^https?:\/\/[^/]+\/[^/]+\/[^/]+/, ''),
-      file: null,
-    } : null);
+    if (bio.image) {
+      const path = bio.image.replace(/^https?:\/\/[^/]+\/[^/]+\/[^/]+/, '');
+      setPhoto({
+        url: bio.image, stored: bio.image, name: bio.image.split('/').pop(), path, file: null,
+      });
+      // Swap the un-loadable content.da.live URL for a blob the browser can show.
+      displayableImage(bio.image)
+        .then((src) => {
+          if (state.photo?.stored !== bio.image) return;
+          setPhoto({ ...state.photo, url: src });
+        })
+        .catch(() => { /* thumbnail stays blank; the stored value is still right */ });
+    } else {
+      setPhoto(null);
+    }
   } else {
     setPhoto(null);
   }
@@ -993,7 +1034,9 @@ async function handleSave() {
     if (state.photo?.file) {
       const uploaded = await uploadPhoto(state.photo.file, slug);
       image = uploaded.url;
-      setPhoto({ ...state.photo, url: uploaded.url, path: uploaded.path, file: null });
+      setPhoto({
+        ...state.photo, stored: uploaded.url, path: uploaded.path, file: null,
+      });
     }
 
     const bio = {
@@ -1150,7 +1193,11 @@ async function removeBio(bio) {
   state.site = site;
   state.token = token;
   state.actions = actions || null;
-  state.isPlugin = typeof actions?.sendHTML === 'function';
+  // The SDK builds `actions` itself and always provides it, for apps as well
+  // as plugins, so its presence proves nothing. DA's library palette posts
+  // `view: 'edit'` (blocks/edit/da-library/da-library.js); the fullscreen app
+  // host does not. Insert only makes sense when a document is open.
+  state.isPlugin = context.view === 'edit' && typeof actions?.sendHTML === 'function';
   if (state.isPlugin) document.body.classList.add('is-plugin');
 
   try { document.execCommand('defaultParagraphSeparator', false, 'p'); } catch (e) { /* ok */ }

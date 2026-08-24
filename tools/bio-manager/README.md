@@ -65,6 +65,23 @@ fix is to drop the `aemdev-bios` index, not to re-add the meta.
 confirmed this is accurate about a real person*. It is surfaced on every roster
 card, and it is the flag Preflight should eventually refuse to publish over.
 
+### Two API details that are easy to get backwards
+
+- **`content.da.live` requires auth.** An unauthenticated GET is a 401, and this
+  app runs on `aem.live` — a different origin — so a plain `<img src>` can never
+  load a headshot. Anything displaying one has to pull it through the Source API
+  with the token and use a blob URL. `displayableImage()` does this.
+- **`POST /live/` publishes; `DELETE /live/` unpublishes.** Removal unpublishes
+  both tiers *before* deleting the document, or the page stays publicly
+  reachable with nothing behind it.
+
+### What distinguishes the plugin surface from the app
+
+Not `actions`. The SDK builds that object itself and hands it to both, so
+`typeof actions.sendHTML === 'function'` is always true. DA's library palette
+posts `context.view === 'edit'`; the fullscreen app host does not. That is the
+only reliable signal, and it is what gates the `Insert` action.
+
 ## How a bio reaches a page
 
 Two ways, both live:
@@ -86,11 +103,22 @@ Both render through [`blocks/bio`](../../blocks/bio/bio.js).
 
 Three steps. Only the first is not in this repo.
 
-### 1. The app card — DA config (manual, once)
+### 1. The app card — DA config (done)
 
-The apps sheet lives in DA, not in git. Open
-`https://da.live/config#/aemgdc/aemdev/`, add a tab called **`apps`**, and add
-this row:
+**Already in place.** The `apps` tab of the site config carries the row below,
+and the card renders at `da.live/apps#/aemgdc/aemdev`. Recorded here so it can
+be rebuilt if the config is ever reset.
+
+Two things worth knowing about that config, both learned the hard way:
+
+- **Permissions live in the *org* config**, not the site config. The site config
+  holds only `data`, `apps` and `prepare`, so editing it is low-risk.
+- **`aem.repositoryId` is set** (`author-p121227-e1306133.adobeaemcloud.com`), so
+  the Adobe Asset Selector *is* available to this site. Headshots live in DA
+  because that was the requirement, not because AEM Assets was unreachable.
+
+To recreate: open `https://da.live/config#/aemgdc/aemdev/`, select the **`apps`**
+tab, and add this row:
 
 | title | description | image | path | ref |
 | --- | --- | --- | --- | --- |

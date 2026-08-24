@@ -15,7 +15,7 @@ needs porting).
 | S2a | TagsServlet fix + `aemdev` tag namespace (AEM side) | 1 | ✅ **done — live on DEV** | Tad | 1d | 28 Aug |
 | S2b | Tag Picker config + page tag read-back (DA plugin) | 1 | ported | **Laurel** | 2d | 5 Sep |
 | S3 | Icon Picker | 1 | none | Laurel | 2.5d | 5 Sep |
-| S4 | Bio Manager | 1 | ✅ **built — ported, reskinned, tested** | Tad | 2d | 12 Sep |
+| S4 | Bio Manager | 1 | ✅ **done — live in DA, round-trip verified** | Tad | 2d | 12 Sep |
 | S5 | Advanced Search | 2 | ported | Laurel | 1d | 12 Sep |
 | S6 | Form Picker | 1 | none | Tad | 3d | 12 Sep |
 | S7 | Preflight + publish workflow | 1 | exists (generic) | Tad | 2d | 12 Sep |
@@ -475,17 +475,53 @@ needs a browser and a DA login.
   9 columns. `/en/query-index.json` unchanged at 19 rows / 19 columns.
 - **`robots.txt` updated** with `Disallow: /en/fragments/`, live.
 
-### Remaining work
+### Verified in DA (24 Aug)
 
-- **Commit and push.** The plugin and app URLs 404 until the code is on `main` —
-  `/tools/bio-manager.html` and `/img/tools/bio-manager.png` are not deployed, and the
-  resolved sidekick config still returns 3 plugins, not 4.
-- **Add the `apps` sheet row** in the DA config (manual, ~30s) — [README §1](../../tools/bio-manager/README.md#1-the-app-card--da-config-manual-once).
-- **Open it in DA** as both app and plugin, after the push. This is the one acceptance test
-  that cannot be done from the CLI.
+Deployed, registered, and driven end to end against real DA. The `apps` sheet row is in the
+site config; the card renders at `da.live/apps#/aemgdc/aemdev`; the resolved sidekick config
+returns 4 plugins with Bio Manager first.
+
+**A create/delete round trip passed**: create writes the document, uploads the headshot to
+`/media/bios/`, adds the roster row, previews and publishes; the pipeline rewrites the image
+to `./media_<hash>`; the row reaches `aemdev-bios`. Remove unpublishes both tiers, deletes the
+document and the headshot, and drops the row — DA source, headshot, preview and live all 404
+afterwards, the roster back to 7, all seven real bios untouched.
+
+**Five defects only the real environment exposed.** The fixtures had passed all of them,
+which is the lesson worth carrying into S3, S6 and S10:
+
+| Defect | Why fixtures missed it |
+| --- | --- |
+| Roster showed initials, never headshots | The sheet stores a `content.da.live` URL, which **requires auth** (401 unauthenticated); the app runs on `aem.live`, another origin, so `<img src>` could never load one. The `onerror` fallback made it look deliberate. Now fetched through the Source API and shown as blob URLs. | 
+| `Insert` appeared in the fullscreen app | **The SDK builds `actions` itself** and gives it to apps and plugins alike, so `typeof actions.sendHTML === 'function'` is always true. DA's library palette posts `view: 'edit'`; the app host does not. That is the discriminator. |
+| Remove *published* instead of unpublishing | `POST /live/` is the publish call. Unpublishing is `DELETE /live/`. Remove was publishing the bio and then deleting its source — leaving it publicly reachable with nothing behind it. |
+| Remove orphaned the headshot | Nothing ever deleted `/media/bios/<slug>.<ext>`. |
+| The editor's live preview 401'd on save | It rendered the stored `content.da.live` URL. The draft now carries the document URL and a browser-loadable one separately. |
+
+The fixture SDK now mirrors the real one — `actions` always present, `view` distinguishing
+the surfaces — and the fixture DA serves media over the authenticated path rather than a
+public URL that hid the first bug.
+
+### Two corrections to earlier notes in this doc
+
+- **`aem.repositoryId` *is* set** — `author-p121227-e1306133.adobeaemcloud.com`, in the site
+  config's `data` tab. The S4 note claiming it could not be verified was true only because
+  `admin.da.live/config/...` is 401 without a token. **The Adobe Asset Selector is therefore
+  available**, and Act 1's "headshot via Asset Selector" beat is reinstatable if wanted; the
+  DA-media path shipped because it was asked for, not because AEM Assets was unreachable.
+- **DA permissions live at the *org* config, not the site config.** The site config holds only
+  `data`, `apps` and `prepare`. The caution about blast radius when editing it was misplaced.
+- **There is a third registration surface**: a `prepare` tab, already carrying Preflight and a
+  `Schedule Publish` stub. Not documented anywhere else in this plan.
+
+### Remaining work
 - **Review the 7 placeholder bios.** None of these people has approved what it says about
   them, and their photographs are now on a public site. `rick-reich` has no headshot and
   `title: To be confirmed` because his public profile preview returns nothing.
+- **Decide on the Asset Selector** for the demo, now that we know `aem.repositoryId` is set.
+- **Test the library-plugin surface** by opening a document and using the Library panel. The
+  app surface is verified; the plugin surface is verified only against fixtures, because DA
+  iframes the plugin cross-origin and browser automation cannot reach into it.
 - **Drop a `speakers` block** on the `/en/meetups/*` pages that already carry `speakers`
   metadata — that is what makes the four dangling slugs resolve. Belongs with [S9](#s9--meetup-blocks--the-enmeetups-rename).
 

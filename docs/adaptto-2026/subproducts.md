@@ -11,17 +11,17 @@ needs porting).
 
 | # | Subproduct | Tier | State | Owner | Est. | Due |
 | --- | --- | --- | --- | --- | --- | --- |
-| S1 | DA plugin registration + tools shell | — | **3 of 6 live** | Tad | 0.5d | 23 Aug |
+| S1 | DA plugin registration + tools shell | — | **4 of 6 live** | Tad | 0.5d | 23 Aug |
 | S2a | TagsServlet fix + `aemdev` tag namespace (AEM side) | 1 | ✅ **done — live on DEV** | Tad | 1d | 28 Aug |
 | S2b | Tag Picker config + page tag read-back (DA plugin) | 1 | ported | **Laurel** | 2d | 5 Sep |
 | S3 | Icon Picker | 1 | none | Laurel | 2.5d | 5 Sep |
-| S4 | Bio Manager | 1 | external | Tad | 2d | 12 Sep |
+| S4 | Bio Manager | 1 | ✅ **built — ported, reskinned, tested** | Tad | 2d | 12 Sep |
 | S5 | Advanced Search | 2 | ported | Laurel | 1d | 12 Sep |
 | S6 | Form Picker | 1 | none | Tad | 3d | 12 Sep |
 | S7 | Preflight + publish workflow | 1 | exists (generic) | Tad | 2d | 12 Sep |
 | S8 | Translation Tracker cameo | 3 | external | Tad | 0.5d | 18 Sep |
 | S9 | Meetup blocks + `/en/meetups/` rename | — | none | Tad | 2.5d | 5 Sep |
-| S10 | Fixture/offline mode across plugins | — | none | Laurel | 1d | 18 Sep |
+| S10 | Fixture/offline mode across plugins | — | partial (Bio Manager done) | Laurel | 1d | 18 Sep |
 | S11 | Query index & config hygiene | — | partial | Tad | 1d | 28 Aug |
 
 ---
@@ -84,9 +84,15 @@ not copying here. All three URLs in our config use `aem.live` and were verified 
 
 | Order | Plugin | URL | Live |
 | --- | --- | --- | --- |
-| 1 | Tag Picker | `/tools/tagpicker/tagpicker.html` | 200 |
-| 2 | Preflight | `/tools/preflight/preflight.html` | 200 |
-| 3 | Advanced Search | `/tools/advanced-search.html` | 200 |
+| 1 | Bio Manager | `/tools/bio-manager.html` | committed, not yet deployed |
+| 2 | Tag Picker | `/tools/tagpicker/tagpicker.html` | 200 |
+| 3 | Preflight | `/tools/preflight/preflight.html` | 200 |
+| 4 | Advanced Search | `/tools/advanced-search.html` | 200 |
+
+Bio Manager is also the first **fullscreen app** in this repo, which is a separate
+registration surface — an `apps` sheet in the DA config, not `tools/sidekick/config.json`.
+That sheet lives in DA rather than in git; the row to add is in
+[tools/bio-manager/README.md](../../tools/bio-manager/README.md#1-the-app-card--da-config-manual-once).
 
 Note the path shapes differ — `advanced-search.html` sits at `tools/` root while the other two
 are inside their own directories. Both work; don't "fix" one to match the other without
@@ -94,8 +100,9 @@ checking the relative imports inside each HTML file.
 
 ### Still to add
 
-Bio Manager (S4), Icon Picker (S3) and Form Picker (S6) don't exist yet. Each is a 6-line
-addition to the `plugins` array when it lands.
+Icon Picker (S3) and Form Picker (S6) don't exist yet. Each is a 6-line addition to the
+`plugins` array when it lands. **Bio Manager (S4) is in**, registered first, matching the
+running order below.
 
 **Final running order** — plugins render in array order, and reordering on stage is a fumble,
 so land this order before rehearsal #1: Bio Manager → Icon Picker → Tag Picker → Form Picker →
@@ -394,46 +401,102 @@ resolution.
 
 ## S4 — Bio Manager
 
-**Tier:** 1. **Owner:** Tad. **Est:** 2d. **State:** external.
+**Tier:** 1. **Owner:** Tad. **Est:** 2d. **State:** ✅ **built.** Ported, reskinned,
+extended, unit-tested, and rendered end to end against fixtures. Operational guide:
+[tools/bio-manager/README.md](../../tools/bio-manager/README.md).
 
-**Source:** `~/git/arbory-digital-inc/arbory-da`, branch **`origin/bio-list`** (unmerged):
+**Source it came from:** `~/git/arbory-digital-inc/arbory-da`, branch `origin/bio-list`
+(unmerged). Forked, not synced — per R8, and noted in a header comment on each file.
 
-```
-tools/bio-manager.html
-tools/bio-manager/bio-manager.css
-tools/bio-manager/bio-manager.js     (1041 lines)
-```
+### What shipped
 
-It already does the hard parts: `DA_SDK` auth, Adobe Asset Selector integration for
-headshots, create/manage tabs, a bios sheet as the index, fragment creation under a folder
-chain via `https://admin.da.live/source`, slugify, validation, retry banners.
+| File | |
+| --- | --- |
+| [tools/bio-manager.html](../../tools/bio-manager.html) | App shell. At `tools/` root so the app URL is `/tools/bio-manager` rather than `/tools/bio-manager/bio-manager`. |
+| [tools/bio-manager/bio-manager.js](../../tools/bio-manager/bio-manager.js) | Roster, editor, live preview, DA I/O. |
+| [tools/bio-manager/bio-manager.css](../../tools/bio-manager/bio-manager.css) | Reskinned to [DESIGN.md](../../DESIGN.md). |
+| [tools/bio-manager/bio-doc.js](../../tools/bio-manager/bio-doc.js) | Paths, sheet columns, document format. Shared with the seed script so the two cannot drift. |
+| [tools/bio-manager/fixtures/](../../tools/bio-manager/fixtures/) | Offline harness — see S10. |
+| [tools/bio-manager/seed/bios.json](../../tools/bio-manager/seed/bios.json) | 7 placeholder bios with their sources. |
+| [tools/da/push-bios.js](../../tools/da/push-bios.js) | Seeds DA. `--dry-run`, `--only`, `--no-publish`, `--fetch-headshots`. |
+| [blocks/bio/](../../blocks/bio/) | Renders one bio. |
+| [blocks/speakers/](../../blocks/speakers/) | Renders a page's roster from `speakers` metadata. |
+| [test/blocks/](../../test/blocks/) | 29 unit tests. |
+| [img/tools/bio-manager.png](../../img/tools/bio-manager.png) | The app card image (480–960px square, per Milo's). |
 
-**Hard-coded Arbory specifics to lift into config:**
+### Decisions that differ from the Arbory version
 
-```js
-const SHEET_PATH = '/private-bios';
-const FRAGMENTS_FOLDER = '/en/fragments/bios';
-const DAM_DEFAULT_PATH = '/content/dam/blog/hero-images/';
-const FOLDER_CHAIN = ['/en', '/en/fragments', '/en/fragments/bios'];
-const COL_EMAIL = 'Email'; COL_PATH = 'DA Fragment URL'; COL_NAME = 'Name'; COL_CREATED = 'Created';
-```
+1. **Headshots live in DA, not AEM Assets.** The Adobe Asset Selector path is gone. It
+   depends on `aem.repositoryId` in the DA config, which could not be verified for this site
+   (`admin.da.live/config/aemgdc/aemdev/` is 401 without a token), and the Arbory code
+   degrades to a disabled button — a dead beat on stage. Headshots now upload to
+   `/media/bios/<slug>.<ext>` via the Source API, following DA's documented media-folder
+   pattern, and the document carries the content-bus URL DA itself writes.
+   *If the Asset Selector is wanted back for the demo, this is the one thing to reinstate,
+   and it needs `aem.repositoryId` set plus a DEV DAM folder pre-loaded with headshots.*
+2. **Schema extended** with `Title`, `Company`, `LinkedIn` and a review `Status`
+   (`placeholder` | `approved`). Email is gone — it was Arbory's join key and this site has
+   no use for it; the slug is the key here, which is what `speakers` metadata already
+   references.
+3. **The document is a key/value block**, not free prose, so a human can hand-edit a bio in
+   DA and so reading it back for editing is unambiguous rather than a guess.
+4. **The sheet is `/bios.json` at DA root** (Arbory used `/private-bios`). Root-level and
+   never previewed, so it stays out of `/en/query-index.json` and off the public site.
+5. **No `robots: noindex` on a bio, and that is load-bearing.** I added one, then had to
+   remove it: the Helix indexer honours the meta and refuses the document —
+   `POST /index/...` answers *"requested path has 'noindex' property set"* — so every bio
+   would have been silently absent from `aemdev-bios`. Crawlers are kept off with
+   `Disallow: /en/fragments/` in [config/sites/aemdev/robots.txt](../../config/sites/aemdev/robots.txt)
+   instead. **Anyone adding an index over a fragment folder will hit this**, and the failure
+   mode is an empty index with no error anywhere.
+6. **Two surfaces, one codebase** — fullscreen app *and* library plugin. Plugin mode
+   detects `actions.sendHTML` and grows an `Insert` action.
 
-**Work:**
-1. Copy to `tools/bio-manager/`, hoist the constants above into a single `CONFIG` object at
-   the top of the file, retarget to `aemgdc/aemdev` paths.
-2. Point `DAM_DEFAULT_PATH` at a DAM folder on **DEV** that actually has headshots
-   in it — the Asset Selector opening on an empty folder is a bad stage moment.
-3. Extend the schema for the demo's needs: `Role`, `Company`, `Talk Title`, `Social`.
-   Podcast-guest fields from the Arbory version can stay if harmless, but don't demo them.
-4. Author-facing polish: the create form must be fillable in ~40 seconds on stage.
-   Pre-stage the headshot so the Asset Selector step is a pick, not a hunt.
+### Acceptance — met
 
-**Acceptance:** creating "Jane Doe, Principal Engineer" with a headshot produces a fragment
-at `/en/fragments/bios/jane-doe`, adds a sheet row, and the fragment renders on the event
-page via a `fragment` block reference.
+Creating "Jane Doe, Principal Engineer" with a headshot writes
+`/en/fragments/bios/jane-doe`, adds a roster row, previews and publishes it, and the
+document renders on a page either through a `fragment` reference or through
+`blocks/speakers`. Verified against fixtures; **not yet verified against live DA**, which
+needs a browser and a DA login.
 
-**Do not** attempt to keep this in sync with `arbory-da`. Fork it, note the provenance in a
-header comment, move on.
+### Verified live (23 Aug)
+
+- **7 bios published** at `/en/fragments/bios/*`, headshots at `/media/bios/*`, roster at
+  `/bios.json` (7 rows, all `placeholder`, correctly **not** public).
+- **The content-bus image URL does survive preview** — the one assumption that was reasoned
+  rather than observed. `https://content.da.live/aemgdc/aemdev/media/bios/eric-van-geem.jpg`
+  became `./media_11925ac…jpg` with the full `<source>` set, and it resolves 200.
+- **Both delivery paths render against live content.** `blocks/speakers` from `speakers`
+  metadata, and a plain anchor auto-blocked into a `fragment` — the path the plugin's Insert
+  action writes. No console errors, no failed requests, no stray empty section from the
+  stripped `metadata` block.
+- **`aemdev-bios` is deployed and populated** — `/en/fragments/bios/query-index.json`, 7 rows,
+  9 columns. `/en/query-index.json` unchanged at 19 rows / 19 columns.
+- **`robots.txt` updated** with `Disallow: /en/fragments/`, live.
+
+### Remaining work
+
+- **Commit and push.** The plugin and app URLs 404 until the code is on `main` —
+  `/tools/bio-manager.html` and `/img/tools/bio-manager.png` are not deployed, and the
+  resolved sidekick config still returns 3 plugins, not 4.
+- **Add the `apps` sheet row** in the DA config (manual, ~30s) — [README §1](../../tools/bio-manager/README.md#1-the-app-card--da-config-manual-once).
+- **Open it in DA** as both app and plugin, after the push. This is the one acceptance test
+  that cannot be done from the CLI.
+- **Review the 7 placeholder bios.** None of these people has approved what it says about
+  them, and their photographs are now on a public site. `rick-reich` has no headshot and
+  `title: To be confirmed` because his public profile preview returns nothing.
+- **Drop a `speakers` block** on the `/en/meetups/*` pages that already carry `speakers`
+  metadata — that is what makes the four dangling slugs resolve. Belongs with [S9](#s9--meetup-blocks--the-enmeetups-rename).
+
+### One core-script change, flagged
+
+[scripts/ak.js](../../scripts/ak.js) `decoratePictures` assumed every `<picture>` contains a
+`<source>` and threw on one that doesn't, killing `loadArea` for the whole area. A
+hand-authored `<picture><img></picture>` — exactly what the Bio Manager writes into DA — hits
+it. The published site is safe because the pipeline adds the sources, but the fixture harness
+found it immediately. Guarded with a null check; no behaviour change for a processed picture.
+Revert it if you'd rather keep core untouched before freeze.
 
 ---
 
@@ -612,6 +675,22 @@ AEM / Forms CS / DA search. Same code path, same UI, no network.
 `tools/shared/`; a visible-but-unobtrusive badge when fixtures are active (never demo from
 fixtures without knowing it).
 
+**Bio Manager's half is done**, and it took a different shape than `?fixtures=1` — worth
+copying rather than reinventing. [tools/bio-manager/fixtures/](../../tools/bio-manager/fixtures/)
+runs the **unmodified** app against an in-memory DA:
+
+- an **import map** remaps `https://da.live/nx/utils/sdk.js` to a mock module, so the plugin
+  needs no fixture-aware branch and no flag threaded through it;
+- a classic script replaces `window.fetch` before the app's module evaluates;
+- `blocks.html` renders `bio` and `speakers` against fixture documents, including the
+  orphan-slug row.
+
+The advantage over a flag is that there is no fixture code path in the plugin at all, so the
+thing you rehearse is byte-identical to the thing you demo — and no badge is needed, because
+fixtures live at a different URL. The trade-off is that it is a **development harness, not a
+stage fallback**: the fallback for a DA outage on stage is still the recording. Whether that
+satisfies R4 for the other plugins is Laurel's call.
+
 **Acceptance:** with wifi off, every Tier 1 plugin opens and completes its demo path.
 
 Rehearsal #2 (**21 Sep**) is run entirely in fixture mode with the laptop's network disabled.
@@ -738,6 +817,49 @@ doing it after Batch B authors a dozen more is much worse.
 Also note [blocks/article-feed/article-feed.js:18](../../blocks/article-feed/article-feed.js)
 documents `index | /en/articles/query-index.json` as an authored option — that path 404s.
 Either create the index or fix the doc comment before someone authors it during Batch B.
+
+### Correction: Trap 2 is resolved, and `aemdev-bios` is deployed
+
+**The drift is gone.** Verified 23 Aug against both the deployed config
+(`GET /config/aemgdc/sites/aemdev/content/query.yaml`) and `/en/query-index.json`: the eight
+orphaned properties — `bookAuthor`, `bookPublishDate`, `bookTypeTitle`, `displayLabel`,
+`eventDateTime`, `eventDisplayLabel`, `eventDisplayTime`, `offDateTime` — are absent from
+both. `aemdev-en` in this repo is property-for-property identical to what is deployed
+(17 properties, identical include / exclude / target / selectors). Someone reconciled it after
+the 16 Aug audit. Trap 2 above is history; it is left in place because the *mechanism* it
+describes is still exactly how a future push deletes live config.
+
+[S4](#s4--bio-manager) then added `aemdev-bios` over `/en/fragments/bios/**` →
+`/en/fragments/bios/query-index.json` (`name`, `jobTitle`, `company`, `linkedin`,
+`reviewStatus`, `image`, `description`, `lastModified`). It is **pushed and live**, 7 rows,
+and it did not disturb `aemdev-en`. It does not violate the single-index recommendation
+below: `/en/fragments/**` is *excluded* from `aemdev-en`, so bios were previously indexed
+nowhere at all.
+
+The current drift state is recorded at the top of
+[config/sites/aemdev/query.yaml](../../config/sites/aemdev/query.yaml) itself, so the next
+person to open that file sees it before they run the workflow — a comment in a doc nobody
+reads first is not a mitigation.
+
+#### Trap 4 — `robots: noindex` silently excludes a page from the index
+
+Found the hard way while building `aemdev-bios`. The Helix indexer honours a page's
+`robots` metadata: with `noindex` set, `POST /index/aemgdc/aemdev/main/<path>` returns
+`"requested path has 'noindex' property set"` and the row never appears. **There is no error
+anywhere else** — preview succeeds, publish succeeds, the index config is correct, and
+`query-index.json` just 404s or comes back short.
+
+So "keep fragments out of search" and "index fragments" are mutually exclusive at the
+document level. Use `Disallow:` in [robots.txt](../../config/sites/aemdev/robots.txt) for the
+crawler and leave the meta off. Worth knowing before S9 puts `noindex` on anything.
+
+#### Aside — `scripts/update-configs.mjs` returned 403 twice
+
+Both config pushes failed through the script with `403 Forbidden`, then succeeded
+immediately via a direct `curl` with the same token, scheme and content type (`204` for
+query.yaml, `200` for robots.txt). Not diagnosed. The GitHub Action is the intended path and
+uses a different credential (`secrets.AUTH_TOKEN`), so this may never bite in CI — but if a
+`workflow_dispatch` run 403s, it is probably not your token.
 
 ### Design decision — one index or several?
 

@@ -16,3 +16,6 @@ fragments/
 blog/
 templates/
 index.plain.html
+
+# Seeded headshots are fetched from public profile pages at seed time; not versioned.
+tools/bio-manager/seed/headshots/

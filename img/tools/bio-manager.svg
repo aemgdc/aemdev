@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Bio Manager">
+  <title>Bio Manager</title>
+  <rect width="64" height="64" fill="#0e0e0e"/>
+  <rect width="5" height="64" fill="#eb1000"/>
+  <circle cx="25" cy="23" r="9" fill="#f9f9f9"/>
+  <path d="M12 49a13 13 0 0 1 26 0z" fill="#f9f9f9"/>
+  <rect x="44" y="18" width="15" height="5" fill="#eb1000"/>
+  <rect x="44" y="28" width="11" height="3" fill="#6b7280"/>
+  <rect x="44" y="35" width="14" height="3" fill="#6b7280"/>
+</svg>

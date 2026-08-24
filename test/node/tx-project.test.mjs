@@ -1,0 +1,148 @@
+/**
+ * tx-project.test.mjs — the DA translation-project shape.
+ *
+ *   npm run test:node          (node --test "test/node/*.test.mjs")
+ *
+ * Every case here is a failure that is SILENT in production. The connector accepts an
+ * unknown language code and hands back the source text untranslated, so a wrong
+ * `langs[].code` produces a Chinese page full of English weeks later rather than an
+ * error; a `copy` action counted as a translation makes a locale look further along
+ * than it is; and a project read with the wrong timestamp encoding drops the `sent-at`
+ * that exists nowhere else.
+ */
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import {
+  buildProject,
+  assertProject,
+  sentPairs,
+  projectStamp,
+  serviceCodeFor,
+  localeForServiceCode,
+  projectPathFor,
+  epochFromName,
+} from '../../tools/tracker/lib/tx-project.mjs';
+
+const NOW = Date.parse('2026-08-24T10:00:00.000Z');
+
+test('the two Chinese spellings round-trip, and pt is the control that does not differ', () => {
+  assert.equal(serviceCodeFor('zh-cn'), 'zh-CN');
+  assert.equal(serviceCodeFor('zh-tw'), 'zh-TW');
+  assert.equal(serviceCodeFor('pt'), 'pt');
+  assert.equal(localeForServiceCode('zh-CN'), 'zh-cn');
+  // Case-folded on the way back in: a sheet cell and a project are both hand-editable.
+  assert.equal(localeForServiceCode('zh-cn'), 'zh-cn');
+  assert.equal(localeForServiceCode('nope'), null);
+  assert.equal(serviceCodeFor('nope'), null);
+});
+
+test('a project is addressed by its epoch-ms id', () => {
+  assert.equal(projectPathFor(1770000000000), '/.da/translation/active/1770000000000');
+  assert.equal(epochFromName('1770000000000.json'), 1770000000000);
+  assert.equal(epochFromName('notes.json'), null);
+});
+
+test('buildProject writes the service code, our location, and all three stage objects', () => {
+  const { doc, path, epochMs } = buildProject({
+    title: 'meetups batch',
+    paths: ['/en/meetups/miami', '/en/meetups/berlin'],
+    codes: ['de', 'zh-cn'],
+    createdBy: 'aemdev-tracker@host',
+    now: NOW,
+  });
+  assert.equal(epochMs, NOW);
+  assert.equal(path, `/.da/translation/active/${NOW}`);
+  assert.deepEqual(doc.urls, [
+    { suppliedPath: '/en/meetups/miami' },
+    { suppliedPath: '/en/meetups/berlin' },
+  ]);
+  assert.deepEqual(doc.options, { 'source.language': { location: '/en' } });
+  assert.equal(doc.view, 'dashboard');
+  const [de, zh] = doc.langs;
+  assert.equal(de.code, 'de');
+  assert.equal(zh.code, 'zh-CN', 'the connector gets BCP-47 casing');
+  assert.equal(zh.location, '/zh-cn', 'the tree gets the lowercase form');
+  // A missing stage object and a completed one are one `?.` apart; write the empty shape.
+  for (const stage of ['translation', 'copy', 'rollout']) {
+    assert.deepEqual(zh[stage], { status: '' });
+  }
+  assert.equal(zh.action, 'translate');
+});
+
+test('assertProject refuses every silent failure', () => {
+  const good = () => buildProject({
+    title: 't', paths: ['/en/x'], codes: ['de'], createdBy: 'me', now: NOW,
+  }).doc;
+
+  assert.doesNotThrow(() => assertProject(good()));
+
+  const noUrls = good();
+  noUrls.urls = [];
+  assert.throws(() => assertProject(noUrls), /urls` is empty/);
+
+  const badCode = good();
+  badCode.langs[0].code = 'de-DE';
+  assert.throws(() => assertProject(badCode), /not a known locale/);
+
+  const badSource = good();
+  badSource.options['source.language'].location = '/de';
+  assert.throws(() => assertProject(badSource), /must be \/en/);
+
+  const badView = good();
+  badView.view = 'translating';
+  assert.throws(() => assertProject(badView), /is not one of/);
+
+  const badAction = good();
+  badAction.langs[0].action = 'machine-translate';
+  assert.throws(() => assertProject(badAction), /action "machine-translate"/);
+
+  const relative = good();
+  relative.urls = [{ suppliedPath: 'en/x' }];
+  assert.throws(() => assertProject(relative), /absolute suppliedPath/);
+});
+
+test('projectStamp reads an epoch number, an ISO string, or falls back to the id', () => {
+  assert.equal(projectStamp({ modifiedDate: NOW }, 1), new Date(NOW).toISOString());
+  assert.equal(projectStamp({ modifiedDate: '2026-08-24T10:00:00.000Z' }, 1), new Date(NOW).toISOString());
+  assert.equal(projectStamp({ modifiedDate: 'whenever' }, NOW), new Date(NOW).toISOString());
+  assert.equal(projectStamp({}, null), '');
+});
+
+test('sentPairs counts translate only, and the newest project wins', () => {
+  const older = {
+    name: '1.json',
+    epochMs: NOW - 86400000,
+    doc: {
+      urls: [{ suppliedPath: '/en/meetups/miami' }],
+      langs: [
+        { code: 'de', action: 'translate', translation: { status: 'complete' } },
+        { code: 'fr', action: 'copy', translation: { status: '' } },
+        { code: 'ja', action: 'skip', translation: { status: '' } },
+        { code: 'xx', action: 'translate', translation: { status: '' } },
+      ],
+      modifiedDate: NOW - 86400000,
+    },
+  };
+  const newer = {
+    name: '2.json',
+    epochMs: NOW,
+    doc: {
+      urls: [{ suppliedPath: '/en/meetups/miami/' }],
+      langs: [{ code: 'de', action: 'translate', translation: { status: '' } }],
+      modifiedDate: NOW,
+    },
+  };
+
+  const { pairs, other } = sentPairs([older, newer]);
+  // A `copy` places source text untranslated and a `skip` does nothing; neither is sent.
+  assert.equal(pairs.size, 1);
+  const de = pairs.get('/en/meetups/miami\0de');
+  assert.ok(de, 'the trailing slash in the newer project normalizes to the same key');
+  assert.equal(de.project, '2.json', 'the newest project supplies sent-at');
+  assert.equal(de.at, new Date(NOW).toISOString());
+
+  const reasons = other.map((o) => o.why).join(' | ');
+  assert.match(reasons, /action is "copy"/);
+  assert.match(reasons, /action is "skip"/);
+  assert.match(reasons, /unknown locale code/);
+});

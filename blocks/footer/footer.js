@@ -1,6 +1,7 @@
 import { getConfig, getMetadata } from '../../scripts/ak.js';
-import { loadFragment } from '../fragment/fragment.js';
+import { loadLocalizedFragment } from '../fragment/fragment.js';
 
+// Locale-independent — see the note on HEADER_PATH in blocks/header/header.js.
 const FOOTER_PATH = '/fragments/nav/footer';
 
 /**
@@ -12,8 +13,9 @@ export default async function init(el) {
   const footerMeta = getMetadata('footer');
   const path = footerMeta || FOOTER_PATH;
   try {
-    const fragment = await loadFragment(`${locale.prefix}${path}`);
+    const { fragment, localized } = await loadLocalizedFragment(path, locale);
     fragment.classList.add('footer-content');
+    if (!localized) fragment.dataset.fallbackLocale = 'en';
 
     const sections = [...fragment.querySelectorAll('.section')];
 

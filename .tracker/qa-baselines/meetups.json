@@ -1,0 +1,34 @@
+{
+  "$note": "Tier-1 thresholds for the `meetups` group. Seeded by `npm run qa:page -- --group=meetups --path=/en/meetups/adaptto-2026-berlin --calibrate --apply`, then TUNED against the whole group as QA-PROCESS step 3 requires. Every key is optional; a missing key makes its check report `skip`, not `pass`.",
+
+  "$tune": "What changed from the raw calibration, and why. (1) requiredHeadings is EMPTY, not `^What to expect$`: that heading belongs to one announcement page, and seeded verbatim it failed 10 of the group's 14 pages. This group has no guaranteed heading at all — an `announced` page, an `upcoming` page and a `recap` page are three different documents under one template — so the honest value is none, and heading structure here is the judge's problem rather than a regex's. (2) words.reference is REMOVED. Measured across the 14 live pages the range is 29 to 670 words, a 23x spread, so a ratio band against any single page flags most of a healthy group; `words.min` is the check that actually catches a truncated page. (3) words.min is 20, below the shortest real page (29). It is a floor against an EMPTY page, not a length policy — and on a group whose pages are legitimately this short it is close to useless, which is worth knowing rather than pretending otherwise. (4) requiredMetadata includes `event-date`, which 7 of the 14 pages do NOT carry. That is a deliberate true positive: brief row C1 says every page states the event date, and this is the check that implements it. It will fail half the group until the content is fixed — that is the finding, not a mis-calibration.",
+
+  "group": "meetups",
+  "calibratedFrom": "/en/meetups/adaptto-2026-berlin",
+  "calibratedAt": "2026-08-24T04:06:34.944Z",
+  "tunedAt": "2026-08-24T04:20:00.000Z",
+
+  "words": { "min": 20 },
+
+  "requiredHeadings": [],
+  "allowMissingHeadings": [],
+  "headingsNeverFail": false,
+  "maxH1": 1,
+
+  "$comment-metadata": "Verified present on all 14 live pages: template, location, status, author, description, title. Verified MISSING on 7: event-date.",
+  "requiredMetadata": [
+    "title",
+    "description",
+    "template",
+    "event-date",
+    "location",
+    "status"
+  ],
+
+  "$comment-blocks": "Observed across the group. Listing them is documentation rather than permission — every one also has a blocks/<name>/ directory, so `blocks-recognised` would accept them anyway. The list earns its place the day a block is renamed.",
+  "knownBlocks": ["blog-post-hero", "callout", "dam-display", "embed"],
+  "knownSectionStyles": ["key-points", "related"],
+
+  "requireAlt": false,
+  "$comment-requireAlt": "false, so a missing or empty alt WARNS. EDS emits alt=\"\" for an image whose source document gave no alt text, and on this group that is the common case rather than the exception — making it an error would fail pages for an authoring habit nobody has been asked to change yet. Flip it to true once alt text is a stated requirement in the brief."
+}

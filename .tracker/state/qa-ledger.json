@@ -1,0 +1,232 @@
+{
+  "version": 1,
+  "updated": "2026-08-24T04:21:58.376Z",
+  "runs": [
+    {
+      "started": "2026-08-24T04:09:37.409Z",
+      "finished": "2026-08-24T04:09:46.334Z",
+      "host": "fw13-ubuntu",
+      "branch": "main",
+      "group": "meetups",
+      "judged": 14,
+      "pass": 1,
+      "fail": 12,
+      "escalate": 1,
+      "unreachable": 0,
+      "error": 0,
+      "skipped": 0
+    },
+    {
+      "started": "2026-08-24T04:20:03.724Z",
+      "finished": "2026-08-24T04:20:46.598Z",
+      "host": "fw13-ubuntu",
+      "branch": "main",
+      "group": "meetups",
+      "judged": 4,
+      "pass": 1,
+      "fail": 3,
+      "escalate": 0,
+      "unreachable": 0,
+      "error": 0,
+      "skipped": 0
+    },
+    {
+      "started": "2026-08-24T04:21:35.094Z",
+      "finished": "2026-08-24T04:21:35.641Z",
+      "host": "fw13-ubuntu",
+      "branch": "main",
+      "group": "meetups",
+      "judged": 3,
+      "pass": 1,
+      "fail": 2,
+      "escalate": 0,
+      "unreachable": 0,
+      "error": 0,
+      "skipped": 1
+    },
+    {
+      "started": "2026-08-24T04:21:36.097Z",
+      "finished": "2026-08-24T04:21:36.097Z",
+      "host": "fw13-ubuntu",
+      "branch": "main",
+      "group": "meetups",
+      "judged": 0,
+      "pass": 0,
+      "fail": 0,
+      "escalate": 0,
+      "unreachable": 0,
+      "error": 0,
+      "skipped": 4
+    },
+    {
+      "started": "2026-08-24T04:21:52.757Z",
+      "finished": "2026-08-24T04:21:58.376Z",
+      "host": "fw13-ubuntu",
+      "branch": "main",
+      "group": "meetups",
+      "judged": 1,
+      "pass": 0,
+      "fail": 1,
+      "escalate": 0,
+      "unreachable": 0,
+      "error": 0,
+      "skipped": 0
+    }
+  ],
+  "pages": {
+    "/en/meetups/20260625-bring-your-complicated-eds-integration-story-meetup": {
+      "verdict": "fail",
+      "tiers": {
+        "structural": "fail",
+        "judge": null,
+        "visual": null
+      },
+      "judged": "2026-08-24T04:21:53.038Z",
+      "attempts": 4,
+      "report": ".tracker/reports/qa/en--meetups--20260625-bring-your-complicated-eds-integration-story-meetup.json"
+    },
+    "/en/meetups/adaptto-2026-berlin": {
+      "verdict": "pass",
+      "tiers": {
+        "structural": "pass",
+        "judge": "pass",
+        "visual": null
+      },
+      "judged": "2026-08-24T04:20:19.523Z",
+      "attempts": 0,
+      "report": ".tracker/reports/qa/en--meetups--adaptto-2026-berlin.json"
+    },
+    "/en/meetups/adobe-developers-live-san-jose-2026": {
+      "verdict": "pass",
+      "tiers": {
+        "structural": "pass",
+        "judge": null,
+        "visual": null
+      },
+      "judged": "2026-08-24T04:21:35.514Z",
+      "attempts": 0,
+      "report": ".tracker/reports/qa/en--meetups--adobe-developers-live-san-jose-2026.json"
+    },
+    "/en/meetups/aem-65-lts-vs-eds-vs-aemaacs-columbus": {
+      "verdict": "fail",
+      "tiers": {
+        "structural": "fail",
+        "judge": null,
+        "visual": null
+      },
+      "judged": "2026-08-24T04:21:35.641Z",
+      "attempts": 3,
+      "report": ".tracker/reports/qa/en--meetups--aem-65-lts-vs-eds-vs-aemaacs-columbus.json"
+    },
+    "/en/meetups/aem-gdc-june-2026-eds-cdn-recap": {
+      "verdict": "fail",
+      "tiers": {
+        "structural": "fail",
+        "judge": null,
+        "visual": null
+      },
+      "judged": "2026-08-24T04:09:41.348Z",
+      "attempts": 1,
+      "report": ".tracker/reports/qa/en--meetups--aem-gdc-june-2026-eds-cdn-recap.json"
+    },
+    "/en/meetups/aem-meetup-munich": {
+      "verdict": "escalate",
+      "tiers": {
+        "structural": "review",
+        "judge": null,
+        "visual": null
+      },
+      "judged": "2026-08-24T04:09:41.755Z",
+      "attempts": 1,
+      "report": ".tracker/reports/qa/en--meetups--aem-meetup-munich.json"
+    },
+    "/en/meetups/aem-meetup-washington-dc": {
+      "verdict": "fail",
+      "tiers": {
+        "structural": "fail",
+        "judge": null,
+        "visual": null
+      },
+      "judged": "2026-08-24T04:09:42.455Z",
+      "attempts": 1,
+      "report": ".tracker/reports/qa/en--meetups--aem-meetup-washington-dc.json"
+    },
+    "/en/meetups/sites-optimizer-eds-localization-atlanta": {
+      "verdict": "fail",
+      "tiers": {
+        "structural": "fail",
+        "judge": null,
+        "visual": null
+      },
+      "judged": "2026-08-24T04:09:43.024Z",
+      "attempts": 1,
+      "report": ".tracker/reports/qa/en--meetups--sites-optimizer-eds-localization-atlanta.json"
+    },
+    "/en/meetups/aem-frontend-showdown-classic-jamstack-eds": {
+      "verdict": "fail",
+      "tiers": {
+        "structural": "fail",
+        "judge": null,
+        "visual": null
+      },
+      "judged": "2026-08-24T04:09:43.542Z",
+      "attempts": 1,
+      "report": ".tracker/reports/qa/en--meetups--aem-frontend-showdown-classic-jamstack-eds.json"
+    },
+    "/en/meetups/aem-meetup-miami": {
+      "verdict": "fail",
+      "tiers": {
+        "structural": "fail",
+        "judge": null,
+        "visual": null
+      },
+      "judged": "2026-08-24T04:09:44.048Z",
+      "attempts": 1,
+      "report": ".tracker/reports/qa/en--meetups--aem-meetup-miami.json"
+    },
+    "/en/meetups/aemug-midwest-summit-2025-insights": {
+      "verdict": "fail",
+      "tiers": {
+        "structural": "fail",
+        "judge": null,
+        "visual": null
+      },
+      "judged": "2026-08-24T04:09:44.550Z",
+      "attempts": 1,
+      "report": ".tracker/reports/qa/en--meetups--aemug-midwest-summit-2025-insights.json"
+    },
+    "/en/meetups/champions-office-hours-2025-wrap-up": {
+      "verdict": "fail",
+      "tiers": {
+        "structural": "fail",
+        "judge": null,
+        "visual": null
+      },
+      "judged": "2026-08-24T04:09:45.000Z",
+      "attempts": 1,
+      "report": ".tracker/reports/qa/en--meetups--champions-office-hours-2025-wrap-up.json"
+    },
+    "/en/meetups/champions-office-hours-sites-optimizer-agentic-ai": {
+      "verdict": "fail",
+      "tiers": {
+        "structural": "fail",
+        "judge": null,
+        "visual": null
+      },
+      "judged": "2026-08-24T04:09:45.617Z",
+      "attempts": 1,
+      "report": ".tracker/reports/qa/en--meetups--champions-office-hours-sites-optimizer-agentic-ai.json"
+    },
+    "/en/meetups/post-adaptto-2025-meetup": {
+      "verdict": "fail",
+      "tiers": {
+        "structural": "fail",
+        "judge": null,
+        "visual": null
+      },
+      "judged": "2026-08-24T04:09:46.334Z",
+      "attempts": 1,
+      "report": ".tracker/reports/qa/en--meetups--post-adaptto-2025-meetup.json"
+    }
+  }
+}

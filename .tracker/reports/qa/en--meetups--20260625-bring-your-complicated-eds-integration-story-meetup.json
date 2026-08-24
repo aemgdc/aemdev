@@ -1,0 +1,165 @@
+{
+  "page-path": "/en/meetups/20260625-bring-your-complicated-eds-integration-story-meetup",
+  "group": "meetups",
+  "mode": "baseline",
+  "urls": {
+    "target": "https://main--aemdev--aemgdc.aem.page/en/meetups/20260625-bring-your-complicated-eds-integration-story-meetup",
+    "plain": "https://main--aemdev--aemgdc.aem.page/en/meetups/20260625-bring-your-complicated-eds-integration-story-meetup.plain.html"
+  },
+  "branch": "main",
+  "generated": "2026-08-24T04:21:53.038Z",
+  "baseline": {
+    "exists": true,
+    "path": "/home/tad/git/aemgdc/aemdev-tracker/.tracker/qa-baselines/meetups.json",
+    "calibratedFrom": "/en/meetups/adaptto-2026-berlin"
+  },
+  "tiers": {
+    "structural": {
+      "verdict": "fail",
+      "checks": [
+        {
+          "check": "headings",
+          "verdict": "skip",
+          "detail": "no requiredHeadings in the group baseline"
+        },
+        {
+          "check": "text",
+          "verdict": "pass",
+          "words": 670,
+          "min": 20,
+          "reference": null
+        },
+        {
+          "check": "image-alt",
+          "verdict": "warn",
+          "findings": [
+            {
+              "verdict": "warn",
+              "detail": "image has an empty alt (decorative?): https://main--aemdev--aemgdc.aem.page/en/meetups/media_12984561cd75341adc01c40d91ccc899ecbd376b2.jpg?width=750&format=jpg&optimize=medium"
+            },
+            {
+              "verdict": "warn",
+              "detail": "image has an empty alt (decorative?): https://main--aemdev--aemgdc.aem.page/en/meetups/media_1460283a9e379f9f8c9916ff44ab1701a662ef1cb.png?width=750&format=png&optimize=medium"
+            }
+          ],
+          "count": 2
+        },
+        {
+          "check": "images",
+          "verdict": "pass",
+          "checked": 2,
+          "skipped": 0
+        },
+        {
+          "check": "links",
+          "verdict": "fail",
+          "findings": [
+            {
+              "verdict": "fail",
+              "detail": "broken internal link (HTTP 404): https://main--aemdev--aemgdc.aem.page/en/articles/aem-eds-content-modeling-deep-dive/"
+            }
+          ],
+          "internal": 2,
+          "external": 7,
+          "checked": 2
+        },
+        {
+          "check": "icons",
+          "verdict": "pass",
+          "count": 0
+        },
+        {
+          "check": "blocks-recognised",
+          "verdict": "pass",
+          "declared": [
+            "blog-post-hero",
+            "embed",
+            "callout",
+            "dam-display"
+          ]
+        },
+        {
+          "check": "blocks-rendered",
+          "verdict": "pass"
+        },
+        {
+          "check": "sections-recognised",
+          "verdict": "pass",
+          "declared": [
+            "key-points",
+            "related"
+          ]
+        },
+        {
+          "check": "metadata",
+          "verdict": "pass",
+          "required": [
+            "title",
+            "description",
+            "template",
+            "event-date",
+            "location",
+            "status"
+          ],
+          "present": 6
+        },
+        {
+          "check": "verbatim",
+          "verdict": "skip",
+          "detail": "the requirements brief declares no verbatim strings"
+        }
+      ],
+      "errors": [
+        {
+          "check": "links",
+          "detail": "broken internal link (HTTP 404): https://main--aemdev--aemgdc.aem.page/en/articles/aem-eds-content-modeling-deep-dive/"
+        }
+      ],
+      "warnings": [
+        {
+          "check": "image-alt",
+          "detail": "image has an empty alt (decorative?): https://main--aemdev--aemgdc.aem.page/en/meetups/media_12984561cd75341adc01c40d91ccc899ecbd376b2.jpg?width=750&format=jpg&optimize=medium"
+        },
+        {
+          "check": "image-alt",
+          "detail": "image has an empty alt (decorative?): https://main--aemdev--aemgdc.aem.page/en/meetups/media_1460283a9e379f9f8c9916ff44ab1701a662ef1cb.png?width=750&format=png&optimize=medium"
+        }
+      ],
+      "fatal": null
+    },
+    "judge": null,
+    "visual": null
+  },
+  "evidence": {
+    "textSample": {
+      "target": "// Key takeaways This was the first meeting of the AEM Global Developer Collective We had 4 of the most-experience Edge Delivery Services Architects speak on their experiences with making complicated sites We would LOVE to host a meetup in your area! This was our first meeting of the Adobe User Groups AEM Global Developer Collective, a user group intended to enable the global AEM developer community. This first event was virtual meetup, featuring AEM celebrities Eric Van Geem from Huge, Andreas Haller from Netcentric, and Sagar Sane from Adobe. Regarding the AEM Developer Collective As the first meeting of our new AEM User Group, we got a chance to introduce our Developer Collective, and establish some of our goals. And please know: We would LOVE to help you host a user group in your area If you've got experiences or innovations to share, we'd LOVE to have you speak - either on a virtual meetup or in-person Please encourage any of the AEM technologists in your network to join! https://aem-augs.adobe.com/aemug-global-developer-collective/ This Session: Edge Delivery Services & Complex CMS Problems https://www.youtube.com/watch?v=0DqaheEr5Y0 Session Resources The following resources were referenced or shared during the meetup. Links will be added as they become available. // Slides from this meetup filepath /content/dam/meetup/20260625-aemgdc-virtual mode pdf // Content & links discussed in the meetup ⬜ Placeholder - add links to content, repos, demos, or docs discussed during the session Bring Your Own Markup to Edge Delivery Services with Content Overlays - Eric Van Geem's reference on BYOM on EDS ↑↑↓↓←→←→ B A START: The Konami Code for Dynamic Publishing at Scale - Lars T's AEM.live blog on large-scale dynamic EDS content AEM/EDS Meetup: Solving Advanced Architecture & Content Operations for Edge Delivery/DA - Edge Delivery Services architecture diagrams Dynamic Page Publishing in AEM Edge Delivery with BYOM and App Builder | by Lars Auffarth What Was Covered The session touched on a range of integration patterns that come up repeatedly in enterprise EDS projects: Connecting EDS to External Data Sources One of the recurring themes was how to surface dynamic, API-driven content within the EDS document model. Participants discussed block-level fetch patterns, edge-side data fetching via Workers, and when it makes sense to pre-bake data into the query index versus fetching it at runtime. Authentication & Personalisation Several attendees brought up scenarios where EDS pages needed to respond to a logged-in user - gating content, surfacing account-specific data, or routing to personalised variants. The group explored how to layer auth onto an otherwise static delivery tier without sacrificing performance. Hybrid Architectures Not every project is greenfield. The session included discussion of hybrid architectures where EDS coexists with a traditional AEM publish instance, a third-party CMS, or a headless GraphQL API. Patterns for graceful fallback, shared navigation, and consistent metadata were among the topics raised. Keeping Authors Shielded from Complexity A consistent thread across all integration stories: no matter how complex the back end, the author experience in Document Authoring (or SharePoint/Google Docs) must stay simple. The group shared techniques for hiding integration complexity in block logic while surfacing only the knobs authors actually need. Community Highlights As with every AEM GDC session, the best moments came from the audience. Attendees contributed code snippets, pointed to open-source repos, and offered to follow up offline on specific challenges. If you raised a topic during the session and would like to share a write-up or repo link for inclusion here, reach out via the AEM community channels. Join the Next Session The AEM Global Developer Collective meets regularly to tackle exactly these kinds of real-world challenges. If you have a complicated EDS story of your own - whether it's a success, a work-in-progress, or a cautionary tale - we'd love to hear it at a future session. Browse upcoming AEM GDC events → // Related reading Deep Dive Article AEM EDS Content Modeling Deep Dive Read the article → Meetup Recap · June 2026 AEM GDC June 2026 - EDS CDN Architecture & Advanced Search Watch the recap →"
+    },
+    "blocks": [
+      "blog-post-hero",
+      "embed",
+      "callout",
+      "dam-display"
+    ],
+    "sectionStyles": [
+      "key-points",
+      "related"
+    ],
+    "icons": [],
+    "words": 670,
+    "headings": [
+      "h2: Regarding the AEM Developer Collective",
+      "h2: This Session: Edge Delivery Services & Complex CMS Problems",
+      "h2: Session Resources",
+      "h2: What Was Covered",
+      "h3: Connecting EDS to External Data Sources",
+      "h3: Authentication & Personalisation",
+      "h3: Hybrid Architectures",
+      "h3: Keeping Authors Shielded from Complexity",
+      "h2: Community Highlights",
+      "h2: Join the Next Session"
+    ],
+    "title": "Meetup Recap: Bring Your Complicated AEM EDS Integration Story",
+    "description": "A community recap of the AEM Global Developer Collective session on real-world, complex AEM Edge Delivery Services integration patterns - covering hybrid architectures, API-driven blocks, auth, and more."
+  },
+  "verdict": "fail"
+}

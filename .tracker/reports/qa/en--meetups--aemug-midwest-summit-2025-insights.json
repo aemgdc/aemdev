@@ -1,0 +1,132 @@
+{
+  "page-path": "/en/meetups/aemug-midwest-summit-2025-insights",
+  "group": "meetups",
+  "mode": "baseline",
+  "urls": {
+    "target": "https://main--aemdev--aemgdc.aem.page/en/meetups/aemug-midwest-summit-2025-insights",
+    "plain": "https://main--aemdev--aemgdc.aem.page/en/meetups/aemug-midwest-summit-2025-insights.plain.html"
+  },
+  "branch": "main",
+  "generated": "2026-08-24T04:09:44.545Z",
+  "baseline": {
+    "exists": true,
+    "path": "/home/tad/git/aemgdc/aemdev-tracker/.tracker/qa-baselines/meetups.json",
+    "calibratedFrom": "/en/meetups/adaptto-2026-berlin"
+  },
+  "tiers": {
+    "structural": {
+      "verdict": "fail",
+      "checks": [
+        {
+          "check": "headings",
+          "verdict": "fail",
+          "findings": [
+            {
+              "verdict": "fail",
+              "detail": "no heading matches /^What to expect$/"
+            }
+          ],
+          "required": 1,
+          "found": 0
+        },
+        {
+          "check": "text",
+          "verdict": "fail",
+          "detail": "35 words, below the group floor of 40 — the page is empty or truncated",
+          "words": 35,
+          "min": 40,
+          "reference": 70
+        },
+        {
+          "check": "image-alt",
+          "verdict": "pass",
+          "count": 0
+        },
+        {
+          "check": "images",
+          "verdict": "pass",
+          "checked": 0,
+          "skipped": 0
+        },
+        {
+          "check": "links",
+          "verdict": "pass",
+          "internal": 0,
+          "external": 1,
+          "checked": 0
+        },
+        {
+          "check": "icons",
+          "verdict": "pass",
+          "count": 0
+        },
+        {
+          "check": "blocks-recognised",
+          "verdict": "pass",
+          "declared": [
+            "blog-post-hero"
+          ]
+        },
+        {
+          "check": "blocks-rendered",
+          "verdict": "pass"
+        },
+        {
+          "check": "metadata",
+          "verdict": "pass",
+          "required": [
+            "title",
+            "description"
+          ],
+          "present": 2
+        },
+        {
+          "check": "verbatim",
+          "verdict": "fail",
+          "findings": [
+            {
+              "verdict": "fail",
+              "detail": "the brief requires \"Berlin\" verbatim; it is not on the page"
+            }
+          ],
+          "declared": 1
+        }
+      ],
+      "errors": [
+        {
+          "check": "headings",
+          "detail": "no heading matches /^What to expect$/"
+        },
+        {
+          "check": "text",
+          "detail": "35 words, below the group floor of 40 — the page is empty or truncated"
+        },
+        {
+          "check": "verbatim",
+          "detail": "the brief requires \"Berlin\" verbatim; it is not on the page"
+        }
+      ],
+      "warnings": [],
+      "fatal": null
+    },
+    "judge": null,
+    "visual": null
+  },
+  "evidence": {
+    "textSample": {
+      "target": "What we covered The Midwest chapter met to go through Adobe Summit 2025 - the announcements that mattered, the sessions worth going back for, and what practitioners should be planning around. Watch the session https://www.youtube.com/watch?v=jl4QcE7MSxE"
+    },
+    "blocks": [
+      "blog-post-hero"
+    ],
+    "icons": [],
+    "words": 35,
+    "headings": [
+      "h2: What we covered",
+      "h2: Watch the session"
+    ],
+    "title": "AEMUG Midwest Chapter: Adobe Summit 2025 Insights",
+    "description": "A recap of the AEM Midwest chapter session unpacking what came out of Adobe Summit 2025 and what it meant for AEM practitioners."
+  },
+  "verdict": "fail"
+}

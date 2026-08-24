@@ -1,0 +1,104 @@
+{
+  "$comment": "Project-wide tracker configuration. Layer 2 of four: built-in defaults (tools/tracker/config.mjs) <- THIS FILE <- .tracker/hosts/<hostname>.json <- AEMDEV_QA_* env. A host profile may tune transport (endpoints, models, timeouts, token caps) and host.role only; anything that changes the evidence a judge sees — qa.maxTextWords, qa.wordRatio — belongs HERE, for every host, because a verdict that depends on which machine ran it is worthless. The locale list is deliberately absent: it is imported from scripts/tracker/locales.js so the pipeline and the browser cannot disagree, and an override here would replace it wholesale (deepMerge replaces arrays) with no error.",
+
+  "llm": {
+    "$comment": "Three local llama.cpp servers, one per tier. Confirmed running on host fw13-ubuntu at these ports. A machine serving them elsewhere sets its own endpoints in .tracker/hosts/<hostname>.json rather than editing this file.",
+    "judge": {
+      "api": "openai",
+      "endpoint": "http://127.0.0.1:8080",
+      "model": "qwen2.5-14b-instruct",
+      "maxTokens": 900,
+      "timeoutMs": 900000
+    },
+    "triage": {
+      "api": "openai",
+      "endpoint": "http://127.0.0.1:8081",
+      "model": "qwen3-4b-instruct",
+      "maxTokens": 400,
+      "timeoutMs": 120000
+    },
+    "vision": {
+      "api": "openai",
+      "endpoint": "http://127.0.0.1:8082",
+      "model": "qwen2.5-vl-7b-instruct",
+      "maxTokens": 2048,
+      "timeoutMs": 900000
+    }
+  },
+
+  "publish": {
+    "$comment": "One DA site holds both the content and the tracker. `branch` is the ref every surface derives from — the aem.page host the drivers judge against and the Preview link written into every review doc — so a feature branch here would send reviewers to a host that disappears when someone deletes the branch. Use --branch=<ref> for the rare page that must be checked against unlanded code.",
+    "org": "aemgdc",
+    "site": "aemdev",
+    "branch": "main"
+  },
+
+  "qa": {
+    "$comment": "Verdict-affecting thresholds; host profiles must not override these. Values are inherited from the pipeline this was ported from and have NOT been recalibrated on aemdev pages — recalibration belongs in .tracker/qa-baselines/<group>.json, because a tolerance is a property of a template, not of a machine.",
+    "maxTextWords": 2500,
+    "imageCheckLimit": 40,
+    "wordRatio": { "failMin": 0.6, "warnMin": 0.85, "warnMax": 1.25 },
+    "fetchTimeoutMs": 30000,
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) aemdev-tracker-qa",
+
+    "$comment-minConfidence": "The judge's confidence gate: a model `pass` below this escalates instead (tools/tracker/judge.mjs, merge ladder step 4). It lives HERE and not in a host profile for the reason above — it decides verdicts. The upstream pipeline declared confidence in its schema, promised this gate in a header comment, implemented none of it, and emitted `95` against a 0..1 schema for months because llama.cpp's strict mode enforces types and not ranges. 0.55 is deliberately low: it is a floor against a model that has already told you it is guessing, not a quality bar, and every page it catches goes to a human rather than to a recorded PASS.",
+    "minConfidence": 0.55
+  },
+
+  "tx": {
+    "$comment": "The translation lifecycle's observe-and-dispatch half: tx:scan, tx:send, tx:preview. `requestsPerSecond` is a ceiling on admin.hlx.page, which rate-limits at about 10/s — a concurrency cap alone does NOT bound the rate, because the status API answers in ~80ms and six lanes against it is well over 60/s. The two SLA windows turn the one unobservable state into something falsifiable: a pair recorded `sent` whose page has not appeared on the preview host after previewSlaHours becomes `preview-missing` (queue awaiting-preview), and a signed-off page that never reached the live host after publishSlaHours becomes `publish-fail`. Both are deliberately generous — DA's Translate app is driven by a human opening a project, so a batch legitimately sits overnight, and an SLA tighter than the working day would fill the queues with pages nobody is late on.",
+    "concurrency": 6,
+    "requestsPerSecond": 10,
+    "previewSlaHours": 48,
+    "publishSlaHours": 24
+  },
+
+  "escalation": {
+    "$comment": "Attempt ceiling for a page that keeps failing. WIRED: tools/tracker/qa-driver.mjs compares it against the ledger's `attempts` on the skip rule, so a page at or over the ceiling is skipped with its last verdict printed and only --force moves it. A pass resets the count to 0, because an attempt count records unresolved trouble and a page that has been fixed must not inherit the ceiling it hit before. In the pipeline this was ported from the counter was incremented and never compared, which let a page be re-judged for ever. tx-driver.mjs must do the same or say why not.",
+    "maxAttempts": 3
+  },
+
+  "groups": {
+    "$comment-groups": "Four tracked page groups. The key IS the group name IS the sheet basename — config.mjs refuses a registry where they disagree, because a mismatch is what made escalation `group` values unmatchable against work-queue `group` values and left most groups unfilterable in the UI. org/repo are spelled out per entry for readability and asserted against scripts/tracker/paths.js at load. Each sheet is a multi-sheet doc: a `data` master tab plus one tab per target locale.",
+    "indexes": {
+      "$comment": "Root home page plus the section index pages. Hand-authored page list in the group sheet — `/` sits outside every index's include: /en/**, so it needs a manual row. Small, high-visibility, own baseline and brief.",
+      "org": "aemgdc",
+      "repo": "aemdev",
+      "path": "/tracker/data/groups/indexes.json",
+      "sheet": "data",
+      "branch": "main",
+      "qaNotesPath": "/tracker/qa",
+      "txNotesPath": "/tracker/tx"
+    },
+    "meetups": {
+      "$comment": "/en/meetups/**, resolved by PATH PREFIX and never by `template`: 'meetups' is missing from scripts/scripts.js templatedSections, so those pages carry no template metadata at all and a template-keyed sync classifies every one of them as ungrouped.",
+      "org": "aemgdc",
+      "repo": "aemdev",
+      "path": "/tracker/data/groups/meetups.json",
+      "sheet": "data",
+      "branch": "main",
+      "qaNotesPath": "/tracker/qa",
+      "txNotesPath": "/tracker/tx"
+    },
+    "technical-articles": {
+      "$comment": "/en/articles/**, from /en/query-index.json filtered on path prefix. The largest group, and the one where text expansion bites hardest — code blocks must survive translation byte-identical.",
+      "org": "aemgdc",
+      "repo": "aemdev",
+      "path": "/tracker/data/groups/technical-articles.json",
+      "sheet": "data",
+      "branch": "main",
+      "qaNotesPath": "/tracker/qa",
+      "txNotesPath": "/tracker/tx"
+    },
+    "bios": {
+      "$comment": "/en/fragments/bios/**, page list from the /bios.json roster. READ-ONLY coupling: the tracker reads that roster and never writes it — it is owned elsewhere. /en/fragments/** is excluded from the aemdev-en index, so this group has no query-index until a bios index is deployed.",
+      "org": "aemgdc",
+      "repo": "aemdev",
+      "path": "/tracker/data/groups/bios.json",
+      "sheet": "data",
+      "branch": "main",
+      "qaNotesPath": "/tracker/qa",
+      "txNotesPath": "/tracker/tx"
+    }
+  }
+}

@@ -2,10 +2,14 @@
 User-agent: *
 Allow: /
 
+# The QA / translation tracker is an internal board. noindex is set four ways:
+# a per-page metadata row, absence from every query index, an x-robots-tag response
+# header (the only layer that reaches the JSON feeds), and this line.
+Disallow: /tracker/
+
 # Content fragments are composed into pages by blocks; they are not pages.
 # Excluded here rather than with a per-document `robots: noindex`, because the
 # Helix indexer honours that meta and would refuse to index them at all — see
 # tools/bio-manager/bio-doc.js. They are already absent from the sitemap, which
 # is generated from /en/query-index.json (which excludes /en/fragments/**).
 Disallow: /en/fragments/
-

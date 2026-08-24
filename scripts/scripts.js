@@ -1,17 +1,21 @@
 import { loadArea, setConfig } from './ak.js';
 import decorateLinkTargets from './utils/link-target.js';
+import { siteLocalesConfig } from './tracker/locales.js';
 
 const hostnames = ['authorkit.dev'];
 
-const locales = {
-  '': { lang: 'en' },
-  '/de': { lang: 'de' },
-  '/es': { lang: 'es' },
-  '/fr': { lang: 'fr' },
-  '/hi': { lang: 'hi' },
-  '/ja': { lang: 'ja' },
-  '/zh': { lang: 'zh' },
-};
+/*
+ * The locales this site serves.
+ *
+ * Sourced from ONE registry — scripts/tracker/locales.js — so the site's link
+ * localization and the translation tracker cannot disagree about what locales exist.
+ * Previously this map was hand-maintained and had drifted: it listed `hi` and `zh`,
+ * neither of which is a locale here, and it had no `/en` key at all even though every
+ * page on the site lives under /en/. That made `getLocale` match `''` on an English
+ * page, so `localizeUrl` took its root-locale early return and no link localization
+ * ever happened.
+ */
+const locales = siteLocalesConfig();
 
 const linkBlocks = [
   { fragment: '/fragments/' },
@@ -28,6 +32,11 @@ const components = ['fragment', 'schedule'];
 // automatically, so their body content area matches the article reading layout
 // (constrained readable column + full-bleed special sections). Locale-agnostic:
 // matches the folder as a path segment in any locale (e.g. /en/articles/foo).
+// `meetups` is deliberately ABSENT despite the /en/meetup-recaps/ -> /en/meetups/
+// rename. All fourteen live meetup pages already declare `template: meetup` explicitly
+// (verified against /en/query-index.json), so the path-based fallback is not needed
+// there — and adding it would inject `template=blog` into any future meetup page whose
+// metadata was forgotten, which is the wrong template, applied silently.
 const templatedSections = ['articles', 'meetup-recaps', 'meeting-recaps'];
 
 // If the current page is a child of a templated section and has no explicit

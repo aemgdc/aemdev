@@ -1,9 +1,11 @@
 import { getConfig, getMetadata } from '../../scripts/ak.js';
-import { loadFragment } from '../fragment/fragment.js';
+import { loadLocalizedFragment } from '../fragment/fragment.js';
 import { setColorScheme } from '../section-metadata/section-metadata.js';
 
 const { locale } = getConfig();
 
+// Locale-independent. `loadLocalizedFragment` prepends the active locale and falls
+// back to English, so an untranslated locale still gets a nav.
 const HEADER_PATH = '/fragments/nav/header';
 const HEADER_ACTIONS = [
   '/tools/widgets/scheme',
@@ -43,7 +45,10 @@ function decorateLanguage(btn) {
     if (!menu) {
       const content = document.createElement('div');
       content.classList.add('block-content');
-      const fragment = await loadFragment(`${locale.prefix}${HEADER_PATH}/languages`);
+      // The language MENU is the one fragment a reader must be able to reach from a
+      // locale that is otherwise untranslated — it is how they get back to English.
+      // So it falls back too, and an unhandled 404 here would leave the button dead.
+      const { fragment } = await loadLocalizedFragment(`${HEADER_PATH}/languages`, locale);
       menu = document.createElement('div');
       menu.className = 'language menu';
       menu.append(fragment);
@@ -248,8 +253,12 @@ export default async function init(el) {
   const headerMeta = getMetadata('header');
   const path = headerMeta || HEADER_PATH;
   try {
-    const fragment = await loadFragment(`${locale.prefix}${path}`);
+    const { fragment, localized } = await loadLocalizedFragment(path, locale);
     fragment.classList.add('header-content');
+    // Marks chrome that fell back to English, so it is visible in the DOM rather than
+    // only in a network log — and so the translation QA can tell "not translated yet"
+    // apart from "translated wrongly".
+    if (!localized) fragment.dataset.fallbackLocale = 'en';
     await decorateHeader(fragment);
     el.append(fragment);
   } catch (e) {

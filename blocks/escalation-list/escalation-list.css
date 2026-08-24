@@ -1,0 +1,255 @@
+/*
+ * escalation-list
+ *
+ * Scope drives the visual weight, because scope drives the triage: a template-scope
+ * section is the one where one fix clears many pages, so it gets the signal colour and
+ * leads the board. Page and content scope are neutral — they are per-item work.
+ *
+ * `es-bad` is the one hook for a value the model does not recognise (a dangling queue
+ * id, a locale code that is not in the registry). It is red because it is a defect in
+ * the data or the model, not in the page being reviewed.
+ */
+
+.escalation-list {
+  --es-surface: light-dark(var(--paper), var(--carbon));
+  --es-surface-2: light-dark(var(--surface), var(--carbon-2));
+  --es-rule: light-dark(var(--border), var(--carbon-3));
+  --es-text: light-dark(var(--text), var(--white));
+  --es-muted: light-dark(var(--muted), var(--color-gray-400));
+
+  color: var(--es-text);
+  font-family: var(--body-font-family);
+
+  .es-board {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-l);
+  }
+
+  /* ------------------------------------------------------------- scope section */
+
+  .es-scope {
+    border-top: 2px solid var(--es-rule);
+    padding-top: var(--spacing-s);
+  }
+
+  .es-scope[data-scope="template"] {
+    border-top-color: var(--aem-red);
+  }
+
+  .es-scope[data-scope="unknown"] {
+    border-top-color: var(--aem-red);
+    border-left: 4px solid var(--aem-red);
+    padding-left: var(--spacing-s);
+  }
+
+  .es-scope-head {
+    display: flex;
+    align-items: baseline;
+    gap: var(--spacing-s);
+  }
+
+  .es-scope-title {
+    margin: 0;
+    font-family: var(--display-font-family);
+    font-size: var(--heading-font-size-m);
+  }
+
+  .es-scope-count {
+    font-family: var(--mono-font-family);
+    font-weight: 700;
+    font-size: var(--body-font-size-l);
+    margin-left: auto;
+  }
+
+  .es-scope-lead {
+    margin: var(--spacing-xs) 0 var(--spacing-s);
+    font-size: var(--body-font-size-s);
+    color: var(--es-muted);
+    max-width: 60ch;
+  }
+
+  .es-spans {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--spacing-xs) var(--spacing-s);
+    margin: 0 0 var(--spacing-s);
+    font-size: var(--body-font-size-xs);
+  }
+
+  .es-spans-label {
+    font-weight: 700;
+  }
+
+  /* ---------------------------------------------------------------- one item */
+
+  .es-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .es-item {
+    border: 1px solid var(--es-rule);
+    background: var(--es-surface);
+    padding: var(--spacing-s) var(--spacing-m);
+    margin-bottom: var(--spacing-s);
+  }
+
+  .es-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--spacing-xs) var(--spacing-s);
+  }
+
+  .es-path {
+    font-family: var(--mono-font-family);
+    font-size: var(--body-font-size-xs);
+    word-break: break-all;
+  }
+
+  .es-locale,
+  .es-group {
+    font-size: 0.7rem;
+    color: var(--es-muted);
+    border: 1px solid var(--es-rule);
+    padding: 1px 5px;
+  }
+
+  .es-summary {
+    margin: var(--spacing-xs) 0;
+    font-size: var(--body-font-size-s);
+    font-weight: 700;
+  }
+
+  .es-detail {
+    margin: 0 0 var(--spacing-xs);
+    font-size: var(--body-font-size-s);
+    max-width: 70ch;
+  }
+
+  .es-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-xs) var(--spacing-m);
+    margin: var(--spacing-xs) 0;
+  }
+
+  .es-fact {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    font-size: 0.72rem;
+  }
+
+  .es-fact-label {
+    font-family: var(--mono-font-family);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--es-muted);
+  }
+
+  .es-fact-value {
+    font-weight: 700;
+  }
+
+  /* A value the model does not recognise. A data defect, not a content one. */
+  .es-bad {
+    color: var(--aem-red);
+    border-color: var(--aem-red);
+  }
+
+  .es-bad .es-fact-label {
+    color: var(--aem-red);
+  }
+
+  .es-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-s);
+    margin-top: var(--spacing-xs);
+  }
+
+  .es-link {
+    font-family: var(--mono-font-family);
+    font-size: var(--body-font-size-xs);
+    color: var(--color-link);
+    text-decoration: none;
+    border-bottom: 1px solid currentcolor;
+  }
+
+  .es-link:hover,
+  .es-link:focus-visible {
+    color: var(--color-link-hover);
+  }
+
+  /* The repo-side report path. Not a link — it is not published, by design. */
+  .es-report {
+    margin: var(--spacing-xs) 0 0;
+    font-family: var(--mono-font-family);
+    font-size: 0.68rem;
+    color: var(--es-muted);
+    word-break: break-all;
+  }
+
+  .es-more {
+    margin: 0;
+    font-size: var(--body-font-size-xs);
+    color: var(--es-muted);
+  }
+
+  /* --------------------------------------------------- states and warnings */
+
+  .es-panel {
+    border: 1px solid var(--es-rule);
+    border-left: 4px solid var(--slate);
+    background: var(--es-surface-2);
+    padding: var(--spacing-m);
+  }
+
+  .es-panel-error {
+    border-left-color: var(--aem-red);
+  }
+
+  .es-panel-title {
+    margin: 0 0 var(--spacing-s);
+    font-family: var(--display-font-family);
+    font-size: var(--heading-font-size-s);
+  }
+
+  .es-panel-line {
+    margin: 0 0 var(--spacing-s);
+    font-size: var(--body-font-size-s);
+  }
+
+  .es-panel-line:last-child {
+    margin-bottom: 0;
+  }
+
+  .es-warnings {
+    margin: var(--spacing-m) 0 0;
+    border-left: 4px solid var(--aem-red);
+    padding-left: var(--spacing-s);
+  }
+
+  .es-warn-title {
+    margin: 0 0 var(--spacing-xs);
+    font-family: var(--display-font-family);
+    font-size: var(--heading-font-size-xs);
+  }
+
+  .es-warn-list {
+    margin: 0;
+    padding-left: var(--spacing-m);
+    font-size: var(--body-font-size-xs);
+  }
+
+  .es-meta {
+    margin: var(--spacing-m) 0 0;
+    font-size: var(--body-font-size-xs);
+    color: var(--es-muted);
+    max-width: 70ch;
+  }
+}

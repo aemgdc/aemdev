@@ -1,0 +1,132 @@
+{
+  "page-path": "/en/meetups/champions-office-hours-2025-wrap-up",
+  "group": "meetups",
+  "mode": "baseline",
+  "urls": {
+    "target": "https://main--aemdev--aemgdc.aem.page/en/meetups/champions-office-hours-2025-wrap-up",
+    "plain": "https://main--aemdev--aemgdc.aem.page/en/meetups/champions-office-hours-2025-wrap-up.plain.html"
+  },
+  "branch": "main",
+  "generated": "2026-08-24T04:09:44.997Z",
+  "baseline": {
+    "exists": true,
+    "path": "/home/tad/git/aemgdc/aemdev-tracker/.tracker/qa-baselines/meetups.json",
+    "calibratedFrom": "/en/meetups/adaptto-2026-berlin"
+  },
+  "tiers": {
+    "structural": {
+      "verdict": "fail",
+      "checks": [
+        {
+          "check": "headings",
+          "verdict": "fail",
+          "findings": [
+            {
+              "verdict": "fail",
+              "detail": "no heading matches /^What to expect$/"
+            }
+          ],
+          "required": 1,
+          "found": 0
+        },
+        {
+          "check": "text",
+          "verdict": "fail",
+          "detail": "29 words, below the group floor of 40 — the page is empty or truncated",
+          "words": 29,
+          "min": 40,
+          "reference": 70
+        },
+        {
+          "check": "image-alt",
+          "verdict": "pass",
+          "count": 0
+        },
+        {
+          "check": "images",
+          "verdict": "pass",
+          "checked": 0,
+          "skipped": 0
+        },
+        {
+          "check": "links",
+          "verdict": "pass",
+          "internal": 0,
+          "external": 1,
+          "checked": 0
+        },
+        {
+          "check": "icons",
+          "verdict": "pass",
+          "count": 0
+        },
+        {
+          "check": "blocks-recognised",
+          "verdict": "pass",
+          "declared": [
+            "blog-post-hero"
+          ]
+        },
+        {
+          "check": "blocks-rendered",
+          "verdict": "pass"
+        },
+        {
+          "check": "metadata",
+          "verdict": "pass",
+          "required": [
+            "title",
+            "description"
+          ],
+          "present": 2
+        },
+        {
+          "check": "verbatim",
+          "verdict": "fail",
+          "findings": [
+            {
+              "verdict": "fail",
+              "detail": "the brief requires \"Berlin\" verbatim; it is not on the page"
+            }
+          ],
+          "declared": 1
+        }
+      ],
+      "errors": [
+        {
+          "check": "headings",
+          "detail": "no heading matches /^What to expect$/"
+        },
+        {
+          "check": "text",
+          "detail": "29 words, below the group floor of 40 — the page is empty or truncated"
+        },
+        {
+          "check": "verbatim",
+          "detail": "the brief requires \"Berlin\" verbatim; it is not on the page"
+        }
+      ],
+      "warnings": [],
+      "fatal": null
+    },
+    "judge": null,
+    "visual": null
+  },
+  "evidence": {
+    "textSample": {
+      "target": "What we covered A year-end wrap of what actually shipped across AEM in 2025, and a look at the path toward agentic AEM through 2026. Watch the session https://www.youtube.com/watch?v=q4bzAhUxOO8"
+    },
+    "blocks": [
+      "blog-post-hero"
+    ],
+    "icons": [],
+    "words": 29,
+    "headings": [
+      "h2: What we covered",
+      "h2: Watch the session"
+    ],
+    "title": "AEM Champions Office Hours: 2025 Wrap-Up and the Path to Agentic AEM",
+    "description": "A recap of the AEM Champions Office Hours year-end session - what shipped across AEM in 2025 and what the move toward agentic AEM means for 2026."
+  },
+  "verdict": "fail"
+}

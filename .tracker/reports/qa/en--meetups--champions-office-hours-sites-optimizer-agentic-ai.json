@@ -1,0 +1,134 @@
+{
+  "page-path": "/en/meetups/champions-office-hours-sites-optimizer-agentic-ai",
+  "group": "meetups",
+  "mode": "baseline",
+  "urls": {
+    "target": "https://main--aemdev--aemgdc.aem.page/en/meetups/champions-office-hours-sites-optimizer-agentic-ai",
+    "plain": "https://main--aemdev--aemgdc.aem.page/en/meetups/champions-office-hours-sites-optimizer-agentic-ai.plain.html"
+  },
+  "branch": "main",
+  "generated": "2026-08-24T04:09:45.612Z",
+  "baseline": {
+    "exists": true,
+    "path": "/home/tad/git/aemgdc/aemdev-tracker/.tracker/qa-baselines/meetups.json",
+    "calibratedFrom": "/en/meetups/adaptto-2026-berlin"
+  },
+  "tiers": {
+    "structural": {
+      "verdict": "fail",
+      "checks": [
+        {
+          "check": "headings",
+          "verdict": "fail",
+          "findings": [
+            {
+              "verdict": "fail",
+              "detail": "no heading matches /^What to expect$/"
+            }
+          ],
+          "required": 1,
+          "found": 0
+        },
+        {
+          "check": "text",
+          "verdict": "warn",
+          "detail": "40 words is 0.571x the group reference of 70",
+          "words": 40,
+          "min": 40,
+          "reference": 70,
+          "ratio": 0.571
+        },
+        {
+          "check": "image-alt",
+          "verdict": "pass",
+          "count": 0
+        },
+        {
+          "check": "images",
+          "verdict": "pass",
+          "checked": 0,
+          "skipped": 0
+        },
+        {
+          "check": "links",
+          "verdict": "pass",
+          "internal": 0,
+          "external": 1,
+          "checked": 0
+        },
+        {
+          "check": "icons",
+          "verdict": "pass",
+          "count": 0
+        },
+        {
+          "check": "blocks-recognised",
+          "verdict": "pass",
+          "declared": [
+            "blog-post-hero"
+          ]
+        },
+        {
+          "check": "blocks-rendered",
+          "verdict": "pass"
+        },
+        {
+          "check": "metadata",
+          "verdict": "pass",
+          "required": [
+            "title",
+            "description"
+          ],
+          "present": 2
+        },
+        {
+          "check": "verbatim",
+          "verdict": "fail",
+          "findings": [
+            {
+              "verdict": "fail",
+              "detail": "the brief requires \"Berlin\" verbatim; it is not on the page"
+            }
+          ],
+          "declared": 1
+        }
+      ],
+      "errors": [
+        {
+          "check": "headings",
+          "detail": "no heading matches /^What to expect$/"
+        },
+        {
+          "check": "verbatim",
+          "detail": "the brief requires \"Berlin\" verbatim; it is not on the page"
+        }
+      ],
+      "warnings": [
+        {
+          "check": "text",
+          "detail": "40 words is 0.571x the group reference of 70"
+        }
+      ],
+      "fatal": null
+    },
+    "judge": null,
+    "visual": null
+  },
+  "evidence": {
+    "textSample": {
+      "target": "What we covered Office Hours on Adobe AEM Sites Optimizer - what it detects, what it can deploy on its own - and a walk through the agentic AI capabilities arriving across the AEM product line. Watch the session https://www.youtube.com/watch?v=K8OMHxffUK8"
+    },
+    "blocks": [
+      "blog-post-hero"
+    ],
+    "icons": [],
+    "words": 40,
+    "headings": [
+      "h2: What we covered",
+      "h2: Watch the session"
+    ],
+    "title": "AEM Champions Office Hours: Sites Optimizer and Agentic AI Capabilities",
+    "description": "A recap of the AEM Champions Office Hours session on Adobe AEM Sites Optimizer and the new agentic AI capabilities landing across AEM."
+  },
+  "verdict": "fail"
+}

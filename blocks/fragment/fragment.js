@@ -53,6 +53,40 @@ export async function loadFragment(path) {
 }
 
 /**
+ * Loads a fragment for the current locale, falling back to the source locale.
+ *
+ * Site chrome is rolled out per locale, and a locale is only ever PARTLY translated —
+ * translation lands one batch at a time, and a new locale starts completely empty. So
+ * `/de/fragments/nav/header` not existing yet is the NORMAL state for most of a
+ * rollout, not an error.
+ *
+ * Without this fallback the header and footer blocks throw on that 404 and the page
+ * renders with no navigation at all. That failure is also badly misleading to debug:
+ * the symptom is missing chrome on every page in a locale, and the cause is one
+ * unwritten document.
+ *
+ * Returns `{ fragment, localized }`. `localized` is false when the caller got English —
+ * the translation tracker's layout tier uses it to avoid reporting "the chrome is in
+ * English" as a translation defect on a page where English chrome is the intended
+ * state.
+ *
+ * @param {string} path locale-independent fragment path, e.g. `/fragments/nav/header`
+ * @param {{prefix: string}} locale the locale from `getConfig()`
+ * @param {string} sourcePrefix the prefix to fall back to
+ */
+export async function loadLocalizedFragment(path, locale, sourcePrefix = '/en') {
+  const prefix = locale?.prefix ?? '';
+  try {
+    return { fragment: await loadFragment(`${prefix}${path}`), localized: true };
+  } catch (e) {
+    // Only the source locale is worth a second attempt; anything else would ask twice
+    // for the same URL and turn one 404 into two.
+    if (prefix === sourcePrefix) throw e;
+    return { fragment: await loadFragment(`${sourcePrefix}${path}`), localized: false };
+  }
+}
+
+/**
  *
  * @param {Element}} a the fragment link
  * @returns the element that can be replaced
@@ -105,7 +139,8 @@ export default async function init(a) {
       ? fragment.querySelectorAll(':scope > *')
       : [fragment];
     for (const [idx, child] of children.entries()) {
-      // If relative, create a unique ID to help fragments be identified after being inserted into the page
+      // If relative, create a unique ID to help fragments be identified after
+      // being inserted into the page
       if (path.startsWith('/')) child.id = btoa(encodeURIComponent(`${path}/${idx + 1}`));
       elToReplace.insertAdjacentElement('afterend', child);
     }

@@ -1,0 +1,277 @@
+/*
+ * group-progress.
+ *
+ * Twelve columns is a lot, so almost all of the work here is making the row scan left to
+ * right as a progression and making the ZEROES recede without disappearing:
+ *
+ *  - the two columns the English feed can populate are full-strength; the seven it
+ *    cannot are dimmed, which is a statement about the FEED and not about the data;
+ *  - a zero is muted but still a zero, because these columns partition and a dash would
+ *    read as "not applicable";
+ *  - the blocked column is separated by a rule and coloured red, because it is the only
+ *    column on the board where a non-zero means somebody has to act.
+ *
+ * Subgroup rows are rows of the SAME table, indented by their first cell, so their
+ * figures line up with the group row above by construction. `(unassigned)` recedes: it
+ * is the residue, not a category anybody chose.
+ */
+
+.group-progress {
+  --gp-hair: light-dark(var(--border), var(--carbon-3));
+  --gp-surface: light-dark(var(--surface), var(--carbon-2));
+  --gp-ink: light-dark(var(--text), var(--white));
+  --gp-muted: light-dark(var(--muted), var(--color-gray-400));
+  --gp-faint: light-dark(var(--color-gray-400), var(--color-gray-600));
+  --gp-attention: light-dark(var(--aem-red-dk), var(--aem-red));
+  --gp-attention-wash: light-dark(rgb(235 16 0 / 6%), rgb(235 16 0 / 14%));
+
+  max-width: var(--grid-content-width);
+  color: var(--gp-ink);
+
+  /* Twelve columns will not fit a phone; the table scrolls, the page does not. */
+  overflow-x: auto;
+
+  .gp-table {
+    width: 100%;
+    min-width: 44rem;
+    border-collapse: collapse;
+
+    th,
+    td {
+      padding: var(--spacing-s) var(--spacing-s) var(--spacing-s) 0;
+      border-bottom: 1px solid var(--gp-hair);
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      font-family: var(--display-font-family);
+      font-size: var(--body-font-size-s);
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      border-bottom: 2px solid var(--gp-ink);
+    }
+  }
+
+  /* ------------------------------------------------------------------ the numbers */
+
+  .gp-num {
+    width: 1%;
+    text-align: right;
+    white-space: nowrap;
+    font-family: var(--mono-font-family);
+    font-size: var(--body-font-size-s);
+  }
+
+  /* Still a zero, not a dash: the columns partition and none-of-them is an answer. */
+  .gp-zero {
+    color: var(--gp-faint);
+
+    b {
+      font-weight: 400;
+    }
+  }
+
+  .gp-total {
+    padding-right: var(--spacing-m);
+    border-right: 1px solid var(--gp-hair);
+  }
+
+  .gp-of {
+    color: var(--gp-muted);
+  }
+
+  /*
+   * The seven columns the English feed cannot populate. Dimmed, not hidden — the reader
+   * has to learn the nine-position funnel, and the caption under the table says why
+   * these are zero here.
+   */
+  .gp-downstream {
+    color: var(--gp-faint);
+    background: light-dark(rgb(0 0 0 / 2%), rgb(255 255 255 / 3%));
+  }
+
+  /* The only column where a non-zero means somebody has to do something. */
+  .gp-blocked {
+    padding-left: var(--spacing-s);
+    border-left: 1px solid var(--gp-hair);
+    color: var(--gp-attention);
+  }
+
+  .gp-blocked.gp-zero {
+    color: var(--gp-faint);
+  }
+
+  /* -------------------------------------------------------------- the group name */
+
+  .gp-name {
+    width: auto;
+    min-width: 12rem;
+    white-space: nowrap;
+
+    a {
+      font-size: var(--body-font-size-m);
+      font-weight: 600;
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px solid var(--gp-hair);
+    }
+
+    a:hover {
+      color: var(--gp-attention);
+      border-bottom-color: var(--gp-attention);
+    }
+  }
+
+  .gp-toggle {
+    /* Not a site button: a 1em affordance in front of the name. */
+    appearance: none;
+    margin: 0 var(--spacing-xs) 0 0;
+    padding: 0 2px;
+    min-width: 1.2em;
+    background: none;
+    border: 0;
+    color: var(--gp-muted);
+    font-size: var(--body-font-size-s);
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .gp-toggle:hover {
+    color: var(--gp-attention);
+  }
+
+  /* ▸ and ▾ are not the same width, so the name would shift on every expand. */
+  .gp-caret {
+    display: inline-block;
+    width: 1ch;
+    text-align: center;
+  }
+
+  .gp-toggle[aria-expanded="true"] {
+    color: var(--gp-ink);
+  }
+
+  .gp-subcount {
+    display: inline-block;
+    margin-left: var(--spacing-xs);
+    padding: 0 5px;
+    background: var(--gp-surface);
+    border: 1px solid var(--gp-hair);
+    font-family: var(--mono-font-family);
+    font-size: var(--body-font-size-xs);
+    color: var(--gp-muted);
+  }
+
+  /* ----------------------------------------------------------- the subgroup rows */
+
+  .gp-subrow {
+    background: var(--gp-surface);
+
+    td {
+      padding-top: var(--spacing-xs);
+      padding-bottom: var(--spacing-xs);
+      font-size: var(--body-font-size-xs);
+    }
+  }
+
+  .gp-sub-name {
+    padding-left: var(--spacing-l);
+    white-space: nowrap;
+
+    a {
+      color: inherit;
+      font-size: var(--body-font-size-s);
+      font-weight: 400;
+      text-decoration: none;
+      border-bottom: 1px solid var(--gp-hair);
+    }
+
+    a:hover {
+      color: var(--gp-attention);
+    }
+  }
+
+  /* `(unassigned)` — the residue. Present, countable, and not a category anybody chose. */
+  .gp-residue {
+    .gp-sub-name a {
+      color: var(--gp-muted);
+      font-style: italic;
+    }
+  }
+
+  /* ------------------------------------------------------------------- the notes */
+
+  .gp-note {
+    max-width: 76ch;
+    margin: var(--spacing-m) 0 0;
+    padding-left: var(--spacing-m);
+    border-left: 2px solid var(--gp-hair);
+    font-size: var(--body-font-size-s);
+    color: var(--gp-muted);
+  }
+
+  .gp-note-warn {
+    padding: var(--spacing-s) var(--spacing-m);
+    border-left-color: var(--gp-attention);
+    background: var(--gp-attention-wash);
+    color: var(--gp-ink);
+  }
+
+  .gp-stamp {
+    margin: var(--spacing-l) 0 0;
+    font-family: var(--mono-font-family);
+    font-size: var(--body-font-size-xs);
+    color: var(--gp-muted);
+  }
+
+  /* -------------------------------------------------------- the missing-feed panel */
+
+  .gp-missing {
+    padding: var(--spacing-l);
+    background: var(--gp-surface);
+    border: 1px solid var(--gp-hair);
+    border-left: 4px solid var(--gp-ink);
+  }
+
+  .gp-missing-head {
+    margin: 0 0 var(--spacing-s);
+    font-size: var(--heading-font-size-m);
+  }
+
+  .gp-missing-lede,
+  .gp-missing-run {
+    max-width: 76ch;
+    margin: 0 0 var(--spacing-m);
+  }
+
+  .gp-missing-run {
+    margin-bottom: 0;
+    font-size: var(--body-font-size-s);
+  }
+
+  .gp-missing-feed {
+    margin: 0 0 var(--spacing-m);
+
+    dd {
+      margin: 0;
+    }
+  }
+
+  .gp-missing-path {
+    font-family: var(--mono-font-family);
+    font-size: var(--body-font-size-m);
+    font-weight: 700;
+  }
+
+  .gp-missing-error {
+    display: inline-block;
+    margin-top: var(--spacing-xs);
+    padding: 1px 6px;
+    font-family: var(--mono-font-family);
+    font-size: var(--body-font-size-xs);
+    color: var(--gp-attention);
+    background: var(--gp-attention-wash);
+  }
+}

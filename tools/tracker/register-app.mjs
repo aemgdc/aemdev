@@ -199,11 +199,26 @@ async function main() {
     return 0;
   }
 
+  /*
+   * PUT, and the form value is a plain STRING, not a Blob.
+   *
+   * Both were wrong on the first attempt and the config API answered
+   * `400 {"error":"Couldn't parse or save config."}` — which says nothing about which
+   * of the two it disliked. The shape is taken from DA's own client
+   * (`config.save` in adobe/da-nx `nx2/utils/api.js`): `formData.append('config', body)`
+   * with `{ method: 'PUT' }`, where `body` is already-serialized JSON.
+   *
+   * A source doc POST does take a Blob, which is what made the mistake easy: this is a
+   * different API on a different verb, and only the field name is shared.
+   *
+   * The failure was at least clean — it wrote nothing, and the read-back below would
+   * have caught it either way.
+   */
   const body = new FormData();
-  body.append('config', new Blob([JSON.stringify(next)], { type: 'application/json' }));
+  body.append('config', JSON.stringify(next));
   let put;
   try {
-    put = await fetch(CONFIG_URL, { method: 'POST', headers, body });
+    put = await fetch(CONFIG_URL, { method: 'PUT', headers, body });
   } catch (e) {
     console.error(`\n   ✗ write failed to reach DA — ${e.message}`);
     return 2;

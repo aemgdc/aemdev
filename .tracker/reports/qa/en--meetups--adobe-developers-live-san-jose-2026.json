@@ -1,0 +1,114 @@
+{
+  "page-path": "/en/meetups/adobe-developers-live-san-jose-2026",
+  "group": "meetups",
+  "mode": "baseline",
+  "urls": {
+    "target": "https://main--aemdev--aemgdc.aem.page/en/meetups/adobe-developers-live-san-jose-2026",
+    "plain": "https://main--aemdev--aemgdc.aem.page/en/meetups/adobe-developers-live-san-jose-2026.plain.html"
+  },
+  "branch": "main",
+  "generated": "2026-08-24T04:21:35.514Z",
+  "baseline": {
+    "exists": true,
+    "path": "/home/tad/git/aemgdc/aemdev-tracker/.tracker/qa-baselines/meetups.json",
+    "calibratedFrom": "/en/meetups/adaptto-2026-berlin"
+  },
+  "tiers": {
+    "structural": {
+      "verdict": "pass",
+      "checks": [
+        {
+          "check": "headings",
+          "verdict": "skip",
+          "detail": "no requiredHeadings in the group baseline"
+        },
+        {
+          "check": "text",
+          "verdict": "pass",
+          "words": 51,
+          "min": 20,
+          "reference": null
+        },
+        {
+          "check": "image-alt",
+          "verdict": "pass",
+          "count": 0
+        },
+        {
+          "check": "images",
+          "verdict": "pass",
+          "checked": 0,
+          "skipped": 0
+        },
+        {
+          "check": "links",
+          "verdict": "pass",
+          "internal": 0,
+          "external": 0,
+          "checked": 0
+        },
+        {
+          "check": "icons",
+          "verdict": "pass",
+          "count": 0
+        },
+        {
+          "check": "blocks-recognised",
+          "verdict": "pass",
+          "declared": [
+            "blog-post-hero"
+          ]
+        },
+        {
+          "check": "blocks-rendered",
+          "verdict": "pass"
+        },
+        {
+          "check": "sections-recognised",
+          "verdict": "pass",
+          "declared": []
+        },
+        {
+          "check": "metadata",
+          "verdict": "pass",
+          "required": [
+            "title",
+            "description",
+            "template",
+            "event-date",
+            "location",
+            "status"
+          ],
+          "present": 6
+        },
+        {
+          "check": "verbatim",
+          "verdict": "skip",
+          "detail": "the requirements brief declares no verbatim strings"
+        }
+      ],
+      "errors": [],
+      "warnings": [],
+      "fatal": null
+    },
+    "judge": null,
+    "visual": null
+  },
+  "evidence": {
+    "textSample": {
+      "target": "What to expect Adobe Developers Live 2026 comes to San Jose on 23 October. The in-person event runs a different format from the virtual one, built around external speakers and developers from partners and customers - there is no livestream. Our session will focus on developer architecture. Topic to be confirmed."
+    },
+    "blocks": [
+      "blog-post-hero"
+    ],
+    "sectionStyles": [],
+    "icons": [],
+    "words": 51,
+    "headings": [
+      "h2: What to expect"
+    ],
+    "title": "Adobe Developers Live 2026 - San Jose",
+    "description": "Adobe Developers Live comes to San Jose on 23 October 2026 - an in-person event built around external speakers and developers from partners and customers."
+  },
+  "verdict": "pass"
+}

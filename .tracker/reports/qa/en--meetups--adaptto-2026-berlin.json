@@ -1,0 +1,126 @@
+{
+  "page-path": "/en/meetups/adaptto-2026-berlin",
+  "group": "meetups",
+  "mode": "baseline",
+  "urls": {
+    "target": "https://main--aemdev--aemgdc.aem.page/en/meetups/adaptto-2026-berlin",
+    "plain": "https://main--aemdev--aemgdc.aem.page/en/meetups/adaptto-2026-berlin.plain.html"
+  },
+  "branch": "main",
+  "generated": "2026-08-24T04:20:04.151Z",
+  "baseline": {
+    "exists": true,
+    "path": "/home/tad/git/aemgdc/aemdev-tracker/.tracker/qa-baselines/meetups.json",
+    "calibratedFrom": "/en/meetups/adaptto-2026-berlin"
+  },
+  "tiers": {
+    "structural": {
+      "verdict": "pass",
+      "checks": [
+        {
+          "check": "headings",
+          "verdict": "skip",
+          "detail": "no requiredHeadings in the group baseline"
+        },
+        {
+          "check": "text",
+          "verdict": "pass",
+          "words": 70,
+          "min": 20,
+          "reference": null
+        },
+        {
+          "check": "image-alt",
+          "verdict": "pass",
+          "count": 0
+        },
+        {
+          "check": "images",
+          "verdict": "pass",
+          "checked": 0,
+          "skipped": 0
+        },
+        {
+          "check": "links",
+          "verdict": "pass",
+          "internal": 0,
+          "external": 0,
+          "checked": 0
+        },
+        {
+          "check": "icons",
+          "verdict": "pass",
+          "count": 0
+        },
+        {
+          "check": "blocks-recognised",
+          "verdict": "pass",
+          "declared": [
+            "blog-post-hero"
+          ]
+        },
+        {
+          "check": "blocks-rendered",
+          "verdict": "pass"
+        },
+        {
+          "check": "sections-recognised",
+          "verdict": "pass",
+          "declared": []
+        },
+        {
+          "check": "metadata",
+          "verdict": "pass",
+          "required": [
+            "title",
+            "description",
+            "template",
+            "event-date",
+            "location",
+            "status"
+          ],
+          "present": 6
+        },
+        {
+          "check": "verbatim",
+          "verdict": "skip",
+          "detail": "the requirements brief declares no verbatim strings"
+        }
+      ],
+      "errors": [],
+      "warnings": [],
+      "fatal": null
+    },
+    "judge": {
+      "verdict": "pass",
+      "confidence": 0.95,
+      "rawConfidence": 0.95,
+      "issues": [],
+      "model": "qwen2.5-14b-instruct@http://127.0.0.1:8080",
+      "mode": "baseline",
+      "briefSource": "local",
+      "briefSection": "EN QA Requirements",
+      "minConfidence": 0.55,
+      "elapsedMs": 15293,
+      "reason": "both tiers clean at confidence 0.95"
+    },
+    "visual": null
+  },
+  "evidence": {
+    "textSample": {
+      "target": "What to expect adaptTo() 2026 runs 28-30 September in Berlin. Our session, \"Spiritually Succeeding AEM: Advanced Author Customization in DA\", is on Tuesday 29 September. It covers how far the Document Authoring interface can be customised - tag pickers wired to a live AEM taxonomy, icon and form pickers, structured bio management, preflight checks with a publish workflow, and block-aware bulk content operations. A recap will follow after the event."
+    },
+    "blocks": [
+      "blog-post-hero"
+    ],
+    "sectionStyles": [],
+    "icons": [],
+    "words": 70,
+    "headings": [
+      "h2: What to expect"
+    ],
+    "title": "adaptTo() 2026 - Berlin",
+    "description": "adaptTo() 2026 in Berlin, 28-30 September. Our session, \"Spiritually Succeeding AEM: Advanced Author Customization in DA\", is on 29 September."
+  },
+  "verdict": "pass"
+}

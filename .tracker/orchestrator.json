@@ -39,11 +39,22 @@
     "imageCheckLimit": 40,
     "wordRatio": { "failMin": 0.6, "warnMin": 0.85, "warnMax": 1.25 },
     "fetchTimeoutMs": 30000,
-    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) aemdev-tracker-qa"
+    "userAgent": "Mozilla/5.0 (X11; Linux x86_64) aemdev-tracker-qa",
+
+    "$comment-minConfidence": "The judge's confidence gate: a model `pass` below this escalates instead (tools/tracker/judge.mjs, merge ladder step 4). It lives HERE and not in a host profile for the reason above — it decides verdicts. The upstream pipeline declared confidence in its schema, promised this gate in a header comment, implemented none of it, and emitted `95` against a 0..1 schema for months because llama.cpp's strict mode enforces types and not ranges. 0.55 is deliberately low: it is a floor against a model that has already told you it is guessing, not a quality bar, and every page it catches goes to a human rather than to a recorded PASS.",
+    "minConfidence": 0.55
+  },
+
+  "tx": {
+    "$comment": "The translation lifecycle's observe-and-dispatch half: tx:scan, tx:send, tx:preview. `requestsPerSecond` is a ceiling on admin.hlx.page, which rate-limits at about 10/s — a concurrency cap alone does NOT bound the rate, because the status API answers in ~80ms and six lanes against it is well over 60/s. The two SLA windows turn the one unobservable state into something falsifiable: a pair recorded `sent` whose page has not appeared on the preview host after previewSlaHours becomes `preview-missing` (queue awaiting-preview), and a signed-off page that never reached the live host after publishSlaHours becomes `publish-fail`. Both are deliberately generous — DA's Translate app is driven by a human opening a project, so a batch legitimately sits overnight, and an SLA tighter than the working day would fill the queues with pages nobody is late on.",
+    "concurrency": 6,
+    "requestsPerSecond": 10,
+    "previewSlaHours": 48,
+    "publishSlaHours": 24
   },
 
   "escalation": {
-    "$comment": "Attempt ceiling for a page that keeps failing. NOT YET READ BY ANYTHING — the drivers do not exist yet. Whoever writes qa-driver.mjs / tx-driver.mjs must compare it against the ledger's `attempts` on the skip rule, or delete this key; a counter that is incremented and never compared lets a page loop forever.",
+    "$comment": "Attempt ceiling for a page that keeps failing. WIRED: tools/tracker/qa-driver.mjs compares it against the ledger's `attempts` on the skip rule, so a page at or over the ceiling is skipped with its last verdict printed and only --force moves it. A pass resets the count to 0, because an attempt count records unresolved trouble and a page that has been fixed must not inherit the ceiling it hit before. In the pipeline this was ported from the counter was incremented and never compared, which let a page be re-judged for ever. tx-driver.mjs must do the same or say why not.",
     "maxAttempts": 3
   },
 

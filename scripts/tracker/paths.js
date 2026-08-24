@@ -14,7 +14,9 @@
  * into a tracker doc should be assumed world-visible.
  */
 
-import { locale, normalizePath, pathForLocale } from './locales.js';
+import {
+  locale, localeForPath, basePath, normalizePath, pathForLocale,
+} from './locales.js';
 
 /** DA / AEM identity. One site, unlike the two-site original. */
 export const ORG = 'aemgdc';
@@ -67,9 +69,69 @@ export const previewOrigin = (branch = DEFAULT_BRANCH) => `https://${branchHost(
 /** `https://<branch>--aemdev--aemgdc.aem.live` — the live host. */
 export const liveOrigin = (branch = DEFAULT_BRANCH) => `https://${branchHost(branch)}--${SITE}--${ORG}.aem.live`;
 
-export const previewUrl = (path, branch) => `${previewOrigin(branch)}${normalizePath(path)}`;
-export const liveUrl = (path, branch) => `${liveOrigin(branch)}${normalizePath(path)}`;
-export const prodUrl = (path) => `https://${PROD_HOST}${normalizePath(path)}`;
+/* ------------------------------------------------- the one path shape that differs */
+
+/**
+ * Is this the bare locale HOME page — `/en`, `/de`, `/zh-cn`?
+ *
+ * `basePath('/de')` is `/`, and `localeForPath('/')` is null, so the site root is
+ * correctly not one of these.
+ */
+const isLocaleHome = (p) => Boolean(localeForPath(p)) && basePath(p) === '/';
+
+/**
+ * The path to ASK ABOUT when addressing a page on a host or on the AEM admin API.
+ *
+ * Identical to `normalizePath` for every path but one: the locale home page needs its
+ * TRAILING SLASH, and `normalizePath` — which exists because the slashed form 404s on
+ * article paths — strips it. Both halves are measured, on `main--aemdev--aemgdc.aem.live`:
+ *
+ *     /en            404        /en/            200
+ *     /en/articles   200        /en/articles/   404
+ *
+ * The reason is that a locale home is a directory INDEX. `admin.hlx.page/status` shows
+ * it plainly: `/en` resolves to `/en.md` (which does not exist) while `/en/` resolves to
+ * `/en/index.md` (which does). Same host, same path resolution, so this spelling is
+ * equally right for the `preview` and `live` verbs as for `status`.
+ *
+ * This is not cosmetic and it is not rare: it is ten of the tracker's pages — every
+ * locale's home page — and getting it wrong makes the crawl report `previewed=''` on
+ * them FOREVER, whatever is actually published. That is the exact class of
+ * technically-true-and-completely-misleading observation the two crawl columns exist to
+ * avoid, so the correction lives inside the URL builders rather than in each caller's
+ * memory.
+ *
+ * The site root `/` is deliberately left alone: it exists (`status` reports 200 for
+ * `/index.md`) and answers 301 to `/en/` on the host, which is a real answer and not a
+ * different path.
+ */
+export function probePath(path) {
+  const p = normalizePath(path);
+  return isLocaleHome(p) ? `${p}/` : p;
+}
+
+/**
+ * The DA SOURCE path of a page's document, without an extension.
+ *
+ * The mirror of `probePath` on the authoring side: a directory index is stored as
+ * `index`, so the root home page is `/index` and the locale home page is `/en/index`.
+ * `daSourceUrl(sourceDocPath(p), 'html')` is the document; `probePath(p)` is the URL.
+ * Conflating them GETs a document that is not there and concludes the page does not
+ * exist.
+ */
+export function sourceDocPath(path) {
+  const p = normalizePath(path);
+  if (p === '/') return '/index';
+  return isLocaleHome(p) ? `${p}/index` : p;
+}
+
+/*
+ * Every host and admin URL goes through `probePath`, not `normalizePath`. See its
+ * comment: a locale home addressed without the trailing slash is a 404 on both hosts.
+ */
+export const previewUrl = (path, branch) => `${previewOrigin(branch)}${probePath(path)}`;
+export const liveUrl = (path, branch) => `${liveOrigin(branch)}${probePath(path)}`;
+export const prodUrl = (path) => `https://${PROD_HOST}${probePath(path)}`;
 
 /**
  * Recover the branch from a preview or live URL.
@@ -99,11 +161,11 @@ export function plainPath(path) {
 export const plainUrl = (path, branch) => `${previewOrigin(branch)}${plainPath(path)}`;
 
 /** AEM admin status endpoint. Answers unauthenticated for this site. */
-export const statusApiUrl = (path, branch = DEFAULT_BRANCH) => `${AEM_ADMIN}/status/${ORG}/${SITE}/${branchHost(branch)}${normalizePath(path)}`;
+export const statusApiUrl = (path, branch = DEFAULT_BRANCH) => `${AEM_ADMIN}/status/${ORG}/${SITE}/${branchHost(branch)}${probePath(path)}`;
 
-export const previewApiUrl = (path, branch = DEFAULT_BRANCH) => `${AEM_ADMIN}/preview/${ORG}/${SITE}/${branchHost(branch)}${normalizePath(path)}`;
+export const previewApiUrl = (path, branch = DEFAULT_BRANCH) => `${AEM_ADMIN}/preview/${ORG}/${SITE}/${branchHost(branch)}${probePath(path)}`;
 
-export const publishApiUrl = (path, branch = DEFAULT_BRANCH) => `${AEM_ADMIN}/live/${ORG}/${SITE}/${branchHost(branch)}${normalizePath(path)}`;
+export const publishApiUrl = (path, branch = DEFAULT_BRANCH) => `${AEM_ADMIN}/live/${ORG}/${SITE}/${branchHost(branch)}${probePath(path)}`;
 
 /* ------------------------------------------------------------------ DA source */
 
@@ -118,6 +180,17 @@ export function daSourceUrl(path, ext) {
   if (!ext) throw new Error('daSourceUrl needs an explicit ext ("html" or "json") — DA addresses docs and sheets differently');
   return `${DA_ADMIN}/source/${ORG}/${SITE}${normalizePath(path)}.${ext}`;
 }
+
+/**
+ * The DA LIST endpoint for a folder.
+ *
+ * A different verb on a different path shape from `/source/`: it takes a directory with
+ * no extension and answers an array of `{ name, ext, path }`. It is here rather than
+ * inline in the one tool that needs it because `/.da/translation/active/` is read by
+ * `tx:scan` and written by `tx:send`, and a second hand-rolled spelling of an
+ * admin.da.live URL is how the two come to disagree about which folder they mean.
+ */
+export const daListUrl = (path) => `${DA_ADMIN}/list/${ORG}/${SITE}${normalizePath(path)}`;
 
 /** The DA editor deep link for a document — what a reviewer clicks. */
 export const daEditUrl = (path) => `${DA_LIVE}/edit#/${ORG}/${SITE}${normalizePath(path)}`;

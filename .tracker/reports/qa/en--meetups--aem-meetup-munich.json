@@ -1,0 +1,112 @@
+{
+  "page-path": "/en/meetups/aem-meetup-munich",
+  "group": "meetups",
+  "mode": "baseline",
+  "urls": {
+    "target": "https://main--aemdev--aemgdc.aem.page/en/meetups/aem-meetup-munich",
+    "plain": "https://main--aemdev--aemgdc.aem.page/en/meetups/aem-meetup-munich.plain.html"
+  },
+  "branch": "main",
+  "generated": "2026-08-24T04:09:41.754Z",
+  "baseline": {
+    "exists": true,
+    "path": "/home/tad/git/aemgdc/aemdev-tracker/.tracker/qa-baselines/meetups.json",
+    "calibratedFrom": "/en/meetups/adaptto-2026-berlin"
+  },
+  "tiers": {
+    "structural": {
+      "verdict": "review",
+      "checks": [
+        {
+          "check": "headings",
+          "verdict": "pass",
+          "required": 1,
+          "found": 1
+        },
+        {
+          "check": "text",
+          "verdict": "warn",
+          "detail": "40 words is 0.571x the group reference of 70",
+          "words": 40,
+          "min": 40,
+          "reference": 70,
+          "ratio": 0.571
+        },
+        {
+          "check": "image-alt",
+          "verdict": "pass",
+          "count": 0
+        },
+        {
+          "check": "images",
+          "verdict": "pass",
+          "checked": 0,
+          "skipped": 0
+        },
+        {
+          "check": "links",
+          "verdict": "pass",
+          "internal": 0,
+          "external": 0,
+          "checked": 0
+        },
+        {
+          "check": "icons",
+          "verdict": "pass",
+          "count": 0
+        },
+        {
+          "check": "blocks-recognised",
+          "verdict": "pass",
+          "declared": [
+            "blog-post-hero"
+          ]
+        },
+        {
+          "check": "blocks-rendered",
+          "verdict": "pass"
+        },
+        {
+          "check": "metadata",
+          "verdict": "pass",
+          "required": [
+            "title",
+            "description"
+          ],
+          "present": 2
+        },
+        {
+          "check": "verbatim",
+          "verdict": "pass",
+          "declared": 1
+        }
+      ],
+      "errors": [],
+      "warnings": [
+        {
+          "check": "text",
+          "detail": "40 words is 0.571x the group reference of 70"
+        }
+      ],
+      "fatal": null
+    },
+    "judge": null,
+    "visual": null
+  },
+  "evidence": {
+    "textSample": {
+      "target": "What to expect The AEM Global Developer Collective meets in Munich on 2 October 2026, the week after adaptTo() in Berlin. The session will adapt the themes from adaptTo() for the Munich group. Topic and venue are still being confirmed."
+    },
+    "blocks": [
+      "blog-post-hero"
+    ],
+    "icons": [],
+    "words": 40,
+    "headings": [
+      "h2: What to expect"
+    ],
+    "title": "AEM GDC Meetup - Munich",
+    "description": "An AEM Global Developer Collective meetup in Munich on 2 October 2026, picking up the themes from adaptTo() the week before."
+  },
+  "verdict": "escalate"
+}

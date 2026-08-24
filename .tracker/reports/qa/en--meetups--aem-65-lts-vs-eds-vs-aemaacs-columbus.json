@@ -1,0 +1,126 @@
+{
+  "page-path": "/en/meetups/aem-65-lts-vs-eds-vs-aemaacs-columbus",
+  "group": "meetups",
+  "mode": "baseline",
+  "urls": {
+    "target": "https://main--aemdev--aemgdc.aem.page/en/meetups/aem-65-lts-vs-eds-vs-aemaacs-columbus",
+    "plain": "https://main--aemdev--aemgdc.aem.page/en/meetups/aem-65-lts-vs-eds-vs-aemaacs-columbus.plain.html"
+  },
+  "branch": "main",
+  "generated": "2026-08-24T04:21:35.641Z",
+  "baseline": {
+    "exists": true,
+    "path": "/home/tad/git/aemgdc/aemdev-tracker/.tracker/qa-baselines/meetups.json",
+    "calibratedFrom": "/en/meetups/adaptto-2026-berlin"
+  },
+  "tiers": {
+    "structural": {
+      "verdict": "fail",
+      "checks": [
+        {
+          "check": "headings",
+          "verdict": "skip",
+          "detail": "no requiredHeadings in the group baseline"
+        },
+        {
+          "check": "text",
+          "verdict": "pass",
+          "words": 85,
+          "min": 20,
+          "reference": null
+        },
+        {
+          "check": "image-alt",
+          "verdict": "pass",
+          "count": 0
+        },
+        {
+          "check": "images",
+          "verdict": "pass",
+          "checked": 0,
+          "skipped": 0
+        },
+        {
+          "check": "links",
+          "verdict": "pass",
+          "internal": 0,
+          "external": 1,
+          "checked": 0
+        },
+        {
+          "check": "icons",
+          "verdict": "pass",
+          "count": 0
+        },
+        {
+          "check": "blocks-recognised",
+          "verdict": "pass",
+          "declared": [
+            "blog-post-hero"
+          ]
+        },
+        {
+          "check": "blocks-rendered",
+          "verdict": "pass"
+        },
+        {
+          "check": "sections-recognised",
+          "verdict": "pass",
+          "declared": []
+        },
+        {
+          "check": "metadata",
+          "verdict": "fail",
+          "findings": [
+            {
+              "verdict": "fail",
+              "detail": "required metadata \"event-date\" is missing or empty"
+            }
+          ],
+          "required": [
+            "title",
+            "description",
+            "template",
+            "event-date",
+            "location",
+            "status"
+          ],
+          "present": 5
+        },
+        {
+          "check": "verbatim",
+          "verdict": "skip",
+          "detail": "the requirements brief declares no verbatim strings"
+        }
+      ],
+      "errors": [
+        {
+          "check": "metadata",
+          "detail": "required metadata \"event-date\" is missing or empty"
+        }
+      ],
+      "warnings": [],
+      "fatal": null
+    },
+    "judge": null,
+    "visual": null
+  },
+  "evidence": {
+    "textSample": {
+      "target": "// Key takeaways What each of the three offerings actually is, and who each one is for Side-by-side advantages and implementation challenges How the licensing models differ Choosing a migration path, and what it costs What we covered A comparison of Adobe's three current AEM offerings - AEM 6.5 LTS, AEM as a Cloud Service, and Edge Delivery Services - covering what each is good at, where each gets painful, how the licensing differs, and how to choose a migration path. Watch the session https://www.youtube.com/watch?v=riIwPPiK8NI"
+    },
+    "blocks": [
+      "blog-post-hero"
+    ],
+    "sectionStyles": [],
+    "icons": [],
+    "words": 85,
+    "headings": [
+      "h2: What we covered",
+      "h2: Watch the session"
+    ],
+    "title": "AEM 6.5 LTS vs Edge Delivery vs AEM as a Cloud Service",
+    "description": "A recap of the AEM Columbus user group session comparing Adobe's three current AEM offerings - 6.5 LTS, Edge Delivery Services and AEM as a Cloud Service - across capability, licensing and migration effort."
+  },
+  "verdict": "fail"
+}

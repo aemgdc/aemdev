@@ -1,0 +1,127 @@
+{
+  "page-path": "/en/meetups/sites-optimizer-eds-localization-atlanta",
+  "group": "meetups",
+  "mode": "baseline",
+  "urls": {
+    "target": "https://main--aemdev--aemgdc.aem.page/en/meetups/sites-optimizer-eds-localization-atlanta",
+    "plain": "https://main--aemdev--aemgdc.aem.page/en/meetups/sites-optimizer-eds-localization-atlanta.plain.html"
+  },
+  "branch": "main",
+  "generated": "2026-08-24T04:09:43.021Z",
+  "baseline": {
+    "exists": true,
+    "path": "/home/tad/git/aemgdc/aemdev-tracker/.tracker/qa-baselines/meetups.json",
+    "calibratedFrom": "/en/meetups/adaptto-2026-berlin"
+  },
+  "tiers": {
+    "structural": {
+      "verdict": "fail",
+      "checks": [
+        {
+          "check": "headings",
+          "verdict": "fail",
+          "findings": [
+            {
+              "verdict": "fail",
+              "detail": "no heading matches /^What to expect$/"
+            }
+          ],
+          "required": 1,
+          "found": 0
+        },
+        {
+          "check": "text",
+          "verdict": "pass",
+          "words": 83,
+          "min": 40,
+          "reference": 70,
+          "ratio": 1.186
+        },
+        {
+          "check": "image-alt",
+          "verdict": "pass",
+          "count": 0
+        },
+        {
+          "check": "images",
+          "verdict": "pass",
+          "checked": 0,
+          "skipped": 0
+        },
+        {
+          "check": "links",
+          "verdict": "pass",
+          "internal": 0,
+          "external": 0,
+          "checked": 0
+        },
+        {
+          "check": "icons",
+          "verdict": "pass",
+          "count": 0
+        },
+        {
+          "check": "blocks-recognised",
+          "verdict": "pass",
+          "declared": [
+            "blog-post-hero"
+          ]
+        },
+        {
+          "check": "blocks-rendered",
+          "verdict": "pass"
+        },
+        {
+          "check": "metadata",
+          "verdict": "pass",
+          "required": [
+            "title",
+            "description"
+          ],
+          "present": 2
+        },
+        {
+          "check": "verbatim",
+          "verdict": "fail",
+          "findings": [
+            {
+              "verdict": "fail",
+              "detail": "the brief requires \"Berlin\" verbatim; it is not on the page"
+            }
+          ],
+          "declared": 1
+        }
+      ],
+      "errors": [
+        {
+          "check": "headings",
+          "detail": "no heading matches /^What to expect$/"
+        },
+        {
+          "check": "verbatim",
+          "detail": "the brief requires \"Berlin\" verbatim; it is not on the page"
+        }
+      ],
+      "warnings": [],
+      "fatal": null
+    },
+    "judge": null,
+    "visual": null
+  },
+  "evidence": {
+    "textSample": {
+      "target": "// Key takeaways Adobe Sites Optimizer: AI-driven detection of site issues, and what it takes to act on them Translation and localization on Edge Delivery with Document Authoring Multi-language and multi-locale structures in DA What we covered Two topics. Adobe's Sites Optimizer - an AI-powered platform for detecting and deploying site enhancements - and a walkthrough of translation and localization for Edge Delivery sites authored in DA, including how multi-language and multi-locale site structures hold up in practice. This session was not recorded."
+    },
+    "blocks": [
+      "blog-post-hero"
+    ],
+    "icons": [],
+    "words": 83,
+    "headings": [
+      "h2: What we covered"
+    ],
+    "title": "Adobe Sites Optimizer and Edge Delivery Localization on DA",
+    "description": "A recap of the Atlanta AEM user group session on Adobe's Sites Optimizer AI tooling and on running translation and localization for Edge Delivery sites authored in Document Authoring."
+  },
+  "verdict": "fail"
+}

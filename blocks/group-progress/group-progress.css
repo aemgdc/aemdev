@@ -17,6 +17,19 @@
  */
 
 .group-progress {
+  /*
+   * Centred in the site's content column.
+   *
+   * `.section > .default-content` gets `max-width` AND `margin: 0 auto` from
+   * styles.css, but a BLOCK is not `.default-content`, so it inherits neither. Setting
+   * only `max-width` — which every one of these blocks did — pins the board hard to the
+   * left of a full-bleed section while the prose above it sits centred, and at a wide
+   * viewport the mismatch is the first thing you see. `blocks/article-feed` is the
+   * house pattern being followed here.
+   */
+  max-width: var(--grid-content-width);
+  margin-inline: auto;
+
   --gp-hair: light-dark(var(--border), var(--carbon-3));
   --gp-surface: light-dark(var(--surface), var(--carbon-2));
   --gp-ink: light-dark(var(--text), var(--white));
@@ -25,7 +38,6 @@
   --gp-attention: light-dark(var(--aem-red-dk), var(--aem-red));
   --gp-attention-wash: light-dark(rgb(235 16 0 / 6%), rgb(235 16 0 / 14%));
 
-  max-width: var(--grid-content-width);
   color: var(--gp-ink);
 
   /* Twelve columns will not fit a phone; the table scrolls, the page does not. */

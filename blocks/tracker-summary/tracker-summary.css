@@ -16,6 +16,19 @@
  */
 
 .tracker-summary {
+  /*
+   * Centred in the site's content column.
+   *
+   * `.section > .default-content` gets `max-width` AND `margin: 0 auto` from
+   * styles.css, but a BLOCK is not `.default-content`, so it inherits neither. Setting
+   * only `max-width` — which every one of these blocks did — pins the board hard to the
+   * left of a full-bleed section while the prose above it sits centred, and at a wide
+   * viewport the mismatch is the first thing you see. `blocks/article-feed` is the
+   * house pattern being followed here.
+   */
+  max-width: var(--grid-content-width);
+  margin-inline: auto;
+
   --ts-hair: light-dark(var(--border), var(--carbon-3));
   --ts-surface: light-dark(var(--surface), var(--carbon-2));
   --ts-ink: light-dark(var(--text), var(--white));
@@ -32,7 +45,6 @@
   --ts-band-6: light-dark(var(--carbon-2), var(--color-gray-300));
   --ts-band-7: light-dark(var(--carbon), var(--color-gray-200));
 
-  max-width: var(--grid-content-width);
   color: var(--ts-ink);
 
   /* ------------------------------------------------------------------- KPI tiles */

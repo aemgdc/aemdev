@@ -83,6 +83,26 @@ export function subgroupSlug(name) {
 export const isAssigned = (name) => subgroupKey(name) !== subgroupKey(UNASSIGNED);
 
 /**
+ * THE bucket order, as one comparator over `{ name, size }`: residue LAST regardless
+ * of size, then biggest first, then by name.
+ *
+ * `bySubgroup` sorts its own buckets with this, and it is exported because a board
+ * does not sort item lists — it sorts the ROWS OF A PUBLISHED FEED. The rollup's
+ * `subgroups` tab arrives with one row per bucket carrying its own `total`, there are
+ * no items left to count, and a DA round trip makes no promise about preserving the
+ * order the build wrote. Without this export a block would carry rule 1 a second
+ * time, and "regardless of size" is precisely the clause a second copy loses: it
+ * looks like a tiebreak, so it gets written as one.
+ */
+export const compareSubgroups = (a, b) => {
+  const aRes = !isAssigned(a.name);
+  const bRes = !isAssigned(b.name);
+  if (aRes !== bRes) return aRes ? 1 : -1;
+  return (b.size || 0) - (a.size || 0)
+    || String(a.name).localeCompare(String(b.name));
+};
+
+/**
  * Partition items by subgroup.
  *
  * Returns entries ordered biggest-first with UNASSIGNED forced LAST regardless of
@@ -109,12 +129,8 @@ export function bySubgroup(items, pick = (item) => item) {
     if (!buckets.has(key)) buckets.set(key, { name, key, rows: [] });
     buckets.get(key).rows.push(item);
   }
-  return [...buckets.values()].sort((a, b) => {
-    const aRes = !isAssigned(a.name);
-    const bRes = !isAssigned(b.name);
-    if (aRes !== bRes) return aRes ? 1 : -1;
-    return b.rows.length - a.rows.length || a.name.localeCompare(b.name);
-  });
+  const sized = (b) => ({ name: b.name, size: b.rows.length });
+  return [...buckets.values()].sort((a, b) => compareSubgroups(sized(a), sized(b)));
 }
 
 /** The authored labels in an item set, biggest-first, excluding the blank bucket. */

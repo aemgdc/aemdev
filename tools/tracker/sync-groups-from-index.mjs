@@ -162,8 +162,8 @@ const val = (row, key) => text(row?.[key]);
  * page-2-missing fetch is indistinguishable from a site that lost half its pages
  * unless the envelope is compared against the row count.
  */
-export async function fetchIndex(branch, floor) {
-  const url = liveUrl('/en/query-index.json', branch);
+export async function fetchIndex(branch, floor, path = '/en/query-index.json') {
+  const url = liveUrl(path, branch);
   let res;
   try {
     res = await fetch(url);
@@ -188,6 +188,28 @@ export async function fetchIndex(branch, floor) {
   return { rows, total, url };
 }
 
+/*
+ * Groups whose pages are NOT in /en/query-index.json, and where to find them instead.
+ *
+ * `/en/fragments/**` is in that index's `exclude` list, so every bio is invisible to it.
+ * Before this existed the bios group synced to zero rows and said so politely, which
+ * read as "there are no bios" rather than "we are looking in the wrong place" — the
+ * seven published bios were there the whole time.
+ *
+ * The floor is 0, deliberately: a brand-new site legitimately has no bios yet, so an
+ * empty bios index is a real state and must not trip the partial-input guard that
+ * protects the main index.
+ */
+const EXTRA_INDICES = [
+  {
+    group: 'bios',
+    path: '/en/fragments/bios/query-index.json',
+    floor: 0,
+    // The bios index names its columns for the bio schema, not the page schema.
+    title: (r) => text(r.name) || text(r.title),
+  },
+];
+
 /**
  * Every page the index claims, resolved to a group and normalized.
  *
@@ -195,15 +217,19 @@ export async function fetchIndex(branch, floor) {
  * `/en/`, and the slashed form 404s on this site. Without normalization the sync
  * records a 404 as a tracked page AND keeps a second row for the same page forever.
  */
-function resolveIndexRows(rows) {
+function resolveIndexRows(rows, opts = {}) {
+  const { title: titleOf = (r) => text(r.title), only = null, seen = new Map() } = opts;
   const pages = [];
   const unresolved = [];
-  const seen = new Map();
   for (const r of rows) {
     const path = normalizePath(r.path);
     const group = path ? groupForPath(path) : null;
     if (!path) {
       // A row with no path is not a page; nothing to resolve and nothing to report.
+    } else if (only && group !== only) {
+      // A row in a group-specific feed that resolves elsewhere is a mis-scoped index,
+      // not a page to file. Report it rather than filing it under the wrong group.
+      unresolved.push({ path, template: `outside ${only} — index include is too broad` });
     } else if (!group) {
       unresolved.push({ path, template: text(r.template) });
     } else if (seen.has(path)) {
@@ -212,7 +238,7 @@ function resolveIndexRows(rows) {
       unresolved.push({ path, template: 'DUPLICATE index row — ignored' });
     } else {
       const page = {
-        path, group, title: text(r.title), template: text(r.template), source: 'index',
+        path, group, title: titleOf(r), template: text(r.template), source: 'index',
       };
       seen.set(path, page);
       pages.push(page);
@@ -539,6 +565,11 @@ async function main() {
 
   console.log(`── group:sync · ${opts.apply ? 'APPLY' : 'DRY RUN (default)'} · branch ${branch} ──`);
 
+  // Groups whose own feed could not be fetched. They are reported and left alone rather
+  // than synced to zero, because syncing a group to zero looks exactly like "this group
+  // is empty" and is indistinguishable from the truth on the board.
+  const skipped = new Set();
+
   let index;
   try {
     index = await fetchIndex(branch, floor);
@@ -555,7 +586,33 @@ async function main() {
     console.log(`   --limit=${opts.limit}: considering ${limited.length} row(s); off-index reporting is SUPPRESSED `
       + '(the rows the limit hid would otherwise be reported as dropped)');
   }
-  const { pages, unresolved } = resolveIndexRows(limited);
+  const seen = new Map();
+  const { pages, unresolved } = resolveIndexRows(limited, { seen });
+
+  /*
+   * The group-specific feeds. Fetched only when their group is in scope, so
+   * `--group=meetups` does not pay for a bios fetch it will discard.
+   */
+  for (const extra of EXTRA_INDICES) {
+    if (!names.includes(extra.group)) continue; // eslint-disable-line no-continue
+    let feed;
+    try {
+      feed = await fetchIndex(branch, extra.floor, extra.path);
+    } catch (e) {
+      // Group-scoped refusal. The main index already reconciled, so failing the whole
+      // run here would discard good work for one group's feed being unreachable.
+      console.error(`\n   ✗ ${extra.group}: ${extra.path} — ${e.message}`);
+      console.error(`     ${extra.group} is SKIPPED this run; every other group still syncs.`);
+      skipped.add(extra.group);
+      continue; // eslint-disable-line no-continue
+    }
+    const got = resolveIndexRows(feed.rows, { title: extra.title, only: extra.group, seen });
+    console.log(`   index:  ${feed.url}`);
+    console.log(`   listed: ${feed.rows.length} of ${feed.total} row(s) → ${extra.group} `
+      + `· floor ${extra.floor} · ok`);
+    pages.push(...got.pages);
+    unresolved.push(...got.unresolved);
+  }
 
   /*
    * The manual rows, added deliberately and named as such in the plan. `/` is outside
@@ -600,6 +657,12 @@ async function main() {
   let configError = false;
   let transportError = false;
   for (const name of names) {
+    if (skipped.has(name)) {
+      console.error(`\n── ${name} ──\n   ✗ SKIPPED — its index could not be fetched (above). `
+        + 'Left exactly as it was.');
+      transportError = true;
+      continue; // eslint-disable-line no-continue
+    }
     const groupPages = byGroup.get(name) || [];
     try {
       const plan = await syncGroup({
@@ -617,10 +680,12 @@ async function main() {
          * index's `exclude`, and its roster (/bios.json) is owned by another session
          * and deliberately not read here. Saying so beats printing a bare zero.
          */
-        const why = name === 'bios'
-          ? 'Expected — /en/fragments/** is excluded from that index, and /bios.json is owned elsewhere.'
+        const extra = EXTRA_INDICES.find((e) => e.group === name);
+        const why = extra
+          ? `Its feed (${extra.path}) returned no rows — so there really are none yet, `
+            + 'rather than the sync looking in the wrong place.'
           : 'Check the prefix rules in lib/group-map.mjs if that is a surprise.';
-        console.log(`   note: no rows for this group in /en/query-index.json. ${why}`);
+        console.log(`   note: no rows for this group. ${why}`);
       }
     } catch (e) {
       console.error(`\n── ${name} ──\n   ✗ ${e.message}`);

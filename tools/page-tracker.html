@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Page Tracker — AEM Global Developer Collective</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--
+      A DA fullscreen app, NOT an EDS page — deliberately no head.html, no ak.js,
+      no loadArea(). It lives BESIDE its directory, which is the house convention
+      for a DA app here (see tools/bio-manager.html on main).
+
+      Opens at https://da.live/app/aemgdc/aemdev/tools/page-tracker
+      Add ?readonly=1 to hand someone a build that cannot write anything.
+
+      /styles/styles.css is deliberately NOT linked. It carries the EDS page
+      contract — `header { display: none }` and `main > div { display: none }` —
+      which keeps authored sections hidden until ak.js decorates and reveals them.
+      This app renders its own markup and never runs ak.js, so linking that
+      stylesheet hides the entire UI. page-tracker.css is self-contained and
+      re-declares the site's tokens under a `--pt-` prefix, the same compromise
+      bio-manager.css makes and for the same reason.
+    -->
+    <link rel="stylesheet" href="/tools/page-tracker/page-tracker.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet" />
+    <!--
+      Load the SDK from the document as well as importing it in page-tracker.js.
+      ES modules are cached per URL so both get the same instance — but loading it
+      here registers its `message` listener as early as possible. The parent posts
+      the init message (with the token and the MessagePort) within roughly 750ms of
+      the frame opening, and a listener registered after that message never
+      resolves: the app then hangs on "Connecting…" with no error anywhere.
+    -->
+    <script src="https://da.live/nx/utils/sdk.js" type="module"></script>
+    <script src="/tools/page-tracker/page-tracker.js" type="module"></script>
+  </head>
+  <body class="pt-app">
+    <main id="pt-root" aria-busy="true">
+      <p class="pt-boot">Connecting to Document Authoring…</p>
+    </main>
+  </body>
+</html>

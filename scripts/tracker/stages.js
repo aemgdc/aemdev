@@ -616,6 +616,17 @@ const BUCKET_FOR_STAGE = {
 };
 
 /**
+ * Which band does a STAGE ID collapse into? `null` for anything that is not a stage.
+ *
+ * Exported because a board has to explain the collapse, not just apply it: the primer
+ * renders "these two stages are one band" from the map itself, and `group-progress`
+ * dims the columns a band cannot reach. Both would otherwise carry a second copy of
+ * this table, and the two QA stages folding into one band is exactly the kind of
+ * detail a hand-written copy gets right once and then loses.
+ */
+export const bucketForStage = (id) => BUCKET_FOR_STAGE[id] ?? null;
+
+/**
  * Which band does this pair sit in? `null` when it is not on the line at all, so it
  * can be counted as inventory without being counted as progress.
  *

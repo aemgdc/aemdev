@@ -120,6 +120,18 @@ export async function loadRollup() {
      * gates the disclosure, is likewise absent-and-falsy on an old rollup.
      */
     subgroups: sheetRows(doc, 'subgroups'),
+    /*
+     * The WHOLE meta row, not just its timestamp.
+     *
+     * `expected`/`listed`/`withheld` and `subgroups-complete` are the fields that let a
+     * SHORT feed read as explained rather than as progress, and `incomplete` +
+     * `groups-failed` are the separate fact that a sheet could not be read at all —
+     * which the contract forbids folding into `withheld`. A board cannot report any of
+     * that if the data layer drops it, and a board fetching the feed a second time to
+     * get it would defeat the memoisation above. `{}` when the feed is missing, so a
+     * caller reads absent fields rather than crashing on the empty state.
+     */
+    meta: metaRow(doc),
     generatedAt: metaRow(doc).generatedAt ?? null,
     missing,
     error,
@@ -145,6 +157,9 @@ export async function loadTxRollup() {
     groups: sheetRows(doc, 'groups'),
     stages: sheetRows(doc, 'stages'),
     queues: sheetRows(doc, 'queues'),
+    // See `loadRollup` — same reason, different unit. Here `expected`/`listed` count
+    // (page, locale) PAIRS, and `cells-withheld` records the first detail tab dropped.
+    meta: metaRow(doc),
     generatedAt: metaRow(doc).generatedAt ?? null,
     missing,
     error,

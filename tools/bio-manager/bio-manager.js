@@ -237,15 +237,18 @@ async function uploadPhoto(file, slug) {
 }
 
 /**
- * Ask the AEM admin API to preview (and optionally publish) a path. Uses the
- * same IMS token DA itself uses for admin.hlx.page. Non-fatal by design: a
- * saved-but-unpublished bio is recoverable, a failed save is not.
+ * Ask the AEM admin API to act on a path. Uses the same IMS token DA itself
+ * uses for admin.hlx.page. Non-fatal by design: a saved-but-unpublished bio is
+ * recoverable, a failed save is not.
+ *
+ * NOTE the method matters. `POST /live/` publishes; unpublishing is
+ * `DELETE /live/`. Getting that backwards leaves a deleted bio still public.
  */
-async function aemAction(action, path) {
+async function aemAction(action, path, method = 'POST') {
   const url = `${AEM_ADMIN}/${action}/${state.org}/${state.site}/${BRANCH}${path}`;
   try {
-    const resp = await fetch(url, { method: 'POST', headers: authHeaders() });
-    if (resp.ok) return { ok: true };
+    const resp = await fetch(url, { method, headers: authHeaders() });
+    if (resp.ok || resp.status === 204) return { ok: true };
     return { ok: false, status: resp.status, detail: resp.headers.get('x-error') || '' };
   } catch (e) {
     return { ok: false, status: 0, detail: e.message };
@@ -612,8 +615,12 @@ function currentDraft() {
     company: els.company.value.trim(),
     linkedin: els.linkedin.value.trim(),
     status: els.status.value,
-    // `stored` is what belongs in the document; `url` may be a local blob.
+    // Two different URLs on purpose: `image` is what belongs in the document
+    // (a content.da.live URL), `preview` is one the browser can actually load
+    // — often a local blob. Rendering the stored URL in the preview panel is a
+    // guaranteed 401.
     image: state.photo?.stored || state.photo?.url || '',
+    preview: state.photo?.url || state.photo?.stored || '',
     // Sanitised here, not at save time, so the preview shows exactly what the
     // document will contain — including anything a paste just lost.
     body: sanitiseBodyHtml(els.body.innerHTML),
@@ -622,8 +629,8 @@ function currentDraft() {
 
 function renderPreview() {
   const draft = currentDraft();
-  const photo = draft.image
-    ? `<img class="bm-preview-photo" src="${escapeHtml(draft.image)}" alt="" />`
+  const photo = draft.preview
+    ? `<img class="bm-preview-photo" src="${escapeHtml(draft.preview)}" alt="" />`
     : '<div class="bm-preview-photo"></div>';
   const link = draft.linkedin
     ? `<a class="bm-preview-link" href="${escapeHtml(draft.linkedin)}"
@@ -1127,8 +1134,8 @@ function confirmRemove(bio) {
   bg.innerHTML = `
     <div class="bm-modal" role="dialog" aria-modal="true" aria-labelledby="bm-rm-title">
       <h2 id="bm-rm-title">Remove ${escapeHtml(bio.name)}?</h2>
-      <p>This deletes <code>${escapeHtml(bio.path || `${CONFIG.fragments}/${bio.slug}`)}</code>,
-        unpublishes it, and drops the roster row. Pages listing
+      <p>This unpublishes <code>${escapeHtml(bio.path || `${CONFIG.fragments}/${bio.slug}`)}</code>,
+        then deletes the document, its headshot and the roster row. Pages listing
         <code>${escapeHtml(bio.slug)}</code> as a speaker will show a missing-bio notice.</p>
       <div class="bm-modal-actions">
         <button type="button" class="bm-btn bm-btn--ghost" data-cancel>Keep it</button>
@@ -1146,23 +1153,35 @@ function confirmRemove(bio) {
   document.body.append(bg);
 }
 
+async function daDelete(path) {
+  const resp = await fetch(`${sourceUrl(path)}`, { method: 'DELETE', headers: authHeaders() });
+  if (resp.ok || resp.status === 204 || resp.status === 404) return true;
+  throw new Error(`Delete failed for ${path} (${resp.status}).`);
+}
+
 async function removeBio(bio) {
   hideBanner();
   const path = bio.path || `${CONFIG.fragments}/${bio.slug}`;
   try {
-    await aemAction('live', path).catch(() => {});
-    const resp = await fetch(`${sourceUrl(path)}.html`, {
-      method: 'DELETE',
-      headers: authHeaders(),
-    });
-    if (!resp.ok && resp.status !== 204 && resp.status !== 404) {
-      throw new Error(`Could not delete the bio document (${resp.status}).`);
+    // Unpublish first. Deleting the source while the page is still published
+    // leaves it publicly reachable with nothing behind it.
+    await aemAction('live', path, 'DELETE');
+    await aemAction('preview', path, 'DELETE');
+    await daDelete(`${path}.html`);
+
+    // The headshot is ours too; leaving it behind orphans media in DA.
+    if (bio.image?.startsWith(DA_CONTENT)) {
+      const prefix = `${DA_CONTENT}/${state.org}/${state.site}`;
+      if (bio.image.startsWith(prefix)) {
+        await daDelete(bio.image.slice(prefix.length)).catch(() => {});
+      }
     }
+
     const rows = await fetchSheet();
     await saveSheet(rows.filter((r) => r.slug !== bio.slug));
     state.rows = state.rows.filter((r) => r.slug !== bio.slug);
     renderRoster();
-    showBanner('success', `${bio.name} removed.`);
+    showBanner('success', `${bio.name} removed and unpublished.`);
   } catch (e) {
     showBanner('error', e.message, [{
       label: 'Retry',

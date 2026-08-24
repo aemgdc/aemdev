@@ -288,10 +288,11 @@ export const feedSheetCfg = (path, branch) => ({ path, branch });
  * caller printing "published" — which is exactly how a rollup missing `:version` sat
  * broken for hours while the tool reported success.
  */
-export async function writeFeed(path, branch, token, doc) {
+export async function writeFeed(path, branch, token, doc, { publish = false } = {}) {
   const cfg = feedSheetCfg(path, branch);
   const want = Object.fromEntries((doc[':names'] || []).map((n) => [n, doc[n].data.length]));
   const res = await updateStatusDoc(cfg, token, () => doc, {
+    publish,
     confirm: (after) => {
       const names = after[':names'] || [];
       const missing = Object.keys(want).filter((n) => !names.includes(n));

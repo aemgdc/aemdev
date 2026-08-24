@@ -14,7 +14,8 @@
  *   npm run rollup -- --out=/tmp/feeds   write the exact bytes locally instead of DA
  *
  *   --dry-run        build and verify, write nothing. THE DEFAULT.
- *   --apply          publish both feeds to DA and preview them.
+ *   --apply          write both feeds to DA and preview them.
+ *   --publish        with --apply, also publish to the live host.
  *   --branch=<ref>   which ref the feeds describe and are previewed on. Default main.
  *   --max-bytes=N    size ceiling per feed (default 400000). See the ladder below.
  *   --no-cells       omit the tx-rollup `cells` detail tab.
@@ -109,7 +110,11 @@ const STAGE_COLUMNS = [...PAGE_STAGES.map((s) => s.id), 'blocked'];
 const HELP = `rollup — build and publish rollup.json and tx-rollup.json.
 
   --dry-run        build and verify, write nothing (DEFAULT)
-  --apply          publish both feeds to DA and preview them
+  --apply          write both feeds to DA and preview them
+  --publish        with --apply, also publish them to the LIVE host. Needed
+                   whenever the /tracker/ pages themselves are published:
+                   a feed on only one host makes the board on the other
+                   render its "nothing published yet" panel.
   --branch=<ref>   the ref the feeds describe (default: publish.branch, i.e. main)
   --max-bytes=N    per-feed size ceiling (default ${SIZE_CEILING_BYTES})
   --no-cells       omit the tx-rollup \`cells\` detail tab
@@ -129,10 +134,12 @@ function parseArgs(args) {
     cells: true,
     subgroups: true,
     out: null,
+    publish: false,
     help: false,
   };
   for (const a of args) {
     if (a === '--apply') o.apply = true;
+    else if (a === '--publish') o.publish = true;
     else if (a === '--dry-run') o.apply = false;
     else if (a === '--no-cells') o.cells = false;
     else if (a === '--no-subgroups') o.subgroups = false;
@@ -697,11 +704,23 @@ async function main() {
 
   let bad = false;
   for (const [path, feed] of [[FEEDS.rollup, built.rollup], [FEEDS.txRollup, built.txRollup]]) {
-    const res = await writeFeed(path, built.branch, token, feed.doc);
+    const res = await writeFeed(path, built.branch, token, feed.doc, { publish: opts.publish });
     const preview = res.preview?.previewed ? 'ok' : `FAILED: ${res.preview?.previewError}`;
+    const live = res.preview?.published === null || res.preview?.published === undefined
+      ? ''
+      : ` · live ${res.preview.published ? 'ok' : `FAILED: ${res.preview.publishError}`}`;
     console.log(`   ✓ ${path}${res.created ? ' (created)' : ''}${res.retried ? ' after one 412 retry' : ''}`
-      + ` · preview ${preview}`);
+      + ` · preview ${preview}${live}`);
     if (!res.preview?.previewed) bad = true;
+    if (opts.publish && res.preview?.published === false) bad = true;
+  }
+  if (!opts.publish) {
+    // Say it every time. A feed on preview only is invisible from the live board, and
+    // the board's honest "nothing published yet" panel is indistinguishable from the
+    // pipeline never having run.
+    console.log('\n   NOT published to live (no --publish). The /tracker/ pages read these');
+    console.log('   feeds from whichever host they are served on: if those pages are');
+    console.log('   published, re-run with --publish or the live board reads as empty.');
   }
   // A refused preview means the file is in DA and served to nobody. Reporting success
   // there is how a dashboard silently skips a row for hours.

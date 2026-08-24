@@ -15,7 +15,7 @@
 import { readFileSync, existsSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { daSourceUrl, previewApiUrl } from '../../../scripts/tracker/paths.js';
+import { daSourceUrl, previewApiUrl, publishApiUrl } from '../../../scripts/tracker/paths.js';
 import { sheetRows, sheetTabs } from '../../../scripts/tracker/stages.js';
 import { cachedDaToken, DA_TOKEN_CACHE } from './da-ims.mjs';
 
@@ -254,7 +254,7 @@ const conflict = (message) => {
  * race-safe, and it is the one server-side precondition available on a doc with no
  * ETag.
  */
-export async function writeStatusDoc(sheetCfg, token, doc, { version, createOnly } = {}) {
+export async function writeStatusDoc(sheetCfg, token, doc, { version, createOnly, publish } = {}) {
   assertSheetDoc(doc);
   const precondition = () => {
     if (createOnly) return { 'If-None-Match': '*' };
@@ -288,11 +288,36 @@ export async function writeStatusDoc(sheetCfg, token, doc, { version, createOnly
     method: 'POST',
     headers: aemAdminHeaders(token),
   });
-  return {
+  const out = {
     previewed: pv.ok,
     previewStatus: pv.status,
     previewError: pv.ok ? null : (pv.headers.get('x-error') || `preview ${pv.status}`),
+    published: null,
+    publishError: null,
   };
+
+  /*
+   * PUBLISH, when asked.
+   *
+   * Preview and live are different hosts, and a FEED that exists on only one of them is
+   * a specific, nasty failure: the board renders its honest "no feed has been published
+   * yet" panel on the host where the feed is missing, which is indistinguishable from
+   * the pipeline never having run. That happened here — the tracker pages were published
+   * to live while the feeds were only previewed, and the live board read as empty while
+   * the preview board read as fully populated.
+   *
+   * So a caller that publishes its PAGES must publish its FEEDS, and this is where the
+   * two stay in step. Not defaulted on: publishing is the irreversible half.
+   */
+  if (publish && pv.ok) {
+    const lv = await fetch(publishApiUrl(withJson(sheetCfg.path), sheetCfg.branch), {
+      method: 'POST',
+      headers: aemAdminHeaders(token),
+    });
+    out.published = lv.ok;
+    out.publishError = lv.ok ? null : (lv.headers.get('x-error') || `publish ${lv.status}`);
+  }
+  return out;
 }
 
 /**
@@ -320,12 +345,13 @@ export async function writeStatusDoc(sheetCfg, token, doc, { version, createOnly
  * ETag — so it is reported rather than papered over: an unconditional whole-doc write
  * to a shared sheet is exactly the operation that loses a concurrent writer's rows.
  */
-export async function updateStatusDoc(sheetCfg, token, mutate, { confirm } = {}) {
+export async function updateStatusDoc(sheetCfg, token, mutate, { confirm, publish } = {}) {
   const apply = async () => {
     const { exists, doc, version } = await fetchStatusDocVersioned(sheetCfg, token);
     const next = await mutate(doc, { exists, version });
     if (!next) return { skipped: true, created: false, conditional: true };
     const preview = await writeStatusDoc(sheetCfg, token, next, {
+      publish,
       version: exists ? version : undefined,
       createOnly: !exists,
     });

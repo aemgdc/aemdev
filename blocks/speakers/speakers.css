@@ -1,0 +1,42 @@
+/* Speakers — a carbon panel of bios. Same row anatomy as blocks/bio, recoloured
+   for the dark ground via the --bio-* properties bio.css exposes. */
+
+.speakers {
+  background: var(--carbon);
+
+  /* Rows carry their own vertical rhythm and hairlines, so the panel only
+     needs enough padding to keep the top and bottom rules off the edge. */
+  padding: 8px clamp(20px, 4vw, 40px) 16px;
+}
+
+.speakers .bio {
+  --bio-name: var(--white);
+  --bio-role: var(--aem-red);
+  --bio-body: #d4d4d4;
+  --bio-link: var(--aem-red);
+  --bio-rule: var(--carbon-3);
+  --bio-photo-bg: var(--carbon-2);
+
+  padding: 28px 0;
+}
+
+.speakers .bio-link:hover {
+  color: var(--white);
+}
+
+.speakers .bio-photo-initials {
+  background: var(--carbon-2);
+  color: var(--slate);
+}
+
+.speakers-missing {
+  opacity: 0.75;
+}
+
+.speakers-missing .bio-role {
+  color: var(--slate);
+}
+
+.speakers-missing .bio-name {
+  color: var(--slate);
+}

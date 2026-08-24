@@ -1,0 +1,124 @@
+/* Bio — one person. Row layout shared with blocks/speakers via the
+   --bio-* custom properties, which `.speakers` overrides for its dark ground. */
+
+.bio {
+  --bio-name: var(--ink);
+  --bio-role: var(--aem-red);
+  --bio-body: var(--text);
+  --bio-link: var(--aem-red-dk);
+  --bio-rule: var(--border);
+  --bio-photo-bg: var(--surface);
+  --bio-photo-size: 96px;
+
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  padding: 24px 0;
+  border-top: 1px solid var(--bio-rule);
+  border-bottom: 1px solid var(--bio-rule);
+}
+
+.bio-photo {
+  flex: 0 0 var(--bio-photo-size);
+  width: var(--bio-photo-size);
+  height: var(--bio-photo-size);
+  background: var(--bio-photo-bg);
+  overflow: hidden;
+}
+
+.bio-photo picture,
+.bio-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bio-photo-initials {
+  display: grid;
+  place-items: center;
+  background: var(--carbon);
+  color: var(--white);
+  font-family: var(--display-font-family);
+  font-size: calc(var(--bio-photo-size) / 2.6);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.bio-copy {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.bio-name {
+  font-family: var(--display-font-family);
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--bio-name);
+  margin: 0;
+}
+
+.bio-role {
+  font-family: var(--mono-font-family);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--bio-role);
+  margin: 6px 0 12px;
+}
+
+.bio-body {
+  color: var(--bio-body);
+  font-size: var(--body-font-size-s);
+  line-height: 1.6;
+}
+
+.bio-body > :first-child {
+  margin-top: 0;
+}
+
+.bio-body > :last-child {
+  margin-bottom: 0;
+}
+
+.bio-link {
+  display: inline-block;
+  margin-top: 12px;
+  font-family: var(--mono-font-family);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bio-link);
+  text-decoration: none;
+  border-bottom: 1px solid currentcolor;
+}
+
+.bio-link::after {
+  content: " \2192";
+}
+
+.bio-link:hover {
+  color: var(--aem-red);
+}
+
+/* Consecutive bios collapse their shared hairline. */
+.bio + .bio {
+  border-top: 0;
+}
+
+@media (width <= 700px) {
+  .bio {
+    --bio-photo-size: 72px;
+
+    gap: 16px;
+  }
+
+  .bio-name {
+    font-size: 1.35rem;
+  }
+}

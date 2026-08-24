@@ -98,13 +98,17 @@ function decoratePictures(el) {
       if (val?.startsWith('./media_')) child.setAttribute(attr, val.replace('./', '/'));
     });
     const source = pic.querySelector('source');
-    const clone = source.cloneNode();
-    const [pathname, params] = clone.getAttribute('srcset').split('?');
-    const search = new URLSearchParams(params);
-    search.set('width', 3000);
-    clone.setAttribute('srcset', `${pathname}?${search.toString()}`);
-    clone.setAttribute('media', '(min-width: 1440px)');
-    pic.prepend(clone);
+    // A hand-authored <picture><img></picture> has no <source> yet — the
+    // pipeline adds them. Skip rather than throw and take down loadArea.
+    if (source) {
+      const clone = source.cloneNode();
+      const [pathname, params] = clone.getAttribute('srcset').split('?');
+      const search = new URLSearchParams(params);
+      search.set('width', 3000);
+      clone.setAttribute('srcset', `${pathname}?${search.toString()}`);
+      clone.setAttribute('media', '(min-width: 1440px)');
+      pic.prepend(clone);
+    }
   }
 }
 

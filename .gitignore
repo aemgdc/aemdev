@@ -39,3 +39,6 @@ visual-compare-out/
 # were all unstageable. Anchoring it restricts the rule to the /tracker content tree
 # it was written for. Verified with `git check-ignore -v`.
 /tracker/
+
+# Seeded headshots are fetched from public profile pages at seed time; not versioned.
+tools/bio-manager/seed/headshots/

@@ -1,4 +1,23 @@
 auto-generated: true
+
+# ---------------------------------------------------------------------------
+# THIS FILE IS THE ONLY LIVE QUERY CONFIG. `helix-query.yaml` and
+# `config/query.yaml` are dead for this v8 / DA site — editing them does
+# nothing, silently. See docs/adaptto-2026/subproducts.md#s11.
+#
+# Pushed by .github/workflows/update-index-configuration.yaml; read back by
+# `sync-site-configs`. Run the read-back before any push, and read the diff:
+# a push replaces the deployed config wholesale, so anything this file lacks
+# is deleted from it.
+#
+# Drift status, verified 23 Aug 2026 against the deployed config and against
+# /en/query-index.json: NONE. The eight orphaned properties the 16 Aug audit
+# found (bookAuthor, bookPublishDate, bookTypeTitle, displayLabel,
+# eventDateTime, eventDisplayLabel, eventDisplayTime, offDateTime) are gone
+# from both. aemdev-en here is property-for-property identical to what is
+# deployed, so pushing this file changes exactly one thing: it adds
+# aemdev-bios.
+# ---------------------------------------------------------------------------
 indices:
   #aemdev EN CONTENT#
   aemdev-en:
@@ -78,10 +97,55 @@ indices:
         select: head > meta[name="location"]
         value: |
           attribute(el, "content")
+
       robots:
         select: head > meta[name="robots"]
         value: |
           attribute(el, "content")
+  #aemdev BIOS# — speaker and author bios written by tools/bio-manager.
+  # /en/fragments/** is excluded from aemdev-en above, so these are indexed
+  # here and nowhere else. Consumers: the Bio Manager roster (cross-checks the
+  # DA sheet against what is actually published) and any listing block that
+  # needs speaker names without fetching one document per speaker.
+  # blocks/speakers does NOT read this — it resolves slugs to documents
+  # directly, so a bio renders the moment it is previewed.
+  aemdev-bios:
+    include:
+      - /en/fragments/bios/**
+    target: /en/fragments/bios/query-index.json
+    properties:
+      name:
+        select: head > meta[name="bio-name"]
+        value: |
+          attribute(el, "content")
+      jobTitle:
+        select: head > meta[name="bio-title"]
+        value: |
+          attribute(el, "content")
+      company:
+        select: head > meta[name="bio-company"]
+        value: |
+          attribute(el, "content")
+      linkedin:
+        select: head > meta[name="bio-linkedin"]
+        value: |
+          attribute(el, "content")
+      reviewStatus:
+        select: head > meta[name="bio-status"]
+        value: |
+          attribute(el, "content")
+      image:
+        select: head > meta[property="og:image"]
+        value: |
+          match(attribute(el, "content"), "https:\/\/[^/]+(/.*)")
+      description:
+        select: head > meta[name="description"]
+        value: |
+          attribute(el, "content")
+      lastModified:
+        select: none
+        value: |
+          parseTimestamp(headers['last-modified'], 'ddd, DD MMM YYYY hh:mm:ss GMT')
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # ADDED BY THE TRACKER BRANCH — NOT YET DEPLOYED.
@@ -164,9 +228,9 @@ indices:
           parseTimestamp(headers['last-modified'], 'ddd, DD MMM YYYY hh:mm:ss GMT')
 
   # ─── Per-locale mirrors of aemdev-en ────────────────────────────────────────
-  # Identical property sets by construction (generated from the block above), so a
-  # locale index cannot drift from the English one and a block written against
-  # /en/query-index.json works unchanged against any locale.
+  # Property sets are IDENTICAL to aemdev-en by construction (generated from its
+  # block, plus `robots`), so a locale index cannot drift from the English one and
+  # a block written against /en/query-index.json works unchanged against any locale.
   #
   # Each of these is EMPTY until content exists in that locale. That is fine and it
   # is why the matching sitemap.yaml language block is safe to add now: a `source`

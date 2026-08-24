@@ -1,0 +1,98 @@
+{
+  "note": "Placeholder bios for the adaptTo() 2026 demo corpus. Every entry is status:placeholder until the person has seen and approved it — the Bio Manager surfaces that, and blocks/speakers renders it. Titles and companies come from the public LinkedIn profile preview (og:title/og:description) and public company or user-group pages; headshots come from the same public profile preview and are cached, unversioned, in ./headshots/<slug>.jpg. A missing headshot is fine: blocks/bio falls back to initials.",
+  "sources": {
+    "eric-van-geem": "https://www.linkedin.com/in/ericvangeem/, https://theorg.com/org/huge/org-chart/eric-van-geem, https://ericvangeem.dev/about",
+    "andreas-haller": "https://www.linkedin.com/in/andreas-haller-b20195110/, https://www.netcentric.biz/focus/edge-delivery-services-experts",
+    "sagar-sane": "https://www.linkedin.com/in/sagarsane/",
+    "tad-reeves": "https://www.linkedin.com/in/thaddeusreeves/",
+    "laurel-timko": "https://www.linkedin.com/in/laureltimko/",
+    "wilson-faure": "https://www.linkedin.com/in/wilsonfaure/, https://aem-augs.adobe.com/",
+    "rick-reich": "https://www.linkedin.com/in/rickreich/ (profile preview unavailable — title and headshot outstanding)"
+  },
+  "bios": [
+    {
+      "slug": "eric-van-geem",
+      "name": "Eric Van Geem",
+      "title": "Director, Technology",
+      "company": "Huge",
+      "linkedin": "https://www.linkedin.com/in/ericvangeem/",
+      "status": "placeholder",
+      "body": [
+        "Eric leads technology delivery at Huge and has spent more than a decade architecting CMS platforms on Adobe, with an AEM Architect Master certification behind it.",
+        "He writes about Edge Delivery Services at ericvangeem.dev, including the Bring Your Own Markup and content-overlay pattern the Collective keeps circling back to. At the June 2026 session he took the room through what happens when an EDS project meets markup it does not own."
+      ]
+    },
+    {
+      "slug": "andreas-haller",
+      "name": "Andreas Haller",
+      "title": "Principal Solution Architect",
+      "company": "Cognizant Netcentric",
+      "linkedin": "https://www.linkedin.com/in/andreas-haller-b20195110/",
+      "status": "placeholder",
+      "body": [
+        "Andreas is a Principal Solution Architect at Cognizant Netcentric in Augsburg and one of the firm's Edge Delivery Services specialists.",
+        "He presented on bringing AI and personalisation to Edge Delivery at Adobe Developers Live, and his work tends to land exactly where EDS has to coexist with something older and larger. In June 2026 he walked the Collective through hybrid architectures that keep an existing AEM publish tier in play."
+      ]
+    },
+    {
+      "slug": "sagar-sane",
+      "name": "Sagar Sane",
+      "title": "Principal Technical Architect",
+      "company": "Adobe",
+      "linkedin": "https://www.linkedin.com/in/sagarsane/",
+      "status": "placeholder",
+      "body": [
+        "Sagar is a Principal Technical Architect at Adobe, based in Raleigh, and has led enterprise-scale Adobe Experience Cloud delivery for years.",
+        "At the June 2026 session he brought the Adobe-side view of the integration patterns everyone else was describing from the field — which is usually where the interesting disagreements start."
+      ]
+    },
+    {
+      "slug": "tad-reeves",
+      "name": "Tad Reeves",
+      "title": "Principal Architect",
+      "company": "Arbory Digital",
+      "linkedin": "https://www.linkedin.com/in/thaddeusreeves/",
+      "status": "placeholder",
+      "body": [
+        "Tad is a two-time Adobe AEM Champion and Certified AEM Architect at Arbory Digital, working on AEM infrastructure, DevOps and Edge Delivery performance.",
+        "He organises the AEM Global Developer Collective and writes regularly about what actually happens when enterprise AEM meets EDS. He presents at adaptTo() 2026 in Berlin on how far the Document Authoring surface can be customised."
+      ]
+    },
+    {
+      "slug": "laurel-timko",
+      "name": "Laurel Timko",
+      "title": "Senior Software Engineer",
+      "company": "JMP",
+      "linkedin": "https://www.linkedin.com/in/laureltimko/",
+      "status": "placeholder",
+      "body": [
+        "Laurel is a full-stack engineer at JMP, where she has built the tooling behind one of the larger Edge Delivery and Document Authoring implementations running in the wild.",
+        "Tag pickers wired to a live AEM taxonomy, block-aware bulk content operations, and the unglamorous parts that decide whether authors actually use the thing. She co-presents at adaptTo() 2026 in Berlin and drives the live demo."
+      ]
+    },
+    {
+      "slug": "wilson-faure",
+      "name": "Wilson Faure",
+      "title": "Senior Manager, AEM Platform",
+      "company": "Cox Communications",
+      "linkedin": "https://www.linkedin.com/in/wilsonfaure/",
+      "status": "placeholder",
+      "body": [
+        "Wilson runs the AEM platform at Cox Communications, is a three-time Adobe AEM Champion, and chairs the AEM Southeast User Group.",
+        "His work is on transforming enterprise customer experience across AI and digital platforms. At the Atlanta session he shared real-world experience with Adobe Sites Optimizer — what it detects, and what it takes to actually act on it."
+      ]
+    },
+    {
+      "slug": "rick-reich",
+      "name": "Rick Reich",
+      "title": "To be confirmed",
+      "company": "Better Digital",
+      "linkedin": "https://www.linkedin.com/in/rickreich/",
+      "status": "placeholder",
+      "body": [
+        "Rick is lined up to speak at the Collective's Miami meetup, tentatively November 2026, alongside Tad Reeves.",
+        "Title, topic and headshot are still outstanding — this entry exists so the Miami page has something to resolve, and so the review workflow has a real example of a bio that is not ready yet."
+      ]
+    }
+  ]
+}

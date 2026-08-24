@@ -4,6 +4,13 @@
   "editUrlPattern": "https://da.live/edit#/{{org}}/{{site}}{{pathname}}",
   "plugins": [
     {
+      "id": "bio-manager",
+      "title": "Bio Manager",
+      "environments": ["edit"],
+      "daLibrary": true,
+      "url": "https://main--aemdev--aemgdc.aem.live/tools/bio-manager.html"
+    },
+    {
       "id": "tag-picker",
       "title": "Tag Picker",
       "environments": ["edit"],

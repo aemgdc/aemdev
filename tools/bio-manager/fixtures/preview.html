@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Bio Manager — fixture preview</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/img/tools/bio-manager.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet" />
+    <link rel="stylesheet" href="/tools/bio-manager/bio-manager.css" />
+
+    <!--
+      Runs the real app with no DA and no network:
+        - the import map swaps the hosted DA SDK for fixtures/mock-sdk.js
+        - mock-da.js replaces window.fetch with an in-memory DA
+      Add ?plugin=1 to exercise the library-plugin surface (Insert buttons).
+    -->
+    <script type="importmap">
+      {
+        "imports": {
+          "https://da.live/nx/utils/sdk.js": "/tools/bio-manager/fixtures/mock-sdk.js"
+        }
+      }
+    </script>
+    <script src="/tools/bio-manager/fixtures/mock-da.js"></script>
+    <script src="/tools/bio-manager/bio-manager.js" type="module"></script>
+  </head>
+  <body></body>
+</html>

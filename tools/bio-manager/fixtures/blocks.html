@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>bio + speakers — fixture render</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/img/tools/bio-manager.svg" />
+    <meta name="speakers" content="eric-van-geem, laurel-timko, wilson-faure" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap"
+      rel="stylesheet" />
+    <link rel="stylesheet" href="/styles/styles.css" />
+    <link rel="stylesheet" href="/styles/sections.css" />
+
+    <!--
+      Renders blocks/speakers and blocks/bio against fixture documents, so the
+      output can be checked without publishing anything. `wilson-faure` is
+      deliberately absent from the fixtures to exercise the orphan row.
+    -->
+    <script>
+      // ?live=1 skips the fixtures and lets the dev server proxy the real
+      // published bios through, so the same page verifies the actual corpus.
+      if (!new URLSearchParams(location.search).has('live')) {
+        document.write('<script src="/tools/bio-manager/fixtures/mock-content.js"><\/script>');
+      }
+    </script>
+    <style>
+      body { margin: 0; background: var(--surface, #f4f4f4); }
+      main { max-width: 1140px; margin: 0 auto; padding: 48px 24px 96px; }
+      .fixture-label {
+        font-family: "Space Mono", monospace;
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: #eb1000;
+        margin: 48px 0 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <header></header>
+    <main>
+      <div>
+        <p class="fixture-label">speakers — from the page's speakers metadata</p>
+        <div class="speakers"></div>
+      </div>
+      <div>
+        <p class="fixture-label">speakers — slugs authored in the block</p>
+        <div class="speakers">
+          <div><div>bios</div><div>laurel-timko, eric-van-geem</div></div>
+        </div>
+      </div>
+      <div>
+        <p class="fixture-label">bio — one fragment referenced on a page</p>
+        <div class="bio">
+          <div><div>Photo</div><div><picture><img src="/tools/bio-manager/fixtures/headshot.svg" alt="Sagar Sane" /></picture></div></div>
+          <div><div>Name</div><div>Sagar Sane</div></div>
+          <div><div>Title</div><div>Principal Technical Architect</div></div>
+          <div><div>Company</div><div>Adobe</div></div>
+          <div><div>LinkedIn</div><div><a href="https://www.linkedin.com/in/sagarsane/">https://www.linkedin.com/in/sagarsane/</a></div></div>
+          <div><div>Bio</div><div><p>Sagar is a Principal Technical Architect at Adobe, based in Raleigh, and has led enterprise-scale Adobe Experience Cloud delivery for years.</p></div></div>
+        </div>
+      </div>
+      <div>
+        <p class="fixture-label">
+          fragment reference — what the plugin's Insert action writes (needs ?live=1)
+        </p>
+        <p><a href="/en/fragments/bios/sagar-sane">Sagar Sane</a></p>
+      </div>
+      <div>
+        <p class="fixture-label">bio — no photo, so initials</p>
+        <div class="bio">
+          <div><div>Name</div><div>Rick Reich</div></div>
+          <div><div>Title</div><div>To be confirmed</div></div>
+          <div><div>Company</div><div>Better Digital</div></div>
+          <div><div>Bio</div><div><p>Lined up to speak at the Miami meetup. Title, topic and headshot are still outstanding.</p></div></div>
+        </div>
+      </div>
+    </main>
+    <footer></footer>
+    <script type="module">
+      import { loadArea, setConfig } from '/scripts/ak.js';
+
+      setConfig({
+        hostnames: ['aemdev.org'],
+        locales: { '': { lang: 'en' } },
+        linkBlocks: [{ fragment: '/fragments/' }],
+        components: ['fragment'],
+      });
+      // Decorate `main` rather than the document: `loadArea(document)` also
+      // pulls in the header, footer and template, none of which this harness has.
+      await loadArea({ area: document.querySelector('main') });
+      document.body.dataset.fixtureReady = 'true';
+    </script>
+  </body>
+</html>

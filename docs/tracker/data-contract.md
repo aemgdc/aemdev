@@ -265,7 +265,7 @@ change both, or read those examples as shorthand.
   "runs": [{ "started": "<iso>", "finished": "<iso>", "host": "<hostname>",
              "branch": "main", "group": "meetups", "locales": ["de"],
              "pass": 12, "fail": 2, "escalate": 1, "skipped": 3 }],
-  "pages": { "/en/meetups/x de": {
+  "pages": { "/en/meetups/x\0de": {
       "translation-status": "auto-qa-ok", "tiers": { "structural": "pass", "judge": "pass", "visual": null },
       "judged": "<iso>", "attempts": 1, "report": ".tracker/reports/tx/de--meetups--x.json" } } }
 ```

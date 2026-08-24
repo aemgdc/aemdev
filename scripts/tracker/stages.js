@@ -150,7 +150,7 @@ const TRANSLATION_FORWARD = {
 /**
  * `review-status` — a native speaker's verdict. The ONLY stored human judgement.
  *
- * `TRANSLATION OK` keeps the SAS original's deliberate casing oddity (it had `QA OK`
+ * `TRANSLATION OK` keeps the upstream tracker's deliberate casing oddity (it had `QA OK`
  * and `LANG OK`): a literal uppercase-with-space STORED value, matched everywhere via
  * `.toLowerCase()`. It survives the port because the same string is what the review
  * document's marker means, and a human edits that document in DA's rich-text editor.
@@ -567,10 +567,11 @@ export function classifyTranslation(row, localeRow) {
  * backwards?", because whenever a review-status is set, classify compares two
  * identical answers and every write looks safe.
  *
- * In the SAS original that is precisely how a reconcile silently moved 33 rows from
- * `visual-qa-pass` back to `judge-dredd-ok`: all 33 carried `ready-for-review`, so
- * the guard built on classify() could not fire. The function and the reason are both
- * ported. Any writer that claims to prevent regressions must use THIS.
+ * In the tracker this is ported from, that is precisely how a reconcile silently
+ * walked a batch of pairs BACKWARDS through the funnel: every one of them carried
+ * `ready-for-review`, so the guard built on classify() compared two identical
+ * answers and could not fire. The function and the reason are both ported. Any
+ * writer that claims to prevent regressions must use THIS.
  */
 export function translationStage(status) {
   const s = String(status ?? '').trim().toLowerCase();
@@ -657,7 +658,7 @@ export const emptyBucketCounts = () => Object.fromEntries(PROGRESS_BUCKETS.map((
  * three views cannot disagree about one number.
  *
  * Returns nested objects deliberately — `{ stages, queues, buckets, total, counted }`
- * rather than a flat spread. The SAS original returned a flat shape and callers wrote
+ * rather than a flat spread. The upstream tracker returned a flat shape and callers wrote
  * `{ ...tally(x), ...stage }`, which silently shadowed every key the two had in
  * common. Nesting makes that impossible to write by accident.
  */
@@ -733,7 +734,7 @@ export function sheetTabs(doc) {
  * under-count with no warning, which is why the wording is worth being exact about.
  *
  * The join between the `data` tab and its ten locale tabs. Returns a Map keyed
- * `"<page-path> <locale>"` — a NUL separator because a path may contain anything
+ * `"<page-path>\0<locale>"` — a NUL separator because a path may contain anything
  * a slug allows, and a delimiter that can appear in a key is a silent collision.
  */
 export function indexLocaleRows(doc) {
@@ -741,14 +742,14 @@ export function indexLocaleRows(doc) {
   for (const code of TARGET_LOCALES) {
     for (const r of sheetRows(doc, code)) {
       const path = normalizePath(get(r, 'page-path'));
-      if (path) map.set(`${path} ${code}`, r);
+      if (path) map.set(`${path}\0${code}`, r);
     }
   }
   return map;
 }
 
 /** Look one pair out of the index built above. Missing is `{}`, never undefined. */
-export const localeRowFor = (index, path, code) => index.get(`${normalizePath(path)} ${code}`) || {};
+export const localeRowFor = (index, path, code) => index.get(`${normalizePath(path)}\0${code}`) || {};
 
 /* ------------------------------------------------------------------- conveniences */
 

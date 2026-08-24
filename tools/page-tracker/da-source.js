@@ -32,7 +32,7 @@
 import {
   FEEDS, TRACKER_GROUPS, daListUrl, daSourceUrl, previewApiUrl, slugOf,
 } from '../../scripts/tracker/paths.js';
-import { normalizePath } from '../../scripts/tracker/locales.js';
+import { TARGET_LOCALES, normalizePath } from '../../scripts/tracker/locales.js';
 import {
   EN_STATUSES, REVIEW_STATUSES, CONTENT_ESCALATION_COLUMN,
   indexLocaleRows, sheetRows, sheetTabs,
@@ -156,6 +156,13 @@ export async function readGroupSheet(group) {
   }
 
   const tabs = sheetTabs(doc);
+  /*
+   * A tab no locale is registered for is REPORTED, never ignored. Locale rows are read
+   * per registered locale rather than per tab found, so a misspelled tab name would
+   * otherwise make that whole locale read as ten blank rows — untranslated, with no
+   * warning anywhere. The same guard `loadGroup()` in scripts/tracker/data.js carries.
+   */
+  const known = new Set(['data', ...TARGET_LOCALES]);
   return {
     exists: true,
     where: url,
@@ -163,6 +170,7 @@ export async function readGroupSheet(group) {
     doc,
     version: strongEtag(res.headers.get('ETag')),
     tabs,
+    unknownTabs: tabs.filter((t) => !known.has(t)),
     rows: sheetRows(doc, 'data').filter((r) => normalizePath(r?.[PATH_COLUMN])),
     localeIndex: indexLocaleRows(doc),
   };
@@ -368,16 +376,28 @@ async function updateSheet(group, {
       return { ok: false, reason: e.message };
     }
 
+    /*
+     * REFUSE, before the POST, rather than falling back to writing anyway.
+     *
+     * No validator means an UNCONDITIONAL whole-doc write to a shared sheet, which is
+     * precisely the operation that loses a concurrent writer's rows while reporting
+     * success. A `.json` source on this service always carries an ETag, so its absence
+     * is a fault to report, not a degraded mode to proceed in — and the check has to be
+     * here and not after the request, or the write it exists to prevent has already
+     * happened by the time anyone is told.
+     */
+    if (!current.version) {
+      return {
+        ok: false,
+        reason: 'the sheet read returned no ETag — refusing an unconditional whole-doc write',
+      };
+    }
+
     const post = await fetchFn(url, {
       method: 'POST',
-      // No validator would mean an UNCONDITIONAL whole-doc write to a shared sheet,
-      // which is exactly the operation that loses a concurrent writer's rows. A
-      // `.json` source always carries an ETag, so its absence is a fault, not a
-      // fallback to write anyway.
-      headers: current.version ? { 'If-Match': current.version } : {},
+      headers: { 'If-Match': current.version },
       body: docForm(current.doc, filenameFor(group)),
     });
-    if (!current.version) return { ok: false, reason: 'the sheet read returned no ETag — refusing an unconditional write' };
     if (post.status === 412) return { ok: false, conflict: true, reason: 'the sheet changed since it was read' };
     if (!post.ok) return { ok: false, reason: `sheet write failed (${post.status})` };
     return { ok: true };

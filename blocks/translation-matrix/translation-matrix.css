@@ -1,0 +1,389 @@
+/*
+ * translation-matrix
+ *
+ * ─── The palette, and why it is not nine colours ─────────────────────────────
+ *
+ * The site's tokens are carbon, cool gray and one signal red (styles/styles.css,
+ * DESIGN.md). Nine distinguishable hues do not exist in that palette, and inventing
+ * them would be a parallel palette on a page that sits inside the real site.
+ *
+ * So identity is carried by the `short` LABEL printed in the segment, and the shade
+ * carries the PHASE — five neutral steps from "not sent" to "live". Nine grays would be
+ * a smear nobody can read; five steps plus a label is legible at 390px and stays legible
+ * to a colour-blind reader, because no fact is encoded in hue alone.
+ *
+ * `--aem-red` is spent on exactly one band: `blocked`. It is the site's signal colour
+ * and blocked is the only band that means somebody has to do something.
+ *
+ * The band ids in these selectors are the model's own (`PAGE_STAGES` /
+ * `PROGRESS_BUCKETS` ids, set as `data-band` by the JS). Keeping the palette here and
+ * the vocabulary in stages.js means neither file holds a copy of the other: CSS knows
+ * nothing about labels, and the JS names no colours.
+ *
+ * `.tm-seg` carries a default background, so a stage added to the model tomorrow renders
+ * as a visible mid-tone segment rather than an invisible one.
+ */
+
+.translation-matrix {
+  --tm-tone-1: light-dark(var(--border), var(--carbon-3));
+  --tm-tone-2: light-dark(var(--color-gray-400), var(--color-gray-600));
+  --tm-tone-3: light-dark(var(--slate), var(--slate));
+  --tm-tone-4: light-dark(var(--slate-dk), var(--color-gray-300));
+  --tm-tone-5: light-dark(var(--carbon), var(--white));
+  --tm-blocked: var(--aem-red);
+  --tm-surface: light-dark(var(--paper), var(--carbon));
+  --tm-surface-2: light-dark(var(--surface), var(--carbon-2));
+  --tm-rule: light-dark(var(--border), var(--carbon-3));
+  --tm-text: light-dark(var(--text), var(--white));
+  --tm-muted: light-dark(var(--muted), var(--color-gray-400));
+
+  color: var(--tm-text);
+  font-family: var(--body-font-family);
+
+  /* ---------------------------------------------------------------- the table */
+
+  /*
+   * At 390px the matrix scrolls sideways with the locale column pinned. See the JS
+   * header for why it does not reflow into per-locale cards: cards keep the row and
+   * destroy the column, and the column is the comparison this board exists to make.
+   */
+  .tm-scroll {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    border: 1px solid var(--tm-rule);
+    background: var(--tm-surface);
+  }
+
+  .tm-table {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 32rem;
+    font-size: var(--body-font-size-xs);
+  }
+
+  .tm-caption {
+    caption-side: top;
+    padding: var(--spacing-s) var(--spacing-m);
+    text-align: left;
+    font-family: var(--display-font-family);
+    font-size: var(--body-font-size-l);
+    color: var(--tm-text);
+    background: var(--tm-surface-2);
+    border-bottom: 1px solid var(--tm-rule);
+  }
+
+  th,
+  td {
+    border-bottom: 1px solid var(--tm-rule);
+    padding: var(--spacing-xs) var(--spacing-s);
+    text-align: left;
+    vertical-align: middle;
+  }
+
+  thead th,
+  tfoot th,
+  tfoot td {
+    background: var(--tm-surface-2);
+  }
+
+  tfoot td,
+  tfoot th {
+    border-top: 2px solid var(--tm-rule);
+    border-bottom: 0;
+  }
+
+  /* The locale column stays put; everything else scrolls under it. */
+  .tm-locale,
+  .tm-corner {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    min-width: 5.5rem;
+    background: var(--tm-surface-2);
+    border-right: 1px solid var(--tm-rule);
+  }
+
+  .tm-corner {
+    z-index: 2;
+  }
+
+  .tm-locale-native {
+    display: block;
+    font-weight: 700;
+    font-size: var(--body-font-size-s);
+    line-height: 1.2;
+  }
+
+  .tm-locale-code {
+    display: block;
+    font-family: var(--mono-font-family);
+    font-size: 0.7rem;
+    color: var(--tm-muted);
+  }
+
+  .tm-group {
+    font-family: var(--mono-font-family);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    min-width: 5.5rem;
+  }
+
+  .tm-group-den {
+    display: block;
+    font-family: var(--body-font-family);
+    font-size: 0.7rem;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+    color: var(--tm-muted);
+  }
+
+  .tm-group-all,
+  .tm-cell-all {
+    border-left: 2px solid var(--tm-rule);
+  }
+
+  /* ----------------------------------------------------------------- the cell */
+
+  .tm-cell-link {
+    display: block;
+    padding: 2px 0;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .tm-cell-link:hover,
+  .tm-cell-link:focus-visible {
+    outline: 2px solid var(--aem-red);
+    outline-offset: 2px;
+  }
+
+  .tm-bar {
+    display: flex;
+    gap: 1px;
+    height: 14px;
+    width: 100%;
+    min-width: 4rem;
+    background: var(--tm-surface);
+  }
+
+  .tm-seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    /*
+     * A pixel floor, not a percentage one: on a 90px bar a single pair out of 190 is a
+     * third of a pixel, which renders as nothing and is indistinguishable from zero.
+     * "Some" and "none" are different answers and the bar has to be able to say which.
+     */
+    min-width: 3px;
+    background: var(--tm-tone-3);
+    color: var(--white);
+  }
+
+  .tm-seg-label {
+    font-family: var(--mono-font-family);
+    font-size: 0.6rem;
+    letter-spacing: 0.02em;
+    padding: 0 2px;
+    white-space: nowrap;
+  }
+
+  .tm-seg[data-band="catalogued"],
+  .tm-seg[data-band="enPublished"] {
+    background: var(--tm-tone-1);
+    color: light-dark(var(--text), var(--white));
+  }
+
+  .tm-seg[data-band="sentForTranslation"],
+  .tm-seg[data-band="sent"] {
+    background: var(--tm-tone-2);
+    color: light-dark(var(--text), var(--white));
+  }
+
+  .tm-seg[data-band="previewed"],
+  .tm-seg[data-band="autoQaPass"],
+  .tm-seg[data-band="layoutQaPass"],
+  .tm-seg[data-band="autoQa"] {
+    background: var(--tm-tone-3);
+  }
+
+  .tm-seg[data-band="inReview"],
+  .tm-seg[data-band="reviewOk"] {
+    background: var(--tm-tone-4);
+    color: light-dark(var(--white), var(--carbon));
+  }
+
+  .tm-seg[data-band="online"] {
+    background: var(--tm-tone-5);
+    color: light-dark(var(--white), var(--carbon));
+  }
+
+  .tm-seg[data-band="blocked"] {
+    background: var(--tm-blocked);
+    color: var(--white);
+  }
+
+  .tm-lead {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-top: 2px;
+    line-height: 1.2;
+  }
+
+  .tm-lead-band {
+    font-family: var(--mono-font-family);
+    font-size: 0.65rem;
+    color: var(--tm-muted);
+  }
+
+  .tm-lead-num {
+    font-weight: 700;
+    font-size: var(--body-font-size-s);
+  }
+
+  .tm-lead-blocked {
+    margin-left: auto;
+    font-weight: 700;
+    font-size: 0.7rem;
+    color: var(--aem-red);
+  }
+
+  /* Nothing EXPECTED in this cell — a different fact from nothing having moved. */
+  .tm-cell-none {
+    color: var(--tm-muted);
+  }
+
+  /* No ROW in the feed. Unknown, not zero — so it is marked, not just dimmed. */
+  .tm-cell-absent {
+    color: var(--aem-red);
+  }
+
+  .tm-cell-dash {
+    display: block;
+    font-family: var(--mono-font-family);
+    text-align: center;
+  }
+
+  /* --------------------------------------------------------------- the legend */
+
+  .tm-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-s) var(--spacing-m);
+    margin: var(--spacing-m) 0 0;
+  }
+
+  .tm-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--body-font-size-xs);
+  }
+
+  .tm-legend-dot {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 auto;
+    background: var(--tm-tone-3);
+  }
+
+  .tm-legend-dot[data-band="catalogued"],
+  .tm-legend-dot[data-band="enPublished"] {
+    background: var(--tm-tone-1);
+  }
+
+  .tm-legend-dot[data-band="sentForTranslation"],
+  .tm-legend-dot[data-band="sent"] {
+    background: var(--tm-tone-2);
+  }
+
+  .tm-legend-dot[data-band="inReview"],
+  .tm-legend-dot[data-band="reviewOk"] {
+    background: var(--tm-tone-4);
+  }
+
+  .tm-legend-dot[data-band="online"] {
+    background: var(--tm-tone-5);
+  }
+
+  .tm-legend-dot[data-band="blocked"] {
+    background: var(--tm-blocked);
+  }
+
+  .tm-legend-num {
+    font-weight: 700;
+    font-family: var(--mono-font-family);
+  }
+
+  /* ------------------------------------------------- states, warnings, meta */
+
+  .tm-panel {
+    border: 1px solid var(--tm-rule);
+    border-left: 4px solid var(--slate);
+    background: var(--tm-surface-2);
+    padding: var(--spacing-m);
+    margin: 0 0 var(--spacing-m);
+  }
+
+  .tm-panel-error,
+  .tm-panel-notice {
+    border-left-color: var(--aem-red);
+  }
+
+  .tm-panel-title {
+    margin: 0 0 var(--spacing-s);
+    font-family: var(--display-font-family);
+    font-size: var(--heading-font-size-s);
+  }
+
+  .tm-panel-line {
+    margin: 0 0 var(--spacing-s);
+    font-size: var(--body-font-size-s);
+  }
+
+  .tm-panel-line:last-child {
+    margin-bottom: 0;
+  }
+
+  .tm-warnings {
+    margin: var(--spacing-m) 0 0;
+    border-left: 4px solid var(--aem-red);
+    padding-left: var(--spacing-s);
+  }
+
+  .tm-warn-title {
+    margin: 0 0 var(--spacing-xs);
+    font-family: var(--display-font-family);
+    font-size: var(--heading-font-size-xs);
+  }
+
+  .tm-warn-list {
+    margin: 0;
+    padding-left: var(--spacing-m);
+    font-size: var(--body-font-size-xs);
+  }
+
+  .tm-meta {
+    margin: var(--spacing-m) 0 0;
+    color: var(--tm-muted);
+    font-size: var(--body-font-size-xs);
+  }
+
+  .tm-meta-line {
+    margin: 0 0 var(--spacing-xs);
+  }
+
+  .tm-meta-warn {
+    color: var(--tm-text);
+  }
+
+  .tm-meta-bad {
+    color: var(--aem-red);
+    font-weight: 700;
+  }
+}

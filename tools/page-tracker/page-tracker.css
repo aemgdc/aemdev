@@ -1,0 +1,971 @@
+/* ============================================================
+   Page Tracker — a DA fullscreen app.
+
+   Self-contained on purpose. `/styles/styles.css` cannot be linked here: it
+   carries the EDS page contract (`header { display: none }`,
+   `main > div { display: none }`) which keeps authored sections hidden until
+   ak.js reveals them, and this app renders its own markup and never runs
+   ak.js — linking it hides the entire UI.
+
+   So the tokens below are the SITE's tokens, same names in spirit and same
+   values, re-declared under a `--pt-` prefix. That is the compromise
+   tools/bio-manager/bio-manager.css already makes and for the same reason;
+   the duplication is deliberate and the values must be changed with
+   styles/styles.css, not independently of it.
+
+   Design follows DESIGN.md: carbon + Adobe Red + cool gray, Barlow Condensed /
+   Inter / Space Mono, sharp edges. Dark is supported here even though the site
+   currently pins `color-scheme: light`, because a DA app renders inside DA's own
+   chrome and a reviewer working in DA's dark theme should not be handed a white
+   rectangle.
+   ============================================================ */
+
+:root {
+  /* Brand — from styles/styles.css */
+  --pt-red: #eb1000;
+  --pt-red-deep: #c50e00;
+  --pt-carbon: #0e0e0e;
+  --pt-carbon-mid: #1b1b1b;
+  --pt-carbon-line: #272727;
+  --pt-slate: #6b7280;
+  --pt-slate-dark: #4b5563;
+
+  /* Ground — light */
+  --pt-paper: #f9f9f9;
+  --pt-surface: #f4f4f4;
+  --pt-raised: #fff;
+  --pt-text: #1f1f1f;
+  --pt-muted: #6b7280;
+  --pt-border: #d1d5db;
+  --pt-border-strong: #9ca3af;
+
+  /* Signal — a stage is not a status, so the two families stay distinct */
+  --pt-ok: #0f7a3d;
+  --pt-ok-bg: #e7f4ec;
+  --pt-warn: #8a5300;
+  --pt-warn-bg: #fdf3e3;
+  --pt-err: #c50e00;
+  --pt-err-bg: #fdeceb;
+  --pt-info: #1d4ed8;
+  --pt-info-bg: #e8eefc;
+  --pt-idle: #4b5563;
+  --pt-idle-bg: #ececec;
+
+  /* Type */
+  --pt-display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --pt-body: "Inter", system-ui, "Helvetica Neue", helvetica, arial, sans-serif;
+  --pt-mono: "Space Mono", menlo, consolas, "Liberation Mono", monospace;
+
+  /* Space */
+  --pt-xs: 4px;
+  --pt-sm: 8px;
+  --pt-md: 16px;
+  --pt-lg: 28px;
+
+  color-scheme: light dark;
+}
+
+/*
+ * Only the ground and the signal BACKGROUNDS move in dark. The brand and the
+ * signal foregrounds are lightened rather than swapped, so a red chip is the same
+ * red chip a reviewer learned in light mode.
+ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --pt-paper: #131313;
+    --pt-surface: #1b1b1b;
+    --pt-raised: #232323;
+    --pt-text: #ededed;
+    --pt-muted: #a1a1aa;
+    --pt-border: #343434;
+    --pt-border-strong: #4d4d4d;
+    --pt-ok: #4ec97f;
+    --pt-ok-bg: #16301f;
+    --pt-warn: #e0a75a;
+    --pt-warn-bg: #30260f;
+    --pt-err: #ff7a6e;
+    --pt-err-bg: #331715;
+    --pt-info: #86a9f5;
+    --pt-info-bg: #151f36;
+    --pt-idle: #b4b4b4;
+    --pt-idle-bg: #262626;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body.pt-app {
+  margin: 0;
+  background: var(--pt-paper);
+  color: var(--pt-text);
+  font-family: var(--pt-body);
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+#pt-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.pt-boot {
+  padding: var(--pt-lg);
+  color: var(--pt-muted);
+  font-family: var(--pt-mono);
+}
+
+/* ------------------------------------------------------------------ header */
+
+.pt-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  padding: var(--pt-md) var(--pt-lg) var(--pt-sm);
+  background: var(--pt-surface);
+  border-bottom: 2px solid var(--pt-carbon-line);
+
+  h1 {
+    margin: 0;
+    font-family: var(--pt-display);
+    font-size: 30px;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+  }
+}
+
+.pt-sub {
+  margin: var(--pt-xs) 0 0;
+  max-width: 78ch;
+  color: var(--pt-muted);
+  font-size: 12.5px;
+}
+
+.pt-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pt-md);
+  align-items: flex-end;
+  margin-top: var(--pt-md);
+}
+
+.pt-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  > span {
+    color: var(--pt-muted);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+}
+
+.pt-select,
+.pt-input {
+  padding: 5px var(--pt-sm);
+  border: 1px solid var(--pt-border-strong);
+  background: var(--pt-raised);
+  color: var(--pt-text);
+  font-family: inherit;
+  font-size: 13px;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.pt-input {
+  font-family: var(--pt-mono);
+}
+
+/* ------------------------------------------------------- locale + filter bars */
+
+.pt-locales {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pt-xs);
+  margin-top: var(--pt-md);
+}
+
+.pt-locale {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 4px var(--pt-sm);
+  border: 1px solid var(--pt-border);
+  background: var(--pt-raised);
+  color: var(--pt-text);
+  font-family: inherit;
+  cursor: pointer;
+
+  .pt-locale-native {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .pt-locale-code {
+    color: var(--pt-muted);
+    font-family: var(--pt-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  &[aria-pressed="true"] {
+    border-color: var(--pt-red);
+    background: var(--pt-carbon);
+    color: #fff;
+    box-shadow: inset 0 -3px 0 0 var(--pt-red);
+
+    .pt-locale-code {
+      color: #d6d6d6;
+    }
+  }
+}
+
+.pt-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pt-xs);
+  align-items: center;
+  margin-top: var(--pt-sm);
+}
+
+.pt-filter-legend {
+  min-width: 4.5em;
+  color: var(--pt-muted);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.pt-filter {
+  display: inline-flex;
+  gap: 6px;
+  align-items: baseline;
+  padding: 3px var(--pt-sm);
+  border: 1px solid var(--pt-border);
+  background: var(--pt-raised);
+  color: var(--pt-text);
+  font-family: inherit;
+  font-size: 12px;
+  cursor: pointer;
+
+  .pt-filter-count {
+    color: var(--pt-muted);
+    font-family: var(--pt-mono);
+    font-size: 10.5px;
+  }
+
+  /*
+   * A zero-count filter is shown, not hidden. "No pages are blocked" is an answer,
+   * and a filter bar that grew and shrank as the data changed would make the
+   * vocabulary itself look unstable.
+   */
+  &.pt-filter-empty {
+    opacity: 0.55;
+  }
+
+  &[aria-pressed="true"] {
+    border-color: var(--pt-red);
+    background: var(--pt-carbon);
+    color: #fff;
+
+    .pt-filter-count {
+      color: #d6d6d6;
+    }
+  }
+}
+
+.pt-counts {
+  margin: var(--pt-sm) 0 0;
+  font-family: var(--pt-mono);
+  font-size: 11.5px;
+  color: var(--pt-muted);
+}
+
+.pt-note-line {
+  margin: var(--pt-xs) 0 0;
+  max-width: 90ch;
+  color: var(--pt-warn);
+  font-size: 11.5px;
+
+  &:empty {
+    display: none;
+  }
+}
+
+.pt-readonly {
+  margin: var(--pt-sm) 0 0;
+  padding: 5px var(--pt-sm);
+  border-left: 3px solid var(--pt-warn);
+  background: var(--pt-warn-bg);
+  color: var(--pt-warn);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* -------------------------------------------------------------------- layout */
+
+.pt-body {
+  flex: 1;
+  min-height: 0;
+}
+
+.pt-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+
+  &.pt-layout-open {
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 42%);
+  }
+}
+
+.pt-list {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+/* --------------------------------------------------------------------- table */
+
+.pt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+
+  th {
+    position: sticky;
+    top: 0;
+    padding: 6px var(--pt-sm);
+    background: var(--pt-carbon);
+    color: #fff;
+    font-family: var(--pt-display);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 6px var(--pt-sm);
+    border-bottom: 1px solid var(--pt-border);
+    vertical-align: top;
+  }
+}
+
+.pt-row {
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--pt-surface);
+    outline: none;
+  }
+
+  &.pt-row-selected {
+    background: var(--pt-info-bg);
+    box-shadow: inset 3px 0 0 0 var(--pt-red);
+  }
+
+  /* A blocked pair is out of the funnel; the row says so before any column does. */
+  &.pt-row-blocked .pt-title {
+    text-decoration: underline;
+    text-decoration-color: var(--pt-err);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+  }
+}
+
+.pt-title {
+  font-weight: 600;
+}
+
+.pt-path {
+  color: var(--pt-muted);
+  font-family: var(--pt-mono);
+  font-size: 10.5px;
+  word-break: break-all;
+}
+
+.pt-subgroup-name {
+  font-family: var(--pt-mono);
+  font-size: 11px;
+}
+
+.pt-na {
+  color: var(--pt-muted);
+}
+
+.pt-col-crawl,
+.pt-col-links,
+.pt-col-actions {
+  white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------- chips */
+
+.pt-chip {
+  display: inline-block;
+  margin-left: var(--pt-xs);
+  padding: 1px 5px;
+  border: 1px solid var(--pt-border-strong);
+  background: var(--pt-surface);
+  font-family: var(--pt-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: 1px;
+}
+
+.pt-chip-quiet {
+  color: var(--pt-muted);
+}
+
+.pt-chip-warn {
+  border-color: var(--pt-warn);
+  background: var(--pt-warn-bg);
+  color: var(--pt-warn);
+}
+
+.pt-chip-flag {
+  border-color: var(--pt-err);
+  background: var(--pt-err-bg);
+  color: var(--pt-err);
+}
+
+.pt-chip-queue {
+  border-color: var(--pt-info);
+  background: var(--pt-info-bg);
+  color: var(--pt-info);
+}
+
+/*
+ * `statusChip()` from scripts/tracker/block-utils.js emits `.tracker-chip` with a
+ * `data-status` from `statusClass()`, so the CSS hook and the enum cannot drift: a
+ * status added to stages.js arrives here already named. Only the values worth
+ * COLOURING are listed; everything else falls through to the neutral chip, which is
+ * the honest default for a value the model itself warns about.
+ */
+.tracker-chip {
+  display: inline-block;
+  padding: 1px 6px;
+  border: 1px solid var(--pt-border-strong);
+  background: var(--pt-surface);
+  font-size: 11px;
+  white-space: nowrap;
+
+  &[data-status="none"] {
+    border-style: dashed;
+    color: var(--pt-muted);
+  }
+
+  &[data-status="en-published"],
+  &[data-status="preview-ok"],
+  &[data-status="auto-qa-ok"],
+  &[data-status="visual-qa-ok"],
+  &[data-status="translation-ok"] {
+    border-color: var(--pt-ok);
+    background: var(--pt-ok-bg);
+    color: var(--pt-ok);
+  }
+
+  &[data-status="draft"],
+  &[data-status="sent"],
+  &[data-status="ready-for-review"],
+  &[data-status="en-previewed"] {
+    border-color: var(--pt-info);
+    background: var(--pt-info-bg);
+    color: var(--pt-info);
+  }
+
+  &[data-status="preview-missing"],
+  &[data-status="auto-qa-escalate"],
+  &[data-status="needs-terminology-fix"],
+  &[data-status="needs-layout-fix"] {
+    border-color: var(--pt-warn);
+    background: var(--pt-warn-bg);
+    color: var(--pt-warn);
+  }
+
+  &[data-status="send-fail"],
+  &[data-status="untranslated"],
+  &[data-status="unlocalized-links"],
+  &[data-status="auto-qa-fail"],
+  &[data-status="visual-qa-fail"],
+  &[data-status="publish-fail"],
+  &[data-status="needs-retranslation"] {
+    border-color: var(--pt-err);
+    background: var(--pt-err-bg);
+    color: var(--pt-err);
+  }
+}
+
+/* --------------------------------------------------------------------- stage */
+
+.pt-stage {
+  display: inline-block;
+  min-width: 3.4em;
+  padding: 1px 5px;
+  background: var(--pt-idle-bg);
+  color: var(--pt-idle);
+  font-family: var(--pt-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-align: center;
+
+  /* Funnel order, coarsened: catalogued and en-published are inventory, the middle
+     is in flight, the end is done, and blocked is off the line entirely. */
+  &[data-stage="catalogued"],
+  &[data-stage="enpublished"] {
+    background: var(--pt-idle-bg);
+    color: var(--pt-idle);
+  }
+
+  &[data-stage="sentfortranslation"],
+  &[data-stage="previewed"] {
+    background: var(--pt-info-bg);
+    color: var(--pt-info);
+  }
+
+  &[data-stage="autoqapass"],
+  &[data-stage="layoutqapass"],
+  &[data-stage="inreview"] {
+    background: var(--pt-warn-bg);
+    color: var(--pt-warn);
+  }
+
+  &[data-stage="reviewok"],
+  &[data-stage="online"] {
+    background: var(--pt-ok-bg);
+    color: var(--pt-ok);
+  }
+
+  &[data-stage="blocked"] {
+    background: var(--pt-err-bg);
+    color: var(--pt-err);
+  }
+}
+
+.pt-stage-label {
+  margin-left: 6px;
+  font-size: 12px;
+}
+
+.pt-stage-line {
+  display: flex;
+  gap: var(--pt-sm);
+  align-items: baseline;
+  margin: 0;
+}
+
+/*
+ * The crawl pair. "Does not answer" is drawn as a visibly EMPTY box rather than
+ * omitted, because a missing chip and a negative chip are the same pixel to a reader
+ * and only one of them means "we looked".
+ */
+.pt-crawl {
+  display: inline-block;
+  margin-right: 3px;
+  padding: 1px 4px;
+  border: 1px solid var(--pt-border-strong);
+  font-family: var(--pt-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+}
+
+.pt-crawl-yes {
+  border-color: var(--pt-ok);
+  background: var(--pt-ok-bg);
+  color: var(--pt-ok);
+}
+
+.pt-crawl-no {
+  border-style: dashed;
+  color: var(--pt-muted);
+}
+
+/* ------------------------------------------------------------- links, buttons */
+
+.pt-mini {
+  display: inline-block;
+  margin-right: 5px;
+  padding: 1px 5px;
+  border: 1px solid var(--pt-border-strong);
+  color: var(--pt-text);
+  font-family: var(--pt-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  text-transform: uppercase;
+
+  &:hover {
+    border-color: var(--pt-red);
+    color: var(--pt-red-deep);
+  }
+}
+
+.pt-mini-dead {
+  border-style: dashed;
+  color: var(--pt-muted);
+  cursor: help;
+}
+
+.pt-btn {
+  padding: 4px 10px;
+  border: 1px solid var(--pt-carbon);
+  background: var(--pt-carbon);
+  color: #fff;
+  font-family: var(--pt-body);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    border-color: var(--pt-red);
+    background: var(--pt-red);
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+}
+
+.pt-btn-quiet {
+  border-color: var(--pt-border-strong);
+  background: var(--pt-raised);
+  color: var(--pt-text);
+
+  &:hover:not(:disabled) {
+    border-color: var(--pt-red);
+    background: var(--pt-raised);
+    color: var(--pt-red-deep);
+  }
+}
+
+.pt-btn-warn {
+  border-color: var(--pt-warn);
+  background: var(--pt-warn-bg);
+  color: var(--pt-warn);
+
+  &:hover:not(:disabled) {
+    border-color: var(--pt-warn);
+    background: var(--pt-warn-bg);
+    color: var(--pt-warn);
+  }
+}
+
+/* ---------------------------------------------------------------- empty state */
+
+.pt-empty {
+  padding: var(--pt-lg);
+  max-width: 80ch;
+}
+
+.pt-empty-head {
+  margin: 0 0 var(--pt-sm);
+  font-family: var(--pt-display);
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.pt-empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pt-sm);
+  margin: var(--pt-md) 0 0;
+}
+
+.pt-hint {
+  margin: var(--pt-sm) 0 0;
+  color: var(--pt-muted);
+  font-size: 12px;
+}
+
+.pt-note {
+  margin: var(--pt-xs) 0 0;
+  font-family: var(--pt-mono);
+  font-size: 11px;
+}
+
+.pt-error-line {
+  margin: var(--pt-sm) 0 0;
+  padding: 5px var(--pt-sm);
+  border-left: 3px solid var(--pt-err);
+  background: var(--pt-err-bg);
+  color: var(--pt-err);
+  font-family: var(--pt-mono);
+  font-size: 11.5px;
+  word-break: break-all;
+}
+
+.pt-cmd {
+  margin: var(--pt-sm) 0 0;
+  padding: var(--pt-sm);
+  overflow-x: auto;
+  background: var(--pt-carbon);
+  color: #e8eef2;
+  font-family: var(--pt-mono);
+  font-size: 11.5px;
+  line-height: 1.7;
+}
+
+/* -------------------------------------------------------------------- drawer */
+
+.pt-drawer {
+  position: sticky;
+  top: 0;
+  max-height: 100vh;
+  overflow-y: auto;
+  padding: 0 var(--pt-md) var(--pt-lg);
+  border-left: 2px solid var(--pt-carbon-line);
+  background: var(--pt-raised);
+}
+
+.pt-drawer-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  gap: var(--pt-sm);
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--pt-md) 0 var(--pt-sm);
+  background: var(--pt-raised);
+  border-bottom: 1px solid var(--pt-border);
+
+  h2 {
+    margin: 0;
+    font-family: var(--pt-display);
+    font-size: 22px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+}
+
+.pt-section {
+  margin-top: var(--pt-lg);
+
+  h3 {
+    margin: 0;
+    font-family: var(--pt-display);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--pt-border);
+    padding-bottom: 3px;
+  }
+}
+
+.pt-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pt-xs);
+  margin: var(--pt-sm) 0 0;
+}
+
+.pt-warnings {
+  margin: var(--pt-sm) 0 0;
+  padding-left: 1.2em;
+  color: var(--pt-warn);
+  font-size: 11.5px;
+}
+
+.pt-flagbox {
+  margin-top: var(--pt-md);
+  padding: var(--pt-sm);
+  border: 1px dashed var(--pt-border-strong);
+}
+
+.pt-write-status {
+  margin-left: var(--pt-sm);
+  font-family: var(--pt-mono);
+  font-size: 11px;
+}
+
+.pt-when {
+  margin-left: var(--pt-xs);
+  color: var(--pt-muted);
+  font-family: var(--pt-mono);
+  font-size: 10px;
+}
+
+/* ----------------------------------------------------------------- the tiers */
+
+.pt-tiers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pt-sm);
+  margin-top: var(--pt-sm);
+}
+
+/*
+ * The always-three tier chips. `not-run` is DASHED and says "did not run" in words:
+ * a grey chip that could be read as a quiet pass is precisely the failure this state
+ * exists to prevent. `null` and `pass` must never look the same.
+ */
+.pt-tier {
+  display: flex;
+  flex-direction: column;
+  min-width: 6.5em;
+  padding: 3px 6px;
+  border: 1px solid var(--pt-border-strong);
+  background: var(--pt-surface);
+
+  .pt-tier-name {
+    font-family: var(--pt-mono);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+  }
+
+  .pt-tier-verdict {
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  &[data-state="pass"] {
+    border-color: var(--pt-ok);
+    background: var(--pt-ok-bg);
+    color: var(--pt-ok);
+  }
+
+  &[data-state="fail"] {
+    border-color: var(--pt-err);
+    background: var(--pt-err-bg);
+    color: var(--pt-err);
+  }
+
+  &[data-state="escalate"],
+  &[data-state="review"],
+  &[data-state="unknown"] {
+    border-color: var(--pt-warn);
+    background: var(--pt-warn-bg);
+    color: var(--pt-warn);
+  }
+
+  &[data-state="not-run"] {
+    border-style: dashed;
+    border-color: var(--pt-border-strong);
+    background: transparent;
+    color: var(--pt-muted);
+
+    .pt-tier-verdict {
+      font-style: italic;
+      font-weight: 400;
+    }
+  }
+}
+
+.pt-findings {
+  margin: var(--pt-sm) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+
+  li {
+    padding: 4px 0;
+    border-bottom: 1px solid var(--pt-border);
+  }
+}
+
+.pt-finding-tier,
+.pt-finding-sev,
+.pt-finding-width {
+  display: inline-block;
+  margin-right: 5px;
+  padding: 0 4px;
+  border: 1px solid var(--pt-border-strong);
+  font-family: var(--pt-mono);
+  font-size: 9.5px;
+  text-transform: uppercase;
+}
+
+.pt-finding-detail {
+  overflow-wrap: anywhere;
+}
+
+/* ------------------------------------------------------------- locale matrix */
+
+.pt-locale-table {
+  width: 100%;
+  margin-top: var(--pt-sm);
+  border-collapse: collapse;
+  font-size: 12px;
+
+  th {
+    padding: 4px;
+    border-bottom: 1px solid var(--pt-border-strong);
+    color: var(--pt-muted);
+    font-family: var(--pt-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  td {
+    padding: 4px;
+    border-bottom: 1px solid var(--pt-border);
+    vertical-align: middle;
+  }
+
+  .pt-select {
+    padding: 2px 4px;
+    font-size: 11px;
+  }
+}
+
+.pt-locale-row {
+  /* The locale the table is currently showing, so the drawer and the list agree
+     about which row you came from. */
+  &.pt-locale-row-focus {
+    background: var(--pt-info-bg);
+  }
+}
+
+.pt-locale-name {
+  .pt-locale-native {
+    font-weight: 600;
+  }
+
+  .pt-locale-code {
+    margin-left: var(--pt-xs);
+    color: var(--pt-muted);
+    font-family: var(--pt-mono);
+    font-size: 9.5px;
+    text-transform: uppercase;
+  }
+}
+
+/* ------------------------------------------------------------------ narrow */
+
+@media (width <= 1100px) {
+  .pt-layout.pt-layout-open {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pt-drawer {
+    position: static;
+    max-height: none;
+    border-left: 0;
+    border-top: 2px solid var(--pt-carbon-line);
+  }
+}

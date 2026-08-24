@@ -106,7 +106,10 @@ function builders(block) {
   };
 
   const section = (id, title, lede) => {
-    const s = el('section', `sp-section sp-section-${id}`);
+    const s = el('section', 'sp-section');
+    // The id is the hook — `#sp-funnel` is both the CSS handle and the in-page anchor,
+    // so a second per-section CLASS saying the same thing would only be a thing to keep
+    // in step with it.
     s.id = `sp-${id}`;
     s.append(el('h2', 'sp-h', title));
     if (lede) s.append(el('p', 'sp-lede', lede));
@@ -123,8 +126,8 @@ function builders(block) {
    * same directory as boards that render sheet cells a human typed, and one `innerHTML`
    * helper here is the one that gets copied into those.
    */
-  const table = (headers, rows, cls) => {
-    const t = el('table', `sp-table${cls ? ` ${cls}` : ''}`);
+  const table = (headers, rows) => {
+    const t = el('table', 'sp-table');
     const htr = el('tr');
     for (const [label, hcls] of headers) htr.append(el('th', hcls || null, label));
     const thead = el('thead');
@@ -241,7 +244,7 @@ function builders(block) {
       ['Position', 'sp-col-stage'],
       ['What it means'],
       ['Progress band', 'sp-col-band'],
-    ], rows, 'sp-funnel'));
+    ], rows));
     s.append(note(
       'The `short` column on the right of each chip (CAT, EN, PREV…) is the same label '
       + 'the Page Tracker app uses in its tight table columns. Same value, less room.',
@@ -277,7 +280,7 @@ function builders(block) {
       ['#', 'sp-num'],
       ['Band', 'sp-col-band'],
       ['Funnel positions folded into it'],
-    ], rows, 'sp-bands'));
+    ], rows));
     s.append(note(
       'Two bands fold two positions each, and they are the only ones that do: the two '
       + 'automated QA tiers read as one band, and so do the two review positions. '
@@ -314,7 +317,7 @@ function builders(block) {
       ['Owned by', 'sp-col-owner'],
       ['What it is waiting for'],
       ['Feed id', 'sp-col-id'],
-    ], rows, 'sp-queues'));
+    ], rows));
     s.append(note(
       'The owner is in the MODEL, not in this page’s markup, so the boards, the '
       + 'Page Tracker app and the escalation feed cannot disagree about who is being '
@@ -381,7 +384,7 @@ function builders(block) {
       ['Means', 'sp-col-means'],
       ['Written by', 'sp-col-owner'],
       ['Sends it to', 'sp-col-queue'],
-    ], rows, 'sp-tx'));
+    ], rows));
     s.append(ownership('translation-status'));
     s.append(note(
       '`sent` is the one value here that nothing can re-observe. Every other state can '
@@ -422,7 +425,7 @@ function builders(block) {
       ['Means', 'sp-col-means'],
       ['Line to write in the review doc', 'sp-col-marker'],
       ['Sends it to', 'sp-col-queue'],
-    ], rows, 'sp-review'));
+    ], rows));
     s.append(ownership('review-status'));
     s.append(note(
       'A verdict is single-valued: recording one replaces the last. A mistyped marker '

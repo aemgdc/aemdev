@@ -1,0 +1,331 @@
+/*
+ * status-primer — reference pages, not marketing pages.
+ *
+ * Two decisions worth stating, because both are deliberate departures a later editor
+ * would otherwise "fix":
+ *
+ * 1. RED IS RESERVED FOR ATTENTION. The site's only signal colour is Adobe Red, and on
+ *    these boards it means "a human owes an answer" — a blocking status, a work queue.
+ *    It is never used for a completed state, however tempting a red "done" chip is on a
+ *    red-accented site: the funnel progression is carried by INK WEIGHT instead, from
+ *    pale grey at `catalogued` to solid carbon at `online`. That keeps one colour with
+ *    one meaning across every tracker board.
+ * 2. FOUR PILL TIERS, NOT NINE. The tiers are the phases (English gate, in flight,
+ *    automated QA, human/live), which is exactly the collapse `PROGRESS_BUCKETS`
+ *    performs. Nine hand-picked shades would be nine chances to disagree with the
+ *    band table two sections further down.
+ *
+ * Mono type for anything that is a STORED VALUE and body type for anything that is
+ * prose about it — so a reader can see at a glance which strings they can grep a sheet
+ * for. No border-radius anywhere; styles.css is the spec.
+ */
+
+.status-primer {
+  --sp-hair: light-dark(var(--border), var(--carbon-3));
+  --sp-surface: light-dark(var(--surface), var(--carbon-2));
+  --sp-ink: light-dark(var(--text), var(--white));
+  --sp-muted: light-dark(var(--muted), var(--color-gray-400));
+  --sp-attention: light-dark(var(--aem-red-dk), var(--aem-red));
+
+  /* The funnel ramp: pale to solid, one tier per phase. */
+  --sp-tier-1: light-dark(var(--color-gray-200), var(--color-gray-800));
+  --sp-tier-2: light-dark(var(--color-gray-300), var(--color-gray-700));
+  --sp-tier-3: light-dark(var(--color-gray-400), var(--color-gray-600));
+  --sp-tier-4: light-dark(var(--carbon), var(--color-gray-200));
+
+  max-width: var(--grid-content-width);
+  color: var(--sp-ink);
+
+  .sp-section {
+    margin: var(--spacing-xl) 0;
+
+    /*
+     * The scroll container is the SECTION, not the table: a table set to
+     * `display: block` to get its own scrollbar stops being a table for layout, and
+     * these tables need their columns to line up. Each section holds exactly one.
+     */
+    overflow-x: auto;
+  }
+
+  .sp-h {
+    font-size: var(--heading-font-size-m);
+    margin: 0 0 var(--spacing-s);
+    padding-bottom: var(--spacing-xs);
+    border-bottom: 2px solid var(--sp-ink);
+  }
+
+  .sp-lede,
+  .sp-body {
+    max-width: 76ch;
+    margin: 0 0 var(--spacing-m);
+  }
+
+  .sp-lede {
+    font-size: var(--body-font-size-l);
+    color: var(--sp-muted);
+  }
+
+  /* An aside about the table above it. Indented off a rule so it never reads as lede. */
+  .sp-note {
+    max-width: 76ch;
+    margin: var(--spacing-s) 0 0;
+    padding-left: var(--spacing-m);
+    border-left: 2px solid var(--sp-hair);
+    font-size: var(--body-font-size-s);
+    color: var(--sp-muted);
+  }
+
+  /* ---------------------------------------------------------------- the two rules */
+
+  .sp-rules {
+    max-width: 82ch;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: sp-rule;
+
+    li {
+      counter-increment: sp-rule;
+      position: relative;
+      margin: 0 0 var(--spacing-l);
+      padding: var(--spacing-m) var(--spacing-m) var(--spacing-m) var(--spacing-xl);
+      background: var(--sp-surface);
+      border-left: 4px solid var(--sp-attention);
+    }
+
+    li::before {
+      content: counter(sp-rule);
+      position: absolute;
+      left: var(--spacing-s);
+      top: var(--spacing-m);
+      font-family: var(--display-font-family);
+      font-size: var(--heading-font-size-m);
+      line-height: 1;
+      color: var(--sp-attention);
+    }
+  }
+
+  .sp-rule-head {
+    display: block;
+    font-size: var(--body-font-size-l);
+    line-height: 1.3;
+  }
+
+  .sp-rule-body {
+    margin: var(--spacing-s) 0 0;
+  }
+
+  /* -------------------------------------------------------------------- tables */
+
+  .sp-table {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+    font-size: var(--body-font-size-s);
+
+    th,
+    td {
+      text-align: left;
+      vertical-align: top;
+      padding: var(--spacing-s) var(--spacing-m) var(--spacing-s) 0;
+      border-bottom: 1px solid var(--sp-hair);
+    }
+
+    th {
+      font-family: var(--display-font-family);
+      font-size: var(--body-font-size-m);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      border-bottom: 2px solid var(--sp-ink);
+    }
+
+    /* The narrow columns, so prose gets whatever is left. */
+    .sp-num {
+      width: 2.5rem;
+      color: var(--sp-muted);
+      font-family: var(--mono-font-family);
+    }
+
+    .sp-col-stage,
+    .sp-col-value,
+    .sp-col-band,
+    .sp-col-queue,
+    .sp-col-owner,
+    .sp-col-means,
+    .sp-col-marker,
+    .sp-col-id {
+      width: 1%;
+    }
+
+    td:first-child {
+      color: var(--sp-muted);
+      font-family: var(--mono-font-family);
+      white-space: nowrap;
+    }
+  }
+
+  /*
+   * Row accents, all on the LEFT edge and all meaning the same thing as the colour they
+   * use elsewhere on the page: carbon for a gate a human opens, red for something that
+   * takes a pair out of the funnel.
+   */
+  .sp-row-english td:first-child {
+    box-shadow: inset 3px 0 0 0 var(--sp-tier-2);
+  }
+
+  .sp-row-gate td {
+    background: var(--sp-surface);
+  }
+
+  .sp-row-gate td:first-child {
+    box-shadow: inset 3px 0 0 0 var(--sp-tier-4);
+  }
+
+  .sp-row-blocking td:first-child {
+    box-shadow: inset 3px 0 0 0 var(--sp-attention);
+  }
+
+  /* A band that folds two funnel positions. Only two do, and that is worth seeing. */
+  .sp-row-folded td {
+    background: var(--sp-surface);
+  }
+
+  /* -------------------------------------------------------------- stored values */
+
+  .sp-code {
+    font-family: var(--mono-font-family);
+    font-size: var(--body-font-size-xs);
+    padding: 1px 5px;
+    background: var(--sp-surface);
+    border: 1px solid var(--sp-hair);
+    white-space: nowrap;
+  }
+
+  /* ------------------------------------------------------------------ the pills */
+
+  .sp-pill {
+    display: inline-block;
+    padding: 2px 8px;
+    font-family: var(--mono-font-family);
+    font-size: var(--body-font-size-xs);
+    font-weight: 700;
+    white-space: nowrap;
+    background: var(--sp-tier-1);
+    color: var(--sp-ink);
+  }
+
+  /* Tier 1 — the English gate. */
+  .sp-pill[data-status="catalogued"],
+  .sp-pill[data-status="enpublished"] {
+    background: var(--sp-tier-1);
+  }
+
+  /* Tier 2 — in flight with the translation service. */
+  .sp-pill[data-status="sentfortranslation"],
+  .sp-pill[data-status="previewed"] {
+    background: var(--sp-tier-2);
+  }
+
+  /* Tier 3 — the automated QA tiers have looked at it. */
+  .sp-pill[data-status="autoqapass"],
+  .sp-pill[data-status="layoutqapass"] {
+    background: var(--sp-tier-3);
+  }
+
+  /* Tier 4 — a human is involved, or it is serving traffic. */
+  .sp-pill[data-status="inreview"],
+  .sp-pill[data-status="reviewok"],
+  .sp-pill[data-status="online"] {
+    background: var(--sp-tier-4);
+    color: light-dark(var(--white), var(--carbon));
+  }
+
+  /* The tight label the Page Tracker app uses, shown next to the prose one. */
+  .sp-short {
+    margin-left: var(--spacing-xs);
+    font-family: var(--mono-font-family);
+    font-size: var(--body-font-size-xs);
+    color: var(--sp-muted);
+  }
+
+  /* ------------------------------------------------------------------ the chips */
+
+  .sp-chip {
+    display: inline-block;
+    padding: 1px 7px;
+    font-size: var(--body-font-size-xs);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    border: 1px solid currentcolor;
+  }
+
+  /* A person owns this. Full-strength ink — it is a name, not a machine. */
+  .sp-chip-human {
+    color: var(--sp-ink);
+    background: var(--sp-surface);
+  }
+
+  /* Machine-written. Deliberately quieter than the human chip beside it. */
+  .sp-chip-auto {
+    color: var(--sp-muted);
+    background: none;
+  }
+
+  /* Attention: this pulls a pair out of the funnel. */
+  .sp-chip-queue {
+    color: var(--sp-attention);
+    background: light-dark(rgb(235 16 0 / 6%), rgb(235 16 0 / 14%));
+  }
+
+  /* ------------------------------------------------------ the ownership strip */
+
+  .sp-owner-wrap {
+    margin: var(--spacing-m) 0 0;
+    padding: var(--spacing-s) var(--spacing-m);
+    background: var(--sp-surface);
+    border-left: 4px solid var(--sp-hair);
+
+    .sp-note {
+      border-left: 0;
+      padding-left: 0;
+      margin-top: var(--spacing-xs);
+    }
+  }
+
+  .sp-owner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-s);
+    align-items: baseline;
+    margin: 0;
+  }
+
+  .sp-owner-col {
+    font-family: var(--mono-font-family);
+    font-size: var(--body-font-size-s);
+    font-weight: 700;
+  }
+
+  .sp-owner-where {
+    font-size: var(--body-font-size-s);
+    color: var(--sp-muted);
+  }
+
+  /* -------------------------------------------------------- the config-error strip */
+
+  /*
+   * A typo in an authored `sections` row. Red, at the top, above a primer that renders
+   * anyway — the block's job is explaining the model, so it does that and reports the
+   * typo rather than going blank over it.
+   */
+  .sp-config-error {
+    margin: 0 0 var(--spacing-l);
+    padding: var(--spacing-s) var(--spacing-m);
+    border-left: 4px solid var(--sp-attention);
+    background: light-dark(rgb(235 16 0 / 6%), rgb(235 16 0 / 14%));
+    font-size: var(--body-font-size-s);
+  }
+}

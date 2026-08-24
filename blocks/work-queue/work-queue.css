@@ -1,0 +1,214 @@
+/*
+ * work-queue
+ *
+ * The owner is the load-bearing piece of information on this board, so it is the one
+ * thing rendered as a chip rather than as prose, and the left rule of each queue is
+ * keyed to it (`data-owner`) — a reader scanning for "mine" gets a colour before they
+ * get a word. Three owners exist in the model (`pipeline`, `human`, `developer`), and a
+ * fourth added later falls back to the neutral rule rather than disappearing.
+ *
+ * Colours are the site's own tokens (styles/styles.css). `--aem-red` marks the queues a
+ * PERSON owns, because those are the ones that stop moving without attention.
+ */
+
+.work-queue {
+  --wq-surface: light-dark(var(--paper), var(--carbon));
+  --wq-surface-2: light-dark(var(--surface), var(--carbon-2));
+  --wq-rule: light-dark(var(--border), var(--carbon-3));
+  --wq-text: light-dark(var(--text), var(--white));
+  --wq-muted: light-dark(var(--muted), var(--color-gray-400));
+
+  color: var(--wq-text);
+  font-family: var(--body-font-family);
+
+  .wq-board {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-m);
+  }
+
+  .wq-queue {
+    border: 1px solid var(--wq-rule);
+    border-left: 4px solid var(--slate);
+    background: var(--wq-surface);
+    padding: var(--spacing-s) var(--spacing-m);
+  }
+
+  .wq-queue[data-owner="human"] {
+    border-left-color: var(--aem-red);
+  }
+
+  .wq-queue[data-owner="developer"] {
+    border-left-color: var(--slate-dk);
+  }
+
+  /* --------------------------------------------------------------- the heading */
+
+  .wq-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--spacing-s);
+  }
+
+  .wq-title {
+    margin: 0;
+    font-family: var(--display-font-family);
+    font-size: var(--heading-font-size-s);
+  }
+
+  .wq-owner {
+    font-family: var(--mono-font-family);
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    background: var(--wq-surface-2);
+    border: 1px solid var(--wq-rule);
+    color: var(--wq-text);
+  }
+
+  .wq-queue[data-owner="human"] .wq-owner {
+    background: var(--aem-red);
+    border-color: var(--aem-red);
+    color: var(--white);
+  }
+
+  .wq-count {
+    margin-left: auto;
+    font-family: var(--mono-font-family);
+    font-size: var(--body-font-size-l);
+    font-weight: 700;
+  }
+
+  .wq-shown,
+  .wq-hint {
+    color: var(--wq-muted);
+    font-size: var(--body-font-size-xs);
+  }
+
+  .wq-hint {
+    margin: var(--spacing-xs) 0 var(--spacing-s);
+  }
+
+  /* ------------------------------------------------------------- detail rows */
+
+  .wq-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .wq-item {
+    border-top: 1px solid var(--wq-rule);
+    padding: var(--spacing-s) 0;
+  }
+
+  .wq-item-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--spacing-xs) var(--spacing-s);
+  }
+
+  .wq-path {
+    font-family: var(--mono-font-family);
+    font-size: var(--body-font-size-xs);
+    word-break: break-all;
+  }
+
+  .wq-locale,
+  .wq-group,
+  .wq-attempts {
+    font-size: 0.7rem;
+    color: var(--wq-muted);
+    border: 1px solid var(--wq-rule);
+    padding: 1px 5px;
+  }
+
+  .wq-locale-unknown {
+    color: var(--aem-red);
+    border-color: var(--aem-red);
+  }
+
+  .wq-summary {
+    margin: var(--spacing-xs) 0;
+    font-size: var(--body-font-size-s);
+  }
+
+  .wq-nodetail {
+    margin: 0 0 var(--spacing-xs);
+    font-size: var(--body-font-size-xs);
+    color: var(--wq-muted);
+  }
+
+  .wq-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-s);
+  }
+
+  .wq-link {
+    font-size: var(--body-font-size-xs);
+    font-family: var(--mono-font-family);
+    color: var(--color-link);
+    text-decoration: none;
+    border-bottom: 1px solid currentcolor;
+  }
+
+  .wq-link:hover,
+  .wq-link:focus-visible {
+    color: var(--color-link-hover);
+  }
+
+  /* ----------------------------------------------------- states and warnings */
+
+  .wq-panel {
+    border: 1px solid var(--wq-rule);
+    border-left: 4px solid var(--slate);
+    background: var(--wq-surface-2);
+    padding: var(--spacing-m);
+  }
+
+  /* The good state. Quiet on purpose — an empty queue is success, not an alert. */
+  .wq-panel-clear {
+    border-left-color: var(--slate);
+  }
+
+  .wq-panel-error {
+    border-left-color: var(--aem-red);
+  }
+
+  .wq-panel-title {
+    margin: 0 0 var(--spacing-s);
+    font-family: var(--display-font-family);
+    font-size: var(--heading-font-size-s);
+  }
+
+  .wq-panel-line {
+    margin: 0 0 var(--spacing-s);
+    font-size: var(--body-font-size-s);
+  }
+
+  .wq-panel-line:last-child {
+    margin-bottom: 0;
+  }
+
+  .wq-warnings {
+    margin: var(--spacing-m) 0 0;
+    border-left: 4px solid var(--aem-red);
+    padding-left: var(--spacing-s);
+  }
+
+  .wq-warn-title {
+    margin: 0 0 var(--spacing-xs);
+    font-family: var(--display-font-family);
+    font-size: var(--heading-font-size-xs);
+  }
+
+  .wq-warn-list {
+    margin: 0;
+    padding-left: var(--spacing-m);
+    font-size: var(--body-font-size-xs);
+  }
+}

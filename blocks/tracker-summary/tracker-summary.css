@@ -1,0 +1,421 @@
+/*
+ * tracker-summary.
+ *
+ * The missing-feed panel is styled as a FIRST-CLASS state, not as an error: bordered,
+ * legible, with the commands set in mono at a size somebody can read off a projector.
+ * It is the state this board is in today and the one it will be in for most of a demo,
+ * and something that looks like a stack trace teaches a room to distrust the board.
+ *
+ * Red is reserved for attention, as everywhere in the tracker: a shortfall this feed
+ * cannot quantify, or an invariant that failed. A merely-missing feed is neutral —
+ * "nobody has run it yet" is not a fault.
+ *
+ * The band ramp is monochrome and rises with progress, matching status-primer's four
+ * tiers so that a bar and a primer table read as one system. The final band, `online`,
+ * is the only one that inverts to solid ink; `blocked` is the only one that is red.
+ */
+
+.tracker-summary {
+  --ts-hair: light-dark(var(--border), var(--carbon-3));
+  --ts-surface: light-dark(var(--surface), var(--carbon-2));
+  --ts-ink: light-dark(var(--text), var(--white));
+  --ts-muted: light-dark(var(--muted), var(--color-gray-400));
+  --ts-attention: light-dark(var(--aem-red-dk), var(--aem-red));
+  --ts-attention-wash: light-dark(rgb(235 16 0 / 6%), rgb(235 16 0 / 14%));
+
+  /* The band ramp — pale for inventory, solid ink for serving traffic. */
+  --ts-band-1: light-dark(var(--color-gray-200), var(--color-gray-800));
+  --ts-band-2: light-dark(var(--color-gray-300), var(--color-gray-700));
+  --ts-band-3: light-dark(var(--color-gray-400), var(--color-gray-600));
+  --ts-band-4: light-dark(var(--slate), var(--color-gray-500));
+  --ts-band-5: light-dark(var(--slate-dk), var(--color-gray-400));
+  --ts-band-6: light-dark(var(--carbon-2), var(--color-gray-300));
+  --ts-band-7: light-dark(var(--carbon), var(--color-gray-200));
+
+  max-width: var(--grid-content-width);
+  color: var(--ts-ink);
+
+  /* ------------------------------------------------------------------- KPI tiles */
+
+  .ts-kpis {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-l);
+    margin: 0 0 var(--spacing-m);
+    padding-bottom: var(--spacing-m);
+    border-bottom: 1px solid var(--ts-hair);
+  }
+
+  .ts-kpi {
+    display: flex;
+    flex-direction: column;
+    min-width: 8rem;
+  }
+
+  .ts-kpi-value {
+    font-family: var(--display-font-family);
+    font-size: var(--heading-font-size-l);
+    line-height: 1;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 2px solid var(--ts-attention);
+    }
+
+    a:hover {
+      color: var(--ts-attention);
+    }
+  }
+
+  /* A zero is a real answer here and must not read as a rendering fault. */
+  .ts-kpi-zero {
+    color: var(--ts-muted);
+  }
+
+  .ts-kpi-label {
+    margin-top: var(--spacing-xs);
+    font-size: var(--body-font-size-s);
+    font-weight: 600;
+  }
+
+  /* The unit. Never optional — see the block comment about adding two denominators. */
+  .ts-kpi-unit {
+    font-size: var(--body-font-size-xs);
+    color: var(--ts-muted);
+  }
+
+  /* -------------------------------------------------------------- the band header */
+
+  .ts-band {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--spacing-s);
+    margin: var(--spacing-l) 0 var(--spacing-s);
+  }
+
+  .ts-band-name {
+    margin: 0;
+    font-size: var(--heading-font-size-s);
+  }
+
+  .ts-band-meta {
+    font-family: var(--mono-font-family);
+    font-size: var(--body-font-size-xs);
+    color: var(--ts-muted);
+  }
+
+  /* ------------------------------------------------------------------- the bars */
+
+  .ts-bar {
+    display: flex;
+    width: 100%;
+    height: 18px;
+    background: var(--ts-surface);
+    border: 1px solid var(--ts-hair);
+  }
+
+  /*
+   * Nothing counted at all. Hatched rather than empty, so it reads as "no data" and not
+   * as a bar that happens to be at zero — which is the same distinction the missing
+   * panel above draws in words.
+   */
+  .ts-bar-empty {
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent 0 4px,
+      var(--ts-hair) 4px 5px
+    );
+  }
+
+  .ts-seg {
+    min-width: 2px;
+  }
+
+  .ts-seg,
+  .ts-swatch {
+    background: var(--ts-band-1);
+
+    &[data-bucket="enPublished"] { background: var(--ts-band-2); }
+    &[data-bucket="sent"] { background: var(--ts-band-3); }
+    &[data-bucket="previewed"] { background: var(--ts-band-4); }
+    &[data-bucket="autoQa"] { background: var(--ts-band-5); }
+    &[data-bucket="inReview"] { background: var(--ts-band-6); }
+    &[data-bucket="reviewOk"] { background: var(--ts-band-7); }
+    &[data-bucket="online"] { background: var(--ts-band-7); }
+    &[data-bucket="blocked"] { background: var(--ts-attention); }
+  }
+
+  /*
+   * `reviewOk` and `online` share the ramp's last step, so the two are separated by a
+   * hairline instead of by a shade nobody could tell apart.
+   */
+  .ts-seg[data-bucket="online"],
+  .ts-swatch[data-bucket="online"] {
+    box-shadow: inset 0 0 0 1px light-dark(var(--white), var(--carbon));
+  }
+
+  /* ------------------------------------------------------------------ the legend */
+
+  .ts-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-s) var(--spacing-l);
+    margin: var(--spacing-s) 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--body-font-size-xs);
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-xs);
+    }
+  }
+
+  /* An empty band stays on the legend — the reader needs the vocabulary — but recedes. */
+  .ts-legend-zero {
+    color: var(--ts-muted);
+    opacity: 0.65;
+  }
+
+  .ts-swatch {
+    width: 12px;
+    height: 12px;
+    border: 1px solid var(--ts-hair);
+  }
+
+  .ts-legend-n {
+    font-family: var(--mono-font-family);
+  }
+
+  .ts-legend-pct {
+    color: var(--ts-muted);
+  }
+
+  /* ------------------------------------------------------------- the locale strip */
+
+  .ts-locales {
+    width: 100%;
+    margin: var(--spacing-l) 0 0;
+    border-collapse: collapse;
+
+    th,
+    td {
+      text-align: left;
+      vertical-align: middle;
+      padding: var(--spacing-s) var(--spacing-m) var(--spacing-s) 0;
+      border-bottom: 1px solid var(--ts-hair);
+    }
+
+    th {
+      font-family: var(--display-font-family);
+      font-size: var(--body-font-size-s);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      white-space: nowrap;
+      border-bottom: 2px solid var(--ts-ink);
+    }
+
+    td:last-child,
+    th:last-child {
+      padding-right: 0;
+    }
+  }
+
+  .ts-locale-name {
+    width: 1%;
+    white-space: nowrap;
+
+    a {
+      display: inline-block;
+      font-size: var(--body-font-size-m);
+      font-weight: 600;
+      color: inherit;
+      text-decoration: none;
+      border-bottom: 1px solid var(--ts-hair);
+    }
+
+    a:hover {
+      border-bottom-color: var(--ts-attention);
+      color: var(--ts-attention);
+    }
+  }
+
+  /* The English name and the code, under the native one a reader of that locale uses. */
+  .ts-locale-en {
+    display: block;
+    font-size: var(--body-font-size-xs);
+    color: var(--ts-muted);
+  }
+
+  .ts-locale-code {
+    display: block;
+    font-family: var(--mono-font-family);
+    font-size: var(--body-font-size-xs);
+    color: var(--ts-muted);
+  }
+
+  .ts-locale-bar {
+    /* Takes whatever is left; the three other columns are content-width. */
+    width: auto;
+    min-width: 8rem;
+
+    .ts-bar {
+      height: 12px;
+    }
+  }
+
+  .ts-locale-num {
+    width: 1%;
+    white-space: nowrap;
+    text-align: right;
+    font-family: var(--mono-font-family);
+    font-size: var(--body-font-size-s);
+  }
+
+  .ts-of {
+    color: var(--ts-muted);
+  }
+
+  /* ------------------------------------------------------------------ the notes */
+
+  .ts-note {
+    max-width: 76ch;
+    margin: var(--spacing-s) 0 0;
+    padding-left: var(--spacing-m);
+    border-left: 2px solid var(--ts-hair);
+    font-size: var(--body-font-size-s);
+    color: var(--ts-muted);
+  }
+
+  /* A shortfall the feed could quantify. Ink, not red: it is accounted for. */
+  .ts-note-withheld {
+    border-left-color: var(--ts-ink);
+    color: var(--ts-ink);
+  }
+
+  /* A shortfall nobody can quantify, or a failed invariant. This one is a fault. */
+  .ts-note-incomplete {
+    border-left-color: var(--ts-attention);
+    background: var(--ts-attention-wash);
+    padding: var(--spacing-s) var(--spacing-m);
+    color: var(--ts-ink);
+  }
+
+  .ts-stamp {
+    margin: var(--spacing-l) 0 0;
+    font-family: var(--mono-font-family);
+    font-size: var(--body-font-size-xs);
+    color: var(--ts-muted);
+  }
+
+  /* --------------------------------------------------------- the missing-feed panel */
+
+  .ts-missing {
+    padding: var(--spacing-l);
+    background: var(--ts-surface);
+    border: 1px solid var(--ts-hair);
+    border-left: 4px solid var(--ts-ink);
+  }
+
+  .ts-missing-head {
+    margin: 0 0 var(--spacing-s);
+    font-size: var(--heading-font-size-m);
+  }
+
+  .ts-missing-lede,
+  .ts-missing-run {
+    max-width: 76ch;
+    margin: 0 0 var(--spacing-m);
+  }
+
+  .ts-missing-run {
+    margin-bottom: var(--spacing-s);
+    font-weight: 600;
+  }
+
+  .ts-missing-feeds {
+    margin: 0 0 var(--spacing-l);
+
+    dd {
+      margin: 0 0 var(--spacing-m);
+    }
+  }
+
+  /* The path it asked for. The single most useful string on this panel. */
+  .ts-missing-path {
+    font-family: var(--mono-font-family);
+    font-size: var(--body-font-size-m);
+    font-weight: 700;
+  }
+
+  .ts-missing-what {
+    display: block;
+    font-size: var(--body-font-size-s);
+    color: var(--ts-muted);
+  }
+
+  /* The data layer's own message, verbatim: "404" and "Unexpected token" differ. */
+  .ts-missing-error {
+    display: inline-block;
+    margin-top: var(--spacing-xs);
+    padding: 1px 6px;
+    font-family: var(--mono-font-family);
+    font-size: var(--body-font-size-xs);
+    color: var(--ts-attention);
+    background: var(--ts-attention-wash);
+  }
+
+  .ts-missing-steps {
+    margin: 0 0 var(--spacing-m);
+    padding-left: 1.4em;
+
+    li {
+      margin-bottom: var(--spacing-s);
+    }
+  }
+
+  .ts-cmd {
+    display: block;
+    font-family: var(--mono-font-family);
+    font-size: var(--body-font-size-s);
+    overflow-wrap: anywhere;
+  }
+
+  .ts-cmd-why {
+    font-size: var(--body-font-size-xs);
+    color: var(--ts-muted);
+  }
+
+  /* On a narrow screen the bar column collapses under the locale name. */
+  @media (width <= 600px) {
+    .ts-locales,
+    .ts-locales tbody,
+    .ts-locales tr {
+      display: block;
+    }
+
+    .ts-locales thead {
+      display: none;
+    }
+
+    .ts-locales tr {
+      padding: var(--spacing-s) 0;
+      border-bottom: 1px solid var(--ts-hair);
+    }
+
+    .ts-locales td {
+      display: inline-block;
+      border-bottom: 0;
+      padding: 0 var(--spacing-m) 0 0;
+    }
+
+    .ts-locale-bar {
+      display: block;
+      width: 100%;
+      padding-top: var(--spacing-xs);
+    }
+  }
+}

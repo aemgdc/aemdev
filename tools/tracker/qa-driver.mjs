@@ -141,7 +141,7 @@ class GateFailure extends Error {
 /**
  * Where a page's problem probably lives, for the escalation queue's `scope`.
  *
- * Straight from the judge-dredd triage table, because the triage that follows a batch
+ * Straight from the upstream tracker's triage table, because the triage that follows a batch
  * is only fast if the queue already sorts itself: a `template` scope means the same
  * thing showed up across pages and the fix is the brief or the baseline (then re-run
  * with `--force`, which is free); `page` means one document; `content` means the prose

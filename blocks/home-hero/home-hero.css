@@ -34,14 +34,23 @@
   background: var(--carbon-3);
 }
 
-.home-hero-left {
+/* The centred content column. One track by default; the next-meetup promo adds
+   a second one at desktop width and stacks under the copy below that. */
+.home-hero-inner {
   max-width: var(--grid-content-width);
   margin: 0 auto;
   padding: 0 clamp(24px, 4vw, 48px);
   position: relative;
   z-index: 1;
+  display: grid;
+  gap: clamp(32px, 4vw, 56px);
+  align-items: start;
+}
+
+.home-hero-left {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 /* Suppress old carousel/dots if JS still renders them */
@@ -143,4 +152,158 @@
 .home-hero-chip--alt {
   color: #4b5563;
   border-color: #374151;
+}
+
+/* === NEXT MEETUP PROMO ================================================== */
+
+.home-hero-event {
+  background: var(--carbon-2);
+  border: 1px solid var(--carbon-3);
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 440px;
+}
+
+/* The one red surface in the hero — it is what makes the promo read as the
+   actionable thing on the page rather than a second column of copy. */
+.home-hero-event-kicker {
+  font-family: var(--mono-font-family);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #f4f4f4;
+  background: var(--aem-red);
+  padding: 11px 16px;
+  margin: 0;
+
+  /* Event posters often open with a red band of their own; the rule keeps the
+     two from reading as one smeared block. */
+  border-bottom: 2px solid var(--carbon);
+}
+
+.home-hero-event-main {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Event posters are square and carry type to their own edges, so the frame is
+   square too: object-fit: cover crops nothing. */
+.home-hero-event-media {
+  display: block;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: var(--carbon);
+  border-bottom: 1px solid var(--carbon-3);
+}
+
+.home-hero-event-media img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.home-hero-event-media-empty {
+  background:
+    repeating-linear-gradient(135deg, rgb(255 255 255 / 3%) 0 1px, transparent 1px 12px),
+    var(--carbon);
+}
+
+.home-hero-event-title {
+  font-family: var(--display-font-family);
+  font-weight: 700;
+  font-size: clamp(1.45rem, 1.9vw, 1.85rem);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  color: #f4f4f4;
+  margin: 0;
+  padding: 20px 20px 0;
+  transition: color 0.12s;
+}
+
+.home-hero-event-main:hover .home-hero-event-title,
+.home-hero-event-main:focus-visible .home-hero-event-title {
+  color: var(--aem-red);
+}
+
+/* Clamped so the card keeps its height whatever the next event's dek runs to. */
+.home-hero-event-dek {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: #9ca3af;
+  margin: 0;
+  padding: 12px 20px 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.home-hero-event-meta {
+  font-family: var(--mono-font-family);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--slate);
+  margin: 0;
+  padding: 14px 20px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+}
+
+/* Trailing rather than leading, so a separator left at a line break sits at the
+   end of the line it belongs to instead of hanging off the front of the next. */
+.home-hero-event-meta > span:not(:last-child)::after {
+  content: " ·";
+  color: var(--slate-dk);
+}
+
+.home-hero-event-cta {
+  display: block;
+  margin: 20px;
+  padding: 13px 20px;
+  background: var(--aem-red);
+  border: 2px solid var(--aem-red);
+  color: #f4f4f4;
+  font-family: var(--mono-font-family);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.home-hero-event-cta:hover {
+  background: var(--aem-red-dk);
+  border-color: var(--aem-red-dk);
+  color: #f4f4f4;
+}
+
+/* Holds the column while the query index is in flight. */
+.home-hero-event-pending .home-hero-event-media {
+  border-bottom: 0;
+}
+
+@media (width >= 900px) {
+  .home-hero-inner-split {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 34%);
+  }
+
+  .home-hero-event {
+    max-width: none;
+    margin-top: 6px;
+  }
+
+  /* The dek sets the hero's measure on its own once the promo takes the right
+     half; the extra cap would only shorten the lines twice. */
+  .home-hero-dek {
+    max-width: none;
+  }
 }

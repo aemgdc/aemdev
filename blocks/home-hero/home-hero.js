@@ -4,10 +4,43 @@
   2) two-column semantic content (preferred for DA): left hero / right rapid
 
   The right-hand "Rapid Drop" panel is externalized into a fragment and rendered
-  by the standalone `rapid-drop` block. Reference it with a `rapid-fragment` row. */
+  by the standalone `rapid-drop` block. Reference it with a `rapid-fragment` row.
+
+  NEXT-MEETUP PROMO
+  A promo panel sits to the right of the hero copy on desktop and stacks under it
+  on mobile. Authored rows win; with none, the panel finds the soonest event in
+  the query index itself, so the hero never promotes a meetup that has already
+  happened. Optional rows:
+
+    event-kicker   | Next AEM Meetup        (label on the red bar)
+    event-title    | ...                    (the meetup's headline)
+    event-dek      | ...                    (one supporting line)
+    event-date     | 2026-08-27             (ISO is formatted; any other text
+                                             is printed verbatim)
+    event-location | Washington, DC
+    event-image    | <picture> or a URL     (event artwork / poster)
+    event-link     | /en/meetups/...        (where the artwork + headline go)
+    event-cta      | [Register free →](...) (the red button)
+    event-focal    | 50% 20%                (where the desktop crop of the
+                                             artwork sits: a keyword, or x% y%)
+    event-index    | /en/query-index.json   (index used to find the next event)
+    event-auto     | off                    (never auto-fill; authored rows only)
+*/
 
 import { loadFragment } from '../fragment/fragment.js';
 import { loadStyle, getConfig } from '../../scripts/ak.js';
+import { dateValue, parseDate } from '../../scripts/utils/date.js';
+
+/* Statuses the meetup pages use for an event that has not happened yet — the
+   same pair the `insights` block badges as UPCOMING EVENT. */
+const UPCOMING_STATUSES = ['upcoming', 'announced'];
+const DEFAULT_EVENT_INDEX = '/en/query-index.json';
+const DEFAULT_EVENT_KICKER = 'Next AEM Meetup';
+const DEFAULT_EVENT_CTA = 'Event details →';
+/* DA-hosted assets are indexed as bare paths and need their host back. */
+const DA_HOST = 'https://content.da.live';
+/* Only a CSS <position> may reach the inline style, and only these shapes. */
+const FOCAL = /^(top|bottom|center|left|right|\d{1,3}%\s+\d{1,3}%)$/i;
 
 function getRowText(el) {
   return el?.textContent?.trim() || '';
@@ -47,6 +80,16 @@ function getCellUrl(cell) {
 
   const text = getRowText(cell);
   return /^https?:\/\//.test(text) ? text : '';
+}
+
+/* Like getCellUrl, but also accepts a site-relative path (/en/meetups/...),
+   which is what an author reaches for when linking to one of our own pages. */
+function getCellHref(cell) {
+  const link = cell?.querySelector('a[href]');
+  if (link) return link.getAttribute('href');
+
+  const text = getRowText(cell);
+  return /^(https?:\/\/|\/)/.test(text) ? text : '';
 }
 
 function getCellUrls(cell) {
@@ -150,6 +193,18 @@ function parseModel(block) {
     notifyButton: '',
     rapidBgMedia: null,
     rapidBgUrl: '',
+    eventKicker: '',
+    eventTitle: '',
+    eventDek: '',
+    eventDate: '',
+    eventLocation: '',
+    eventMedia: null,
+    eventImageUrl: '',
+    eventLink: '',
+    eventCta: null,
+    eventFocal: '',
+    eventIndex: '',
+    eventAuto: true,
   };
 
   const rows = [...block.querySelectorAll(':scope > div')];
@@ -259,6 +314,51 @@ function parseModel(block) {
       case 'email-button':
         model.notifyButton = value;
         break;
+      case 'event-kicker':
+      case 'next-event-kicker':
+        model.eventKicker = value;
+        break;
+      case 'event':
+      case 'event-title':
+      case 'next-event':
+        model.eventTitle = value;
+        break;
+      case 'event-dek':
+      case 'event-description':
+        model.eventDek = value;
+        break;
+      case 'event-date':
+      case 'event-when':
+        model.eventDate = value;
+        break;
+      case 'event-location':
+      case 'event-where':
+        model.eventLocation = value;
+        break;
+      case 'event-image':
+      case 'event-art':
+      case 'event-poster':
+        model.eventMedia = getCellMedia(valueCell);
+        model.eventImageUrl = getCellHref(valueCell);
+        break;
+      case 'event-link':
+      case 'event-url':
+        model.eventLink = getCellHref(valueCell);
+        break;
+      case 'event-cta':
+      case 'event-button':
+        model.eventCta = getCta(valueCell);
+        break;
+      case 'event-focal':
+      case 'event-crop':
+        if (FOCAL.test(value)) model.eventFocal = value.toLowerCase();
+        break;
+      case 'event-index':
+        if (value.startsWith('/')) model.eventIndex = value;
+        break;
+      case 'event-auto':
+        model.eventAuto = !/^(off|false|no|none)$/i.test(value);
+        break;
       case 'rapid-bg':
       case 'drop-bg':
       case 'rapid-image': {
@@ -299,6 +399,18 @@ function parseTwoColumnModel(block) {
     notifyButton: '',
     rapidBgMedia: null,
     rapidBgUrl: '',
+    eventKicker: '',
+    eventTitle: '',
+    eventDek: '',
+    eventDate: '',
+    eventLocation: '',
+    eventMedia: null,
+    eventImageUrl: '',
+    eventLink: '',
+    eventCta: null,
+    eventFocal: '',
+    eventIndex: '',
+    eventAuto: true,
   };
 
   const firstRow = block.querySelector(':scope > div');
@@ -488,6 +600,214 @@ function buildLegacyRight(model) {
   return right;
 }
 
+/* ---------------------------------------------------------------------------
+   Next-meetup promo panel
+   --------------------------------------------------------------------------- */
+
+/* An ISO date becomes "Thu, Aug 27, 2026". Anything else — "27 Aug, 6–9PM ET" —
+   is the author's own wording and is printed untouched. */
+function formatEventDate(raw, locale = 'en-US') {
+  const text = raw ? String(raw).trim() : '';
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(text)) return text;
+  const date = parseDate(text);
+  if (!date) return text;
+  return date.toLocaleDateString(locale, {
+    weekday: 'short', month: 'short', day: 'numeric', year: 'numeric',
+  });
+}
+
+/* Index rows carry DA asset paths; absolute URLs and site paths pass through. */
+function resolveEventImage(src) {
+  if (!src) return '';
+  if (/^https?:\/\//i.test(src)) return src;
+  if (src.startsWith('/aemgdc/')) return `${DA_HOST}${src}`;
+  return src;
+}
+
+/* `reserve` keeps the empty frame for the pending placeholder, whose whole job
+   is to hold the column's height. A finished card with no artwork drops the
+   frame instead of showing a poster-sized hole. */
+function createEventMedia(event, reserve) {
+  const media = document.createElement('div');
+  media.className = 'home-hero-event-media';
+
+  if (event.media) {
+    media.appendChild(event.media.cloneNode(true));
+    return media;
+  }
+
+  const src = resolveEventImage(event.imageUrl);
+  if (!src) {
+    if (!reserve) return null;
+    media.classList.add('home-hero-event-media-empty');
+    return media;
+  }
+
+  const img = document.createElement('img');
+  img.src = src;
+  /* The poster repeats the headline as pixels, so the headline below it is the
+     accessible copy — an alt that repeats it would be read twice. */
+  img.alt = '';
+  img.loading = 'lazy';
+  img.decoding = 'async';
+  media.appendChild(img);
+  return media;
+}
+
+function createEventPanel(event, { reserveMedia = false } = {}) {
+  const panel = document.createElement('aside');
+  panel.className = 'home-hero-event';
+  panel.setAttribute('aria-label', event.kicker || DEFAULT_EVENT_KICKER);
+  if (event.focal) panel.style.setProperty('--home-hero-event-focal', event.focal);
+
+  appendTextElement(panel, 'p', 'home-hero-event-kicker', event.kicker || DEFAULT_EVENT_KICKER);
+
+  const hasLink = Boolean(event.link);
+  const main = document.createElement(hasLink ? 'a' : 'div');
+  main.className = 'home-hero-event-main';
+  if (hasLink) main.href = event.link;
+  const media = createEventMedia(event, reserveMedia);
+  if (media) main.appendChild(media);
+  /* Without artwork there is nothing to absorb the height the card is given
+     beside the hero copy, so it opts out of stretching and keeps its own. */
+  else panel.classList.add('home-hero-event-textonly');
+  appendTextElement(main, 'h2', 'home-hero-event-title', event.title);
+  panel.appendChild(main);
+
+  appendTextElement(panel, 'p', 'home-hero-event-dek', event.dek);
+
+  const when = formatEventDate(event.date);
+  if (when || event.location) {
+    const meta = document.createElement('p');
+    meta.className = 'home-hero-event-meta';
+    [when, event.location].filter(Boolean).forEach((part) => {
+      const span = document.createElement('span');
+      span.textContent = part;
+      meta.appendChild(span);
+    });
+    panel.appendChild(meta);
+  }
+
+  const cta = createCtaLink(event.cta, 'home-hero-event-cta');
+  if (cta) {
+    /* A registration link leaves the site; an internal event page does not. */
+    if (/^https?:\/\//i.test(event.cta.href)) {
+      cta.target = '_blank';
+      cta.rel = 'noopener noreferrer';
+    }
+    panel.appendChild(cta);
+  }
+
+  return panel;
+}
+
+function authoredEvent(model) {
+  if (!model.eventTitle) return null;
+  const link = model.eventLink || model.eventCta?.href || '';
+  return {
+    kicker: model.eventKicker,
+    title: model.eventTitle,
+    dek: model.eventDek,
+    date: model.eventDate,
+    location: model.eventLocation,
+    media: model.eventMedia,
+    imageUrl: model.eventImageUrl,
+    focal: model.eventFocal,
+    link,
+    cta: model.eventCta || (link ? { label: DEFAULT_EVENT_CTA, href: link } : null),
+  };
+}
+
+function isUpcoming(row) {
+  return UPCOMING_STATUSES.includes((row.status || '').trim().toLowerCase());
+}
+
+/* Soonest first. An `announced` event with no date yet sorts last within the
+   group rather than jumping the queue ahead of a dated meetup. */
+function byEventDate(a, b) {
+  const da = dateValue(a.eventDate) || Number.MAX_SAFE_INTEGER;
+  const db = dateValue(b.eventDate) || Number.MAX_SAFE_INTEGER;
+  return da - db;
+}
+
+function pickNextEvent(rows, now = new Date()) {
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+  return rows
+    .filter(isUpcoming)
+    .filter((row) => {
+      const date = parseDate(row.eventDate);
+      /* A dateless `announced` event is still ahead of us; a dated one is only
+         worth promoting up to and including the day it happens. */
+      return !date || date.getTime() >= today;
+    })
+    .sort(byEventDate)[0] || null;
+}
+
+function eventFromIndexRow(row, model) {
+  return {
+    kicker: model.eventKicker,
+    title: row.title || '',
+    dek: model.eventDek || row.description || '',
+    date: row.eventDate || '',
+    location: row.location || '',
+    media: null,
+    imageUrl: row.image || '',
+    focal: model.eventFocal,
+    link: row.path || '',
+    cta: model.eventCta || (row.path ? { label: DEFAULT_EVENT_CTA, href: row.path } : null),
+  };
+}
+
+async function fetchNextEvent(indexPath) {
+  const resp = await fetch(indexPath);
+  if (!resp.ok) return null;
+  const json = await resp.json();
+  return pickNextEvent(Array.isArray(json?.data) ? json.data : []);
+}
+
+/* The frame is what keeps the promo from making the hero taller than it already
+   is. At desktop width the card inside it is taken out of flow, so the frame
+   contributes no height of its own and the grid row is sized by the hero copy
+   alone; the card then stretches to that height and stops level with the hero's
+   primary button. Below the split it is an ordinary wrapper. */
+function mountEventPanel(inner, panel) {
+  const frame = document.createElement('div');
+  frame.className = 'home-hero-event-frame';
+  frame.appendChild(panel);
+  inner.classList.add('home-hero-inner-split');
+  inner.appendChild(frame);
+  return frame;
+}
+
+/* Renders the panel now when it can, and reserves its column while the index is
+   in flight — the hero must not wait on a network round trip to paint. */
+function attachEventPanel(inner, model) {
+  const authored = authoredEvent(model);
+  if (authored) {
+    mountEventPanel(inner, createEventPanel(authored));
+    return;
+  }
+  if (!model.eventAuto) return;
+
+  const placeholder = createEventPanel({ kicker: model.eventKicker }, { reserveMedia: true });
+  placeholder.classList.add('home-hero-event-pending');
+  const frame = mountEventPanel(inner, placeholder);
+
+  /* Nothing to promote, or the index is unreachable: leave the hero as it was
+     rather than sitting on an empty column. */
+  const drop = () => {
+    frame.remove();
+    inner.classList.remove('home-hero-inner-split');
+  };
+
+  fetchNextEvent(model.eventIndex || DEFAULT_EVENT_INDEX)
+    .then((row) => {
+      if (!row) return drop();
+      return placeholder.replaceWith(createEventPanel(eventFromIndexRow(row, model)));
+    })
+    .catch(drop);
+}
+
 async function buildRight(model) {
   let right = null;
   if (model.rapidFragment) {
@@ -576,7 +896,15 @@ export default async function decorate(block) {
 
   const right = await buildRight(model);
 
-  block.appendChild(left);
+  /* `inner` carries the centred content column so the hero copy and the
+     next-meetup promo can sit side by side; the rapid-drop panel stays a
+     full-bleed sibling of it, exactly as before. */
+  const inner = document.createElement('div');
+  inner.className = 'home-hero-inner';
+  inner.appendChild(left);
+  attachEventPanel(inner, model);
+
+  block.appendChild(inner);
   if (right) block.appendChild(right);
 
   // Section opts in to full-bleed via the home-template CSS hooks.

@@ -78,6 +78,10 @@ describe('home-hero next-meetup promo', () => {
     expect(panel.querySelector('.home-hero-event-dek').textContent).to.equal('An Adobe Champions doubleheader.');
     expect(panel.querySelector('.home-hero-event-main').getAttribute('href')).to.equal('/en/meetups/aem-meetup-washington-dc');
     expect(panel.querySelector('.home-hero-event-media img').getAttribute('src')).to.equal('https://example.com/poster.jpg');
+    /* The frame is what lets the card be taken out of flow at desktop width, so
+       the promo cannot make the hero taller than its own copy. */
+    expect(panel.parentElement.className).to.equal('home-hero-event-frame');
+    expect(panel.classList.contains('home-hero-event-textonly')).to.be.false;
 
     const meta = [...panel.querySelectorAll('.home-hero-event-meta span')].map((s) => s.textContent);
     expect(meta).to.deep.equal(['Thu, Aug 27, 2026', 'McLean, VA']);
@@ -131,13 +135,56 @@ describe('home-hero next-meetup promo', () => {
     expect(el.querySelector('.home-hero-event-title').textContent).to.equal('Munich');
   });
 
-  it('drops the panel and the split column when nothing is upcoming', async () => {
+  it('hands an authored focal point to the crop, and refuses anything else', async () => {
+    const withFocal = block([...HERO_ROWS, ['event-title', 'X'], ['event-focal', '50% 20%']]);
+    await decorate(withFocal);
+    expect(withFocal.querySelector('.home-hero-event').style.getPropertyValue('--home-hero-event-focal')).to.equal('50% 20%');
+
+    const keyword = block([...HERO_ROWS, ['event-title', 'X'], ['event-focal', 'Top']]);
+    await decorate(keyword);
+    expect(keyword.querySelector('.home-hero-event').style.getPropertyValue('--home-hero-event-focal')).to.equal('top');
+
+    /* The value reaches an inline style, so only a CSS <position> may pass. */
+    const junk = block([...HERO_ROWS, ['event-title', 'X'], ['event-focal', 'red; background: url(x)']]);
+    await decorate(junk);
+    expect(junk.querySelector('.home-hero-event').getAttribute('style')).to.equal(null);
+  });
+
+  it('marks an artwork-less card so it keeps its own height', async () => {
+    const el = block([...HERO_ROWS, ['event-title', 'Munich'], ['event-link', '/en/meetups/munich']]);
+    await decorate(el);
+
+    const panel = el.querySelector('.home-hero-event');
+    expect(panel.querySelector('.home-hero-event-media')).to.not.exist;
+    expect(panel.classList.contains('home-hero-event-textonly')).to.be.true;
+  });
+
+  it('keeps the reserved frame filled while the index is in flight', async () => {
+    let release;
+    sinon.stub(window, 'fetch').callsFake(() => new Promise((r) => { release = r; }));
+    const el = block(HERO_ROWS);
+    await decorate(el);
+
+    const pending = el.querySelector('.home-hero-event-pending');
+    expect(pending).to.exist;
+    /* It must hold a media box even with no image, or the column it is holding
+       open would collapse before the real card arrives. */
+    expect(pending.querySelector('.home-hero-event-media-empty')).to.exist;
+    expect(pending.classList.contains('home-hero-event-textonly')).to.be.false;
+
+    release({ ok: true, status: 200, json: () => Promise.resolve({ data: [] }) });
+    await settled(el, (e) => !e.querySelector('.home-hero-event'));
+  });
+
+  it('drops the panel, its frame and the split column when nothing is upcoming', async () => {
     stubIndex([row({ title: 'Last year', eventDate: '2000-01-01' })]);
     const el = block(HERO_ROWS);
     await decorate(el);
     await settled(el, (e) => !e.querySelector('.home-hero-event'));
 
     expect(el.querySelector('.home-hero-event')).to.not.exist;
+    /* The frame has to go too — an empty one would still claim a grid column. */
+    expect(el.querySelector('.home-hero-event-frame')).to.not.exist;
     expect(el.querySelector('.home-hero-inner').classList.contains('home-hero-inner-split')).to.be.false;
   });
 
@@ -147,6 +194,7 @@ describe('home-hero next-meetup promo', () => {
     await decorate(el);
     await settled(el, (e) => !e.querySelector('.home-hero-event'));
     expect(el.querySelector('.home-hero-event')).to.not.exist;
+    expect(el.querySelector('.home-hero-event-frame')).to.not.exist;
   });
 
   it('never looks anything up when event-auto is off', async () => {

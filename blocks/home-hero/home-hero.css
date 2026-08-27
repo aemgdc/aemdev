@@ -8,6 +8,10 @@
 }
 
 .home-hero {
+  /* The trailing space under the hero's CTA row. The promo panel subtracts
+     exactly this so its bottom edge lands on the button, not below it. */
+  --home-hero-cta-gap: 32px;
+
   background: var(--carbon);
   padding: 96px 0 80px;
   position: relative;
@@ -92,7 +96,7 @@
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: 32px;
+  margin-bottom: var(--home-hero-cta-gap);
 }
 
 .home-hero-btn {
@@ -163,6 +167,7 @@
   flex-direction: column;
   width: 100%;
   max-width: 440px;
+  overflow: hidden;
 }
 
 /* The one red surface in the hero — it is what makes the promo read as the
@@ -184,7 +189,9 @@
 }
 
 .home-hero-event-main {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   color: inherit;
   text-decoration: none;
 }
@@ -247,7 +254,10 @@
   font-size: 0.7rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--slate);
+
+  /* --slate lands at 3.6:1 on this card; the date and venue are the only things
+     here that are not repeated elsewhere, so they clear 4.5:1 instead. */
+  color: #9ca3af;
   margin: 0;
   padding: 14px 20px 0;
   display: flex;
@@ -292,13 +302,64 @@
 }
 
 @media (width >= 900px) {
+  /* A fixed second track, because the frame's own content contributes no width
+     to size it from. */
   .home-hero-inner-split {
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 34%);
+    grid-template-columns: minmax(0, 1fr) 34%;
+    align-items: stretch;
   }
 
+  .home-hero-event-frame {
+    position: relative;
+  }
+
+  /* Out of flow, so the row is sized by the hero copy alone; 6px down to sit
+     level with the kicker's cap height, and stopping one CTA gap short of the
+     row's foot, which is the bottom edge of the hero's primary button. */
   .home-hero-event {
+    position: absolute;
+    inset: 6px 0 var(--home-hero-cta-gap);
     max-width: none;
-    margin-top: 6px;
+  }
+
+  /* A card with no artwork has nothing that can grow, so it keeps its own
+     height rather than stretching into a mostly empty box. */
+  .home-hero-event-textonly {
+    bottom: auto;
+  }
+
+  /* Whatever height the copy did not use goes to the artwork. */
+  .home-hero-event-main {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .home-hero-event-media {
+    flex: 1;
+    min-height: 120px;
+    aspect-ratio: auto;
+  }
+
+  /* Event posters front-load their type — a branding band, then the title — so
+     the band is anchored high rather than centred, which is also where faces sit
+     in a photograph. `event-focal` overrides it per event. */
+  .home-hero-event-media img {
+    object-position: var(--home-hero-event-focal, 50% 20%);
+  }
+
+  /* A step down in size buys the headline a third line inside the same space,
+     which is the difference between a real meetup title and an ellipsis. The
+     dek goes; it is shown in full once the promo stacks under the copy. */
+  .home-hero-event-title {
+    font-size: clamp(1.3rem, 1.55vw, 1.6rem);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+
+  .home-hero-event-dek {
+    display: none;
   }
 
   /* The dek sets the hero's measure on its own once the promo takes the right

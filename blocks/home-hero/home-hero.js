@@ -21,6 +21,8 @@
     event-image    | <picture> or a URL     (event artwork / poster)
     event-link     | /en/meetups/...        (where the artwork + headline go)
     event-cta      | [Register free →](...) (the red button)
+    event-focal    | 50% 20%                (where the desktop crop of the
+                                             artwork sits: a keyword, or x% y%)
     event-index    | /en/query-index.json   (index used to find the next event)
     event-auto     | off                    (never auto-fill; authored rows only)
 */
@@ -37,6 +39,8 @@ const DEFAULT_EVENT_KICKER = 'Next AEM Meetup';
 const DEFAULT_EVENT_CTA = 'Event details →';
 /* DA-hosted assets are indexed as bare paths and need their host back. */
 const DA_HOST = 'https://content.da.live';
+/* Only a CSS <position> may reach the inline style, and only these shapes. */
+const FOCAL = /^(top|bottom|center|left|right|\d{1,3}%\s+\d{1,3}%)$/i;
 
 function getRowText(el) {
   return el?.textContent?.trim() || '';
@@ -198,6 +202,7 @@ function parseModel(block) {
     eventImageUrl: '',
     eventLink: '',
     eventCta: null,
+    eventFocal: '',
     eventIndex: '',
     eventAuto: true,
   };
@@ -344,6 +349,10 @@ function parseModel(block) {
       case 'event-button':
         model.eventCta = getCta(valueCell);
         break;
+      case 'event-focal':
+      case 'event-crop':
+        if (FOCAL.test(value)) model.eventFocal = value.toLowerCase();
+        break;
       case 'event-index':
         if (value.startsWith('/')) model.eventIndex = value;
         break;
@@ -399,6 +408,7 @@ function parseTwoColumnModel(block) {
     eventImageUrl: '',
     eventLink: '',
     eventCta: null,
+    eventFocal: '',
     eventIndex: '',
     eventAuto: true,
   };
@@ -648,6 +658,7 @@ function createEventPanel(event, { reserveMedia = false } = {}) {
   const panel = document.createElement('aside');
   panel.className = 'home-hero-event';
   panel.setAttribute('aria-label', event.kicker || DEFAULT_EVENT_KICKER);
+  if (event.focal) panel.style.setProperty('--home-hero-event-focal', event.focal);
 
   appendTextElement(panel, 'p', 'home-hero-event-kicker', event.kicker || DEFAULT_EVENT_KICKER);
 
@@ -657,6 +668,9 @@ function createEventPanel(event, { reserveMedia = false } = {}) {
   if (hasLink) main.href = event.link;
   const media = createEventMedia(event, reserveMedia);
   if (media) main.appendChild(media);
+  /* Without artwork there is nothing to absorb the height the card is given
+     beside the hero copy, so it opts out of stretching and keeps its own. */
+  else panel.classList.add('home-hero-event-textonly');
   appendTextElement(main, 'h2', 'home-hero-event-title', event.title);
   panel.appendChild(main);
 
@@ -698,6 +712,7 @@ function authoredEvent(model) {
     location: model.eventLocation,
     media: model.eventMedia,
     imageUrl: model.eventImageUrl,
+    focal: model.eventFocal,
     link,
     cta: model.eventCta || (link ? { label: DEFAULT_EVENT_CTA, href: link } : null),
   };
@@ -737,6 +752,7 @@ function eventFromIndexRow(row, model) {
     location: row.location || '',
     media: null,
     imageUrl: row.image || '',
+    focal: model.eventFocal,
     link: row.path || '',
     cta: model.eventCta || (row.path ? { label: DEFAULT_EVENT_CTA, href: row.path } : null),
   };
@@ -749,26 +765,38 @@ async function fetchNextEvent(indexPath) {
   return pickNextEvent(Array.isArray(json?.data) ? json.data : []);
 }
 
+/* The frame is what keeps the promo from making the hero taller than it already
+   is. At desktop width the card inside it is taken out of flow, so the frame
+   contributes no height of its own and the grid row is sized by the hero copy
+   alone; the card then stretches to that height and stops level with the hero's
+   primary button. Below the split it is an ordinary wrapper. */
+function mountEventPanel(inner, panel) {
+  const frame = document.createElement('div');
+  frame.className = 'home-hero-event-frame';
+  frame.appendChild(panel);
+  inner.classList.add('home-hero-inner-split');
+  inner.appendChild(frame);
+  return frame;
+}
+
 /* Renders the panel now when it can, and reserves its column while the index is
    in flight — the hero must not wait on a network round trip to paint. */
 function attachEventPanel(inner, model) {
   const authored = authoredEvent(model);
   if (authored) {
-    inner.classList.add('home-hero-inner-split');
-    inner.appendChild(createEventPanel(authored));
+    mountEventPanel(inner, createEventPanel(authored));
     return;
   }
   if (!model.eventAuto) return;
 
   const placeholder = createEventPanel({ kicker: model.eventKicker }, { reserveMedia: true });
   placeholder.classList.add('home-hero-event-pending');
-  inner.classList.add('home-hero-inner-split');
-  inner.appendChild(placeholder);
+  const frame = mountEventPanel(inner, placeholder);
 
   /* Nothing to promote, or the index is unreachable: leave the hero as it was
-     rather than sitting on an empty box. */
+     rather than sitting on an empty column. */
   const drop = () => {
-    placeholder.remove();
+    frame.remove();
     inner.classList.remove('home-hero-inner-split');
   };
 

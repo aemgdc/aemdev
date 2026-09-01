@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-unresolved
 import DA_SDK from 'https://da.live/nx/utils/sdk.js';
 
-const tagURL = 'https://edge-www-dev.jmp.com/services/tagsservlet';
+const tagURL = 'https://publish-p121227-e1183758.adobeaemcloud.com/services/tagsservlet';
 
 const selectedTagDisplay = document.getElementById('selected-tag');
 const addedTagsList = document.getElementById('tags-list');

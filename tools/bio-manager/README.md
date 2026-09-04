@@ -84,20 +84,44 @@ only reliable signal, and it is what gates the `Insert` action.
 
 ## How a bio reaches a page
 
-Two ways, both live:
+Three ways, all live. The first two differ only in layout.
 
-1. **`speakers` metadata** — `<meta name="speakers" content="tad-reeves, laurel-timko">`.
-   Drop an empty `speakers` block on the page and [`blocks/speakers`](../../blocks/speakers/speakers.js)
-   resolves each slug to `/en/fragments/bios/<slug>` and renders the roster. Every
-   `/en/meetups/*` page already carries this metadata, so those pages need no
-   re-authoring. A slug with no document renders a visible "no bio yet" row.
-2. **A fragment reference** — the plugin's `Insert` action writes a plain anchor to
+1. **`bios` — bricks.** `<meta name="speakers" content="tad-reeves, greg-dimeris">`,
+   and an empty `bios` block on the page. [`blocks/bios`](../../blocks/bios/bios.js)
+   renders one card per speaker across the content column, stacking on narrow
+   viewports. This is what `/en/meetups/20260827-aem-meetup-washington-dc` shows
+   under its "Meetup Speakers" heading.
+2. **`speakers` — rows.** The same roster as full-width rows on a carbon panel:
+   [`blocks/speakers`](../../blocks/speakers/speakers.js). `| Speakers (bricks) |`
+   switches it to the brick grid on that dark ground.
+3. **A fragment reference** — the plugin's `Insert` action writes a plain anchor to
    `/en/fragments/bios/<slug>`. `linkBlocks` in [`scripts/scripts.js`](../../scripts/scripts.js)
    auto-blocks any href containing `/fragments/`, so it becomes a `fragment` block
    with no extra authoring. This is the path for a page with no `speakers`
-   metadata, such as an article.
+   metadata, such as an article — one bio, in the row layout.
 
-Both render through [`blocks/bio`](../../blocks/bio/bio.js).
+Either roster block reads slugs authored in the block first and falls back to the
+page's `speakers` metadata, which is the contract every `/en/meetups/*` page
+already follows — so an empty block on a meetup page needs no authoring at all. A
+bare slug resolves to `/en/fragments/bios/<slug>`; a token starting with `/` is
+used verbatim, which is how another locale's bios get referenced. A slug with no
+document renders a visible "no bio yet" card rather than vanishing.
+
+All of it renders through [`blocks/bio`](../../blocks/bio/bio.js): `parseBio` /
+`buildBio` build one bio's DOM and bio.css lays it out as either a row or a brick,
+so there is one renderer and one stylesheet rather than three that drift.
+[`blocks/bio/roster.js`](../../blocks/bio/roster.js) holds the slug grammar, the
+fetch and the media-URL rewrite, shared by all three blocks.
+
+### The already-authored `bio` block
+
+A **`bio` block with no recognized field at all** renders the page's roster as
+bricks too. That is not a synonym for `bios` invented for its own sake: pages were
+already authored with an empty `bio` block under a "Speakers" heading, and the
+alternative was a published page with an empty strip on it. A `bio` block that
+carries a recognized field but no `Name` — a bio somebody is mid-way through
+writing — is left exactly as authored, because replacing a half-written bio with
+somebody else's speakers is the one failure an author cannot undo by reloading.
 
 ## Setup
 
@@ -200,8 +224,10 @@ http://localhost:3000/tools/bio-manager/fixtures/blocks.html
 
 The [fixtures](fixtures/) run the real app against an in-memory DA — no network,
 no login. An import map swaps the hosted DA SDK for a mock, and `window.fetch`
-is replaced before the app's module loads. `blocks.html` renders `bio` and
-`speakers` against fixture documents, including the orphan-slug row.
+is replaced before the app's module loads. `blocks.html` renders `bios`,
+`speakers` (rows and bricks) and `bio` — including an empty `bio` block, which is
+the shape live meetup pages carry — against fixture documents, with an
+orphan slug in every roster so the "no bio yet" card is always on screen.
 
 This is the per-plugin half of S10's fixture mode. It is a development harness,
 not a stage fallback: the fallback for a DA outage on stage is the recording.
@@ -218,5 +244,7 @@ not a stage fallback: the fallback for a DA outage on stage is the recording.
 | [`fixtures/`](fixtures/) | Offline harness. |
 | [`../da/push-bios.js`](../da/push-bios.js) | Seed script. |
 | [`../../blocks/bio/`](../../blocks/bio/) | Renders one bio. |
-| [`../../blocks/speakers/`](../../blocks/speakers/) | Renders a page's roster. |
-| [`../../test/blocks/`](../../test/blocks/) | 29 unit tests across both blocks. |
+| [`../../blocks/bio/roster.js`](../../blocks/bio/roster.js) | Slug grammar, fetch, media-URL rewrite. Shared. |
+| [`../../blocks/bios/`](../../blocks/bios/) | Renders a page's roster as bricks. |
+| [`../../blocks/speakers/`](../../blocks/speakers/) | Renders a page's roster as rows on a carbon panel. |
+| [`../../test/blocks/`](../../test/blocks/) | 44 unit tests across the three blocks. |

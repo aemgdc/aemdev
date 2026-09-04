@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>bio + speakers — fixture render</title>
+    <title>bio + bios + speakers — fixture render</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="/img/tools/bio-manager.svg" />
     <meta name="speakers" content="eric-van-geem, laurel-timko, wilson-faure" />
@@ -14,9 +14,10 @@
     <link rel="stylesheet" href="/styles/sections.css" />
 
     <!--
-      Renders blocks/speakers and blocks/bio against fixture documents, so the
-      output can be checked without publishing anything. `wilson-faure` is
-      deliberately absent from the fixtures to exercise the orphan row.
+      Renders blocks/bios, blocks/speakers and blocks/bio against fixture
+      documents, so the output can be checked without publishing anything.
+      `wilson-faure` is deliberately absent from the fixtures to exercise the
+      orphan card, and it appears in every roster below for that reason.
     -->
     <script>
       // ?live=1 skips the fixtures and lets the dev server proxy the real
@@ -26,8 +27,11 @@
       }
     </script>
     <style>
-      body { margin: 0; background: var(--surface, #f4f4f4); }
+      body { margin: 0; background: var(--paper, #f9f9f9); }
       main { max-width: 1140px; margin: 0 auto; padding: 48px 24px 96px; }
+      /* The grid asks for the content column, which this harness has already
+         constrained — without this it insets 8% inside its own label. */
+      main .bio-bricks { width: 100%; margin-inline: 0; }
       .fixture-label {
         font-family: "Space Mono", monospace;
         font-size: 0.72rem;
@@ -43,7 +47,34 @@
     <header></header>
     <main>
       <div>
-        <p class="fixture-label">speakers — from the page's speakers metadata</p>
+        <p class="fixture-label">bios — bricks, from the page's speakers metadata</p>
+        <div class="bios"></div>
+      </div>
+      <div>
+        <p class="fixture-label">bios — slugs authored in the block</p>
+        <div class="bios">
+          <div><div>bios</div><div>laurel-timko, eric-van-geem</div></div>
+        </div>
+      </div>
+      <div>
+        <p class="fixture-label">bios — one speaker, so the brick does not run the column's width</p>
+        <div class="bios">
+          <div><div>eric-van-geem</div></div>
+        </div>
+      </div>
+      <div>
+        <p class="fixture-label">
+          bio — an EMPTY block, which is what meetup pages already carry under a
+          "Speakers" heading. Renders the roster rather than nothing.
+        </p>
+        <div class="bio"><div><div></div></div></div>
+      </div>
+      <div>
+        <p class="fixture-label">speakers (bricks) — the same grid on the carbon panel</p>
+        <div class="speakers bricks"></div>
+      </div>
+      <div>
+        <p class="fixture-label">speakers — rows, from the page's speakers metadata</p>
         <div class="speakers"></div>
       </div>
       <div>

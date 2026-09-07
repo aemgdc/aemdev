@@ -153,8 +153,13 @@ header {
     margin: 0;
   }
 
+  /* The widgets and the CTA are separate <p>s in one authored block; this is what
+     puts them on a row together instead of stacking them. */
   .actions-section .default-content {
     max-width: none;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-s);
   }
 
   /* Join the community CTA */
@@ -214,6 +219,92 @@ header {
     height: 1px;
     overflow: hidden;
     clip-path: inset(50%);
+  }
+
+  /* LANGUAGE SELECTOR — globe + the active locale code, sized to its content rather
+     than to the fixed icon-button square the other widgets use. 44px is the touch
+     target inside the mobile drawer; desktop restores the full header height. */
+  .action-wrapper.globe button {
+    width: auto;
+    height: 44px;
+    gap: 8px;
+    padding: 0 4px;
+  }
+
+  .action-wrapper.globe .icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Scoped to .globe: the authored widget icons are filled paths and `fill: none`
+     would erase them. */
+  .action-wrapper.globe .icon svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentcolor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+  }
+
+  .action-wrapper .lang-code {
+    font-family: var(--mono-font-family);
+    font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+  }
+
+  /* Anchored to the button's LEFT here: on mobile the actions row starts at the left
+     of the drawer, and a right-anchored menu hangs off the side of the viewport.
+     Desktop flips it, where the button is the far-right item instead. */
+  .language-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 200px;
+    padding: var(--spacing-xs) 0;
+    background-color: var(--ink-2);
+    border: 1px solid var(--ink-3);
+    z-index: 1;
+  }
+
+  .action-wrapper.is-open .language-menu {
+    display: block;
+  }
+
+  .language-menu a {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    padding: 7px 16px;
+    font-size: 0.9rem;
+    color: #9ca3af;
+    white-space: nowrap;
+    transition: color 0.12s ease, background-color 0.12s ease;
+  }
+
+  .language-menu a:hover,
+  .language-menu a:focus-visible {
+    color: var(--white);
+    background-color: var(--ink-3);
+  }
+
+  /* Fixed-width code column so the native names line up — the mono grid is the point
+     of showing a code at all. `zh-cn` is the widest at five characters. */
+  .language-menu .lang-code {
+    flex: 0 0 auto;
+    min-width: 3.4em;
+    font-size: 0.68rem;
+    color: var(--slate);
+  }
+
+  .language-menu [aria-current] {
+    color: var(--white);
+  }
+
+  .language-menu [aria-current] .lang-code {
+    color: var(--orange);
   }
 
   /* Mobile hamburger toggle — top-level grid cell, right of brand */
@@ -353,6 +444,15 @@ header .mega-menu ul {
   /* Hide the mobile-only hamburger toggle on desktop */
   header .mobile-toggle {
     display: none;
+  }
+
+  header .action-wrapper.globe button {
+    height: var(--header-height);
+  }
+
+  header .language-menu {
+    left: auto;
+    right: 0;
   }
 
   /* Bring back the // OPSINVENTOR imprint at desktop */

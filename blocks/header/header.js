@@ -1,6 +1,13 @@
 import { getConfig, getMetadata } from '../../scripts/ak.js';
 import { loadLocalizedFragment } from '../fragment/fragment.js';
 import { setColorScheme } from '../section-metadata/section-metadata.js';
+import {
+  ALL_LOCALES,
+  SOURCE_LOCALE,
+  locale as localeByCode,
+  localeForPath,
+  pathForLocale,
+} from '../../scripts/tracker/locales.js';
 
 const { locale } = getConfig();
 
@@ -13,10 +20,37 @@ const HEADER_ACTIONS = [
   '/tools/widgets/toggle',
 ];
 
+/*
+ * Widgets whose icon is drawn here rather than authored.
+ *
+ * These links come from DA as plain text — an author writes `/tools/widgets/language`,
+ * not an icon — so the glyph has to come from code. It is written inline rather than
+ * referenced out of `img/icons/` because the site's icon loader emits `<use href=...>`
+ * against `codeBase`, and `decorateBrandSection` below already documents that failing
+ * cross-origin. Both are single-stroke line art on purpose: one visual family with the
+ * header's mono type, and `currentColor` keeps them black and white with the button.
+ */
+const ACTION_ICONS = {
+  '/tools/widgets/toggle': {
+    name: 'burger',
+    svg: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>',
+  },
+  '/tools/widgets/language': {
+    name: 'globe',
+    svg: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="3.7" ry="9"/><line x1="3" y1="12" x2="21" y2="12"/></svg>',
+  },
+};
+
 function closeAllMenus() {
   const openMenus = document.body.querySelectorAll('header .is-open');
   for (const openMenu of openMenus) {
     openMenu.classList.remove('is-open');
+    // A click anywhere outside the header closes menus through here, not through the
+    // button's own handler, so `aria-expanded` has to be reset here too — otherwise a
+    // click-away leaves the button claiming an open menu that is shut.
+    for (const btn of openMenu.querySelectorAll('button[aria-haspopup]')) {
+      btn.setAttribute('aria-expanded', 'false');
+    }
   }
 }
 
@@ -38,24 +72,108 @@ function toggleMenu(menu) {
   menu.classList.add('is-open');
 }
 
+/**
+ * The locale to SHOW as current.
+ *
+ * Off the locale tree — the site root and every `/tracker/**` page — there is no
+ * locale in the path, and `scripts/tracker/locales.js` deliberately declines to
+ * assert one there. The chrome a reader is looking at on those pages is nonetheless
+ * the English fallback `loadLocalizedFragment` served them, so English is the honest
+ * label. This is display only: nothing here touches `documentElement.lang`.
+ */
+function currentLocale(pathname) {
+  return localeByCode(localeForPath(pathname)) || localeByCode(SOURCE_LOCALE);
+}
+
+/**
+ * Where the picker sends a reader for `code`.
+ *
+ * The same page in the other locale, so switching language does not also throw away
+ * the page you were on. Off the locale tree there IS no equivalent page — `/tracker/x`
+ * has no German twin — so those pages offer the locale home instead of linking to a
+ * path that cannot exist.
+ */
+function localeHref(pathname, code) {
+  return localeForPath(pathname) ? pathForLocale(pathname, code) : localeByCode(code).location;
+}
+
+/**
+ * Builds the picker's menu from the locale registry.
+ *
+ * The list is NOT authored. `scripts/tracker/locales.js` is already the one place that
+ * says which locales this site serves — `scripts.js` hands the same registry to
+ * `setConfig` — so building from it means the picker cannot offer a locale the site
+ * does not have, and adding one is a row in that table rather than an authored menu
+ * per locale. It also removes a failure mode the authored version had: the menu is the
+ * one piece of chrome a reader in an untranslated locale must be able to reach, and it
+ * no longer depends on a document existing to do it.
+ */
+function buildLocaleMenu(pathname, currentCode) {
+  const list = document.createElement('ul');
+
+  for (const code of ALL_LOCALES) {
+    const { native, name } = localeByCode(code);
+
+    const codeEl = document.createElement('span');
+    codeEl.className = 'lang-code';
+    codeEl.textContent = code;
+    // The code repeats what `hreflang` already says and is a URL prefix, not a word.
+    // Hiding it keeps the link's accessible name "Deutsch", not "de Deutsch".
+    codeEl.setAttribute('aria-hidden', 'true');
+
+    const nativeEl = document.createElement('span');
+    nativeEl.className = 'lang-native';
+    nativeEl.textContent = native;
+
+    const a = document.createElement('a');
+    a.href = localeHref(pathname, code);
+    // `lang` describes the link's own text, which is that language's name for itself;
+    // `hreflang` describes what is on the other end.
+    a.lang = code;
+    a.hreflang = code;
+    a.title = name;
+    if (code === currentCode) a.setAttribute('aria-current', 'true');
+    a.append(codeEl, nativeEl);
+
+    const li = document.createElement('li');
+    li.append(a);
+    list.append(li);
+  }
+
+  const menu = document.createElement('div');
+  menu.className = 'language-menu';
+  menu.append(list);
+  return menu;
+}
+
 function decorateLanguage(btn) {
-  const section = btn.closest('.section');
-  btn.addEventListener('click', async () => {
-    let menu = section.querySelector('.language.menu');
-    if (!menu) {
-      const content = document.createElement('div');
-      content.classList.add('block-content');
-      // The language MENU is the one fragment a reader must be able to reach from a
-      // locale that is otherwise untranslated — it is how they get back to English.
-      // So it falls back too, and an unhandled 404 here would leave the button dead.
-      const { fragment } = await loadLocalizedFragment(`${HEADER_PATH}/languages`, locale);
-      menu = document.createElement('div');
-      menu.className = 'language menu';
-      menu.append(fragment);
-      content.append(menu);
-      section.append(content);
-    }
-    toggleMenu(section);
+  const wrapper = btn.closest('.action-wrapper');
+  const { pathname } = window.location;
+  const current = currentLocale(pathname);
+
+  const codeEl = document.createElement('span');
+  codeEl.className = 'lang-code';
+  codeEl.textContent = current.code;
+  btn.append(codeEl);
+
+  // The visible code is an abbreviation; the accessible name says which language that
+  // is. `aria-label` overrides the button's text, so the code and the author's label
+  // both have to be folded into it.
+  btn.setAttribute('aria-label', `${btn.getAttribute('aria-label') || 'Language'}: ${current.name}`);
+  btn.setAttribute('aria-haspopup', 'true');
+  btn.setAttribute('aria-expanded', 'false');
+
+  wrapper.append(buildLocaleMenu(pathname, current.code));
+
+  btn.addEventListener('click', () => {
+    toggleMenu(wrapper);
+    btn.setAttribute('aria-expanded', wrapper.classList.contains('is-open') ? 'true' : 'false');
+  });
+
+  wrapper.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape' || !wrapper.classList.contains('is-open')) return;
+    closeAllMenus();
+    btn.focus();
   });
 }
 
@@ -105,11 +223,13 @@ async function decorateAction(header, pattern) {
   const btn = document.createElement('button');
   btn.type = 'button';
 
-  // The toggle widget comes from DA without an icon span — inject a hamburger SVG.
-  if (pattern === '/tools/widgets/toggle' && !icon) {
+  // Widget links come from DA as bare text, with no icon span to decorate. Drawing the
+  // glyph here also fixes the wrapper's variant class, which is read off the icon.
+  if (!icon && ACTION_ICONS[pattern]) {
+    const { name, svg } = ACTION_ICONS[pattern];
     icon = document.createElement('span');
-    icon.className = 'icon icon-burger';
-    icon.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
+    icon.className = `icon icon-${name}`;
+    icon.innerHTML = svg;
   }
 
   if (icon) btn.append(icon);

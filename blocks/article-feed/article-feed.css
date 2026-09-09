@@ -82,10 +82,13 @@
 
 /* ── Card ── */
 .feed-card-item {
+  /* Named so the thumbnail can bleed back out by exactly this much. */
+  --feed-card-pad: 32px;
+
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 32px;
+  padding: var(--feed-card-pad);
   background: #fff;
   border: 1px solid var(--border);
   text-decoration: none;
@@ -98,6 +101,36 @@
   transform: translateY(-2px);
   text-decoration: none;
   color: inherit;
+}
+
+/* ── Thumbnail ──
+   Bled out to the card's own edges rather than inset inside the padding: a
+   framed image inside a framed card reads as two boxes, and the site's other
+   image cards (insights, speaking) already sit flush. The wide crop keeps it a
+   thumbnail — it sits above the kicker without taking the card over. */
+.feed-card-thumb {
+  margin: calc(var(--feed-card-pad) * -1) calc(var(--feed-card-pad) * -1) 8px;
+  aspect-ratio: 21 / 9;
+  overflow: hidden;
+  background: var(--ink);
+  border-bottom: 1px solid var(--border);
+}
+
+.feed-card-thumb picture {
+  display: block;
+  height: 100%;
+}
+
+.feed-card-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.feed-card-item:hover .feed-card-thumb img {
+  transform: scale(1.03);
 }
 
 .feed-card-category {
@@ -143,6 +176,12 @@
   font-size: 0.82rem;
   color: var(--slate);
   text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feed-card-thumb img {
+    transition: none;
+  }
 }
 
 /* ── Alternating section backgrounds via parent section ── */

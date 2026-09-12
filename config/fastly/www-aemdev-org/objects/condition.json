@@ -2,9 +2,9 @@
   {
     "statement": "req.url.path ~ \"^/(services|content/dam)/\"",
     "type": "REQUEST",
-    "name": "services path",
-    "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
+    "comment": "",
     "priority": "10",
-    "comment": ""
+    "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
+    "name": "services path"
   }
 ]

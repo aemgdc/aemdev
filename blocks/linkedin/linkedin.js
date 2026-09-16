@@ -1,4 +1,5 @@
 import observe from '../../scripts/utils/observer.js';
+import isOwnLine from '../../scripts/utils/own-line.js';
 
 /* LinkedIn's guest embed endpoint renders a post from its URN:
      https://www.linkedin.com/embed/feed/update/urn:li:ugcPost:<id>
@@ -90,15 +91,6 @@ export function embedLinkedIn(a) {
   a.parentElement.replaceChild(div, a);
   observe(div, decorate);
   return true;
-}
-
-/* A link is "on its own line" when nothing else shares its paragraph or list
-   item, so inline mentions of a post stay links. Compare text rather than child
-   count: a formatting wrapper (a bolded link, say) adds an element but no text
-   of its own, and shouldn't stop the line counting as the link's alone. */
-function isOwnLine(a) {
-  const line = a.closest('p, li');
-  return !!line && line.textContent.trim() === a.textContent.trim();
 }
 
 /**

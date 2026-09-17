@@ -189,7 +189,7 @@ const altTextCheck = async ({ doc }) => {
 
 const tagsCheck = async ({ doc }) => {
   try {
-    const resp = await fetch('https://www.jmp.com/services/tagsservlet.en');
+    const resp = await fetch('https://publish-p121227-e1183758.adobeaemcloud.com/services/tagsservlet.en');
     if (!resp.ok) {
       return [{ badge: 'error', reason: `Could not fetch acceptable tags (${resp.status})` }];
     }
@@ -243,7 +243,7 @@ const CATEGORIES = {
     { title: 'Title', fn: titleCheck },
     { title: 'Description', fn: descCheck },
     { title: 'Image alt text', fn: altTextCheck },
-    //{ title: 'Tags', fn: tagsCheck },
+    { title: 'Tags', fn: tagsCheck },
   ],
 };
 

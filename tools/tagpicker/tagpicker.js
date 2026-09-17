@@ -40,8 +40,7 @@ function getValidTags(items, path = []) {
     const tagValName = item['jcr:title']
       .toLowerCase()
       .replaceAll('&', 'and')
-      .replaceAll(' ', '-')
-      .replace('(intro-stats)-', '');
+      .replaceAll(' ', '-');
     const currentTag = [...path, tagValName];
     validTags.push(currentTag.join('|'));
     if (item.children && item.children.length > 0) {

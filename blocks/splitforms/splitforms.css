@@ -1,0 +1,229 @@
+/* Splitforms — author content on one side, a working form on the other */
+
+.splitforms {
+  display: grid;
+  gap: 32px;
+  align-items: start;
+
+  /* Matches `.section > .default-content` so the panel lines up with the copy
+     above it. `.block-content` is unconstrained — a block that wants the content
+     column has to ask for it (see blocks/bio/bio.css). */
+  width: var(--grid-container-width);
+  max-width: var(--grid-content-width);
+  margin: 48px auto;
+}
+
+/* === CONTENT PANE === */
+
+.splitforms-content > *:first-child {
+  margin-top: 0;
+}
+
+.splitforms-content > *:last-child {
+  margin-bottom: 0;
+}
+
+/* === FORM PANEL === */
+
+.splitforms-panel {
+  background: var(--white);
+  border: 2px solid var(--carbon);
+  border-top: 6px solid var(--aem-red);
+  padding: clamp(24px, 4vw, 36px);
+}
+
+.splitforms-title {
+  font-family: var(--display-font-family);
+  font-size: var(--heading-font-size-m);
+  font-weight: 700;
+  line-height: var(--heading-line-height);
+  letter-spacing: -0.01em;
+  color: var(--carbon);
+  margin: 0 0 8px;
+}
+
+.splitforms-note {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: var(--muted);
+  margin: 0 0 20px;
+}
+
+.splitforms-form {
+  display: grid;
+  gap: 18px;
+}
+
+/* === FIELDS === */
+
+.splitforms-field {
+  display: grid;
+  gap: 6px;
+}
+
+.splitforms-field label {
+  font-family: var(--mono-font-family);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--carbon);
+}
+
+.splitforms-required {
+  color: var(--aem-red);
+  margin-left: 4px;
+}
+
+.splitforms-field input,
+.splitforms-field textarea,
+.splitforms-field select {
+  font-family: var(--body-font-family);
+  font-size: 1rem;
+  color: var(--text);
+  background: var(--paper);
+  border: 2px solid var(--border);
+  border-radius: 0;
+  padding: 11px 12px;
+  width: 100%;
+  transition: border-color 0.12s ease-in-out;
+}
+
+.splitforms-field textarea {
+  resize: vertical;
+  min-height: 96px;
+}
+
+.splitforms-field input:hover,
+.splitforms-field textarea:hover,
+.splitforms-field select:hover {
+  border-color: var(--slate);
+}
+
+.splitforms-field input:focus-visible,
+.splitforms-field textarea:focus-visible,
+.splitforms-field select:focus-visible {
+  outline: none;
+  border-color: var(--aem-red);
+  box-shadow: 0 0 0 3px rgb(235 16 0 / 16%);
+}
+
+.splitforms-field input:user-invalid,
+.splitforms-field textarea:user-invalid,
+.splitforms-field select:user-invalid {
+  border-color: var(--aem-red);
+}
+
+/* === HONEYPOT — must stay reachable to bots, invisible to people === */
+
+.splitforms-trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* === SUBMIT === */
+
+.splitforms-submit {
+  font-family: var(--body-font-family);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--white);
+  background: var(--aem-red);
+  border: 2px solid var(--aem-red);
+  border-radius: 0;
+  padding: 12px 28px;
+  cursor: pointer;
+  justify-self: start;
+  transition: background-color 0.12s ease-in-out, border-color 0.12s ease-in-out;
+}
+
+.splitforms-submit:hover {
+  background: var(--aem-red-dk);
+  border-color: var(--aem-red-dk);
+}
+
+.splitforms-submit:focus-visible {
+  outline: 2px solid var(--carbon);
+  outline-offset: 2px;
+}
+
+.splitforms-submit:disabled {
+  background: var(--slate);
+  border-color: var(--slate);
+  cursor: not-allowed;
+}
+
+/* === STATUS + SUCCESS === */
+
+.splitforms-status:empty {
+  display: none;
+}
+
+.splitforms-status {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 4px solid var(--slate);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.splitforms-status-error {
+  border-left-color: var(--aem-red);
+  background: rgb(235 16 0 / 6%);
+}
+
+.splitforms-success {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+  padding: 16px 18px;
+  border-left: 4px solid var(--aem-red);
+  background: rgb(235 16 0 / 6%);
+  color: var(--text);
+}
+
+/* === DARK VARIANT — for carbon sections === */
+
+.splitforms.dark .splitforms-panel {
+  background: var(--carbon-2);
+  border-color: var(--carbon-3);
+  border-top-color: var(--aem-red);
+}
+
+.splitforms.dark .splitforms-title,
+.splitforms.dark .splitforms-field label {
+  color: var(--white);
+}
+
+.splitforms.dark .splitforms-field input,
+.splitforms.dark .splitforms-field textarea,
+.splitforms.dark .splitforms-field select {
+  background: var(--carbon);
+  border-color: var(--carbon-3);
+  color: var(--white);
+}
+
+.splitforms.dark .splitforms-status,
+.splitforms.dark .splitforms-success {
+  background: var(--carbon);
+  color: var(--white);
+}
+
+/* === RESPONSIVE === */
+
+@media (width >= 900px) {
+  .splitforms {
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+  }
+
+  .splitforms-solo {
+    grid-template-columns: minmax(0, 560px);
+    justify-content: center;
+  }
+}

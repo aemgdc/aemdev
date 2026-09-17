@@ -48,6 +48,15 @@
 .bio-copy {
   min-width: 0;
   flex: 1 1 auto;
+
+  /* A brick's copy column is ~200-250px, and the grid's min track sizing function
+     is a fixed length, so a track never grows to fit a long unbroken string — the
+     string simply escapes the card, draws over its neighbour, and at narrow widths
+     widens the document until `body { overflow-x: hidden }` clips it away. Measured
+     with a URL in a Bio field and with a `/de/fragments/bios/<slug>` orphan token.
+     `break-word` rather than `anywhere`, matching blocks/card/card.css. Harmless to
+     the row layout: it only acts on a word that would otherwise overflow. */
+  overflow-wrap: break-word;
 }
 
 .bio-name {
@@ -106,8 +115,10 @@
   color: var(--aem-red);
 }
 
-/* Consecutive bios collapse their shared hairline. */
-.bio + .bio {
+/* Consecutive bios collapse their shared hairline — ROWS only. A brick carries a
+   border on all four sides plus its own red top rule, and dropping it because the
+   brick happens to follow another one is what this `:not()` prevents. */
+.bio + .bio:not(.bio-brick) {
   border-top: 0;
 }
 
@@ -120,5 +131,142 @@
 
   .bio-name {
     font-size: 1.35rem;
+  }
+}
+
+/* ============================================================================
+   BRICKS — the same bio, turned on its side and laid across the page.
+
+   One anatomy, two layouts. A brick is a `.bio` with `.bio-brick` on it, so
+   `buildBio` builds one renderer's worth of DOM and the difference between a
+   full-width row and a card is this stylesheet. The `--bio-*` properties bio.css
+   already exposes keep working, which is how `.speakers` recolours bricks for
+   its carbon ground without knowing anything about them.
+   ============================================================================ */
+
+/* The host block stops being a row so the grid inside it can do the laying out. */
+.bio.bio-roster {
+  display: block;
+  padding: 0;
+  border: 0;
+}
+
+.bio-bricks {
+  /* A <ul>, so a roster of people is a list to assistive tech. That brings UA
+     list styling and `main ul { padding-inline-start: 28px }` with it. */
+  list-style: none;
+  padding: 0;
+  display: grid;
+
+  /* `auto-fit`, not `auto-fill`: an empty track COLLAPSES, so a roster never
+     leaves a hole in the row. The `min()` keeps the 240px floor from overflowing
+     a viewport narrower than the floor.
+
+     `1fr` as the max, NOT a length. auto-fit derives its repetition count from
+     the max track sizing function whenever that is definite, so `minmax(240px,
+     480px)` yields floor((1140 + 28) / (480 + 28)) = 2 tracks and turns three
+     speakers into 2 + 1. Measured, after shipping exactly that mistake. With an
+     indefinite `1fr` the count comes from the 240px floor — 4 tracks in the
+     content column, one of which collapses — and three bricks fill the row. */
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: clamp(16px, 2vw, 28px);
+
+  /* Matches `.section > .default-content`, so the bricks' outer edges line up
+     with the heading above them. `.block-content` is unconstrained — a block
+     that wants the content column has to ask for it. */
+  width: var(--grid-container-width);
+  max-width: var(--grid-content-width);
+  margin: clamp(16px, 2vw, 24px) auto clamp(24px, 4vw, 48px);
+}
+
+/* One or two speakers. `1fr` tracks would make each brick 556px — a card holding
+   a 120px photo and three lines of copy, stretched across half the page. Here the
+   track max IS a length, which is exactly what auto-fit's count wants: two 480px
+   tracks packed to the start, so a short roster reads as normal cards sitting
+   under the left edge of the heading. `:nth-child(-n+2):last-child` is true only
+   when the grid holds one or two items. */
+.bio-bricks:has(> .bio-brick:nth-child(-n+2):last-child) {
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 480px));
+  justify-content: start;
+}
+
+.bio.bio-brick {
+  --bio-photo-size: 120px;
+
+  /* Adobe Red on the brick's `--surface` ground measures 4.13:1 — under AA for
+     12px label text. Adobe Red Deep, already the site's link colour on light
+     grounds, is 5.56:1. The carbon panel pins this back to Adobe Red in
+     speakers.css, where darkening it would go the wrong way. */
+  --bio-role: var(--aem-red-dk);
+
+  /* Nothing sets box-sizing globally in styles.css, so without this the brick's
+     padding would land OUTSIDE its track width. */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+
+  /* The brick is an <li>; `li { margin-block: 0.25em }` in styles.css would
+     otherwise put a stray 4px above and below every card. */
+  margin: 0;
+
+  /* DESIGN.md's card floor and ceiling, exactly: 24-32px. */
+  padding: clamp(24px, 2.2vw, 32px);
+  background: var(--bio-brick-bg, var(--surface));
+  border: 1px solid var(--bio-rule);
+
+  /* The one signal: identity, at the top of every brick. */
+  border-top: 3px solid var(--bio-brick-accent, var(--aem-red));
+}
+
+.bio.bio-brick .bio-photo {
+  flex: 0 0 auto;
+  margin-bottom: 18px;
+}
+
+.bio.bio-brick .bio-copy {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+
+.bio.bio-brick .bio-name {
+  font-size: 1.45rem;
+}
+
+.bio.bio-brick .bio-role {
+  margin-bottom: 14px;
+}
+
+/* Pinned to the foot of the brick, so a short bio and a long one still line
+   their links up across the row. `flex-start` because an inline-block link
+   stretched by the column would draw its underline the full brick width. */
+.bio.bio-brick .bio-link {
+  align-self: flex-start;
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+/* No group `opacity` here, deliberately. The slug in `.bio-name` is the ONLY
+   thing identifying WHICH speaker is missing, and compositing it toward the
+   background drops it to ~2.8:1 — the opposite of the visible-orphan rule this
+   placeholder exists to satisfy. Swapping the red identity rule for a slate one
+   says "not a speaker yet" without dimming a single character. */
+.bio-brick.bio-missing {
+  --bio-brick-accent: var(--slate);
+}
+
+.bio-brick.bio-missing .bio-role {
+  color: var(--slate);
+}
+
+@media (width <= 700px) {
+  .bio.bio-brick {
+    --bio-photo-size: 96px;
+  }
+
+  .bio.bio-brick .bio-name {
+    font-size: 1.3rem;
   }
 }

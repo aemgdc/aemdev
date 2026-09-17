@@ -1,0 +1,9 @@
+/* Bios — this page's roster as bricks.
+   Every rule that draws a brick lives in blocks/bio/bio.css, which bios.js loads:
+   a brick IS a bio, and one stylesheet is the reason the two cannot drift. This
+   file exists so the block's own stylesheet request is a 200 and so the block
+   element itself is a plain container rather than inheriting anything. */
+
+.bios {
+  display: block;
+}

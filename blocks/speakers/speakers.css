@@ -16,7 +16,12 @@
   --bio-link: var(--aem-red);
   --bio-rule: var(--carbon-3);
   --bio-photo-bg: var(--carbon-2);
+  --bio-brick-bg: var(--carbon-2);
+}
 
+/* Rows only. A brick sets its own padding, and which of the two stylesheets the
+   browser happens to have parsed last must not decide the answer. */
+.speakers .bio:not(.bio-brick) {
   padding: 28px 0;
 }
 
@@ -39,4 +44,28 @@
 
 .speakers-missing .bio-name {
   color: var(--slate);
+}
+
+/* === BRICKS VARIANT === the blocks/bio card grid, inside this panel.
+
+   The grid asks for the content column when it stands alone on a page; in here
+   the panel's own padding is the gutter, so it fills the panel instead. */
+.speakers .bio-bricks {
+  width: 100%;
+  max-width: 1180px;
+  margin-block: 8px 16px;
+}
+
+/* The panel paints bio photos carbon-2 and so are the bricks, which would leave
+   an initials placeholder invisible on its own brick. */
+.speakers .bio-brick .bio-photo-initials {
+  background: var(--carbon);
+}
+
+/* bio.css darkens the role line to Adobe Red Deep for the light brick's ground.
+   On carbon that goes the wrong way — 2.8:1 against 3.8:1 — so the panel pins it
+   back. Higher specificity than either single-class rule on purpose: bio.css and
+   speakers.css load independently and their order is not guaranteed. */
+.speakers .bio.bio-brick {
+  --bio-role: var(--aem-red);
 }

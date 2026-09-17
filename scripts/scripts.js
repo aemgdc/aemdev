@@ -23,6 +23,10 @@ const linkBlocks = [
   { youtube: 'https://www.youtube' },
   { youtube: 'https://youtu.be' },
   { spotify: 'https://open.spotify.com' },
+  // Post permalinks only — profile, company and article links stay links.
+  { linkedin: 'linkedin.com/posts/' },
+  { linkedin: 'linkedin.com/feed/update/' },
+  { linkedin: 'linkedin.com/embed/feed/update/' },
 ];
 
 // Blocks with self-managed styles

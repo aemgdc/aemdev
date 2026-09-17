@@ -1,0 +1,36 @@
+/* Embedded LinkedIn post. LinkedIn's guest iframe can't report its own height,
+   so the placeholder reserves a fixed one — override --linkedin-embed-height on
+   a section or page to fit an unusually short or tall post. */
+.linkedin-embed {
+  --linkedin-embed-width: 550px;
+  --linkedin-embed-height: 660px;
+
+  width: 100%;
+  max-width: var(--linkedin-embed-width);
+  height: var(--linkedin-embed-height);
+  margin: 2.5rem auto;
+  background-color: var(--surface);
+
+  /* Sharp-edged per DESIGN.md; the elevation comes entirely from the shadow —
+     a tight contact layer over a wide, soft ambient one. */
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 6%),
+    0 0.75rem 1.5rem rgb(0 0 0 / 10%),
+    0 2rem 4.5rem rgb(0 0 0 / 22%);
+
+  & iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+}
+
+/* Wider columns let the post breathe, so it needs less vertical room. */
+@media (width >= 600px) {
+  .linkedin-embed {
+    --linkedin-embed-height: 610px;
+
+    margin-block: 3rem;
+  }
+}

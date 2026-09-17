@@ -13,6 +13,7 @@
  *   | card-1-url      | /en/articles/aem-eds-content-modeling-deep-dive/ |
  *   | card-1-date     | Jun 25, 2026 |
  *   | card-1-author   | Tad Reeves |
+ *   | card-1-image    | (an image, or a path to one) |  (optional) thumbnail
  *
  * Dynamic mode (falls back to index fetch when no card rows present):
  *   | index  | /en/query-index.json |
@@ -31,9 +32,23 @@
  * Sort is by `eventDate` where present, else `date`, descending — an event that
  * happened has a more meaningful recency than the day it was written up. Most
  * recaps carry only `date`, so this degrades to publication order.
+ *
+ * In dynamic mode a card's thumbnail is the page's own `image` (the query index
+ * maps that to og:image, so it is whatever the page already shows as its default
+ * image). A card with no image keeps the text-only layout rather than reserving
+ * an empty frame, so a mixed feed still reads as one grid.
  */
 
 import { formatDate, dateValue } from '../../scripts/utils/date.js';
+import { createPicture } from '../../scripts/utils/picture.js';
+
+/*
+ * A thumbnail is at most ~460px wide (2-up just under the 4-up breakpoint), so
+ * one 750px render covers every column count at 2x. The index hands us the
+ * 1200px og render; createPicture keeps only the pathname and re-derives the
+ * width, which is the whole point of routing through it.
+ */
+const THUMB_BREAKPOINTS = [{ width: '750' }];
 
 // Split an authored comma-separated cell into a lowercased list for matching.
 function splitList(val) {
@@ -91,6 +106,10 @@ function parseRows(block) {
       if (field === 'url') {
         const link = valueCell.querySelector('a[href]');
         cardMap[num].url = link ? link.getAttribute('href') : value;
+      } else if (field === 'image') {
+        // An author drops in a real image, so the cell has no text to read.
+        const img = valueCell.querySelector('img[src]');
+        cardMap[num].image = img ? img.getAttribute('src') : value;
       } else {
         cardMap[num][field] = value;
       }
@@ -156,10 +175,32 @@ function buildSectionHeader(config) {
   return header;
 }
 
+/*
+ * A card image is author-supplied text in static mode, and createPicture parses
+ * it as a URL. A typo there should cost that card its thumbnail, not the feed.
+ * alt="" is deliberate: the card is one link already named by its title, so a
+ * described thumbnail would only read it out twice.
+ */
+function buildThumb(src) {
+  let picture;
+  try {
+    picture = createPicture({ src, alt: '', breakpoints: THUMB_BREAKPOINTS });
+  } catch {
+    return null;
+  }
+  const thumb = document.createElement('div');
+  thumb.className = 'feed-card-thumb';
+  thumb.append(picture);
+  return thumb;
+}
+
 function buildCard(card) {
   const a = document.createElement('a');
   a.className = 'feed-card-item';
   a.href = card.url || '#';
+
+  const thumb = card.image ? buildThumb(card.image) : null;
+  if (thumb) a.append(thumb);
 
   if (card.category) {
     const cat = document.createElement('p');
@@ -224,6 +265,7 @@ function articleToCard(article) {
     url: article.path || '#',
     date: when ? formatDate(when) : '',
     author: article.author || '',
+    image: article.image || '',
   };
 }
 

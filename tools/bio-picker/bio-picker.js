@@ -222,18 +222,7 @@ async function insertBios() {
         return p;
       })();
 
-      const currentValue = pElement.textContent.trim();
-      const speakers = currentValue
-        ? currentValue.split(',').map((s) => s.trim()).filter(Boolean)
-        : [];
-
-      selectedBios.forEach((bio) => {
-        if (!speakers.includes(bio.slug)) {
-          speakers.push(bio.slug);
-        }
-      });
-
-      pElement.textContent = speakers.join(', ');
+      pElement.textContent = selectedBios.map((bio) => bio.slug).join(', ');
     }
 
     // Get the main content and save back to document

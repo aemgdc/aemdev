@@ -220,6 +220,21 @@ function getCurrentVersion(json) {
   };
 }
 
+function replaceHtml(text) {
+  let inner = text;
+  const fromOrigin = `https://main--${DA_CONSTANTS.org}--${DA_CONSTANTS.repo}.aem.live`;
+  inner = text
+    .replaceAll('./media', `${fromOrigin}/media`);
+
+  return `
+    <body>
+      <header></header>
+      <main>${inner}</main>
+      <footer></footer>
+    </body>
+  `;
+}
+
 async function saveToDa(text, pathname, token) {
   const daPath = `/${DA_CONSTANTS.org}/${DA_CONSTANTS.repo}${pathname}`;
   const daHref = `${DA_CONSTANTS.editUrl}${daPath}`;
@@ -255,6 +270,7 @@ export {
   getCurrentVersion,
   getPageStatus,
   getPublishStatus,
+  replaceHtml,
   saveToDa,
   toLowerCaseObject,
 };

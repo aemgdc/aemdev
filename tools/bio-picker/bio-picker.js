@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-unresolved
 import DA_SDK from 'https://da.live/nx/utils/sdk.js';
 import { BIO_PATHS, bioFromRow } from '/tools/bio-manager/bio-doc.js';
+import { saveToDa } from '/tools/advanced-search/helper.js';
 
 const DA_SOURCE = 'https://admin.da.live/source';
 const DA_CONTENT = 'https://content.da.live';
@@ -134,9 +135,10 @@ function renderBios(query) {
 }
 
 async function insertBio() {
-  if (!selectedBio || !state.actions) return;
+  if (!selectedBio) return;
 
   try {
+    // Fetch the source document
     const pageSourceUrl = `https://admin.da.live/source/${state.org}/${state.site}${state.path}.html?nocache=${Date.now()}`;
     const resp = await state.actions.daFetch(pageSourceUrl);
     if (!resp.ok) {
@@ -145,42 +147,65 @@ async function insertBio() {
       return;
     }
 
-    let html = await resp.text();
+    const text = await resp.text();
+    const dom = new DOMParser().parseFromString(text, 'text/html');
+    const metadataEl = dom.querySelector('.metadata');
 
-    // Find and replace speakers value using a more flexible regex
-    const regex = /<p[^>]*>speakers<\/p>\s*<\/div>\s*<div[^>]*>\s*<p[^>]*>(.*?)<\/p>/i;
-    const match = html.match(regex);
+    // Throw error if metadata block doesn't exist
+    if (!metadataEl) {
+      console.error('Metadata block not found on page. Please add a metadata block before using the bio picker.');
+      state.actions.closeLibrary?.();
+      return;
+    }
 
-    if (!match) {
+    // Find or create the speakers row
+    let speakersRow = null;
+    [...metadataEl.childNodes].forEach((row) => {
+      if (row.children) {
+        const key = row.children[0]?.textContent?.trim().toLowerCase();
+        if (key && key.startsWith('speakers')) {
+          speakersRow = row;
+        }
+      }
+    });
+
+    if (!speakersRow) {
       console.error('No speakers row found in metadata. Please add a speakers row to the metadata block first.');
       state.actions.closeLibrary?.();
       return;
     }
 
-    const currentValue = match[1].trim();
-    const speakers = currentValue
-      ? currentValue.split(',').map((s) => s.trim()).filter(Boolean)
-      : [];
+    // Update the speakers value
+    if (speakersRow && speakersRow.children[1]) {
+      const valueCell = speakersRow.children[1];
+      const pElement = valueCell.querySelector('p') || (() => {
+        const p = document.createElement('p');
+        valueCell.appendChild(p);
+        return p;
+      })();
 
-    if (!speakers.includes(selectedBio.slug)) {
-      speakers.push(selectedBio.slug);
+      const currentValue = pElement.textContent.trim();
+      const speakers = currentValue
+        ? currentValue.split(',').map((s) => s.trim()).filter(Boolean)
+        : [];
+
+      if (!speakers.includes(selectedBio.slug)) {
+        speakers.push(selectedBio.slug);
+      }
+
+      pElement.textContent = speakers.join(', ');
     }
 
-    const newValue = speakers.join(', ');
-    const updatedHtml = html.replace(match[1], newValue);
-
-    const body = new FormData();
-    body.append('data', new Blob([updatedHtml], { type: 'text/html' }));
-    await fetch(pageSourceUrl.replace('?nocache=' + Date.now(), ''), {
-      method: 'POST',
-      headers: authHeaders(),
-      body,
-    });
-
-    state.actions.closeLibrary?.();
+    // Get the main content and save back to document
+    const main = dom.querySelector('main');
+    if (main) {
+      await saveToDa(main.innerHTML, state.path, state.token);
+    }
   } catch (error) {
-    console.error('Failed to insert bio:', error);
+    console.error('Failed to update speakers:', error);
   }
+
+  state.actions.closeLibrary?.();
 }
 
 async function init() {

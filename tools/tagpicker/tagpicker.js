@@ -1,5 +1,7 @@
 // eslint-disable-next-line import/no-unresolved
 import DA_SDK from 'https://da.live/nx/utils/sdk.js';
+import { saveToDa } from '/tools/advanced-search/helper.js';
+
 
 const tagURL = 'https://publish-p121227-e1183758.adobeaemcloud.com/services/tagsservlet';
 

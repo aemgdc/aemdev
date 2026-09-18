@@ -145,42 +145,19 @@ async function insertBio() {
       return;
     }
 
-    const text = await resp.text();
-    const dom = new DOMParser().parseFromString(text, 'text/html');
-    const metadataEl = dom.querySelector('.metadata');
+    let html = await resp.text();
 
-    if (!metadataEl) {
-      console.error('Metadata block not found on page. Please add a metadata block before using the bio picker.');
-      state.actions.closeLibrary?.();
-      return;
-    }
+    // Find and replace speakers value using a more flexible regex
+    const regex = /<p[^>]*>speakers<\/p>\s*<\/div>\s*<div[^>]*>\s*<p[^>]*>(.*?)<\/p>/i;
+    const match = html.match(regex);
 
-    let speakersRow = null;
-    [...metadataEl.children].forEach((row) => {
-      if (row.children && row.children.length >= 2) {
-        const key = row.children[0]?.textContent?.trim().toLowerCase();
-        if (key === 'speakers') {
-          speakersRow = row;
-        }
-      }
-    });
-
-    if (!speakersRow) {
+    if (!match) {
       console.error('No speakers row found in metadata. Please add a speakers row to the metadata block first.');
       state.actions.closeLibrary?.();
       return;
     }
 
-    const valueCell = speakersRow.children[1];
-    const pElement = valueCell.querySelector('p');
-
-    if (!pElement) {
-      console.error('Invalid speakers row structure.');
-      state.actions.closeLibrary?.();
-      return;
-    }
-
-    const currentValue = pElement.textContent.trim();
+    const currentValue = match[1].trim();
     const speakers = currentValue
       ? currentValue.split(',').map((s) => s.trim()).filter(Boolean)
       : [];
@@ -189,18 +166,16 @@ async function insertBio() {
       speakers.push(selectedBio.slug);
     }
 
-    pElement.textContent = speakers.join(', ');
+    const newValue = speakers.join(', ');
+    const updatedHtml = html.replace(match[1], newValue);
 
-    const main = dom.querySelector('main');
-    if (main) {
-      const body = new FormData();
-      body.append('data', new Blob([main.innerHTML], { type: 'text/html' }));
-      await fetch(pageSourceUrl.replace('?nocache=' + Date.now(), ''), {
-        method: 'POST',
-        headers: authHeaders(),
-        body,
-      });
-    }
+    const body = new FormData();
+    body.append('data', new Blob([updatedHtml], { type: 'text/html' }));
+    await fetch(pageSourceUrl.replace('?nocache=' + Date.now(), ''), {
+      method: 'POST',
+      headers: authHeaders(),
+      body,
+    });
 
     state.actions.closeLibrary?.();
   } catch (error) {

@@ -16,6 +16,7 @@ let state = {
   org: '',
   site: '',
   token: '',
+  path: '',
   actions: null,
 };
 
@@ -45,7 +46,7 @@ function roleLine(bio) {
 
 async function fetchBios() {
   try {
-    const resp = await fetch(`${sourceUrl(BIO_PATHS.sheet)}.json`, { headers: authHeaders() });
+    const resp = await fetch(`${sourceUrl(BIO_PATHS.sheet)}.json?nocache=${Date.now()}`, { headers: authHeaders() });
     if (resp.status === 404) return [];
     if (!resp.ok) throw new Error(`Could not read the bios sheet (${resp.status}).`);
     const json = await resp.json();
@@ -132,13 +133,83 @@ function renderBios(query) {
   });
 }
 
-function insertBio() {
+function createSpeakersRow() {
+  const row = document.createElement('div');
+  row.innerHTML = '<div><p>speakers</p></div><div><p></p></div>';
+  return row;
+}
+
+async function insertBio() {
   if (!selectedBio || !state.actions) return;
 
-  const href = `${BIO_PATHS.fragments}/${selectedBio.slug}`;
-  state.actions.sendHTML(`<p><a href="${href}">${escapeHtml(selectedBio.name)}</a></p>`);
-  if (typeof state.actions.closeLibrary === 'function') {
-    state.actions.closeLibrary();
+  try {
+    const pageSourceUrl = `https://admin.da.live/source/${state.org}/${state.site}${state.path}.html?nocache=${Date.now()}`;
+    const resp = await state.actions.daFetch(pageSourceUrl);
+    if (!resp.ok) {
+      console.error('Failed to fetch source document');
+      state.actions.closeLibrary?.();
+      return;
+    }
+
+    const text = await resp.text();
+    const dom = new DOMParser().parseFromString(text, 'text/html');
+    const metadataEl = dom.querySelector('.metadata');
+
+    if (!metadataEl) {
+      console.error('Metadata block not found on page. Please add a metadata block before using the bio picker.');
+      state.actions.closeLibrary?.();
+      return;
+    }
+
+    let speakersRow = null;
+    [...metadataEl.childNodes].forEach((row) => {
+      if (row.children) {
+        const key = row.children[0]?.textContent?.trim().toLowerCase();
+        if (key === 'speakers') {
+          speakersRow = row;
+        }
+      }
+    });
+
+    if (!speakersRow) {
+      speakersRow = createSpeakersRow();
+      metadataEl.appendChild(speakersRow);
+    }
+
+    if (speakersRow && speakersRow.children[1]) {
+      const valueCell = speakersRow.children[1];
+      const pElement = valueCell.querySelector('p') || (() => {
+        const p = document.createElement('p');
+        valueCell.appendChild(p);
+        return p;
+      })();
+
+      const currentValue = pElement.textContent.trim();
+      const speakers = currentValue
+        ? currentValue.split(',').map((s) => s.trim()).filter(Boolean)
+        : [];
+
+      if (!speakers.includes(selectedBio.slug)) {
+        speakers.push(selectedBio.slug);
+      }
+
+      pElement.textContent = speakers.join(', ');
+    }
+
+    const main = dom.querySelector('main');
+    if (main) {
+      const body = new FormData();
+      body.append('data', new Blob([main.innerHTML], { type: 'text/html' }));
+      await fetch(pageSourceUrl.replace('?nocache=' + Date.now(), ''), {
+        method: 'POST',
+        headers: authHeaders(),
+        body,
+      });
+    }
+
+    state.actions.closeLibrary?.();
+  } catch (error) {
+    console.error('Failed to insert bio:', error);
   }
 }
 
@@ -166,6 +237,7 @@ async function init() {
   state.org = org;
   state.site = site;
   state.token = token;
+  state.path = context?.path || '';
   state.actions = actions || null;
 
   allBios = await fetchBios();

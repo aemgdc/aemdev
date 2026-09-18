@@ -4,7 +4,6 @@ import { BIO_PATHS, bioFromRow } from '/tools/bio-manager/bio-doc.js';
 import { saveToDa } from '/tools/advanced-search/helper.js';
 
 const DA_SOURCE = 'https://admin.da.live/source';
-const DA_CONTENT = 'https://content.da.live';
 
 const searchInput = document.getElementById('bio-search');
 const biosContainer = document.getElementById('bios-container');
@@ -277,6 +276,46 @@ async function init() {
   state.actions = actions || null;
 
   allBios = await fetchBios();
+
+  // Load existing speakers from the page
+  try {
+    const pageSourceUrl = `https://admin.da.live/source/${org}/${site}${context.path}.html?nocache=${Date.now()}`;
+    const resp = await actions.daFetch(pageSourceUrl);
+    if (resp.ok) {
+      const text = await resp.text();
+      const dom = new DOMParser().parseFromString(text, 'text/html');
+      const metadataEl = dom.querySelector('.metadata');
+
+      if (metadataEl) {
+        [...metadataEl.childNodes].forEach((row) => {
+          if (row.children) {
+            const key = row.children[0]?.textContent?.trim().toLowerCase();
+            if (key && key.startsWith('speakers')) {
+              const valueCell = row.children[1];
+              const pElement = valueCell?.querySelector('p');
+              if (pElement) {
+                const speakerSlugs = pElement.textContent
+                  .trim()
+                  .split(',')
+                  .map((s) => s.trim())
+                  .filter(Boolean);
+
+                speakerSlugs.forEach((slug) => {
+                  const bio = allBios.find((b) => b.slug === slug);
+                  if (bio && !selectedBios.find((b) => b.slug === slug)) {
+                    selectedBios.push(bio);
+                  }
+                });
+              }
+            }
+          }
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load existing speakers:', error);
+  }
+
   renderBios('');
   updateCurrentDisplay();
   renderSelectedBios();
@@ -288,6 +327,7 @@ async function init() {
   addBioButton.addEventListener('click', addCurrentBio);
   resetButton.addEventListener('click', resetSelection);
   insertBiosButton.addEventListener('click', insertBios);
+  insertBiosButton.disabled = selectedBios.length === 0;
 }
 
 init();

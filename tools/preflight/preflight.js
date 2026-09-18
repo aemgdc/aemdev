@@ -194,8 +194,6 @@ const speakerCheck = async ({ doc }) => {
 
   if (!speakersMetadata) {
     return [REASONS['speakers.warn.missing']];
-  } else {
-    return { badge: 'success', reason: `Speaker(s) provided` };
   }
 };
 

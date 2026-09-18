@@ -250,6 +250,7 @@ function changeRowValue(rowEl, newTextValue, editAmount, editStringLocation, que
 function editRows(queryObject, token) {
   const doNameChange = document.getElementById('changeRowName').checked;
   const doValueChange = document.getElementById('changeRowValue').checked;
+  let useBlankValue = false;
   try {
     if (!doNameChange && !doValueChange) {
       throw new Error('no operation selected');
@@ -264,7 +265,8 @@ function editRows(queryObject, token) {
     }
     const newTextValue = document.querySelector('#edit-section #newText')?.value;
     if (doValueChange && !newTextValue) {
-      throw new Error('no value change provided');
+      useBlankValue =true;
+      // throw new Error('no value change provided');
     }
     const editAmount = document.querySelector('#edit-section [name="partialEdit"]')?.value;
     const editStringLocation = document.querySelector('#edit-section [name="editTextAction"]')?.value;
@@ -275,6 +277,9 @@ function editRows(queryObject, token) {
         }
         if (newTextValue) {
           changeRowValue(el, newTextValue, editAmount, editStringLocation, queryObject);
+        }
+        if (useBlankValue) {
+          changeRowValue(el, '', editAmount, editStringLocation, queryObject);
         }
       });
       const htmlToUse = result.dom.querySelector('main');

@@ -4,15 +4,18 @@ import { BIO_PATHS, bioFromRow } from '/tools/bio-manager/bio-doc.js';
 import { saveToDa } from '/tools/advanced-search/helper.js';
 
 const DA_SOURCE = 'https://admin.da.live/source';
-const DA_CONTENT = 'https://content.da.live';
 
 const searchInput = document.getElementById('bio-search');
 const biosContainer = document.getElementById('bios-container');
-const selectedBioDisplay = document.getElementById('selected-bio');
-const insertBioButton = document.getElementById('insertBio');
+const currentBioDisplay = document.getElementById('current-bio');
+const selectedBiosList = document.getElementById('selected-bios');
+const addBioButton = document.getElementById('addBio');
+const resetButton = document.getElementById('resetSelection');
+const insertBiosButton = document.getElementById('insertBios');
 
 let allBios = [];
-let selectedBio = null;
+let currentBio = null;
+const selectedBios = [];
 let state = {
   org: '',
   site: '',
@@ -82,7 +85,7 @@ function filterBios(query) {
 function createBioElement(bio) {
   const div = document.createElement('div');
   div.className = 'bio-item';
-  if (selectedBio?.slug === bio.slug) {
+  if (currentBio?.slug === bio.slug) {
     div.classList.add('selected');
   }
   div.innerHTML = `
@@ -91,23 +94,58 @@ function createBioElement(bio) {
     <div class="bio-slug">${escapeHtml(bio.slug)}</div>
   `;
   div.addEventListener('click', () => {
-    selectedBio = bio;
-    updateSelectedDisplay();
+    currentBio = bio;
+    updateCurrentDisplay();
     renderBios(searchInput.value);
   });
   return div;
 }
 
-function updateSelectedDisplay() {
-  if (selectedBio) {
-    selectedBioDisplay.textContent = selectedBio.name;
-    selectedBioDisplay.classList.add('bio-added');
-    insertBioButton.disabled = false;
+function updateCurrentDisplay() {
+  if (currentBio) {
+    currentBioDisplay.textContent = currentBio.name;
+    addBioButton.disabled = false;
   } else {
-    selectedBioDisplay.textContent = '(none)';
-    selectedBioDisplay.classList.remove('bio-added');
-    insertBioButton.disabled = true;
+    currentBioDisplay.textContent = '(none)';
+    addBioButton.disabled = true;
   }
+}
+
+function addCurrentBio() {
+  if (!currentBio) return;
+
+  if (!selectedBios.find((b) => b.slug === currentBio.slug)) {
+    selectedBios.push(currentBio);
+  }
+
+  renderSelectedBios();
+  insertBiosButton.disabled = selectedBios.length === 0;
+}
+
+function renderSelectedBios() {
+  selectedBiosList.replaceChildren();
+  selectedBios.forEach((bio) => {
+    const li = document.createElement('li');
+    li.textContent = bio.name;
+    li.addEventListener('click', () => {
+      const index = selectedBios.indexOf(bio);
+      if (index > -1) {
+        selectedBios.splice(index, 1);
+      }
+      renderSelectedBios();
+      insertBiosButton.disabled = selectedBios.length === 0;
+    });
+    selectedBiosList.appendChild(li);
+  });
+}
+
+function resetSelection() {
+  currentBio = null;
+  selectedBios.length = 0;
+  updateCurrentDisplay();
+  renderSelectedBios();
+  renderBios(searchInput.value);
+  insertBiosButton.disabled = true;
 }
 
 function renderBios(query) {
@@ -134,8 +172,8 @@ function renderBios(query) {
   });
 }
 
-async function insertBio() {
-  if (!selectedBio) return;
+async function insertBios() {
+  if (selectedBios.length === 0) return;
 
   try {
     // Fetch the source document
@@ -158,7 +196,7 @@ async function insertBio() {
       return;
     }
 
-    // Find or create the speakers row
+    // Find the speakers row
     let speakersRow = null;
     [...metadataEl.childNodes].forEach((row) => {
       if (row.children) {
@@ -184,16 +222,7 @@ async function insertBio() {
         return p;
       })();
 
-      const currentValue = pElement.textContent.trim();
-      const speakers = currentValue
-        ? currentValue.split(',').map((s) => s.trim()).filter(Boolean)
-        : [];
-
-      if (!speakers.includes(selectedBio.slug)) {
-        speakers.push(selectedBio.slug);
-      }
-
-      pElement.textContent = speakers.join(', ');
+      pElement.textContent = selectedBios.map((bio) => bio.slug).join(', ');
     }
 
     // Get the main content and save back to document
@@ -236,14 +265,58 @@ async function init() {
   state.actions = actions || null;
 
   allBios = await fetchBios();
+
+  // Load existing speakers from the page
+  try {
+    const pageSourceUrl = `https://admin.da.live/source/${org}/${site}${context.path}.html?nocache=${Date.now()}`;
+    const resp = await actions.daFetch(pageSourceUrl);
+    if (resp.ok) {
+      const text = await resp.text();
+      const dom = new DOMParser().parseFromString(text, 'text/html');
+      const metadataEl = dom.querySelector('.metadata');
+
+      if (metadataEl) {
+        [...metadataEl.childNodes].forEach((row) => {
+          if (row.children) {
+            const key = row.children[0]?.textContent?.trim().toLowerCase();
+            if (key && key.startsWith('speakers')) {
+              const valueCell = row.children[1];
+              const pElement = valueCell?.querySelector('p');
+              if (pElement) {
+                const speakerSlugs = pElement.textContent
+                  .trim()
+                  .split(',')
+                  .map((s) => s.trim())
+                  .filter(Boolean);
+
+                speakerSlugs.forEach((slug) => {
+                  const bio = allBios.find((b) => b.slug === slug);
+                  if (bio && !selectedBios.find((b) => b.slug === slug)) {
+                    selectedBios.push(bio);
+                  }
+                });
+              }
+            }
+          }
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load existing speakers:', error);
+  }
+
   renderBios('');
-  updateSelectedDisplay();
+  updateCurrentDisplay();
+  renderSelectedBios();
 
   searchInput.addEventListener('input', () => {
     renderBios(searchInput.value);
   });
 
-  insertBioButton.addEventListener('click', insertBio);
+  addBioButton.addEventListener('click', addCurrentBio);
+  resetButton.addEventListener('click', resetSelection);
+  insertBiosButton.addEventListener('click', insertBios);
+  insertBiosButton.disabled = selectedBios.length === 0;
 }
 
 init();

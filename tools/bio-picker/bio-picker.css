@@ -89,6 +89,29 @@ body {
     }
   }
 
+  #current-bio-container {
+    grid-column: 1 / -1;
+    border-top: 1px solid #cccccc;
+    padding-top: 12px;
+    margin-top: 8px;
+
+    #current-label {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    #current-bio {
+      padding: 8px 12px;
+      border: 2px solid #dadada;
+      border-radius: 5px;
+      background-color: #fafafa;
+      color: #0378CD;
+      font-family: "anova-regular", arial, helvetica, sans-serif;
+      min-height: 20px;
+    }
+  }
+
   #selected-container {
     grid-column: 1 / -1;
     border-top: 1px solid #cccccc;
@@ -101,18 +124,31 @@ body {
       margin-bottom: 8px;
     }
 
-    #selected-bio {
-      padding: 8px 12px;
-      border: 2px solid #dadada;
-      border-radius: 5px;
-      background-color: #fafafa;
-      color: #0378CD;
-      font-family: "anova-regular", arial, helvetica, sans-serif;
-      min-height: 20px;
+    #selected-bios {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
 
-      &.bio-added {
-        border-color: #0378CD;
-        font-weight: bold;
+      li {
+        display: inline-block;
+        padding: 6px 10px;
+        border: 2px solid #dadada;
+        border-radius: 5px;
+        background-color: #fafafa;
+        color: #0378CD;
+        font-family: "anova-regular", arial, helvetica, sans-serif;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+          background-color: #fafafa;
+          border-color: red;
+          color: red;
+          text-decoration: line-through;
+        }
       }
     }
   }
@@ -122,8 +158,8 @@ body {
     display: flex;
     gap: 8px;
 
-    #insertBio {
-      flex: 1;
+    #addBio,
+    #insertBios {
       background-color: #0378CD;
       color: white;
       border: 2px solid transparent;
@@ -135,6 +171,16 @@ body {
       &:disabled {
         background-color: #cccccc;
         cursor: not-allowed;
+      }
+    }
+
+    #resetSelection {
+      background-color: #fafafa;
+      color: #333333;
+      border: 2px solid #cccccc;
+
+      &:hover {
+        background-color: #dddddd;
       }
     }
   }

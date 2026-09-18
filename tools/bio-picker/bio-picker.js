@@ -1,10 +1,6 @@
 // eslint-disable-next-line import/no-unresolved
 import DA_SDK from 'https://da.live/nx/utils/sdk.js';
-
-const BIO_PATHS = {
-  sheet: '/bios',
-  fragments: '/en/fragments/bios',
-};
+import { BIO_PATHS, bioFromRow } from '/tools/bio-manager/bio-doc.js';
 
 const DA_SOURCE = 'https://admin.da.live/source';
 const DA_CONTENT = 'https://content.da.live';
@@ -55,25 +51,13 @@ async function fetchBios() {
     const json = await resp.json();
 
     if (Array.isArray(json?.data)) {
-      return json.data.filter((row) => row.slug).map((row) => ({
-        slug: row.slug || '',
-        name: row.name || '',
-        title: row.title || '',
-        company: row.company || '',
-        status: row.status || 'placeholder',
-      }));
+      return json.data.filter((row) => row.Slug).map(bioFromRow);
     }
     if (Array.isArray(json?.[':names'])) {
       const names = json[':names'];
       const primary = names.includes('data') ? 'data' : names[0];
       const rows = Array.isArray(json[primary]?.data) ? json[primary].data : [];
-      return rows.filter((row) => row.slug).map((row) => ({
-        slug: row.slug || '',
-        name: row.name || '',
-        title: row.title || '',
-        company: row.company || '',
-        status: row.status || 'placeholder',
-      }));
+      return rows.filter((row) => row.Slug).map(bioFromRow);
     }
     return [];
   } catch (error) {

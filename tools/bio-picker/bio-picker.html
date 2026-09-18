@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AEM Bio Picker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="icon" href="data:,">
+    <!-- Import DA App SDK -->
+    <script src="https://da.live/nx/utils/sdk.js" type="module"></script>
+    <!-- Project App Logic -->
+    <script src="/tools/bio-picker/bio-picker.js" type="module"></script>
+
+    <link rel="stylesheet" type="text/css" href="/tools/bio-picker/bio-picker.css">
+  </head>
+  <body>
+    <h2>Bio Picker</h2>
+
+    <div id="search-container">
+      <input id="bio-search" type="search" placeholder="Search by name, title, or company…"
+        autocomplete="off" />
+    </div>
+
+    <div id="bios-container"></div>
+
+    <div id="selected-container">
+      <div id="selected-label">Selected Bio:</div>
+      <div id="selected-bio">(none)</div>
+    </div>
+
+    <div id="button-container" class="buttons">
+      <button id="insertBio">Insert Bio</button>
+    </div>
+  </body>
+</html>

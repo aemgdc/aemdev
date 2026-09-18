@@ -1,0 +1,198 @@
+// eslint-disable-next-line import/no-unresolved
+import DA_SDK from 'https://da.live/nx/utils/sdk.js';
+
+const BIO_PATHS = {
+  sheet: '/bios',
+  fragments: '/en/fragments/bios',
+};
+
+const DA_SOURCE = 'https://admin.da.live/source';
+const DA_CONTENT = 'https://content.da.live';
+
+const searchInput = document.getElementById('bio-search');
+const biosContainer = document.getElementById('bios-container');
+const selectedBioDisplay = document.getElementById('selected-bio');
+const insertBioButton = document.getElementById('insertBio');
+
+let allBios = [];
+let selectedBio = null;
+let state = {
+  org: '',
+  site: '',
+  token: '',
+  actions: null,
+};
+
+function authHeaders() {
+  return { Authorization: `Bearer ${state.token}` };
+}
+
+function sourceUrl(path) {
+  return `${DA_SOURCE}/${state.org}/${state.site}${path}`;
+}
+
+function escapeHtml(value) {
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#039;',
+  };
+  return String(value ?? '').replace(/[&<>"']/g, (c) => map[c]);
+}
+
+function roleLine(bio) {
+  const parts = [bio.title, bio.company].filter(Boolean);
+  return parts.join(' · ');
+}
+
+async function fetchBios() {
+  try {
+    const resp = await fetch(`${sourceUrl(BIO_PATHS.sheet)}.json`, { headers: authHeaders() });
+    if (resp.status === 404) return [];
+    if (!resp.ok) throw new Error(`Could not read the bios sheet (${resp.status}).`);
+    const json = await resp.json();
+
+    if (Array.isArray(json?.data)) {
+      return json.data.filter((row) => row.slug).map((row) => ({
+        slug: row.slug || '',
+        name: row.name || '',
+        title: row.title || '',
+        company: row.company || '',
+        status: row.status || 'placeholder',
+      }));
+    }
+    if (Array.isArray(json?.[':names'])) {
+      const names = json[':names'];
+      const primary = names.includes('data') ? 'data' : names[0];
+      const rows = Array.isArray(json[primary]?.data) ? json[primary].data : [];
+      return rows.filter((row) => row.slug).map((row) => ({
+        slug: row.slug || '',
+        name: row.name || '',
+        title: row.title || '',
+        company: row.company || '',
+        status: row.status || 'placeholder',
+      }));
+    }
+    return [];
+  } catch (error) {
+    console.error('Failed to fetch bios:', error);
+    return [];
+  }
+}
+
+function filterBios(query) {
+  if (!query.trim()) return allBios;
+  const q = query.trim().toLowerCase();
+  return allBios.filter((bio) =>
+    bio.name.toLowerCase().includes(q)
+    || bio.title.toLowerCase().includes(q)
+    || bio.company.toLowerCase().includes(q)
+    || bio.slug.toLowerCase().includes(q),
+  );
+}
+
+function createBioElement(bio) {
+  const div = document.createElement('div');
+  div.className = 'bio-item';
+  if (selectedBio?.slug === bio.slug) {
+    div.classList.add('selected');
+  }
+  div.innerHTML = `
+    <div class="bio-name">${escapeHtml(bio.name)}</div>
+    <div class="bio-role">${escapeHtml(roleLine(bio)) || '&nbsp;'}</div>
+    <div class="bio-slug">${escapeHtml(bio.slug)}</div>
+  `;
+  div.addEventListener('click', () => {
+    selectedBio = bio;
+    updateSelectedDisplay();
+    renderBios(searchInput.value);
+  });
+  return div;
+}
+
+function updateSelectedDisplay() {
+  if (selectedBio) {
+    selectedBioDisplay.textContent = selectedBio.name;
+    selectedBioDisplay.classList.add('bio-added');
+    insertBioButton.disabled = false;
+  } else {
+    selectedBioDisplay.textContent = '(none)';
+    selectedBioDisplay.classList.remove('bio-added');
+    insertBioButton.disabled = true;
+  }
+}
+
+function renderBios(query) {
+  const filtered = filterBios(query);
+  biosContainer.replaceChildren();
+
+  if (!allBios.length) {
+    biosContainer.className = 'loading';
+    biosContainer.textContent = 'Loading bios…';
+    return;
+  }
+
+  if (!filtered.length) {
+    biosContainer.className = 'empty';
+    biosContainer.textContent = query.trim()
+      ? 'No bios match your search.'
+      : 'No bios found.';
+    return;
+  }
+
+  biosContainer.className = '';
+  filtered.forEach((bio) => {
+    biosContainer.append(createBioElement(bio));
+  });
+}
+
+function insertBio() {
+  if (!selectedBio || !state.actions) return;
+
+  const href = `${BIO_PATHS.fragments}/${selectedBio.slug}`;
+  state.actions.sendHTML(`<p><a href="${href}">${escapeHtml(selectedBio.name)}</a></p>`);
+  if (typeof state.actions.closeLibrary === 'function') {
+    state.actions.closeLibrary();
+  }
+}
+
+async function init() {
+  let sdk;
+  try {
+    sdk = await DA_SDK;
+  } catch (e) {
+    biosContainer.className = 'empty';
+    biosContainer.textContent = 'Failed to initialize DA SDK.';
+    console.error('DA SDK initialization failed:', e);
+    return;
+  }
+
+  const { context, token, actions } = sdk || {};
+  const org = context?.org || context?.organization || context?.owner;
+  const site = context?.site || context?.repo || context?.repository;
+
+  if (!token || !org || !site) {
+    biosContainer.className = 'empty';
+    biosContainer.textContent = 'No DA org, site or token in the SDK context.';
+    return;
+  }
+
+  state.org = org;
+  state.site = site;
+  state.token = token;
+  state.actions = actions || null;
+
+  allBios = await fetchBios();
+  renderBios('');
+  updateSelectedDisplay();
+
+  searchInput.addEventListener('input', () => {
+    renderBios(searchInput.value);
+  });
+
+  insertBioButton.addEventListener('click', insertBio);
+}
+
+init();

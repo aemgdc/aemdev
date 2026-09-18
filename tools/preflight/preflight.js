@@ -94,6 +94,7 @@ const REASONS = {
   'description.warn': { badge: 'warn', reason: 'Description not found in metadata or first paragraph.' },
   'alt.info': { badge: 'info', reason: 'All images have alt text.' },
   'tags.warn.missing': { badge: 'warn', reason: 'No tags found in metadata.' },
+  'speakers.warn.missing': { badge: 'warn', reason: 'No speakers found in metadata.' },
 };
 
 /* ------------------------------------------------------------------ *
@@ -187,6 +188,15 @@ const altTextCheck = async ({ doc }) => {
   }));
 };
 
+const speakerCheck = async ({ doc }) => {
+  const metadata = getMetadata(doc.querySelector('.metadata'));
+  const speakersMetadata = metadata.speakers;
+
+  if (!speakersMetadata) {
+    return [REASONS['speakers.warn.missing']];
+  }
+};
+
 const tagsCheck = async ({ doc }) => {
   try {
     const resp = await fetch('https://publish-p121227-e1183758.adobeaemcloud.com/services/tagsservlet.en');
@@ -238,6 +248,7 @@ const CATEGORIES = {
   Content: [
     { title: 'H1 count', fn: h1Check },
     { title: 'Lorem ipsum', fn: loremCheck },
+    { title: 'Speakers', fn: speakerCheck },
   ],
   SEO: [
     { title: 'Title', fn: titleCheck },

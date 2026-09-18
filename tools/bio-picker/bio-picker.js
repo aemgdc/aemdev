@@ -133,12 +133,6 @@ function renderBios(query) {
   });
 }
 
-function createSpeakersRow() {
-  const row = document.createElement('div');
-  row.innerHTML = '<div><p>speakers</p></div><div><p></p></div>';
-  return row;
-}
-
 async function insertBio() {
   if (!selectedBio || !state.actions) return;
 
@@ -162,8 +156,8 @@ async function insertBio() {
     }
 
     let speakersRow = null;
-    [...metadataEl.childNodes].forEach((row) => {
-      if (row.children) {
+    [...metadataEl.children].forEach((row) => {
+      if (row.children && row.children.length >= 2) {
         const key = row.children[0]?.textContent?.trim().toLowerCase();
         if (key === 'speakers') {
           speakersRow = row;
@@ -172,29 +166,30 @@ async function insertBio() {
     });
 
     if (!speakersRow) {
-      speakersRow = createSpeakersRow();
-      metadataEl.appendChild(speakersRow);
+      console.error('No speakers row found in metadata. Please add a speakers row to the metadata block first.');
+      state.actions.closeLibrary?.();
+      return;
     }
 
-    if (speakersRow && speakersRow.children[1]) {
-      const valueCell = speakersRow.children[1];
-      const pElement = valueCell.querySelector('p') || (() => {
-        const p = document.createElement('p');
-        valueCell.appendChild(p);
-        return p;
-      })();
+    const valueCell = speakersRow.children[1];
+    const pElement = valueCell.querySelector('p');
 
-      const currentValue = pElement.textContent.trim();
-      const speakers = currentValue
-        ? currentValue.split(',').map((s) => s.trim()).filter(Boolean)
-        : [];
-
-      if (!speakers.includes(selectedBio.slug)) {
-        speakers.push(selectedBio.slug);
-      }
-
-      pElement.textContent = speakers.join(', ');
+    if (!pElement) {
+      console.error('Invalid speakers row structure.');
+      state.actions.closeLibrary?.();
+      return;
     }
+
+    const currentValue = pElement.textContent.trim();
+    const speakers = currentValue
+      ? currentValue.split(',').map((s) => s.trim()).filter(Boolean)
+      : [];
+
+    if (!speakers.includes(selectedBio.slug)) {
+      speakers.push(selectedBio.slug);
+    }
+
+    pElement.textContent = speakers.join(', ');
 
     const main = dom.querySelector('main');
     if (main) {

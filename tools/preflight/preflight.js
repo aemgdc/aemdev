@@ -95,6 +95,7 @@ const REASONS = {
   'alt.info': { badge: 'info', reason: 'All images have alt text.' },
   'tags.warn.missing': { badge: 'warn', reason: 'No tags found in metadata.' },
   'speakers.warn.missing': { badge: 'warn', reason: 'No speakers found in metadata.' },
+  'speakers.info.found': { badge: 'info', reason: 'Speakers found in metadata.' },
 };
 
 /* ------------------------------------------------------------------ *
@@ -192,8 +193,10 @@ const speakerCheck = async ({ doc }) => {
   const metadata = getMetadata(doc.querySelector('.metadata'));
   const speakersMetadata = metadata.speakers;
 
-  if (!speakersMetadata) {
+  if (!speakersMetadata || !speakersMetadata.content.textContent.trim()) {
     return [REASONS['speakers.warn.missing']];
+  } else {
+    return [REASONS['speakers.info.found']];
   }
 };
 

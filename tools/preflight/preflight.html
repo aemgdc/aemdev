@@ -8,6 +8,10 @@
     <!-- Project App Logic -->
     <script src="/tools/preflight/preflight.js" type="module"></script>
     <link rel="icon" href="data:,">
+    <!-- Preflight renders in a shadow root, which document rules do not reach —
+         but custom properties inherit through the boundary, so loading the skin
+         here is what puts --da-* in scope for the styles inside it. -->
+    <link rel="stylesheet" href="/tools/styles/da-plugin.css">
   </head>
   <body>
     <div id="preflight"></div>

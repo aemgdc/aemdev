@@ -6,13 +6,19 @@
  * file only knows how to render option TYPES, so adding a form type is a change
  * to the catalog and nothing else.
  *
- * What gets inserted is the block's DA source shape — nested divs, the same
- * markup DA stores when the block is authored by hand:
+ * What gets inserted is a TABLE, not the nested divs DA stores on disk. Those
+ * two are different shapes and it matters:
  *
- *   <div class="splitforms">
- *     <div><div>…content…</div></div>          one cell  -> the pane beside the form
- *     <div><div>form</div><div>contact</div></div>   two cells -> configuration
- *   </div>
+ *   on disk   <div class="splitforms"><div><div>form</div>…
+ *   in the    <table><tr><td colspan="2"><p>splitforms</p></td></tr>
+ *   editor          <tr><td><p>form</p></td><td><p>contact</p></td></tr>…
+ *
+ * The editor converts between them on load and save, but its paste parser only
+ * recognises the table. Sending the div form inserts nothing at all — silently,
+ * with the palette closing as though it had worked. Verified by reading the
+ * shape of a block already in a document, which is what this now mirrors:
+ * the name row and any content row span both columns, config rows are two
+ * cells, and every cell's text sits in a <p>.
  * ------------------------------------------------------------------------ */
 
 import DA_SDK from 'https://da.live/nx/utils/sdk.js';
@@ -60,17 +66,20 @@ function configRows() {
 /* ---------- what gets inserted ---------- */
 
 function blockHTML() {
-  const parts = [];
+  const rows = ['<tr><td colspan="2"><p>splitforms</p></td></tr>'];
+
   if (state.contentPane) {
-    parts.push('<div><div>'
+    rows.push('<tr><td colspan="2">'
       + `<h2>${esc(CONTENT_PLACEHOLDER.heading)}</h2>`
       + `<p>${esc(CONTENT_PLACEHOLDER.body)}</p>`
-      + '</div></div>');
+      + '</td></tr>');
   }
+
   configRows().forEach(([key, value]) => {
-    parts.push(`<div><div>${esc(key)}</div><div>${esc(value)}</div></div>`);
+    rows.push(`<tr><td><p>${esc(key)}</p></td><td><p>${esc(value)}</p></td></tr>`);
   });
-  return `<div class="splitforms">${parts.join('')}</div>`;
+
+  return `<table><tbody>${rows.join('')}</tbody></table>`;
 }
 
 /* ---------- rendering ---------- */

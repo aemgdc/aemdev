@@ -51,9 +51,26 @@
   box-sizing: border-box;
 }
 
+/*
+ * The palette is locked to the viewport and scrolls INSIDE itself.
+ *
+ * DA gives an extension a fixed-height iframe — measured at 471x877 — inside a
+ * `.tool-panel-content` with `overflow: hidden`, and the iframe itself is
+ * `overflow: clip`. Nothing outside this document scrolls, so anything taller
+ * than the panel is not merely awkward to reach, it is unreachable: a sticky
+ * footer has no scrollport to pin against and an author cannot scroll to it.
+ *
+ * So the palette never exceeds the viewport. The header and the insert row are
+ * fixed height; the middle scrolls on its own, which works regardless of what
+ * the host does with the iframe.
+ */
 body {
   margin: 0;
   padding: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
   background: var(--sfp-surface);
   color: var(--sfp-text);
   font-family: var(--sfp-body);
@@ -66,8 +83,15 @@ body {
 
 .sfp-app {
   max-width: 1180px;
+  width: 100%;
   margin: 0 auto;
-  padding: var(--sfp-md) var(--sfp-lg) var(--sfp-lg);
+  padding: var(--sfp-md) var(--sfp-lg) 0;
+
+  /* The column that fills the viewport: header, scrolling middle, insert row. */
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 .sfp-head {
@@ -141,6 +165,13 @@ body {
   gap: var(--sfp-lg);
   align-items: start;
   margin-top: var(--sfp-md);
+
+  /* This is the only thing that scrolls. `min-height: 0` is what lets a flex
+     child shrink below its content and actually produce a scrollbar. */
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: var(--sfp-md);
 }
 
 /* A grid child is `min-width: auto`, so the preview table's min-content width
@@ -381,9 +412,7 @@ body {
  * to stay reachable without the author hunting for a scrollbar.
  */
 .sfp-foot {
-  position: sticky;
-  bottom: 0;
-  z-index: 1;
+  flex: none;
   display: flex;
   align-items: center;
   gap: var(--sfp-sm);

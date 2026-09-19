@@ -1,12 +1,14 @@
+@import url('/tools/styles/da-plugin.css');
+
 body {
-  font-family: "anova-light", arial, helvetica, sans-serif;
+  font-family: var(--da-body);
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 48px 88px 64px min-content auto;
   gap: 16px;
   h2 {
     margin: 1rem;
-    font-family: "anova-regular", arial, helvetica, sans-serif;
+    font-family: var(--da-display);
   }
   #menu-container {
     width: 100%;
@@ -16,7 +18,7 @@ body {
     ul {
       padding-left: 12px;
       li.toggle {
-        background-color: #fafafa;
+        background-color: var(--da-paper);
         position: relative;
         padding: 4px;
         &:before {
@@ -26,14 +28,14 @@ body {
           transform: translateY(3px) rotate(135deg);
           width: 6px;
           height: 6px;
-          border: 2px solid #707070;
-          border-radius: 0 1px 0 0;
+          border: 2px solid var(--da-muted);
+          border-radius: var(--da-radius);
           border-width: 3px 3px 0 0;
           transition: all 0.35s ease;
           margin: 0 8px;
         }
         &:hover {
-          background-color: #f4f4f4;
+          background-color: var(--da-surface);
         }
         ul.children li:before {
           display: none;
@@ -48,7 +50,7 @@ body {
             padding-left: 0;
             width: 100%;
             &:hover {
-              background-color: #eaeaea;
+              background-color: var(--da-border);
             }
           }
           li.toggle {
@@ -63,7 +65,7 @@ body {
         }
       }
       li.toggle.open {
-        background-color: #fafafa;
+        background-color: var(--da-paper);
         &:before {
           content: '';
           position: absolute;
@@ -72,15 +74,15 @@ body {
           transform: translateY(6px) rotate(-45deg);
           width: 6px;
           height: 6px;
-          border: 2px solid #707070;
-          border-radius: 0 1px 0 0;
+          border: 2px solid var(--da-muted);
+          border-radius: var(--da-radius);
           border-width: 3px 3px 0 0;
           transition: all 0.35s ease;
         }
         .item-name {
           width: calc(100% - 25px);
           &:hover {
-            background-color: #f4f4f4;
+            background-color: var(--da-surface);
           }
         }
         ul.children {
@@ -90,7 +92,7 @@ body {
             padding-left: 0;
             width: 100%;
             &:hover {
-              background-color: #f4f4f4;
+              background-color: var(--da-surface);
             }
           }
           li.toggle {
@@ -109,8 +111,8 @@ body {
   #selected-container, #saved-tags {
     margin-top: 0;
     font-weight: bold;
-    color: #333;
-    border-top: 1px solid #ccc;
+    color: var(--da-text);
+    border-top: 1px solid var(--da-border);
     padding-top: 10px;
   }
   #selected-container {
@@ -126,20 +128,20 @@ body {
     grid-row: 3;
     button {
       &:nth-child(1) {
-        background-color: #0378CD;
+        background-color: var(--da-red);
         color: white;
         border: 2px solid transparent;
         &:hover {
-          background-color: #005c9e;
+          background-color: var(--da-red-deep);
         }
       }
       &:nth-child(2) {
-        font-family: "anova-light", arial, helvetica, sans-serif;
-        background-color: #fafafa;
-        color: #333333;
-        border: 2px solid #cccccc;
+        font-family: var(--da-body);
+        background-color: var(--da-paper);
+        color: var(--da-text);
+        border: 2px solid var(--da-border);
         &:hover {
-          background-color: #dddddd;
+          background-color: var(--da-border);
         }
       }
     }
@@ -155,24 +157,24 @@ body {
     cursor: pointer;
     overflow: hidden;
     text-overflow: ellipsis;
-    border-radius: 5px;
+    border-radius: var(--da-radius);
     transition: all .35s;
     margin: 0.25em;
     &.tag-added {
-      font-family: "anova-regular", arial, helvetica, sans-serif;
+      font-family: var(--da-body);
       display: inline-block;
       box-sizing: border-box;
       text-decoration: none;
-      border: 2px solid #dadada;
+      border: 2px solid var(--da-border);
       padding: 6px 10px;
       text-align: left;
       font-size: 1rem;
       cursor: pointer;
-      background-color: #fafafa;
-      color: #0378CD;
+      background-color: var(--da-paper);
+      color: var(--da-red);
       overflow: hidden;
       text-overflow: ellipsis;
-      border-radius: 5px;
+      border-radius: var(--da-radius);
       transition: all .35s;
       margin: 4px 8px 0 0;
     }
@@ -185,20 +187,20 @@ body {
       font-weight: normal;
       padding: 16px 0 0 0;
       li {
-        font-family: "anova-regular", arial, helvetica, sans-serif;
+        font-family: var(--da-body);
         display: inline-block;
         box-sizing: border-box;
         text-decoration: none;
-        border: 2px solid #dadada;
+        border: 2px solid var(--da-border);
         padding: 6px 10px;
         text-align: left;
         font-size: 1rem;
         cursor: pointer;
-        background-color: #fafafa;
-        color: #0378CD;
+        background-color: var(--da-paper);
+        color: var(--da-red);
         overflow: hidden;
         text-overflow: ellipsis;
-        border-radius: 5px;
+        border-radius: var(--da-radius);
         transition: all .35s;
         margin: 4px 8px 0 0;
         /* &:after {
@@ -206,15 +208,15 @@ body {
           content: 'x';
         } */
         &:hover {
-          background-color: #fafafa;
+          background-color: var(--da-paper);
           border: 2px solid red;
           color: red;
           text-decoration: line-through;
         }
         &.invalid-tag {
-          border: 2px solid #d32f2f;
-          color: #d32f2f;
-          background-color: #ffebee;
+          border: 2px solid var(--da-err);
+          color: var(--da-err);
+          background-color: var(--da-err-bg);
         }
       }
     }
@@ -251,10 +253,10 @@ li {
 }
 
 button {
-  font-family: "anova-regular", arial, helvetica, sans-serif;
+  font-family: var(--da-body);
   display: inline-block;
   height: 36px;
-  background-color: #ff5000;
+  background-color: var(--da-red);
   color: white;
   box-sizing: border-box;
   text-decoration: none;
@@ -265,10 +267,10 @@ button {
   cursor: pointer;
   overflow: hidden;
   text-overflow: ellipsis;
-  border-radius: 5px;
+  border-radius: var(--da-radius);
   transition: all .35s;
   margin: 0 8px 0 0;
   &:hover {
-    background-color: #d94500;
+    background-color: var(--da-red-deep);
   }
 }

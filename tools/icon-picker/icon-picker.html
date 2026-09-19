@@ -5,13 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="data:," />
     <script src="/tools/icon-picker/icon-picker.js" type="module"></script>
-    <style>
-      body {
-        margin: 0;
-        background: #f4f4f4;
-        font-family: -apple-system, system-ui, "Segoe UI", roboto, sans-serif;
-      }
-    </style>
+    <!-- The palette renders in a shadow root, which document rules do not reach —
+         but custom properties inherit through the boundary, so loading the skin
+         here is what puts --da-* in scope for the styles inside it. -->
+    <link rel="stylesheet" href="/tools/styles/da-plugin.css" />
   </head>
   <body>
     <icon-picker></icon-picker>

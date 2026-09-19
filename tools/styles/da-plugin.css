@@ -1,0 +1,111 @@
+/* ============================================================
+   DA plugin skin — shared tokens for the tools that run inside
+   DA's iframe.
+
+   Why this exists: tagpicker, bio-picker and advanced-search were
+   each carried over from another project and arrived wearing its
+   palette — JMP blue (#0378CD), `anova-*` fonts, 5px radii. None of
+   them loaded those fonts, so the type silently fell back to Arial.
+   bio-manager was reskinned to DESIGN.md by hand and is the one that
+   looks right; this is that skin, factored out so the rest can wear
+   it too and the next plugin starts correct.
+
+   This is NOT the site stylesheet. bio-manager duplicates its tokens
+   deliberately to avoid pulling styles/styles.css into DA's iframe,
+   and that reasoning still holds — what loads here is a few hundred
+   bytes of custom properties and the font link the site already uses,
+   not the site's layout, blocks or resets.
+
+   Adopting it in a plugin is two lines:
+
+     @import url('/tools/styles/da-plugin.css');
+
+   then replace that file's hardcoded colours, fonts and radii with
+   the tokens below. Structure and layout are left alone on purpose —
+   this changes how the tools look, not how they work.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap');
+
+:root {
+  /* Brand — Adobe Red is the one signal colour. */
+  --da-red: #eb1000;
+  --da-red-deep: #c50e00;
+
+  /* Carbon */
+  --da-carbon: #0e0e0e;
+  --da-carbon-mid: #1b1b1b;
+  --da-carbon-surface: #272727;
+
+  /* Cool gray */
+  --da-slate: #6b7280;
+  --da-slate-dark: #4b5563;
+
+  /* Light ground */
+  --da-surface: #f4f4f4;
+  --da-paper: #f9f9f9;
+  --da-white: #fff;
+  --da-text: #1f1f1f;
+  --da-muted: #6b7280;
+  --da-border: #d1d5db;
+  --da-border-strong: #9ca3af;
+
+  /* Status */
+  --da-ok: #0f7a3d;
+  --da-ok-bg: #e7f4ec;
+  --da-warn: #8a5300;
+  --da-warn-bg: #fdf3e3;
+  --da-err: var(--da-red-deep);
+  --da-err-bg: #fdeceb;
+
+  /* Type */
+  --da-display: "Barlow Condensed", "Automate OT", "Arial Narrow", sans-serif;
+  --da-body: "Inter", system-ui, "Helvetica Neue", helvetica, arial, sans-serif;
+  --da-mono: "Space Mono", menlo, consolas, "Liberation Mono", monospace;
+
+  /* Sharp edges. 2px is for chips and nothing else. */
+  --da-radius: 0;
+  --da-radius-chip: 2px;
+
+  /* Space */
+  --da-xs: 4px;
+  --da-sm: 8px;
+  --da-md: 16px;
+  --da-lg: 32px;
+  --da-xl: 64px;
+}
+
+/* ---------- Base ----------
+
+   Deliberately small. A plugin's own stylesheet owns its layout; this sets
+   only the things all of them were getting wrong in the same way — the body
+   face, and page titles rendered in the display face rather than whatever
+   bold sans happened to be in the stack.
+
+   Anything more opinionated belongs in the plugin, not here. */
+
+body {
+  background: var(--da-surface);
+  color: var(--da-text);
+  font-family: var(--da-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2 {
+  font-family: var(--da-display);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  color: var(--da-carbon);
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--da-body);
+  font-weight: 700;
+  color: var(--da-carbon);
+}

@@ -47,19 +47,33 @@ and compares:
 Keeping both lists correct is therefore a thing the tool tells you about rather
 than a thing you have to remember.
 
-## What it inserts
+## What it inserts — a table, not divs
 
-The block's DA source shape — nested divs, exactly what DA stores when the block
-is authored by hand. Two-cell rows configure; the optional one-cell row is the
-content pane beside the form.
+A block has two shapes and they are not interchangeable:
+
+| | shape |
+|---|---|
+| on disk, in DA | `<div class="splitforms"><div><div>form</div><div>…</div></div>…` |
+| in the editor | `<table><tr><td colspan="2"><p>splitforms</p></td></tr>…` |
+
+The editor converts between them on load and save, but **its paste parser only
+recognises the table**. Sending the div form inserts nothing at all — and does it
+silently, with the palette closing as though it had worked. That is worth knowing
+because the div shape is the one you see if you read a document back through the
+Source API, so it is the obvious wrong guess.
 
 ```html
-<div class="splitforms">
-  <div><div><h2>…</h2><p>…</p></div></div>
-  <div><div>form</div><div>event-signup</div></div>
-  <div><div>event-id</div><div>berlin-2026-11</div></div>
-</div>
+<table><tbody>
+  <tr><td colspan="2"><p>splitforms</p></td></tr>
+  <tr><td colspan="2"><h2>…</h2><p>…</p></td></tr>
+  <tr><td><p>form</p></td><td><p>event-signup</p></td></tr>
+  <tr><td><p>event-id</p></td><td><p>berlin-2026-11</p></td></tr>
+</tbody></table>
 ```
+
+The name row and any content row span both columns; config rows are two cells;
+every cell's text sits in a `<p>`. That is the shape a block already in a document
+has, which is where it was read from.
 
 ## Event sign-up options are real, not decorative
 

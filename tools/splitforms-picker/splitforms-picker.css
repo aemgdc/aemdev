@@ -373,14 +373,25 @@ body {
 
 /* ---------- Footer ---------- */
 
+/*
+ * Pinned, because the palette does not get the room its `experience: dialog`
+ * registration implies. DA's canvas UI renders a library extension in a side
+ * panel — measured at 471x830 — and gives it no scroll container of its own, so
+ * on a short window the bottom of a tall palette is simply cut off. Insert has
+ * to stay reachable without the author hunting for a scrollbar.
+ */
 .sfp-foot {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
   display: flex;
   align-items: center;
   gap: var(--sfp-sm);
   flex-wrap: wrap;
   margin-top: var(--sfp-md);
-  padding-top: var(--sfp-md);
+  padding: var(--sfp-md) 0;
   border-top: 1px solid var(--sfp-border);
+  background: var(--sfp-surface);
 }
 
 .sfp-btn {

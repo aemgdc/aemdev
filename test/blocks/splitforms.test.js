@@ -145,6 +145,55 @@ describe('blocks/splitforms', () => {
     });
   });
 
+  describe('event-signup options', () => {
+    const fieldNames = (el) => [...el.querySelectorAll('.splitforms-field [name]')].map((f) => f.name);
+    const build = (extra = '') => {
+      const el = block(row('form', 'event-signup') + extra);
+      decorate(el);
+      return el;
+    };
+
+    it('keeps the dietary field unless it is turned off', () => {
+      expect(fieldNames(build())).to.include('access_needs');
+      expect(fieldNames(build(row('dietary', 'no')))).to.not.include('access_needs');
+    });
+
+    it('adds a places field only when asked', () => {
+      expect(fieldNames(build())).to.not.include('places');
+      expect(fieldNames(build(row('max-attendees', 'yes')))).to.include('places');
+    });
+
+    it('records a single-mode ticket type without asking the attendee', () => {
+      const el = build(row('ticket-type', 'Virtual'));
+      expect(fieldNames(el)).to.not.include('ticket_type');
+      expect(hiddenValue(el, 'ticket_type')).to.equal('Virtual');
+    });
+
+    it('asks the attendee when the event runs both ways', () => {
+      const el = build(row('ticket-type', 'Both'));
+      expect(fieldNames(el)).to.include('ticket_type');
+      expect(hiddenValue(el, 'ticket_type')).to.be.undefined;
+    });
+
+    it('accepts true/false and on/off as well as yes/no', () => {
+      expect(fieldNames(build(row('max-attendees', 'true')))).to.include('places');
+      expect(fieldNames(build(row('max-attendees', 'on')))).to.include('places');
+      expect(fieldNames(build(row('dietary', 'false')))).to.not.include('access_needs');
+    });
+
+    it('leaves the defaults alone when a flag cell is empty or nonsense', () => {
+      expect(fieldNames(build(row('dietary', '')))).to.include('access_needs');
+      expect(fieldNames(build(row('dietary', 'perhaps')))).to.include('access_needs');
+    });
+
+    it('does not leak options between instances', () => {
+      const trimmed = build(row('dietary', 'no'));
+      const plain = build();
+      expect(fieldNames(trimmed)).to.not.include('access_needs');
+      expect(fieldNames(plain)).to.include('access_needs');
+    });
+  });
+
   describe('spam traps', () => {
     it('sends form_loaded_at as epoch milliseconds, not an ISO string', () => {
       const before = Date.now();

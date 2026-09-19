@@ -1,0 +1,461 @@
+/* ============================================================
+   Splitforms Picker — DA library palette.
+
+   Shape follows the site's other pickers: title, a list to choose
+   from, the current selection, an insert row at the bottom.
+
+   Design follows bio-manager, which is the correctly-skinned one:
+   carbon + Adobe Red + cool gray, Barlow Condensed / Inter / Space
+   Mono, sharp edges with 2px only on chips. Tokens are duplicated
+   from styles/styles.css on purpose — this palette must not pull the
+   whole site stylesheet into DA's iframe.
+   ============================================================ */
+
+:root {
+  /* Brand */
+  --sfp-red: #eb1000;
+  --sfp-red-deep: #c50e00;
+  --sfp-carbon: #0e0e0e;
+  --sfp-slate: #6b7280;
+  --sfp-slate-dark: #4b5563;
+
+  /* Light ground */
+  --sfp-surface: #f4f4f4;
+  --sfp-paper: #f9f9f9;
+  --sfp-text: #1f1f1f;
+  --sfp-muted: #6b7280;
+  --sfp-border: #d1d5db;
+  --sfp-border-strong: #9ca3af;
+
+  /* Status */
+  --sfp-warn: #8a5300;
+  --sfp-warn-bg: #fdf3e3;
+  --sfp-err: var(--sfp-red-deep);
+  --sfp-err-bg: #fdeceb;
+
+  /* Type */
+  --sfp-display: "Barlow Condensed", "Automate OT", "Arial Narrow", sans-serif;
+  --sfp-body: "Inter", system-ui, "Helvetica Neue", helvetica, arial, sans-serif;
+  --sfp-mono: "Space Mono", menlo, consolas, "Liberation Mono", monospace;
+
+  /* Space */
+  --sfp-xs: 4px;
+  --sfp-sm: 8px;
+  --sfp-md: 16px;
+  --sfp-lg: 32px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--sfp-surface);
+  color: var(--sfp-text);
+  font-family: var(--sfp-body);
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- Shell ---------- */
+
+.sfp-app {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: var(--sfp-md) var(--sfp-lg) var(--sfp-lg);
+}
+
+.sfp-head {
+  border-bottom: 2px solid var(--sfp-carbon);
+  padding-bottom: var(--sfp-md);
+}
+
+.sfp-eyebrow {
+  font-family: var(--sfp-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--sfp-red);
+  margin: 0 0 var(--sfp-sm);
+}
+
+.sfp-title {
+  font-family: var(--sfp-display);
+  font-size: clamp(1.7rem, 3.4vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.sfp-lede {
+  margin: var(--sfp-sm) 0 0;
+  color: var(--sfp-muted);
+  max-width: 62ch;
+}
+
+.sfp-lede code {
+  font-family: var(--sfp-mono);
+  font-size: 0.82em;
+  background: #e8e8e8;
+  padding: 1px 5px;
+}
+
+/* ---------- Banner ---------- */
+
+.sfp-banner {
+  padding: 10px 14px;
+  margin-top: var(--sfp-md);
+  font-size: 0.86rem;
+  border-left: 3px solid transparent;
+}
+
+.sfp-banner:empty {
+  display: none;
+}
+
+.sfp-banner-warn {
+  background: var(--sfp-warn-bg);
+  border-left-color: var(--sfp-warn);
+  color: var(--sfp-warn);
+}
+
+.sfp-banner-error {
+  background: var(--sfp-err-bg);
+  border-left-color: var(--sfp-err);
+  color: var(--sfp-err);
+}
+
+/* ---------- Layout ---------- */
+
+.sfp-body {
+  display: grid;
+  grid-template-columns: minmax(220px, 290px) 1fr;
+  gap: var(--sfp-lg);
+  align-items: start;
+  margin-top: var(--sfp-md);
+}
+
+/* A grid child is `min-width: auto`, so the preview table's min-content width
+   would push the track wider than the rail and scroll the whole palette
+   sideways. Let the columns shrink and make the table scroll inside itself. */
+.sfp-body > * {
+  min-width: 0;
+}
+
+.sfp-section-label {
+  font-family: var(--sfp-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sfp-slate-dark);
+  margin: 0 0 var(--sfp-sm);
+}
+
+/* ---------- Form list ---------- */
+
+.sfp-forms {
+  display: grid;
+  gap: var(--sfp-sm);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sfp-form {
+  width: 100%;
+  text-align: left;
+  background: var(--sfp-paper);
+  border: 1px solid var(--sfp-border);
+  padding: 10px 12px;
+  cursor: pointer;
+  font-family: var(--sfp-body);
+  font-size: 14px;
+  color: var(--sfp-text);
+  transition: border-color 0.12s ease-in-out, background-color 0.12s ease-in-out;
+}
+
+.sfp-form:hover {
+  border-color: var(--sfp-border-strong);
+}
+
+.sfp-form[aria-pressed="true"] {
+  border-color: var(--sfp-red);
+  border-left-width: 3px;
+  background: rgb(235 16 0 / 5%);
+}
+
+.sfp-form-name {
+  display: block;
+  font-weight: 700;
+}
+
+.sfp-form-blurb {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--sfp-muted);
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+/* ---------- Field chips ---------- */
+
+.sfp-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin: 0 0 var(--sfp-md);
+  padding: 0;
+  list-style: none;
+}
+
+.sfp-fields li {
+  font-family: var(--sfp-mono);
+  font-size: 0.7rem;
+  background: #e8e8e8;
+  border-radius: 2px;
+  padding: 2px 7px;
+  color: var(--sfp-slate-dark);
+}
+
+/* ---------- Options ---------- */
+
+.sfp-opts {
+  display: grid;
+  gap: var(--sfp-md);
+  margin-bottom: var(--sfp-md);
+}
+
+.sfp-label {
+  display: block;
+  font-family: var(--sfp-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sfp-slate-dark);
+  margin-bottom: 6px;
+}
+
+.sfp-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--sfp-border);
+  background: var(--sfp-paper);
+  font: inherit;
+  color: var(--sfp-text);
+}
+
+.sfp-input:focus {
+  outline: none;
+  border-color: var(--sfp-red);
+}
+
+.sfp-hint {
+  font-size: 0.8rem;
+  color: var(--sfp-muted);
+  margin: var(--sfp-xs) 0 0;
+  line-height: 1.4;
+}
+
+/* segmented choice */
+
+.sfp-choice {
+  display: flex;
+  border: 1px solid var(--sfp-border);
+}
+
+.sfp-choice button {
+  flex: 1;
+  appearance: none;
+  background: var(--sfp-paper);
+  border: 0;
+  border-right: 1px solid var(--sfp-border);
+  padding: 9px 6px;
+  font-family: var(--sfp-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sfp-slate-dark);
+  cursor: pointer;
+}
+
+.sfp-choice button:last-child {
+  border-right: 0;
+}
+
+.sfp-choice button[aria-pressed="true"] {
+  background: var(--sfp-red);
+  color: var(--sfp-paper);
+}
+
+/* switch */
+
+.sfp-switch {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.sfp-switch input {
+  width: 16px;
+  height: 16px;
+  margin: 3px 0 0;
+  accent-color: var(--sfp-red);
+  flex: none;
+}
+
+.sfp-switch label {
+  margin: 0;
+  font-family: var(--sfp-body);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--sfp-text);
+  cursor: pointer;
+}
+
+/* ---------- Preview ---------- */
+
+.sfp-preview {
+  border: 1px solid var(--sfp-border);
+  border-top: 3px solid var(--sfp-red);
+  background: var(--sfp-paper);
+  overflow-x: auto;
+}
+
+.sfp-preview table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.86rem;
+}
+
+.sfp-preview th {
+  background: var(--sfp-carbon);
+  color: var(--sfp-paper);
+  font-family: var(--sfp-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 7px 12px;
+}
+
+.sfp-preview td {
+  border-top: 1px solid var(--sfp-border);
+  padding: 7px 12px;
+  vertical-align: top;
+}
+
+.sfp-preview td:first-child {
+  font-family: var(--sfp-mono);
+  font-size: 0.78rem;
+  color: var(--sfp-muted);
+  white-space: nowrap;
+  width: 1%;
+}
+
+.sfp-content-cell {
+  font-style: italic;
+  color: var(--sfp-muted);
+}
+
+/* ---------- Footer ---------- */
+
+.sfp-foot {
+  display: flex;
+  align-items: center;
+  gap: var(--sfp-sm);
+  flex-wrap: wrap;
+  margin-top: var(--sfp-md);
+  padding-top: var(--sfp-md);
+  border-top: 1px solid var(--sfp-border);
+}
+
+.sfp-btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sfp-sm);
+  padding: 11px 24px;
+  border: 1px solid var(--sfp-red);
+  background: var(--sfp-red);
+  color: var(--sfp-paper);
+  font-family: var(--sfp-mono);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.sfp-btn:hover:not(:disabled) {
+  background: var(--sfp-red-deep);
+  border-color: var(--sfp-red-deep);
+}
+
+.sfp-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sfp-btn-ghost {
+  background: transparent;
+  color: var(--sfp-carbon);
+  border-color: var(--sfp-border-strong);
+}
+
+.sfp-btn-ghost:hover:not(:disabled) {
+  background: var(--sfp-carbon);
+  border-color: var(--sfp-carbon);
+  color: var(--sfp-paper);
+}
+
+.sfp-note {
+  font-size: 0.8rem;
+  color: var(--sfp-muted);
+  margin-left: auto;
+  text-align: right;
+}
+
+/* Focus ring, once, for everything that takes one. */
+
+.sfp-form:focus-visible,
+.sfp-btn:focus-visible,
+.sfp-choice button:focus-visible,
+.sfp-switch input:focus-visible,
+.sfp-input:focus-visible {
+  outline: 2px solid var(--sfp-red);
+  outline-offset: 2px;
+}
+
+/* ---------- Narrow: the side rail, or a small dialog ---------- */
+
+@media (width <= 720px) {
+  .sfp-app {
+    padding: var(--sfp-md);
+  }
+
+  .sfp-body {
+    grid-template-columns: 1fr;
+    gap: var(--sfp-md);
+  }
+
+  .sfp-note {
+    margin-left: 0;
+    text-align: left;
+    width: 100%;
+  }
+}

@@ -293,7 +293,19 @@ async function loadDoc(details) {
     token,
     sourceUrl,
   } = details;
-  const url = sourceUrl ?? `https://admin.da.live/source/${org}/${site}${path}.html?nocache=${Date.now()}`;
+  /*
+   * `path` arrives with or without the `.html` extension depending on which
+   * editor is hosting us — Experience Workspace (da.live/canvas) adds it, the
+   * legacy editor (da.live/edit) does not. We append it ourselves on the next
+   * line, so strip it first: a canvas path would otherwise request
+   * `…/contact.html.html` and 404, which the author sees as
+   * "Could not fetch document. Status: 404" and nothing else.
+   *
+   * The strip and the append are kept adjacent on purpose — that is the whole
+   * invariant, and splitting them is how it broke in the first place.
+   */
+  const base = String(path).replace(/\.html$/i, '');
+  const url = sourceUrl ?? `https://admin.da.live/source/${org}/${site}${base}.html?nocache=${Date.now()}`;
   const opts = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
   const resp = await fetch(url, opts);
   if (!resp.ok) return { error: `Could not fetch document. Status: ${resp.status}` };
@@ -392,7 +404,9 @@ customElements.define('da-preflight', DaPreflight);
 
 async function mount() {
   const { context, token } = await DA_SDK;
-  console.log(context.repo);
+
+  // Leading slash only. The `.html` the canvas editor appends is normalised in
+  // loadDoc, next to the place that re-adds it.
   const path = context.path.startsWith('/') ? context.path : `/${context.path}`;
 
   const cmp = document.createElement('da-preflight');

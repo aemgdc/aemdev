@@ -55,6 +55,21 @@ const area = (name, label, required = false, extra = {}) => ({
 const choice = (name, label, options, required = false) => ({
   name, label, type: 'select', options, required,
 });
+const number = (name, label, required = false, extra = {}) => ({
+  name, label, type: 'number', required, ...extra,
+});
+
+/**
+ * Read an on/off config cell. Authors write yes/no, and the picker emits the
+ * same, but true/false and on/off are accepted so a hand-typed table behaves.
+ * Anything unrecognised — including an empty cell — leaves the default alone.
+ */
+function flag(raw, fallback) {
+  const value = String(raw ?? '').trim().toLowerCase();
+  if (['yes', 'true', 'on', '1'].includes(value)) return true;
+  if (['no', 'false', 'off', '0'].includes(value)) return false;
+  return fallback;
+}
 
 /**
  * The pre-selected forms. `subject` becomes the notification email subject,
@@ -89,6 +104,39 @@ const FORMS = {
       text('access_needs', 'Dietary or access requirements'),
       choice('first_event', 'First AEM GDC event?', ['Yes', 'No']),
     ],
+
+    /*
+     * Event sign-up is the one form whose shape an author changes per event, so
+     * it reads three extra config rows. Everything here is additive: with none
+     * of them set the form is exactly what `fields` above declares.
+     */
+    refine(definition, config) {
+      let fields = [...definition.fields];
+      const hiddenValues = {};
+
+      // Dietary/access needs is on unless turned off — most events cater.
+      if (!flag(config.dietary, true)) {
+        fields = fields.filter((f) => f.name !== 'access_needs');
+      }
+
+      // A group booking field, off unless asked for.
+      if (flag(config['max-attendees'], false)) {
+        fields.push(number('places', 'How many places?', false, { min: 1 }));
+      }
+
+      /*
+       * A single-mode event records its type without asking — the attendee has
+       * no choice to make. Only a `Both` event needs the question put to them.
+       */
+      const ticket = (config['ticket-type'] || '').trim();
+      if (ticket && /^both$/i.test(ticket)) {
+        fields.push(choice('ticket_type', 'Attending', ['In-person', 'Virtual'], true));
+      } else if (ticket) {
+        hiddenValues.ticket_type = ticket;
+      }
+
+      return { ...definition, fields, hidden: hiddenValues };
+    },
   },
 
   'join-the-collective': {
@@ -169,6 +217,15 @@ const FORMS = {
 };
 
 const FALLBACK_FORM = 'contact';
+
+/**
+ * The form names this block answers to, for tooling that offers them to authors.
+ *
+ * Exported so tools/splitforms-picker can check its own catalog against the block
+ * instead of keeping a second hand-maintained list: a form added here but not
+ * there shows up as a warning in the picker rather than quietly going missing.
+ */
+export const FORM_NAMES = Object.keys(FORMS);
 
 /**
  * Read the block table into { config, content }.
@@ -378,6 +435,9 @@ function buildForm(definition, config, instanceId) {
   form.append(hidden('subject', definition.subject));
   if (config['reply-email']) form.append(hidden('replyto', config['reply-email']));
   if (config['event-id']) form.append(hidden('event_id', config['event-id']));
+  Object.entries(definition.hidden || {}).forEach(([name, value]) => {
+    form.append(hidden(name, value));
+  });
 
   definition.fields.forEach((field) => form.append(buildField(field, instanceId)));
   form.append(buildTrap());
@@ -418,6 +478,11 @@ export default function decorate(block) {
       + `Known forms: ${Object.keys(FORMS).join(', ')}`);
   }
 
+  // A form may reshape itself from config; those that do not are passed through.
+  const resolved = typeof definition.refine === 'function'
+    ? definition.refine(definition, config)
+    : definition;
+
   instanceCount += 1;
   const instanceId = `splitforms-${instanceCount}`;
 
@@ -433,5 +498,5 @@ export default function decorate(block) {
   } else {
     block.classList.add('splitforms-solo');
   }
-  block.append(buildForm(definition, config, instanceId));
+  block.append(buildForm(resolved, config, instanceId));
 }

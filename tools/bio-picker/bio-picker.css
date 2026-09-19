@@ -1,5 +1,7 @@
+@import url('/tools/styles/da-plugin.css');
+
 body {
-  font-family: "anova-light", arial, helvetica, sans-serif;
+  font-family: var(--da-body);
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: 48px auto auto auto auto;
@@ -8,7 +10,7 @@ body {
 
   h2 {
     margin: 0 0 1rem 0;
-    font-family: "anova-regular", arial, helvetica, sans-serif;
+    font-family: var(--da-display);
     grid-column: 1 / -1;
   }
 
@@ -20,14 +22,14 @@ body {
     #bio-search {
       flex: 1;
       padding: 8px 12px;
-      font-family: "anova-light", arial, helvetica, sans-serif;
-      border: 2px solid #cccccc;
-      border-radius: 5px;
+      font-family: var(--da-body);
+      border: 2px solid var(--da-border);
+      border-radius: var(--da-radius);
       font-size: 14px;
 
       &:focus {
         outline: none;
-        border-color: #0378CD;
+        border-color: var(--da-red);
       }
     }
   }
@@ -36,41 +38,41 @@ body {
     grid-column: 1 / -1;
     max-height: 400px;
     overflow-y: auto;
-    border: 1px solid #cccccc;
-    border-radius: 5px;
-    background-color: #fafafa;
+    border: 1px solid var(--da-border);
+    border-radius: var(--da-radius);
+    background-color: var(--da-paper);
 
     .bio-item {
       padding: 12px;
-      border-bottom: 1px solid #e0e0e0;
+      border-bottom: 1px solid var(--da-border);
       cursor: pointer;
       transition: background-color 0.2s;
 
       &:hover {
-        background-color: #f0f0f0;
+        background-color: var(--da-surface);
       }
 
       &.selected {
-        background-color: #e3f2fd;
-        border-left: 4px solid #0378CD;
+        background-color: rgb(235 16 0 / 5%);
+        border-left: 4px solid var(--da-red);
       }
 
       .bio-name {
-        font-family: "anova-regular", arial, helvetica, sans-serif;
+        font-family: var(--da-body);
         font-weight: bold;
-        color: #333;
+        color: var(--da-text);
         margin: 0 0 4px 0;
       }
 
       .bio-role {
         font-size: 13px;
-        color: #666;
+        color: var(--da-muted);
         margin: 0;
       }
 
       .bio-slug {
         font-size: 12px;
-        color: #999;
+        color: var(--da-muted);
         margin: 4px 0 0 0;
         font-family: monospace;
       }
@@ -79,48 +81,48 @@ body {
     &.empty {
       padding: 24px;
       text-align: center;
-      color: #999;
+      color: var(--da-muted);
     }
 
     &.loading {
       padding: 24px;
       text-align: center;
-      color: #666;
+      color: var(--da-muted);
     }
   }
 
   #current-bio-container {
     grid-column: 1 / -1;
-    border-top: 1px solid #cccccc;
+    border-top: 1px solid var(--da-border);
     padding-top: 12px;
     margin-top: 8px;
 
     #current-label {
       font-weight: bold;
-      color: #333;
+      color: var(--da-text);
       margin-bottom: 8px;
     }
 
     #current-bio {
       padding: 8px 12px;
-      border: 2px solid #dadada;
-      border-radius: 5px;
-      background-color: #fafafa;
-      color: #0378CD;
-      font-family: "anova-regular", arial, helvetica, sans-serif;
+      border: 2px solid var(--da-border);
+      border-radius: var(--da-radius);
+      background-color: var(--da-paper);
+      color: var(--da-red);
+      font-family: var(--da-body);
       min-height: 20px;
     }
   }
 
   #selected-container {
     grid-column: 1 / -1;
-    border-top: 1px solid #cccccc;
+    border-top: 1px solid var(--da-border);
     padding-top: 12px;
     margin-top: 8px;
 
     #selected-label {
       font-weight: bold;
-      color: #333;
+      color: var(--da-text);
       margin-bottom: 8px;
     }
 
@@ -135,16 +137,16 @@ body {
       li {
         display: inline-block;
         padding: 6px 10px;
-        border: 2px solid #dadada;
-        border-radius: 5px;
-        background-color: #fafafa;
-        color: #0378CD;
-        font-family: "anova-regular", arial, helvetica, sans-serif;
+        border: 2px solid var(--da-border);
+        border-radius: var(--da-radius);
+        background-color: var(--da-paper);
+        color: var(--da-red);
+        font-family: var(--da-body);
         cursor: pointer;
         transition: all 0.2s;
 
         &:hover {
-          background-color: #fafafa;
+          background-color: var(--da-paper);
           border-color: red;
           color: red;
           text-decoration: line-through;
@@ -160,37 +162,37 @@ body {
 
     #addBio,
     #insertBios {
-      background-color: #0378CD;
+      background-color: var(--da-red);
       color: white;
       border: 2px solid transparent;
 
       &:hover:not(:disabled) {
-        background-color: #005c9e;
+        background-color: var(--da-red-deep);
       }
 
       &:disabled {
-        background-color: #cccccc;
+        background-color: var(--da-border);
         cursor: not-allowed;
       }
     }
 
     #resetSelection {
-      background-color: #fafafa;
-      color: #333333;
-      border: 2px solid #cccccc;
+      background-color: var(--da-paper);
+      color: var(--da-text);
+      border: 2px solid var(--da-border);
 
       &:hover {
-        background-color: #dddddd;
+        background-color: var(--da-border);
       }
     }
   }
 }
 
 button {
-  font-family: "anova-regular", arial, helvetica, sans-serif;
+  font-family: var(--da-body);
   display: inline-block;
   height: 36px;
-  background-color: #ff5000;
+  background-color: var(--da-red);
   color: white;
   box-sizing: border-box;
   text-decoration: none;
@@ -201,12 +203,12 @@ button {
   cursor: pointer;
   overflow: hidden;
   text-overflow: ellipsis;
-  border-radius: 5px;
+  border-radius: var(--da-radius);
   transition: all 0.35s;
   margin: 0;
 
   &:hover {
-    background-color: #d94500;
+    background-color: var(--da-red-deep);
   }
 }
 

@@ -1,78 +1,47 @@
+@import url('/tools/styles/da-plugin.css');
+
 :root {
-  /* colors */
-  --text-color: red;
-  --link-color: #0378cd;
-  --link-hover-color: #3aaafc;
-  --background-color: #ffffff;
-  --overlay-background-color: #eeeeee;
-  --highlight-background-color: #cccccc;
-  --blue: #0378cd;
-  --blue-hover: #00619d;
-  --blueDark: #002753; /* stat speaking only */
-  --orange: #ff5000;
-  --orange-hover: #d94500;
-  --blueLight: #61CAE5;
-  --purple: #643695;
-  --purpleLight: #9D57A3;
-  --purpleDark: #4d1e80;
-  --red: #B11A29;
-  --redLight: #F04B4B;
-  --redNeon: #fe0b0b;
-  --orangeDark: #854200;
-  --green: #0D782F;
-  --greenLight: #9CCB3B;
-  --yellow: #FFC610;
-  --yellowHover: #ffe48e;
-  --teal: #007481;
-  --tealLight: #3EBDAC;
-  --white: #FFFFFF;
-  --grayDark: #172328;
-  --grayMedium: #44545D;
-  --grayLight: #8F989E;
-  --gray: #f4f4f4;
-  --black: #000000;
-  --gray3: #333333;
-  --gray5: #555555;
-  --gray6: #666666;
-  --gray7: #777777;
-  --gray9: #999999;
-  --gray10: #EFEFEF;
-  --grayRule: #D0D0D0;
-  /* Color variables */
+  /*
+   * What is left of a palette carried over from another project. Thirty-odd
+   * custom properties were declared here and never referenced — purples, teals,
+   * greens, a neon red — so they are gone; these seven are the ones the file
+   * actually uses.
+   *
+   * The `--blue` / `--orange` names are kept because renaming them would touch
+   * every rule that uses them for no visual gain, but both now resolve to Adobe
+   * Red: this skin has one signal colour, and these are aliases onto it.
+   */
+  --blue: var(--da-red);
+  --blue-hover: var(--da-red-deep);
+  --orange: var(--da-red);
+  --red: var(--da-err);
+  --gray: var(--da-surface);
+  --gray3: var(--da-text);
   --color-primary: var(--blue);
-  --color-secondary: var(--orange);
-  --textColor: var(--gray3);
-  --headlineColor: var(--gray);
-  --linkColor: var(--color-primary);
-  --error: var(--red);
-  /* fonts */
-  --font-primary: arial, helvetica, sans-serif;
-  --font-secondary: arial, helvetica, sans-serif;
-  --font-bold: arial, helvetica, sans-serif;
 }
 
 .advanced-search {
   margin: 24px;
   max-width: 1200px;
-  font-family: var(--font-secondary);
+  font-family: var(--da-body);
   h1 {
     font-size: clamp(1.6rem, 1.7vw + 1rem, 2.1rem);
-    font-family: var(--font-secondary);
+    font-family: var(--da-display);
   }
   button {
-    font-family: var(--font-secondary);
+    font-family: var(--da-body);
     margin: 0 8px 8px 0;
     border: none;
-    border-radius: 50px;
+    border-radius: var(--da-radius);
     cursor: pointer;
     font-size: 15px;
     font-weight: 400;
     padding: 5px 14px;
     background-color: transparent;
-    color: #000000;
-    border: 2px solid #292929;
+    color: var(--da-carbon);
+    border: 2px solid var(--da-text);
     &:hover {
-      color: #707070;
+      color: var(--da-muted);
     }
   }
   form {
@@ -86,13 +55,13 @@
       margin-bottom: 1rem;
       div {
         margin: 0 16px 0 0;
-        border-radius: 5px;
+        border-radius: var(--da-radius);
       }
     }
     input[name="replaceText"] {
-      border: 1px solid #d1d1d1;
+      border: 1px solid var(--da-border);
       padding: 6px;
-      border-radius: 5px;
+      border-radius: var(--da-radius);
       margin: 0 0 8px 8px;
       width: 400px;
     }
@@ -109,9 +78,9 @@
         sl-select, select {
           width: 120px;
           font-size: 15px;
-          border-radius: 5px;
+          border-radius: var(--da-radius);
           padding: 6px 0;
-          border: 1px solid #d1d1d1;
+          border: 1px solid var(--da-border);
         }
         input[type=checkbox] {
           margin-bottom: 0rem;
@@ -122,9 +91,9 @@
       }
       div:nth-child(1) {
         display: flex;
-        background-color: #f4f4f4;
+        background-color: var(--da-surface);
         padding: 4px 6px;
-        border-radius: 5px;
+        border-radius: var(--da-radius);
         margin-right: 10px;
         margin-bottom: 10px;
         div:nth-child(1) {
@@ -149,9 +118,9 @@
       }
       div:nth-child(2) {
         display: flex;
-        background-color: #f4f4f4;
+        background-color: var(--da-surface);
         padding: 4px 6px;
-        border-radius: 5px;
+        border-radius: var(--da-radius);
         margin-right: 10px;
         margin-bottom: 10px;
         div:nth-child(1) {
@@ -166,10 +135,10 @@
       }
       div:nth-child(3) {
         display: flex;
-        background-color: #f4f4f4;
+        background-color: var(--da-surface);
         padding: 4px 6px;
         margin-right: 0;
-        border-radius: 5px;
+        border-radius: var(--da-radius);
         margin-bottom: 10px;
         div:nth-child(1) {
           margin-right: 0;
@@ -185,7 +154,7 @@
     }
     sl-input, input {
       margin-bottom: 0;
-      border-radius: 5px;
+      border-radius: var(--da-radius);
     }
     /* label {
       margin-bottom: 8px;
@@ -198,10 +167,10 @@
       min-width: 80px;
       background-color: var(--blue);
       border: none;
-      color: #ffffff;
-      font-family: var(--font-bold);
+      color: var(--da-white);
+      font-family: var(--da-body);
       &:hover {
-        color: #ffffff;
+        color: var(--da-white);
         background-color: var(--blue-hover);
       }
     }
@@ -213,25 +182,25 @@
       button {
         margin: 0 8px 8px 0;
         border: none;
-        border-radius: 50px;
+        border-radius: var(--da-radius);
         cursor: pointer;
         font-size: 15px;
         font-weight: 400;
         padding: 7px 14px;
         background-color: transparent;
-        color: #000000;
-        border: 2px solid #292929;
+        color: var(--da-carbon);
+        border: 2px solid var(--da-text);
         &:hover {
-          color: #707070;
+          color: var(--da-muted);
         }
       }
       button.version {
         background-color: transparent;
-        color: #000000;
-        border: 2px solid #292929;
+        color: var(--da-carbon);
+        border: 2px solid var(--da-text);
         font-weight: 400;
         &:hover {
-          color: #707070;
+          color: var(--da-muted);
         }
       }
     }
@@ -240,8 +209,8 @@
         /* padding-top: 1rem; */
         div {
           margin: 8px 0 1rem 0;
-          border-radius: 5px;
-          border: 1px solid #d1d1d1;
+          border-radius: var(--da-radius);
+          border: 1px solid var(--da-border);
           /* label {
             margin-bottom: 8px;
           } */
@@ -262,42 +231,42 @@
           font-size: 15px;
           cursor: pointer;
           padding: 7px 14px;
-          color: #333333;
+          color: var(--da-text);
           border: none;
-          border-radius: 50px;
+          border-radius: var(--da-radius);
           background-color: var(--blue);
           margin: 0 8px;
           &:hover {
-            background-color: #cacaca;
+            background-color: var(--da-border);
           }
           &.undo {
-            font-family: var(--font-secondary);
+            font-family: var(--da-body);
             margin: 4px 6px 8px 0;
             border: none;
-            border-radius: 50px;
+            border-radius: var(--da-radius);
             cursor: pointer;
             font-size: 15px;
             font-weight: 400;
             padding: 7px 14px;
             background-color: transparent;
-            color: #000000;
-            border: 2px solid #292929;
+            color: var(--da-carbon);
+            border: 2px solid var(--da-text);
             &:hover {
-              color: #707070;
+              color: var(--da-muted);
             }
           }
         }
         button.advanced-submit {
           margin: 8px 4px 8px 0;
           border: none;
-          border-radius: 50px;
+          border-radius: var(--da-radius);
           cursor: pointer;
           font-size: 15px;
           font-weight: 700;
           padding: 7px 14px;
           cursor: pointer;
           background-color: var(--blue);
-          color: #ffffff;
+          color: var(--da-white);
           &:hover {
             background-color: var(--blue-hover);
           }
@@ -326,7 +295,7 @@
   }
   div.results-container:has(div){
     padding: 1.2rem;
-    border-radius: 5px;
+    border-radius: var(--da-radius);
     background-color: rgb(250, 250, 250);
     h2 {
       margin-top: 0;
@@ -350,7 +319,7 @@
         p.button-container:first-child {
           background-color: var(--blue);
           padding: 7px 14px;
-          border-radius: 50px;
+          border-radius: var(--da-radius);
           font-size: 15px;
           font-weight: 700;
           &:hover {
@@ -360,25 +329,25 @@
         p.button-container:nth-child(2) {
           padding: 7px 14px;
           background-color: transparent;
-          color: #000000;
-          border: 2px solid #292929;
+          color: var(--da-carbon);
+          border: 2px solid var(--da-text);
           font-weight: 400;
           font-size: 15px;
-          border-radius: 50px;
+          border-radius: var(--da-radius);
           &:hover {
-            color: #707070;
+            color: var(--da-muted);
           }
         }
         a {
           padding: 7px 14px;
           background-color: transparent;
-          color: #000000;
-          border: 2px solid #292929;
+          color: var(--da-carbon);
+          border: 2px solid var(--da-text);
           font-weight: 400;
-          border-radius: 50px;
+          border-radius: var(--da-radius);
           font-size: 15px;
           &:hover {
-            color: #707070;
+            color: var(--da-muted);
           }
           /* &:after {
             content: '\021F1';
@@ -386,7 +355,7 @@
             margin-left: 4px;
             font-size: 20px;
             display: inline-block;
-            border: 2px solid #0378CD;
+            border: 2px solid var(--da-red);
             content: url('../../../icons/new-tab-icon.svg');
           } */
         }
@@ -431,7 +400,7 @@ dialog {
   height: 610px;
   padding: 1rem;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--da-radius);
   box-shadow: 0 0 10px rgba(0,0,0,0.3);
   iframe {
     width: 500px;
@@ -452,8 +421,8 @@ dialog#refresh-prompt-dialog {
 .searchTerms {
   width: max-content;
   padding: 0 12px;
-  border-radius: 8px;
-  border: 1px solid #d1d1d1;
+  border-radius: var(--da-radius);
+  border: 1px solid var(--da-border);
   box-sizing: border-box;
   outline-offset: 0;
 }
@@ -486,8 +455,8 @@ dialog#refresh-prompt-dialog {
 .result-item {
   margin: 10px 0;
   padding: 10px;
-  /* border: 1px solid #505050; */
-  background-color: #f1f1f1;
+  /* border: 1px solid var(--da-muted); */
+  background-color: var(--da-surface);
   .result-header {
     display: flex;
     align-items: center;
@@ -509,11 +478,11 @@ dialog#refresh-prompt-dialog {
       background-color: green;
     }
     &.status-previewed {
-      background-color: #FFC610;
+      background-color: var(--da-warn);
     }
     &.status-unpublished {
       background-color: transparent;
-      border: 4px solid #c1c1c1;
+      border: 4px solid var(--da-border);
       border-radius: 50%;
       width: 5px;
       height: 5px;
@@ -530,7 +499,7 @@ dialog#refresh-prompt-dialog {
     border: 1px solid green;
   }
   &:has(div.statusCircle.status-previewed) {
-    border: 1px solid #FFC610;
+    border: 1px solid var(--da-warn);
   }
   &:has(div.statusCircle.status-unpublished) {
     border: none;
@@ -559,8 +528,8 @@ dialog#refresh-prompt-dialog {
     transform: translateY(-40%) rotate(135deg);
     width: 8px;
     height: 8px;
-    border: 2px solid #333333;
-    border-radius: 0 1px 0 0;
+    border: 2px solid var(--da-text);
+    border-radius: var(--da-radius);
     border-width: 3px 3px 0 0;
     position: inherit;
     transition: all 0.35s ease;
@@ -578,7 +547,7 @@ dialog#refresh-prompt-dialog {
 
 p.button-container {
   display: inline-block;
-  background-color: #ff5000;
+  background-color: var(--da-red);
   font-weight: bold;
   color: white;
   box-sizing: border-box;
@@ -590,14 +559,14 @@ p.button-container {
   cursor: pointer;
   overflow: hidden;
   text-overflow: ellipsis;
-  border-radius: 5px;
+  border-radius: var(--da-radius);
   transition: all .35s;
   margin: 0 8px 0 0;
 }
 
 a.button {
   display: inline-block;
-  background-color: #00bbee;
+  background-color: var(--da-red);
   font-weight: bold;
   color: white;
   box-sizing: border-box;
@@ -609,7 +578,7 @@ a.button {
   cursor: pointer;
   overflow: hidden;
   text-overflow: ellipsis;
-  border-radius: 5px;
+  border-radius: var(--da-radius);
   transition: all .35s;
   margin: 0;
 }
@@ -623,8 +592,8 @@ a.button {
     display: flex;
     justify-content: center;
     width: 112px;
-    background-color: #3aaafc;
-    border-radius: 5px;
+    background-color: var(--da-red);
+    border-radius: var(--da-radius);
     color: white;
     text-align: center;
     animation: fade-out ease 1s;
@@ -648,7 +617,7 @@ a.button {
   /* Table cells */
   div > div > div {
     display: table-cell;
-    border: 1px solid #ccc;
+    border: 1px solid var(--da-border);
     padding: 8px;
     vertical-align: top;
   }
@@ -667,7 +636,7 @@ a.button {
   /* Table cells */
   div > div {
     display: table-cell;
-    border: 1px solid #ccc;
+    border: 1px solid var(--da-border);
     padding: 8px;
     vertical-align: top;
   }
@@ -687,7 +656,7 @@ a.button {
   color: white;
   padding: 4px;
   margin-bottom: 1rem;
-  border-radius: 0;
+  border-radius: var(--da-radius);
 }
 
 .advanced-replacement-group {
@@ -703,10 +672,10 @@ a.button {
   align-items: left;
   gap: 0.5rem;
   position: relative;
-  border: 1px solid #c0c4cc;
-  border-radius: 8px;
+  border: 1px solid var(--da-border);
+  border-radius: var(--da-radius);
   padding: 0.5rem 0.75rem;
-  background: #fff;
+  background: var(--da-white);
   box-shadow: 0 2px 6px rgba(0,0,0,0.03);
   margin: 8px 0 1rem 0;
   label {
@@ -724,7 +693,7 @@ a.button {
       display: none;
       &.open {
         display: inline;
-        border: 1px solid #c0c4cc;
+        border: 1px solid var(--da-border);
       }
     }
     .sub-section {
@@ -739,7 +708,7 @@ a.button {
       }
       #newText {
         width: 100%;
-        border: 1px solid #c0c4cc;
+        border: 1px solid var(--da-border);
       }
     }
   }
@@ -754,15 +723,15 @@ body {
   align-items: center;
   gap: 0.5rem;
   position: relative;
-  border: 1px solid #d1d1d1;
-  border-radius: 8px;
+  border: 1px solid var(--da-border);
+  border-radius: var(--da-radius);
   padding: 0.5rem 0.75rem;
-  background: #fff;
+  background: var(--da-white);
   box-shadow: 0 2px 6px rgba(0,0,0,0.03);
   margin: 0 10px;
 }
 .page-path-wrapper:focus-within {
-  outline: 2px solid #0378CD;
+  outline: 2px solid var(--da-red);
 }
 input {
   flex: 1;
@@ -780,26 +749,26 @@ button.icon-btn {
   margin: 0 !important;
   background-color: transparent !important;
   cursor: pointer;
-  color: #000000 !important;
+  color: var(--da-carbon) !important;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
+  border-radius: var(--da-radius);
   min-width: 0 !important;
 }
 button.icon-btn:focus-visible {
-  outline: 2px solid #0378CD;
+  outline: 2px solid var(--da-red);
   outline-offset: 2px;
 }
 .tooltip {
   position: absolute;
   top: -6px;
   right: -6px;
-  background: #222;
+  background: var(--da-text);
   color: white;
   padding: 4px 8px;
   font-size: 11px;
-  border-radius: 4px;
+  border-radius: var(--da-radius);
   white-space: nowrap;
   display: none;
 }
@@ -810,7 +779,7 @@ button.icon-btn:focus-visible {
 }
 .separator {
   width: 1px;
-  background: #e2e6ed;
+  background: var(--da-border);
   height: 24px;
   margin: 0 6px;
 }
@@ -823,7 +792,7 @@ button.icon-btn:focus-visible {
   padding: 12px;
   color: black;
   font-style: italic;
-  border-radius: 4px;
+  border-radius: var(--da-radius);
   min-height: 100px;
   margin: 0;
 }

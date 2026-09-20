@@ -418,13 +418,35 @@ dialog#refresh-prompt-dialog {
   flex-direction: row;
 }
 
+/*
+ * The search field carries its own white surface, the way `.page-path-wrapper`
+ * beside it does.
+ *
+ * It needs to say so explicitly because of the bare `input` rule further down:
+ * that one was written for the path input — which sits ON the white wrapper and
+ * so wants to disappear into it — but it is unscoped, so `background:
+ * transparent` and `outline: none` reach every input on the page. The result
+ * here was a field the colour of `--da-surface` behind it, reading as a
+ * bordered panel rather than somewhere to type, with no focus ring either.
+ *
+ * Declared here rather than by narrowing the bare rule, which would change
+ * every other input in the tool.
+ */
 .searchTerms {
   width: max-content;
   padding: 0 12px;
   border-radius: var(--da-radius);
   border: 1px solid var(--da-border);
+  background: var(--da-white);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 3%);
   box-sizing: border-box;
   outline-offset: 0;
+
+  /* The bare rule clears the outline too, so the field had no focus ring at
+     all. Same treatment as `.page-path-wrapper:focus-within` beside it. */
+  &:focus-visible {
+    outline: 2px solid var(--da-red);
+  }
 }
 
 #searchFilters {

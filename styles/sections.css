@@ -238,6 +238,12 @@
   list-style: none;
   margin: var(--spacing-l) 0;
   padding: 0;
+
+  /* This panel is a box, not running copy, so it can't wrap a float — beside
+     splitforms' right-floated form it would squeeze its first row into the
+     copy column. splitforms.css sends sibling blocks below the float for the
+     same reason; a box in .default-content has to ask for itself. */
+  clear: both;
   background: var(--surface);
   border: 1px solid var(--border);
   border-left: 3px solid var(--aem-red);

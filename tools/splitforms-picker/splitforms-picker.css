@@ -397,9 +397,14 @@ body {
   width: 1%;
 }
 
-.sfp-content-cell {
+/* The teaser line above the table: copy that lands in the section, not a row. */
+.sfp-preview-copy {
   font-style: italic;
   color: var(--sfp-muted);
+  font-size: 0.82rem;
+  margin: 0;
+  padding: 7px 12px;
+  border-bottom: 1px dashed var(--sfp-border);
 }
 
 /* ---------- Footer ---------- */

@@ -17,8 +17,15 @@
  * recognises the table. Sending the div form inserts nothing at all — silently,
  * with the palette closing as though it had worked. Verified by reading the
  * shape of a block already in a document, which is what this now mirrors:
- * the name row and any content row span both columns, config rows are two
- * cells, and every cell's text sits in a <p>.
+ * the name row spans both columns, config rows are two cells, and every cell's
+ * text sits in a <p>.
+ *
+ * Every row of that table is configuration. The block's teaser copy is not in
+ * it: the panel floats right inside its section and the section's own copy
+ * flows beside it, so the copy is ordinary page text. That is what lets a form
+ * drop into paragraphs an author has already written. The optional placeholder
+ * teaser is therefore sent as a heading and a paragraph BEFORE the table —
+ * section content, a sibling of the block, not a cell inside it.
  * ------------------------------------------------------------------------ */
 
 import DA_SDK from 'https://da.live/nx/utils/sdk.js';
@@ -28,10 +35,16 @@ import {
 
 const { context, actions } = await DA_SDK;
 
-/** Placeholder copy for the content pane, so an inserted block shows the split. */
-const CONTENT_PLACEHOLDER = {
+/**
+ * Placeholder teaser copy, inserted into the section above the block.
+ *
+ * Off by default. The case this palette is built around is a form dropped into
+ * copy that already exists, where placeholder prose is something to delete
+ * rather than something to fill in; a blank page is the case that wants it.
+ */
+const TEASER = {
   heading: 'Tell them why they should',
-  body: 'Replace this with the reason someone should fill the form in. Delete the whole left cell to run the form on its own.',
+  body: 'Replace this with the reason someone should fill the form in — or delete it, and put the form in copy you have already written.',
 };
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({
@@ -41,7 +54,7 @@ const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({
 const state = {
   form: FORMS[0]?.name,
   values: {},
-  contentPane: true,
+  teaser: false,
 };
 
 /** Reset every option to its catalog default. Called on load and on form change. */
@@ -68,18 +81,17 @@ function configRows() {
 function blockHTML() {
   const rows = ['<tr><td colspan="2"><p>splitforms</p></td></tr>'];
 
-  if (state.contentPane) {
-    rows.push('<tr><td colspan="2">'
-      + `<h2>${esc(CONTENT_PLACEHOLDER.heading)}</h2>`
-      + `<p>${esc(CONTENT_PLACEHOLDER.body)}</p>`
-      + '</td></tr>');
-  }
-
   configRows().forEach(([key, value]) => {
     rows.push(`<tr><td><p>${esc(key)}</p></td><td><p>${esc(value)}</p></td></tr>`);
   });
 
-  return `<table><tbody>${rows.join('')}</tbody></table>`;
+  const table = `<table><tbody>${rows.join('')}</tbody></table>`;
+  if (!state.teaser) return table;
+
+  // Section content, ahead of the block rather than inside it. Order in the
+  // document does not decide where the form lands — the block hoists itself to
+  // the top of its section — but copy before form is how the page reads.
+  return `<h2>${esc(TEASER.heading)}</h2><p>${esc(TEASER.body)}</p>${table}`;
 }
 
 /* ---------- rendering ---------- */
@@ -136,13 +148,14 @@ function renderOption(opt) {
 function renderPreview() {
   const rows = configRows().map(([k, v]) => `
     <tr><td>${esc(k)}</td><td>${esc(v)}</td></tr>`).join('');
-  const content = state.contentPane
-    ? `<tr><td colspan="2" class="sfp-content-cell">${esc(CONTENT_PLACEHOLDER.heading)} — placeholder copy you replace in the document</td></tr>`
+  const teaser = state.teaser
+    ? `<p class="sfp-preview-copy">${esc(TEASER.heading)} — placeholder copy in the section, above the block</p>`
     : '';
   return `
+    ${teaser}
     <table>
       <thead><tr><th colspan="2">splitforms</th></tr></thead>
-      <tbody>${content}${rows}</tbody>
+      <tbody>${rows}</tbody>
     </table>`;
 }
 
@@ -158,10 +171,12 @@ function renderDetail() {
     <div class="sfp-opts">
       <div class="sfp-opt sfp-switch-wrap">
         <div class="sfp-switch">
-          <input type="checkbox" id="opt-content-pane" data-content-pane ${state.contentPane ? 'checked' : ''}>
-          <label for="opt-content-pane">Include a content pane beside the form</label>
+          <input type="checkbox" id="opt-teaser" data-teaser ${state.teaser ? 'checked' : ''}>
+          <label for="opt-teaser">Add placeholder teaser copy</label>
         </div>
-        <p class="sfp-hint">The split the block is named for. Off inserts the form on its own.</p>
+        <p class="sfp-hint">A heading and a paragraph in the section above the block, for a
+          page with nothing on it yet. Leave it off to drop the form into copy that is
+          already there — the form floats right and that copy flows beside it.</p>
       </div>
       ${form.options.map(renderOption).join('')}
     </div>
@@ -237,7 +252,7 @@ function wire() {
 
     if (e.target.closest('#sfp-reset')) {
       resetValues(state.form);
-      state.contentPane = true;
+      state.teaser = false;
       paintDetail();
       return;
     }
@@ -250,8 +265,8 @@ function wire() {
 
   document.body.addEventListener('change', (e) => {
     const el = e.target;
-    if (el.matches('[data-content-pane]')) {
-      state.contentPane = el.checked;
+    if (el.matches('[data-teaser]')) {
+      state.teaser = el.checked;
       paintDetail();
       return;
     }

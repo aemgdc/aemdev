@@ -16,13 +16,29 @@ import decorate from '../../blocks/splitforms/splitforms.js';
  */
 
 const row = (key, value) => `<div><div>${key}</div><div>${value}</div></div>`;
-const contentRow = (html) => `<div><div>${html}</div></div>`;
+const legacyRow = (html) => `<div><div>${html}</div></div>`;
 
-function block(html) {
+/**
+ * A block in the shape AuthorKit leaves it: a section holding a
+ * `.default-content` group of copy and a `.block-content` group of blocks.
+ * The block reads and rearranges that structure, so the tests have to build it.
+ */
+function block(html, { copy = '', siblingBlock = false } = {}) {
+  const section = document.createElement('div');
+  section.className = 'section';
+  if (copy) section.innerHTML = `<div class="default-content">${copy}</div>`;
+
+  const group = document.createElement('div');
+  group.className = 'block-content';
+
   const el = document.createElement('div');
   el.className = 'splitforms';
   el.innerHTML = html;
-  document.body.append(el);
+  group.append(el);
+  if (siblingBlock) group.append(document.createElement('div'));
+
+  section.append(group);
+  document.body.append(section);
   return el;
 }
 
@@ -49,29 +65,91 @@ describe('blocks/splitforms', () => {
   afterEach(() => {
     fetchStub?.restore();
     fetchStub = null;
-    document.querySelectorAll('.splitforms').forEach((el) => el.remove());
+    document.querySelectorAll('body > .section').forEach((el) => el.remove());
   });
 
-  describe('content model', () => {
-    it('reads two-cell rows as config and one-cell rows as content', () => {
-      const el = block(
-        contentRow('<h2>Join us</h2>') + contentRow('<p>Doors at six.</p>') + row('form', 'contact'),
-      );
+  describe('placement', () => {
+    it('hoists the block to the top of its section and marks the section', () => {
+      const el = block(row('form', 'contact'), { copy: '<h2>Join us</h2><p>Doors at six.</p>' });
+      const section = el.closest('.section');
       decorate(el);
 
-      const content = el.querySelector('.splitforms-content');
-      expect(content).to.exist;
-      expect(content.querySelector('h2').textContent).to.equal('Join us');
-      expect(content.querySelector('p').textContent).to.equal('Doors at six.');
-      expect(el.querySelector('.splitforms-title').textContent).to.equal('Send us a message');
+      // A float only shortens the line boxes that follow it, so the block has
+      // to lead the section for the copy to flow beside the panel.
+      expect(section.firstElementChild).to.equal(el);
+      expect(section.classList.contains('splitforms-section')).to.be.true;
+      expect(section.querySelector('.default-content').textContent).to.contain('Doors at six.');
     });
 
-    it('goes solo when there is no content beside the form', () => {
+    it('clears away the group it was hoisted out of', () => {
+      const el = block(row('form', 'contact'), { copy: '<p>Copy.</p>' });
+      const section = el.closest('.section');
+      decorate(el);
+
+      expect(section.querySelector('.block-content')).to.not.exist;
+    });
+
+    it('leaves the group behind when another block is still in it', () => {
+      const el = block(row('form', 'contact'), { copy: '<p>Copy.</p>', siblingBlock: true });
+      const section = el.closest('.section');
+      decorate(el);
+
+      expect(section.querySelector('.block-content')).to.exist;
+      expect(section.firstElementChild).to.equal(el);
+    });
+
+    it('goes solo when the section has no copy to flow beside the panel', () => {
       const el = block(row('form', 'contact'));
       decorate(el);
 
       expect(el.classList.contains('splitforms-solo')).to.be.true;
+    });
+
+    it('stays floated when the section has copy', () => {
+      const el = block(row('form', 'contact'), { copy: '<p>Doors at six.</p>' });
+      decorate(el);
+
+      expect(el.classList.contains('splitforms-solo')).to.be.false;
+    });
+
+    it('renders without a section — a fragment or a preview still gets a form', () => {
+      const el = document.createElement('div');
+      el.className = 'splitforms';
+      el.innerHTML = row('form', 'contact');
+      document.body.append(el);
+      decorate(el);
+
+      expect(el.querySelector('.splitforms-panel')).to.exist;
+      el.remove();
+    });
+  });
+
+  describe('content model', () => {
+    it('reads every two-cell row as config', () => {
+      const el = block(row('form', 'contact'), { copy: '<p>Doors at six.</p>' });
+      decorate(el);
+
+      expect(el.querySelector('.splitforms-title').textContent).to.equal('Send us a message');
       expect(el.querySelector('.splitforms-content')).to.not.exist;
+    });
+
+    it('lifts a legacy one-cell content row out into the section', () => {
+      const el = block(
+        legacyRow('<h2>Join us</h2>') + legacyRow('<p>Doors at six.</p>') + row('form', 'contact'),
+      );
+      const section = el.closest('.section');
+      decorate(el);
+
+      // The copy is section copy now, not a pane inside the panel — and it
+      // still counts as something for the form to float beside.
+      const lifted = section.querySelector('.splitforms-legacy-copy');
+      expect(lifted).to.exist;
+      expect(lifted.previousElementSibling).to.equal(el);
+      expect(lifted.classList.contains('default-content')).to.be.true;
+      expect(lifted.querySelector('h2').textContent).to.equal('Join us');
+      expect(lifted.querySelector('p').textContent).to.equal('Doors at six.');
+      expect(el.contains(lifted)).to.be.false;
+      expect(el.classList.contains('splitforms-solo')).to.be.false;
     });
 
     it('falls back to the contact form when the name is unknown', () => {

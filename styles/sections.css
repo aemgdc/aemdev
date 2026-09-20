@@ -217,3 +217,168 @@
   color: var(--ink);
   border-color: var(--white);
 }
+
+/* === EVENT INFO === the meetup manifest: red signal glyphs, mono labels, a
+   hanging value column and hairline row rules. Applied via section-metadata
+   → Style: event-info. Scoped to the detail list rather than the whole
+   section, so the variant composes with whatever else shares it (hero,
+   signup form, prose).
+
+   The label block floats into the row's left padding, so every value line —
+   including the multi-line address — hangs on the same edge while links and
+   <br>s stay in normal inline flow. Widths are tokens: override --ei-label
+   on a locale or a page whose labels run long. */
+.section.event-info > .default-content > ul {
+  --ei-marker: 22px;    /* icon slot */
+  --ei-gap: 14px;       /* marker → label */
+  --ei-label: 88px;     /* label text column */
+  --ei-value-gap: 28px; /* label block → value */
+  --ei-pad: clamp(16px, 2.4vw, 28px);
+
+  list-style: none;
+  margin: var(--spacing-l) 0;
+  padding: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--aem-red);
+}
+
+/* No labels anywhere in this list? Then reserve no label column — the text
+   hangs straight off the marker gutter. */
+.section.event-info > .default-content > ul:not(:has(strong)) {
+  --ei-label: 0px;
+  --ei-value-gap: 0px;
+}
+
+.section.event-info > .default-content > ul > li {
+  margin: 0;
+  padding: 13px var(--ei-pad) 13px
+    calc(var(--ei-pad) + var(--ei-marker) + var(--ei-gap) + var(--ei-label) + var(--ei-value-gap));
+  border-top: 1px solid var(--border);
+  font-size: var(--body-font-size-s);
+}
+
+.section.event-info > .default-content > ul > li:first-child {
+  border-top: 0;
+}
+
+/* Contain the floated label so a wrapped label can never bleed into the next row. */
+.section.event-info > .default-content > ul > li::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+.section.event-info > .default-content > ul > li > strong {
+  float: left;
+  width: calc(var(--ei-marker) + var(--ei-gap) + var(--ei-label));
+  margin-left: calc(-1 * (var(--ei-marker) + var(--ei-gap) + var(--ei-label) + var(--ei-value-gap)));
+  display: grid;
+  grid-template-columns: var(--ei-marker) minmax(0, 1fr);
+  align-items: start;
+  gap: var(--ei-gap);
+  overflow-wrap: break-word;
+  font-family: var(--mono-font-family);
+  font-size: var(--body-font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.7;
+  text-transform: uppercase;
+  color: var(--carbon);
+}
+
+/* The icon is the bullet. Red is the signal, never decoration. */
+.section.event-info > .default-content > ul > li > strong .icon {
+  width: var(--ei-marker);
+  height: var(--ei-marker);
+  margin-top: calc((1lh - var(--ei-marker)) / 2);
+  color: var(--aem-red);
+  fill: currentcolor;
+}
+
+/* A row with no icon keeps the rhythm: a hollow slate square holds the same
+   slot, so every label starts on the same vertical line. */
+.section.event-info > .default-content > ul > li > strong:not(:has(.icon))::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  margin-top: calc((1lh - 10px) / 2);
+  border: 1.5px solid var(--slate);
+  justify-self: center;
+}
+
+/* A bullet with no label at all — plain prose, no "Label:" — still gets the
+   neutral marker in the same gutter, so mixed lists keep one left edge. */
+.section.event-info > .default-content > ul > li:not(:has(> strong, > .icon)) {
+  position: relative;
+}
+
+.section.event-info > .default-content > ul > li:not(:has(> strong, > .icon))::before {
+  content: "";
+  position: absolute;
+  left: var(--ei-pad);
+  top: calc(13px + (1lh - 10px) / 2);
+  width: 7px;
+  height: 7px;
+  border: 1.5px solid var(--slate);
+}
+
+/* An icon authored outside the label still hangs in the marker gutter. */
+.section.event-info > .default-content > ul > li > .icon {
+  float: left;
+  width: var(--ei-marker);
+  height: var(--ei-marker);
+  margin-left: calc(-1 * (var(--ei-marker) + var(--ei-gap) + var(--ei-label) + var(--ei-value-gap)));
+  color: var(--aem-red);
+  fill: currentcolor;
+}
+
+/* The authored <br> after "Where:" would open the value on a blank line;
+   the hanging indent already breaks the column. */
+.section.event-info > .default-content > ul > li > strong + br {
+  display: none;
+}
+
+.section.event-info > .default-content > ul > li a {
+  color: var(--aem-red-dk);
+  text-underline-offset: 2px;
+}
+
+.section.event-info > .default-content > ul > li a:hover {
+  color: var(--aem-red);
+}
+
+/* Narrow: the label stops floating and sits above its value. */
+
+/* Narrow: collapsing the label column to zero re-points every offset above —
+   row padding, the label's pull, a loose icon's pull — at the marker gutter,
+   so the label sits over its value and both share a left edge. */
+@media (width <= 600px) {
+  .section.event-info > .default-content > ul {
+    --ei-label: 0px;
+    --ei-value-gap: 0px;
+  }
+
+  .section.event-info > .default-content > ul > li > strong {
+    float: none;
+    width: auto;
+    margin-bottom: 2px;
+  }
+}
+
+/* Carbon sections — section-metadata's background handler adds dark-scheme. */
+.section.event-info.dark-scheme > .default-content > ul,
+.section.event-info > .default-content.dark-scheme > ul {
+  background: var(--carbon-2);
+  border-color: var(--carbon-3);
+}
+
+.section.event-info.dark-scheme > .default-content > ul > li,
+.section.event-info > .default-content.dark-scheme > ul > li {
+  border-top-color: var(--carbon-3);
+}
+
+.section.event-info.dark-scheme > .default-content > ul > li > strong,
+.section.event-info > .default-content.dark-scheme > ul > li > strong {
+  color: var(--white);
+}

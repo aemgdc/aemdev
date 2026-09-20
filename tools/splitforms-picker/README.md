@@ -3,6 +3,32 @@
 A DA editor palette for placing a `splitforms` block: pick a form, set the
 options that form offers, see the table you are about to get, insert it.
 
+## Where the teaser copy lives: the section, not the block
+
+The block is configuration only. Every row of the table it inserts is a
+`key | value` pair, and the copy beside the form is whatever the **section**
+already says — ordinary page text, a sibling of the block.
+
+That is the whole point of the shape. The panel floats right inside its
+section and the section's copy flows around it, so a form can be dropped into
+paragraphs an author has already written without first moving that copy into a
+table cell.
+
+Two consequences worth knowing before you use the palette:
+
+- **Placement is normalised.** Wherever the cursor is, the block hoists itself
+  to the top of its section when the page renders. A float only shortens the
+  line boxes that come *after* it, so a block left at the end of a section
+  would right-align against nothing.
+- **Placeholder teaser copy is optional and off by default.** With it on, the
+  palette sends a heading and a paragraph *before* the table — section content,
+  not a cell. It is there for a page with nothing on it yet; for the common
+  case there is already copy to flow beside.
+
+A one-cell content row from the block's earlier two-pane shape still works: the
+block lifts that copy out into the section on render, which is the same result
+as deleting the row and typing the copy into the page.
+
 ## Adding a form type
 
 Edit **`form-catalog.js`**. That is the whole job — `splitforms-picker.js` knows
@@ -63,17 +89,19 @@ because the div shape is the one you see if you read a document back through the
 Source API, so it is the obvious wrong guess.
 
 ```html
+<h2>…</h2>                               <!-- only with the teaser option on, -->
+<p>…</p>                                 <!-- and outside the table           -->
 <table><tbody>
   <tr><td colspan="2"><p>splitforms</p></td></tr>
-  <tr><td colspan="2"><h2>…</h2><p>…</p></td></tr>
   <tr><td><p>form</p></td><td><p>event-signup</p></td></tr>
   <tr><td><p>event-id</p></td><td><p>berlin-2026-11</p></td></tr>
 </tbody></table>
 ```
 
-The name row and any content row span both columns; config rows are two cells;
-every cell's text sits in a `<p>`. That is the shape a block already in a document
-has, which is where it was read from.
+The name row spans both columns; config rows are two cells; every cell's text sits
+in a `<p>`. That is the shape a block already in a document has, which is where it
+was read from. The teaser heading and paragraph are sent alongside the table, not
+in it, because they belong to the section.
 
 ## Event sign-up options are real, not decorative
 

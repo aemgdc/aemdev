@@ -1,31 +1,76 @@
-/* Splitforms — author content on one side, a working form on the other */
+/* Splitforms — a form panel floated right, with the section's copy beside it */
 
+/*
+ * The block itself is a positioning shell, not a layout: an empty box the
+ * width of the copy column, holding one floated panel. It has no height of its
+ * own, so the section's copy starts level with the form rather than under it,
+ * and the float shortens that copy's line boxes as it passes.
+ *
+ * It must NOT establish a block formatting context — no `display: flow-root`,
+ * no `overflow`, no grid or flex. Any of those would contain the float inside
+ * the block, and the copy would drop below the panel instead of flowing beside
+ * it. The section is the formatting context (see `.splitforms-section`).
+ *
+ * The width matches `.section > .default-content`, so the panel's right edge
+ * lands on the same line as the copy's. `.block-content` is unconstrained — a
+ * block that wants the content column has to ask for it (see bio.css).
+ */
 .splitforms {
-  display: grid;
-  gap: 32px;
-  align-items: start;
-
-  /* Matches `.section > .default-content` so the panel lines up with the copy
-     above it. `.block-content` is unconstrained — a block that wants the content
-     column has to ask for it (see blocks/bio/bio.css). */
   width: var(--grid-container-width);
   max-width: var(--grid-content-width);
-  margin: 48px auto;
+  margin: 0 auto;
 }
 
-/* === CONTENT PANE === */
+/*
+ * The blog template constrains the SECTION to the reading column and lets
+ * `.default-content` fill it. A block still asking for 92% would sit 4% inside
+ * the copy on each side — invisible for a normal block, but for a float it
+ * leaves a strip of text running down the outside of the panel.
+ */
+.blog-template .splitforms {
+  width: 100%;
+  max-width: 100%;
+}
 
-.splitforms-content > *:first-child {
+/* === THE HOSTING SECTION === */
+
+/*
+ * `flow-root` makes the section a block formatting context, which is what keeps
+ * the float inside it: without it a panel taller than the section's copy hangs
+ * out of the bottom and over whatever section comes next.
+ *
+ * The vertical rhythm moves here from the block, because the block no longer
+ * has a height to hang margins off.
+ */
+.splitforms-section {
+  display: flow-root;
+  margin-block: clamp(32px, 4vw, 48px);
+}
+
+/*
+ * The block is hoisted to the top of the section, so the copy that follows it
+ * is what sits beside the form. Its first heading's top margin would push it a
+ * clear 56px below the panel's top edge — the section's own margin above does
+ * that spacing now.
+ */
+.splitforms-section > .splitforms + .default-content > *:first-child {
   margin-top: 0;
 }
 
-.splitforms-content > *:last-child {
-  margin-bottom: 0;
+/*
+ * Only running copy flows around a float. Another block in the same section is
+ * a box, not line boxes: it would render underneath the panel. Send it below
+ * the float instead.
+ */
+.splitforms-section > .block-content {
+  clear: right;
 }
 
 /* === FORM PANEL === */
 
 .splitforms-panel {
+  /* Clears the copy that wraps underneath a panel shorter than the section. */
+  margin-bottom: 32px;
   background: var(--white);
   border: 2px solid var(--carbon);
   border-top: 6px solid var(--aem-red);
@@ -216,14 +261,31 @@
 
 /* === RESPONSIVE === */
 
+/*
+ * Below this the panel is a full-width band in the flow — a 300px form beside
+ * a 300px column of copy serves neither.
+ *
+ * Scoped to `.splitforms-section` on purpose: the float needs the section's
+ * formatting context to be contained by, and a block rendered outside one (a
+ * fragment, the DA preview, a unit test) has nothing to hold it.
+ */
 @media (width >= 900px) {
-  .splitforms {
-    grid-template-columns: 1fr 1fr;
-    gap: 48px;
-  }
+  .splitforms-section .splitforms:not(.splitforms-solo) .splitforms-panel {
+    float: right;
 
-  .splitforms-solo {
-    grid-template-columns: minmax(0, 560px);
-    justify-content: center;
+    /* border-box so the width is the width: the panel carries up to 36px of
+       padding a side, and a content-box 42% would eat another 76px of the copy
+       column without saying so. */
+    box-sizing: border-box;
+    width: clamp(300px, 42%, 500px);
+    margin-left: clamp(24px, 4vw, 48px);
   }
+}
+
+/* No copy to sit beside — centre the panel rather than right-align it against
+   empty space. */
+.splitforms-solo .splitforms-panel {
+  box-sizing: border-box;
+  max-width: 560px;
+  margin-inline: auto;
 }

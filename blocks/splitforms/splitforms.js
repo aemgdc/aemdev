@@ -1,19 +1,26 @@
 /**
- * Splitforms block — a split panel: author content on one side, a working form
- * on the other. Submissions go to splitforms.com; no server code involved.
+ * Splitforms block — a working form panel that floats right inside its section.
+ * Submissions go to splitforms.com; no server code involved.
+ *
+ *   ## Our most embarrassing AEM mistakes         <- section copy, NOT the block
+ *   Come hear the stories that only come out in person.
  *
  *   | splitforms   |                       |
  *   | ------------ | --------------------- |
- *   | ## Join us in London                 |  <- single-cell row: left-pane content
- *   | Doors at 18:00, talks from 18:30.    |
- *   | form         | event-signup          |  <- two-cell row: configuration
+ *   | form         | event-signup          |
  *   | reply-email  | hello@aemdev.org      |
  *   | redirect-url | /en/drafts/thank-you  |
  *   | event-id     | london-2026-10        |
  *
- * The rule authors need to remember: rows with TWO cells configure the form,
- * rows with ONE cell are the content beside it. Content is optional — with no
- * single-cell rows the form runs full width.
+ * Every row is configuration — `key | value`. There is no content cell: the
+ * teaser copy is whatever the section already says. That is the point of the
+ * block's shape. An author drops a form into paragraphs they have already
+ * written, and the panel floats right while the copy flows beside it, rather
+ * than having to move that copy into a table cell to get the two-column look.
+ *
+ * Placement is normalised: wherever the cursor was, the block is hoisted to the
+ * top of its section. A float only shortens the line boxes that come AFTER it,
+ * so a block left at the end of a section would right-align against nothing.
  *
  * Config keys
  *   form           one of the form names below — required
@@ -228,12 +235,18 @@ const FALLBACK_FORM = 'contact';
 export const FORM_NAMES = Object.keys(FORMS);
 
 /**
- * Read the block table into { config, content }.
- * Two-cell rows are configuration; one-cell rows are left-pane content.
+ * Read the block table into { config, legacy }.
+ *
+ * Two-cell rows are configuration, which is the whole of the current content
+ * model. One-cell rows are LEGACY: before this block floated, the first row
+ * carried the teaser copy for a left-hand pane. Pages written that way are
+ * live, so rather than dropping that copy — or leaving it to render inside the
+ * form panel — it is handed back and lifted out into the section, where copy
+ * now belongs. Deleting the row on the page produces exactly the same result.
  */
 function parseBlock(block) {
   const config = {};
-  const content = [];
+  const legacy = [];
 
   [...block.children].forEach((row) => {
     const cells = [...row.children];
@@ -251,11 +264,11 @@ function parseBlock(block) {
       }
       if (key) config[key] = value.replace(/^mailto:/i, '');
     } else if (cells.length === 1) {
-      content.push(cells[0]);
+      legacy.push(cells[0]);
     }
   });
 
-  return { config, content };
+  return { config, legacy };
 }
 
 /**
@@ -465,10 +478,67 @@ function buildForm(definition, config, instanceId) {
   return panel;
 }
 
+/**
+ * Wrap copy lifted out of a legacy content row so it reads as section copy.
+ *
+ * `.default-content` is deliberate rather than a class of our own: it is the
+ * group AuthorKit puts prose in, so it already carries the article column's
+ * width and typography in every template. Copy that moves out of the block
+ * lands looking like copy the author had typed into the section.
+ */
+function legacyCopy(cells) {
+  const group = document.createElement('div');
+  group.className = 'default-content splitforms-legacy-copy';
+  cells.forEach((cell) => {
+    while (cell.firstChild) group.append(cell.firstChild);
+  });
+  return group;
+}
+
+/** Is there prose in this section for the panel to float beside? */
+function hasCopy(section) {
+  return [...section.querySelectorAll(':scope > .default-content')]
+    .some((group) => group.textContent.trim() !== '');
+}
+
+/**
+ * Put the block where the float can do its work.
+ *
+ * Two moves, both load-bearing. The block is hoisted to the top of its section
+ * because a float only shortens the line boxes that FOLLOW it — dropped at the
+ * end of a section it would right-align against nothing, which reads as the
+ * block being broken rather than as the author having placed it late. And the
+ * section is marked so CSS can make it a block formatting context, or the
+ * panel escapes the bottom of the section and lands over the next one.
+ */
+function placeInSection(block, legacy) {
+  const section = block.closest('.section');
+
+  // Fragments, the DA preview and unit tests hand over a bare block. It still
+  // renders — it just has no section to float within.
+  if (!section) {
+    if (legacy.length) block.append(legacyCopy(legacy));
+    return;
+  }
+
+  const group = block.parentElement;
+  section.classList.add('splitforms-section');
+  section.prepend(block);
+  // AuthorKit groups consecutive DIVs, so the block may have left an empty
+  // `.block-content` behind — or a sibling block, which stays where it is.
+  if (group !== section && !group.childElementCount) group.remove();
+
+  if (legacy.length) block.after(legacyCopy(legacy));
+
+  // Nothing to flow beside: centre the panel rather than right-align it
+  // against empty space.
+  if (!hasCopy(section)) block.classList.add('splitforms-solo');
+}
+
 let instanceCount = 0;
 
 export default function decorate(block) {
-  const { config, content } = parseBlock(block);
+  const { config, legacy } = parseBlock(block);
 
   const requested = (config.form || '').toLowerCase();
   const definition = FORMS[requested] || FORMS[FALLBACK_FORM];
@@ -486,17 +556,7 @@ export default function decorate(block) {
   instanceCount += 1;
   const instanceId = `splitforms-${instanceCount}`;
 
-  const contentPane = document.createElement('div');
-  contentPane.className = 'splitforms-content';
-  content.forEach((cell) => {
-    while (cell.firstChild) contentPane.append(cell.firstChild);
-  });
-
   block.textContent = '';
-  if (contentPane.childElementCount) {
-    block.append(contentPane);
-  } else {
-    block.classList.add('splitforms-solo');
-  }
   block.append(buildForm(resolved, config, instanceId));
+  placeInSection(block, legacy);
 }

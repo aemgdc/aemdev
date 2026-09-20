@@ -239,11 +239,16 @@
   margin: var(--spacing-l) 0;
   padding: 0;
 
-  /* This panel is a box, not running copy, so it can't wrap a float — beside
-     splitforms' right-floated form it would squeeze its first row into the
-     copy column. splitforms.css sends sibling blocks below the float for the
-     same reason; a box in .default-content has to ask for itself. */
-  clear: both;
+  /* This panel is a box, not running copy, so it can't wrap a float: beside
+     splitforms' right-floated form its first row would be squeezed into the
+     copy column while the background still spanned the full width.
+
+     flow-root makes it its own formatting context, which a float may not
+     overlap — so it narrows to the copy column and tucks under the prose
+     beside the form, rather than clearing to below it. With no float in play
+     a flow-root box still fills its container, so pages without a form are
+     unaffected. */
+  display: flow-root;
   background: var(--surface);
   border: 1px solid var(--border);
   border-left: 3px solid var(--aem-red);

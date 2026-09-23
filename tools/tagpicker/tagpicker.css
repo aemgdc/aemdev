@@ -209,8 +209,8 @@ body {
         } */
         &:hover {
           background-color: var(--da-paper);
-          border: 2px solid var(--da-ok);
-          color: var(--da-ok);
+          border: 2px solid red;
+          color: red;
           text-decoration: line-through;
         }
         &.invalid-tag {

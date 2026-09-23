@@ -207,10 +207,18 @@ async function insertBios() {
       }
     });
 
+    // Create speakers row if it doesn't exist
     if (!speakersRow) {
-      console.error('No speakers row found in metadata. Please add a speakers row to the metadata block first.');
-      state.actions.closeLibrary?.();
-      return;
+      speakersRow = document.createElement('div');
+
+      const keyCell = document.createElement('div');
+      keyCell.textContent = 'speakers';
+      speakersRow.appendChild(keyCell);
+
+      const valueCell = document.createElement('div');
+      speakersRow.appendChild(valueCell);
+
+      metadataEl.appendChild(speakersRow);
     }
 
     // Update the speakers value

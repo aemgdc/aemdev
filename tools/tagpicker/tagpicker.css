@@ -197,7 +197,7 @@ body {
         font-size: 1rem;
         cursor: pointer;
         background-color: var(--da-paper);
-        color: var(--da-red);
+        color: var(--da-ok);
         overflow: hidden;
         text-overflow: ellipsis;
         border-radius: var(--da-radius);
@@ -209,8 +209,8 @@ body {
         } */
         &:hover {
           background-color: var(--da-paper);
-          border: 2px solid red;
-          color: red;
+          border: 2px solid var(--da-ok);
+          color: var(--da-ok);
           text-decoration: line-through;
         }
         &.invalid-tag {

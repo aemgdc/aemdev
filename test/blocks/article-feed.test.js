@@ -129,3 +129,20 @@ describe('blocks/article-feed', () => {
     expect(cards[2].querySelector('.feed-card-thumb')).to.equal(null);
   });
 });
+
+describe('article-feed category label', () => {
+  let stub;
+  afterEach(() => {
+    stub?.restore();
+    stub = null;
+  });
+
+  it('labels a tag-picker value (category|meetup) by its leaf', async () => {
+    stub = stubIndex([article({ category: 'category|meetup', path: '/en/meetups/two' })]);
+    const el = block(row('index', '/en/query-index.json'));
+    await decorate(el);
+    const text = el.textContent;
+    expect(text).to.include('Meetup');
+    expect(text).to.not.include('|');
+  });
+});

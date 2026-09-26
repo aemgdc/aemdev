@@ -9,12 +9,13 @@
  * configuration this site's translation setup is modelled on. Ten target locales
  * plus `en` as the source.
  *
- * Two codes carry a second spelling and it is the reason this file exists as a
+ * Three codes carry a second spelling and it is the reason this file exists as a
  * registry rather than an array of strings (`pt` is listed as the control — it is the
  * near-miss case that looks like it should differ and does not):
  *
- *   ours   DA / hreflang   Google connector
+ *   ours   DA / hreflang   Smartling connector
  *   pt     pt              pt
+ *   pl     pl              pl-PL
  *   zh-cn  zh-cn           zh-CN
  *   zh-tw  zh-tw           zh-TW
  *
@@ -54,7 +55,9 @@ const TABLE = [
   ['es', 'Spanish', 'Español', 'es', 'latin', 1.25],
   ['it', 'Italian', 'Italiano', 'it', 'latin', 1.2],
   ['pt', 'Portuguese', 'Português', 'pt', 'latin', 1.25],
-  ['pl', 'Polish', 'Polski', 'pl', 'latin', 1.3],
+  // Smartling's aemdev project lists Polish as pl-PL only; `pl` fails job creation
+  // with 400 "Invalid locales [pl]" (2026-09-26).
+  ['pl', 'Polish', 'Polski', 'pl-PL', 'latin', 1.3],
   ['ja', 'Japanese', '日本語', 'ja', 'kana', 0.6],
   ['ko', 'Korean', '한국어', 'ko', 'hangul', 0.7],
   ['zh-cn', 'Chinese (Simplified)', '简体中文', 'zh-CN', 'han', 0.5],

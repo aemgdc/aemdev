@@ -73,6 +73,11 @@ import { request } from './lib/http-pool.mjs';
 
 const SOURCE_FILE = join(REPO_ROOT, CONFIG_DIR, 'da-translate.json');
 
+/** Config keys that hold connector credentials; see withDeployedCredentials. */
+export const CREDENTIAL_KEY = /\.(userIdentifier|userId|userSecret|clientId|clientSecret|apiKey|password|username)$/i;
+
+const isCredential = (row) => CREDENTIAL_KEY.test(String(row?.key || ''));
+
 /**
  * The six sheets DA's Translate app reads, and the columns each one may carry.
  *
@@ -271,6 +276,12 @@ export function validatePayload(payload) {
 
   problems.push(...validateLanguages(payload.languages?.data || []));
 
+  const leaked = (payload.config?.data || []).filter(isCredential).map((r) => r.key);
+  if (leaked.length) {
+    problems.push(`config: credential row(s) ${leaked.join(', ')} in the annotated source — it is in git; `
+      + 'keep credentials only in the deployed config (--apply carries them over)');
+  }
+
   // The envelope rule, enforced locally because nothing previews this path.
   try {
     assertSheetDoc(payload);
@@ -278,6 +289,39 @@ export function validatePayload(payload) {
     problems.push(e.message);
   }
   return problems;
+}
+
+/* ----------------------------------------------------------------- credential rows */
+
+/**
+ * Connector credentials (Smartling `userIdentifier`/`userSecret`, OAuth client secrets)
+ * live ONLY in the deployed config. The annotated source is in git and must never hold
+ * one, so a push has to carry the deployed rows over — without it, `--apply` deletes the
+ * credentials and every Connect fails with da-etc's 400 "Missing Smartling …". Values
+ * are never printed: the diff compares with them removed from both sides.
+ */
+/** `doc` with credential rows removed from its `config` sheet (for diffs and printing). */
+export function withoutCredentials(doc) {
+  if (!doc?.config?.data) return doc;
+  const data = doc.config.data.filter((r) => !isCredential(r));
+  return { ...doc, config: { ...doc.config, data, total: data.length, limit: data.length } };
+}
+
+/** `payload` plus the deployed config's credential rows it does not already carry. */
+export function withDeployedCredentials(payload, deployed) {
+  const have = new Set((payload.config?.data || []).map((r) => r.key));
+  const carry = (deployed?.config?.data || []).filter((r) => isCredential(r) && !have.has(r.key));
+  if (!carry.length) return { payload, carried: [] };
+  const data = [...payload.config.data, ...carry];
+  return {
+    payload: {
+      ...payload,
+      config: {
+        ...payload.config, data, total: data.length, limit: data.length,
+      },
+    },
+    carried: carry.map((r) => r.key),
+  };
 }
 
 /* ------------------------------------------------------------------------ the diff */
@@ -487,18 +531,22 @@ async function main() {
   }
 
   if (opts.diff) {
-    const diff = diffPayloads(payload, current.doc);
+    const diff = diffPayloads(payload, withoutCredentials(current.doc));
     printDiff(diff, current.exists);
     return current.exists && !diff.length ? 0 : 1;
   }
 
+  const { payload: toWrite, carried } = withDeployedCredentials(payload, current.doc);
   try {
-    await writeDeployed(token, payload, current);
+    await writeDeployed(token, toWrite, current);
   } catch (e) {
     console.error(`\n✗ ${e.message}`);
     return 2;
   }
   console.log(`\n   ✓ written and read back${current.exists ? ' (If-Match)' : ' (created, If-None-Match: *)'}`);
+  if (carried.length) {
+    console.log(`   carried over ${carried.length} deployed credential row(s) (values not shown)`);
+  }
   console.log('   NOT previewed: /.da/** is DA application config, not site content.');
   console.log('   Next: open DA\'s Translate app and confirm it lists eleven languages.');
   return 0;

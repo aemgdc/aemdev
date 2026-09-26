@@ -70,7 +70,7 @@ describe('locales.js', () => {
   });
 
   describe('serviceCode', () => {
-    it('differs from `code` for exactly zh-cn and zh-tw', () => {
+    it('differs from `code` for exactly pl, zh-cn and zh-tw', () => {
       /*
        * DA's translate config and a sitemap `hreflang` want the lowercase form; the
        * translation connector wants BCP-47 casing. They are near-misses, so a typo is
@@ -79,7 +79,9 @@ describe('locales.js', () => {
        * the difference, and this is the test that keeps it to one.
        */
       const differs = LOCALES.filter((l) => l.serviceCode !== l.code).map((l) => l.code);
-      expect(differs).to.deep.equal(['zh-cn', 'zh-tw']);
+      expect(differs).to.deep.equal(['pl', 'zh-cn', 'zh-tw']);
+      // The Smartling project knows Polish only as pl-PL.
+      expect(locale('pl').serviceCode).to.equal('pl-PL');
       expect(locale('zh-cn').serviceCode).to.equal('zh-CN');
       expect(locale('zh-tw').serviceCode).to.equal('zh-TW');
       // Every other code, including pt, is its own service code.

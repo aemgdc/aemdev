@@ -30,11 +30,16 @@ test('a block named by two rows accumulates BOTH directives', () => {
   // article-feed carries `dnt col 2 if col 1 is "index"…` AND `dnt col 2 if col 1
   // contains "-date"`. Last-write-wins would silently enforce only the second — a rule
   // visible in the sheet that nothing applies.
+  // Healed 2026-09-26: the key column, the parser's aliases and card-N suffixes were
+  // added as three more rows, so five directives now accumulate.
   const rule = ruleFor(contract.rules, 'article-feed');
   assert.equal(rule.mode, 'denylist');
-  assert.equal(rule.directives.length, 2);
+  assert.equal(rule.directives.length, 5);
   assert.equal(permits('article-feed', ['index', '/en/articles/query-index.json'], 1), false);
   assert.equal(permits('article-feed', ['card-1-date', '2 Oct 2026'], 1), false);
+  assert.equal(permits('article-feed', ['card-7-url', '/en/x'], 1), false);
+  assert.equal(permits('article-feed', ['paths', '/en/meetups/'], 1), false);
+  assert.equal(permits('article-feed', ['badge', 'Latest'], 0), false, 'the key itself stays English');
   assert.equal(permits('article-feed', ['badge', 'Latest'], 1), true);
 });
 

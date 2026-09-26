@@ -270,7 +270,7 @@ describe('blocks/tracker-summary', () => {
       const hrefs = [...el.querySelectorAll('.ts-kpi-value a')].map((a) => a.getAttribute('href'));
       expect(hrefs).to.have.length(2);
       expect(hrefs[0]).to.include('/tools/page-tracker');
-      expect(hrefs[1]).to.include('filter=en-published');
+      expect(hrefs[1]).to.include('filter=enPublished');
     });
 
     it('warns that the English feed cannot show anything past the gate', async () => {

@@ -17,7 +17,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { stripAnnotations, validatePayload, diffPayloads } from '../../tools/tracker/tx-config.mjs';
+import {
+  stripAnnotations, validatePayload, diffPayloads, withDeployedCredentials, withoutCredentials,
+} from '../../tools/tracker/tx-config.mjs';
 import { REPO_ROOT } from '../../tools/tracker/config.mjs';
 import { TARGET_LOCALES } from '../../scripts/tracker/locales.js';
 
@@ -112,4 +114,29 @@ test('the dnt sheet has two rows with the same first column, so the diff is a mu
   const stars = payload.dnt.data.filter((r) => r['dnt-sheet'] === '*');
   assert.ok(stars.length > 1, 'a key-based diff would collide on these');
   assert.deepEqual(diffPayloads(payload, payload), [], 'and a multiset diff does not');
+});
+
+test('credentials are carried over from the deployed config, never read from git', () => {
+  const { payload } = stripAnnotations(real());
+  assert.ok(!payload.config.data.some((r) => /userSecret|userIdentifier/.test(r.key)), 'the committed source holds no credential');
+  const deployed = {
+    ...payload,
+    config: {
+      data: [
+        ...payload.config.data,
+        { key: 'translation.service.prod.userIdentifier', value: 'x', description: '' },
+        { key: 'translation.service.prod.userSecret', value: 'y', description: '' },
+      ],
+    },
+  };
+  const { payload: out, carried } = withDeployedCredentials(payload, deployed);
+  assert.deepEqual(carried, ['translation.service.prod.userIdentifier', 'translation.service.prod.userSecret']);
+  assert.equal(out.config.total, payload.config.data.length + 2);
+  assert.deepEqual(diffPayloads(payload, withoutCredentials(deployed)), [], 'the diff ignores credential rows');
+});
+
+test('a credential row in the annotated source is refused', () => {
+  const { payload } = stripAnnotations(real());
+  payload.config.data.push({ key: 'translation.service.prod.userSecret', value: 'nope', description: '' });
+  assert.ok(validatePayload(payload).some((p) => /credential row/.test(p)));
 });

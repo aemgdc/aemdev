@@ -34,55 +34,185 @@
     "list a prose block costs a little money, while forgetting to DNT a path or an",
     "identifier silently corrupts a page in ten locales."
   ],
-
   "config": {
-    "total": 8,
-    "limit": 8,
+    "total": 17,
+    "limit": 17,
     "offset": 0,
     "data": [
       {
+        "key": "source.language",
+        "value": "English",
+        "description": "What language folder is used as the basis to send for translation."
+      },
+      {
         "key": "sync.conflict.behavior",
-        "value": "merge",
-        "description": "Pulling source content into the send-for-translation folder. `merge` so a hand-edit made in staging is not silently discarded by a re-sync."
+        "value": "overwrite, merge",
+        "description": "How to handle old content when it is pulled into the send for translation folder."
       },
       {
         "key": "translate.conflict.behavior",
-        "value": "overwrite",
-        "description": "Content returning FROM translation wins. This is machine translation into a tree nobody hand-edits before QA, so `merge` would only create phantom conflicts."
+        "value": "overwrite, merge",
+        "description": "How to handle old content when new content returns from translation."
       },
       {
         "key": "rollout.conflict.behavior",
-        "value": "merge",
-        "description": "Rolling out to the locale. `merge` because by this point a native reviewer may have corrected the locale document, and a re-rollout must not throw that away — the review verdict in the tracker would then be attached to text that no longer exists."
+        "value": "merge, overwrite",
+        "description": "How to handle old content when new content get rolled out to the locale."
       },
       {
         "key": "copy.conflict.behavior",
-        "value": "merge",
-        "description": "Copying source into a region without translating."
+        "value": "merge, merge",
+        "description": ""
       },
-      { "key": "translation.service.name", "value": "Google", "description": "Machine translation. Every locale is `Machine Translation` in the languages sheet below; the human pass is the tracker's native-review stage, not the connector's." },
-      { "key": "translation.service.all.env", "value": "prod", "description": "First entry is the default." },
-      { "key": "translation.service.prod.link", "value": "https://cloud.google.com/translate/docs/overview", "description": "" },
-      { "key": "translation.service.prod.origin", "value": "https://translate.da.live/google", "description": "" }
+      {
+        "key": "translation.service.name",
+        "value": "Smartling",
+        "description": ""
+      },
+      {
+        "key": "translation.service.all.env",
+        "value": "prod, stage",
+        "description": "The order of service endpoints. First is default."
+      },
+      {
+        "key": "translation.service.prod.link",
+        "value": "https://dashboard.smartling.com/app/accounts/c9e4d16b/account-jobs/?filter=ALL",
+        "description": ""
+      },
+      {
+        "key": "translation.service.prod.origin",
+        "value": "https://translate.da.live/smartling",
+        "description": ""
+      },
+      {
+        "key": "translation.service.prod.authEndpoint",
+        "value": "https://api.smartling.com",
+        "description": ""
+      },
+      {
+        "key": "translation.service.prod.projectId",
+        "value": "1eb6bc358",
+        "description": ""
+      },
+      {
+        "key": "translation.service.prod.autoAuthorize",
+        "value": "yes",
+        "description": ""
+      },
+      {
+        "key": "translation.service.stage.link",
+        "value": "https://dashboard.smartling.com/app/accounts/c9e4d16b/account-jobs/?filter=ALL",
+        "description": ""
+      },
+      {
+        "key": "translation.service.stage.origin",
+        "value": "https://translate.da.live/smartling",
+        "description": ""
+      },
+      {
+        "key": "translation.service.stage.authEndpoint",
+        "value": "https://api.smartling.com",
+        "description": ""
+      },
+      {
+        "key": "translation.service.stage.projectId",
+        "value": "1eb6bc358",
+        "description": ""
+      },
+      {
+        "key": "translation.service.stage.autoAuthorize",
+        "value": "yes",
+        "description": ""
+      }
+    ],
+    ":colWidths": [
+      300,
+      300,
+      300
     ]
   },
-
   "languages": {
     "total": 11,
     "limit": 11,
     "offset": 0,
     "data": [
-      { "name": "English", "code": "en", "translate type": "Machine Translation", "location": "/en", "actions": "Skip" },
-      { "name": "German", "code": "de", "translate type": "Machine Translation", "location": "/de", "actions": "Translate" },
-      { "name": "French", "code": "fr", "translate type": "Machine Translation", "location": "/fr", "actions": "Translate" },
-      { "name": "Spanish", "code": "es", "translate type": "Machine Translation", "location": "/es", "actions": "Translate" },
-      { "name": "Italian", "code": "it", "translate type": "Machine Translation", "location": "/it", "actions": "Translate" },
-      { "name": "Portuguese", "code": "pt", "translate type": "Machine Translation", "location": "/pt", "actions": "Translate" },
-      { "name": "Polish", "code": "pl", "translate type": "Machine Translation", "location": "/pl", "actions": "Translate" },
-      { "name": "Japanese", "code": "ja", "translate type": "Machine Translation", "location": "/ja", "actions": "Translate" },
-      { "name": "Korean", "code": "ko", "translate type": "Machine Translation", "location": "/ko", "actions": "Translate" },
-      { "name": "Chinese (Simplified)", "code": "zh-CN", "translate type": "Machine Translation", "location": "/zh-cn", "actions": "Translate" },
-      { "name": "Chinese (Traditional)", "code": "zh-TW", "translate type": "Machine Translation", "location": "/zh-tw", "actions": "Translate" }
+      {
+        "name": "English",
+        "code": "en",
+        "translate type": "Machine Translation",
+        "location": "/en",
+        "actions": "Skip"
+      },
+      {
+        "name": "German",
+        "code": "de",
+        "translate type": "Machine Translation",
+        "location": "/de",
+        "actions": "Translate"
+      },
+      {
+        "name": "French",
+        "code": "fr",
+        "translate type": "Machine Translation",
+        "location": "/fr",
+        "actions": "Translate"
+      },
+      {
+        "name": "Spanish",
+        "code": "es",
+        "translate type": "Machine Translation",
+        "location": "/es",
+        "actions": "Translate"
+      },
+      {
+        "name": "Italian",
+        "code": "it",
+        "translate type": "Machine Translation",
+        "location": "/it",
+        "actions": "Translate"
+      },
+      {
+        "name": "Portuguese",
+        "code": "pt",
+        "translate type": "Machine Translation",
+        "location": "/pt",
+        "actions": "Translate"
+      },
+      {
+        "name": "Polish",
+        "code": "pl-PL",
+        "translate type": "Machine Translation",
+        "location": "/pl",
+        "actions": "Translate"
+      },
+      {
+        "name": "Japanese",
+        "code": "ja",
+        "translate type": "Machine Translation",
+        "location": "/ja",
+        "actions": "Translate"
+      },
+      {
+        "name": "Korean",
+        "code": "ko",
+        "translate type": "Machine Translation",
+        "location": "/ko",
+        "actions": "Translate"
+      },
+      {
+        "name": "Chinese (Simplified)",
+        "code": "zh-CN",
+        "translate type": "Machine Translation",
+        "location": "/zh-cn",
+        "actions": "Translate"
+      },
+      {
+        "name": "Chinese (Traditional)",
+        "code": "zh-TW",
+        "translate type": "Machine Translation",
+        "location": "/zh-tw",
+        "actions": "Translate"
+      }
     ],
     "_comment": [
       "`code` is what the connector is told; `location` is the URL prefix. For the two",
@@ -92,12 +222,18 @@
       "spellings per locale (`serviceCode` vs `code`) so one place knows the difference.",
       "",
       "`en` is `Skip`, not `Translate`: it is the source."
+    ],
+    ":colWidths": [
+      300,
+      300,
+      300,
+      300,
+      300
     ]
   },
-
   "custom-doc-rules": {
-    "total": 16,
-    "limit": 16,
+    "total": 24,
+    "limit": 24,
     "offset": 0,
     "data": [
       {
@@ -179,27 +315,100 @@
         "block": "tracker-summary, translation-matrix, group-progress, work-queue, escalation-list, status-primer",
         "rule": "do-not-translate",
         "_why": "The tracker's own boards. They live under /tracker/, which is never sent for translation at all — this rule is a second line of defence in case a /tracker/ path is ever added to a project by hand."
+      },
+      {
+        "block": "home-hero, article-feed, rapid-drop, splitforms, bio",
+        "rule": "dnt col 1",
+        "_why": "Column 1 of these key/value blocks is the parser key (kicker, heading, index, badge, Name, form…). A translated key is silently skipped: the hero loses its copy, article-feed renders nothing without `index`, and `bio` removes itself. Healed 2026-09-26 after the DA engine simulation showed every key translatable."
+      },
+      {
+        "block": "home-hero",
+        "rule": "dnt col 2 if col 1 is \"slides\" or \"rapid-fragment\" or \"rapid-id\" or \"rapid-bg\" or \"event-date\" or \"event-image\" or \"event-link\" or \"event-focal\" or \"event-index\" or \"event-auto\"",
+        "_why": "Functional values: fragment paths, ids, ISO dates, links and switches. `event-auto` is matched against off/false/no/none, so a translated \"aus\" silently turns auto-fill back on."
+      },
+      {
+        "block": "article-feed",
+        "rule": "dnt col 2 if col 1 is \"index\" or \"index path\" or \"index-path\" or \"limit\" or \"path\" or \"paths\" or \"status\" or \"statuses\"",
+        "_why": "The aliases the parser accepts for the feed source and filters (the older insights/article-feed rule covers only the canonical names). The /en/ paths stay English; scripts/utils/locale-path.js maps them into the page locale at render time."
+      },
+      {
+        "block": "article-feed",
+        "rule": "dnt col 2 if col 1 contains \"-url\" or \"-image\" or \"-date\"",
+        "_why": "Hand-authored card rows (card-N-url/-image/-date) for any N, not only card-1..4."
+      },
+      {
+        "block": "insights, dam-display, speakers, bios",
+        "rule": "do-not-translate",
+        "_why": "Pure configuration, no reader-facing text: insights (limit/index/category/tag/template), dam-display (filepath + mode — a translated \"images\" falls back to pdf mode), speakers/bios (slugs)."
+      },
+      {
+        "block": "rapid-drop",
+        "rule": "dnt col 2 if col 1 is \"id\" or \"bg\"",
+        "_why": "Element id and background value."
+      },
+      {
+        "block": "splitforms",
+        "rule": "dnt col 2 if col 1 is \"form\" or \"reply-email\" or \"redirect-url\" or \"event-id\" or \"access-key\"",
+        "_why": "An unknown form name falls back to the contact form; the rest are addresses, ids and keys. submit-label and success stay translatable."
+      },
+      {
+        "block": "bio",
+        "rule": "dnt col 2 if col 1 is \"photo\" or \"image\" or \"name\" or \"company\" or \"linkedin\" or \"link\"",
+        "_why": "Names, companies and URLs. Title (job title) and Bio stay translatable."
       }
+    ],
+    ":colWidths": [
+      300,
+      300
     ]
   },
-
   "dnt-content-rules": {
-    "total": 12,
-    "limit": 12,
+    "total": 14,
+    "limit": 14,
     "offset": 0,
     "data": [
-      { "content": "AEM Global Development Collective" },
-      { "content": "AEM GDC" },
-      { "content": "Edge Delivery Services" },
-      { "content": "Document Authoring" },
-      { "content": "Adobe Experience Manager" },
-      { "content": "AEMaaCS" },
-      { "content": "adaptTo()" },
-      { "content": "Adobe Developers Live" },
-      { "content": "aemdev.org" },
-      { "content": "Tad Reeves" },
-      { "content": "Laurel Timko" },
-      { "content": "Wilson Faure" }
+      {
+        "content": "AEM Global Development Collective"
+      },
+      {
+        "content": "AEM GDC"
+      },
+      {
+        "content": "Edge Delivery Services"
+      },
+      {
+        "content": "Document Authoring"
+      },
+      {
+        "content": "Adobe Experience Manager"
+      },
+      {
+        "content": "AEMaaCS"
+      },
+      {
+        "content": "adaptTo()"
+      },
+      {
+        "content": "Adobe Developers Live"
+      },
+      {
+        "content": "aemdev.org"
+      },
+      {
+        "content": "Tad Reeves"
+      },
+      {
+        "content": "Laurel Timko"
+      },
+      {
+        "content": "Wilson Faure"
+      },
+      {
+        "content": "AEM Global Developer Collective"
+      },
+      {
+        "content": "AEM 6.5 LTS"
+      }
     ],
     "_comment": [
       "Literal strings wrapped in translate=\"no\" wherever they appear in body text.",
@@ -217,35 +426,61 @@
       "",
       "Note the matcher is a substring XPath contains(), so a short string here has wide",
       "reach: do not add a common word."
+    ],
+    ":colWidths": [
+      300
     ]
   },
-
   "dnt-sheet-rules": {
     "total": 4,
     "limit": 4,
     "offset": 0,
     "data": [
-      { "pattern": "beginsWith(http:// || https://)", "action": "dnt" },
-      { "pattern": "beginsWith(/)", "action": "dnt" },
-      { "pattern": "beginsWith(aemdev:)", "action": "dnt" },
-      { "pattern": "beginsWith(#)", "action": "dnt" }
+      {
+        "pattern": "beginsWith(http:// || https://)",
+        "action": "dnt"
+      },
+      {
+        "pattern": "beginsWith(/)",
+        "action": "dnt"
+      },
+      {
+        "pattern": "beginsWith(aemdev:)",
+        "action": "dnt"
+      },
+      {
+        "pattern": "beginsWith(#)",
+        "action": "dnt"
+      }
     ],
     "_comment": [
       "Applied to sheet cells. Absolute URLs, site-root-relative paths, taxonomy tag ids",
       "(`aemdev:topic/edge-delivery`), and the hash authoring language this site uses",
       "(`#_blank`, `#_dnt`, `#_self` — see scripts/utils/link-target.js). Every one is an",
       "identifier that must survive byte-identical."
+    ],
+    ":colWidths": [
+      300,
+      300
     ]
   },
-
   "dnt": {
     "total": 3,
     "limit": 3,
     "offset": 0,
     "data": [
-      { "dnt-sheet": "*", "dnt-columns": "Slug, Path, Image, LinkedIn, Updated" },
-      { "dnt-sheet": "redirects", "dnt-columns": "*" },
-      { "dnt-sheet": "*", "dnt-columns": "page-path, locale, locale-path, sent-at, previewed, online, translation-status, review-status, review-updated, subgroup, template, en-status, content-escalation" }
+      {
+        "dnt-sheet": "*",
+        "dnt-columns": "Slug, Path, Image, LinkedIn, Updated"
+      },
+      {
+        "dnt-sheet": "redirects",
+        "dnt-columns": "*"
+      },
+      {
+        "dnt-sheet": "*",
+        "dnt-columns": "page-path, locale, locale-path, sent-at, previewed, online, translation-status, review-status, review-updated, subgroup, template, en-status, content-escalation"
+      }
     ],
     "_comment": [
       "Row 1 covers the bios roster (/bios.json) — its structural columns. `Name` is NOT",
@@ -258,10 +493,20 @@
       "sheets live under /tracker/ and are never in a translation project, but a status",
       "value silently translated from `en-published` to `en-veröffentlicht` would not",
       "fail loudly — it would classify as `unknown en-status` and quietly stop counting."
+    ],
+    ":colWidths": [
+      300,
+      300
     ]
   },
-
-  ":names": ["config", "languages", "custom-doc-rules", "dnt-content-rules", "dnt-sheet-rules", "dnt"],
+  ":names": [
+    "config",
+    "languages",
+    "custom-doc-rules",
+    "dnt-content-rules",
+    "dnt-sheet-rules",
+    "dnt"
+  ],
   ":version": 3,
   ":type": "multi-sheet"
 }

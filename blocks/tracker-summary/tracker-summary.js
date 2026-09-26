@@ -353,7 +353,9 @@ export default async function init(block) {
         label: 'EN published',
         value: num(totals.enPublished),
         unit: 'ready to translate from',
-        href: pageTrackerUrl({ filter: 'en-published' }),
+        // A stage id: the app matches `filter` against PAGE_STAGES ids, and `en-published`
+        // (the en-status VALUE) fell through to a text search that matched nothing.
+        href: pageTrackerUrl({ filter: 'enPublished' }),
         title: 'Open the Page Tracker app, filtered to published English pages',
       }),
     );

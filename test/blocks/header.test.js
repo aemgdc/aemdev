@@ -110,8 +110,9 @@ describe('header language selector', () => {
       const el = await buildHeader();
       const links = [...el.querySelectorAll('.language-menu a')];
 
+      // With the trailing slash: the production CDN 404s `/en` and serves `/en/`.
       expect(links.map((a) => new URL(a.href).pathname))
-        .to.eql(ALL_LOCALES.map((code) => `/${code}`));
+        .to.eql(ALL_LOCALES.map((code) => `/${code}/`));
       expect(el.querySelector('.lang-code').textContent).to.equal('en');
     });
   });

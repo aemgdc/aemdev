@@ -23,6 +23,7 @@
 */
 
 import { dateValue } from '../../scripts/utils/date.js';
+import { fetchLocalizedIndex } from '../../scripts/utils/locale-path.js';
 
 const DEFAULT_INDEX = '/en/query-index.json';
 const DEFAULT_PAGE_SIZE = 9;
@@ -251,10 +252,9 @@ export default async function decorate(block) {
   }
 
   try {
-    const resp = await fetch(index);
-    if (!resp.ok) throw new Error(`Failed to fetch ${index} (${resp.status})`);
-    const json = await resp.json();
-    articles = (json.data || [])
+    // On a /de/ page this reads /de/query-index.json, falling back to English.
+    const { rows } = await fetchLocalizedIndex(index);
+    articles = rows
       .filter((a) => a.path
         && !a.path.endsWith('/index')
         && !a.redirectTarget

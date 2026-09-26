@@ -94,7 +94,10 @@ function currentLocale(pathname) {
  * path that cannot exist.
  */
 function localeHref(pathname, code) {
-  return localeForPath(pathname) ? pathForLocale(pathname, code) : localeByCode(code).location;
+  const home = localeByCode(code).location;
+  const href = localeForPath(pathname) ? pathForLocale(pathname, code) : home;
+  // A locale home is served at `/de/`; the bare `/de` 404s on the production CDN.
+  return href === home ? `${href}/` : href;
 }
 
 /**

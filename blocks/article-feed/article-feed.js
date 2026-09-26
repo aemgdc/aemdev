@@ -40,6 +40,7 @@
  */
 
 import { formatDate, dateValue } from '../../scripts/utils/date.js';
+import { fetchLocalizedIndex, localizePath, pageLang } from '../../scripts/utils/locale-path.js';
 import { createPicture } from '../../scripts/utils/picture.js';
 
 /*
@@ -239,11 +240,14 @@ function buildGrid(cards) {
   return grid;
 }
 
-async function loadArticles(indexPath, { paths, statuses } = {}) {
-  const resp = await fetch(indexPath);
-  if (!resp.ok) throw new Error(`Failed to fetch ${indexPath}`);
-  const json = await resp.json();
-  const articles = (json.data || [])
+async function loadArticles(indexPath, { paths: authoredPaths, statuses } = {}) {
+  // Authored `index`/`path` cells are English and do-not-translate; on a /de/ page they
+  // are read in the /de/ tree. The path filter follows whichever index answered.
+  const { rows, localized } = await fetchLocalizedIndex(indexPath);
+  const paths = localized && authoredPaths
+    ? authoredPaths.map((prefix) => localizePath(prefix).toLowerCase())
+    : authoredPaths;
+  const articles = rows
     .filter((a) => a.pagetype !== 'page' && !a.path.endsWith('/index'))
     .filter((a) => {
       if (!paths) return true;
@@ -263,7 +267,7 @@ function articleToCard(article) {
     title: article.title || '',
     dek: article.description || '',
     url: article.path || '#',
-    date: when ? formatDate(when) : '',
+    date: when ? formatDate(when, pageLang()) : '',
     author: article.author || '',
     image: article.image || '',
   };

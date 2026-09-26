@@ -29,6 +29,7 @@
 
 import { loadFragment } from '../fragment/fragment.js';
 import { loadStyle, getConfig } from '../../scripts/ak.js';
+import { fetchLocalizedIndex, pageLang } from '../../scripts/utils/locale-path.js';
 import { dateValue, parseDate } from '../../scripts/utils/date.js';
 
 /* Statuses the meetup pages use for an event that has not happened yet — the
@@ -676,7 +677,7 @@ function createEventPanel(event, { reserveMedia = false } = {}) {
 
   appendTextElement(panel, 'p', 'home-hero-event-dek', event.dek);
 
-  const when = formatEventDate(event.date);
+  const when = formatEventDate(event.date, pageLang());
   if (when || event.location) {
     const meta = document.createElement('p');
     meta.className = 'home-hero-event-meta';
@@ -759,10 +760,13 @@ function eventFromIndexRow(row, model) {
 }
 
 async function fetchNextEvent(indexPath) {
-  const resp = await fetch(indexPath);
-  if (!resp.ok) return null;
-  const json = await resp.json();
-  return pickNextEvent(Array.isArray(json?.data) ? json.data : []);
+  // A /de/ home page finds the next event in /de/query-index.json, falling back to English.
+  try {
+    const { rows } = await fetchLocalizedIndex(indexPath);
+    return pickNextEvent(rows);
+  } catch {
+    return null;
+  }
 }
 
 /* The frame is what keeps the promo from making the hero taller than it already

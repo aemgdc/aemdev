@@ -18,6 +18,7 @@
  */
 
 import { getMetadata } from '../../scripts/ak.js';
+import { fetchLocalized } from '../../scripts/utils/locale-path.js';
 
 /** Where a bare slug resolves. A token starting with `/` bypasses this. */
 export const BIOS_PATH = '/en/fragments/bios';
@@ -108,11 +109,12 @@ export function resolveMediaUrls(root, docPath) {
 /** Fetch one bio document and hand back its `.bio` block, or null if absent. */
 export async function fetchBioBlock(path) {
   try {
-    const resp = await fetch(`${path}.plain.html`);
+    // On a /de/ page, prefer the translated bio; fall back to the English one.
+    const { resp, path: plainPath } = await fetchLocalized(`${path}.plain.html`);
     if (!resp.ok) return null;
     const doc = new DOMParser().parseFromString(await resp.text(), 'text/html');
     const block = doc.querySelector('.bio');
-    if (block) resolveMediaUrls(block, path);
+    if (block) resolveMediaUrls(block, plainPath.replace(/\.plain\.html$/, ''));
     return block;
   } catch (e) {
     return null;

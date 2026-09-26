@@ -159,3 +159,17 @@ test('the protected literals are the connector\'s own never-translate list', () 
   assert.ok(contract.literals.includes('Tad Reeves'), 'person names are load-bearing content');
   assert.equal(protectedLiterals({}).length, 0);
 });
+
+test('taxonomy never goes to MT: tags and categories come from the AEM tags servlet', () => {
+  // Titles and descriptions may be translated. Tags, categories, template and status are
+  // taxonomy/filter keys; the site resolves their display labels from the tags servlet,
+  // so a machine-translated value would break both the labels and every index filter.
+  for (const key of ['tags', 'category', 'article:tag', 'template', 'status', 'speakers', 'locale']) {
+    assert.equal(permits('metadata', [key, 'category|meetup'], 1), false, `metadata ${key} must stay English`);
+  }
+  for (const key of ['title', 'description']) {
+    assert.equal(permits('metadata', [key, 'A title'], 1), true, `metadata ${key} is translatable`);
+  }
+  assert.equal(permits('insights', ['category', 'Meetup Recap'], 1), false);
+  assert.equal(permits('article-feed', ['category', 'aemdev:category/meetup'], 1), false);
+});

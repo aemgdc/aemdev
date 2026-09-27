@@ -363,8 +363,8 @@
     ]
   },
   "dnt-content-rules": {
-    "total": 14,
-    "limit": 14,
+    "total": 44,
+    "limit": 44,
     "offset": 0,
     "data": [
       {
@@ -408,6 +408,96 @@
       },
       {
         "content": "AEM 6.5 LTS"
+      },
+      {
+        "content": "Experience Workspace"
+      },
+      {
+        "content": "Adobe Experience Workspace"
+      },
+      {
+        "content": "Experience Modernization Agent"
+      },
+      {
+        "content": "Adobe Experience Modernization Agent"
+      },
+      {
+        "content": "Edge Delivery"
+      },
+      {
+        "content": "AEM Assets"
+      },
+      {
+        "content": "CX Co-Pilot"
+      },
+      {
+        "content": "Adobe AUG"
+      },
+      {
+        "content": "AEM Champion"
+      },
+      {
+        "content": "Greg Dimeris"
+      },
+      {
+        "content": "Shashi Mulugu"
+      },
+      {
+        "content": "Markus Haack"
+      },
+      {
+        "content": "Chris Millar"
+      },
+      {
+        "content": "Fastly"
+      },
+      {
+        "content": "Kulturbrauerei"
+      },
+      {
+        "content": "Dark Alley"
+      },
+      {
+        "content": "Author Bus"
+      },
+      {
+        "content": "Media Bus"
+      },
+      {
+        "content": "AEM Developer Collective"
+      },
+      {
+        "content": "EDS"
+      },
+      {
+        "content": "AEM as a Cloud Service"
+      },
+      {
+        "content": "Sites Optimizer"
+      },
+      {
+        "content": "Edge Workers"
+      },
+      {
+        "content": "Rick Reich"
+      },
+      {
+        "content": "Better Digital"
+      },
+      {
+        "content": "Diane Eveler"
+      },
+      {
+        "content": "JAMStack"
+      },
+      {
+        "content": "Cognizant Netcentric"
+      },
+      {
+        "content": "Munich Central Tower"
+      },
+      {
+        "content": "Arbory Digital"
       }
     ],
     "_comment": [

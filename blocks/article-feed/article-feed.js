@@ -64,8 +64,9 @@ function splitList(val) {
 function labelFromTag(value) {
   const raw = Array.isArray(value) ? value[0] : value;
   if (!raw) return '';
-  const afterSlash = String(raw).split('/').pop();
-  const leaf = afterSlash.split(':').pop();
+  // Tags arrive as `aemdev:category/meetup` or, from the tag picker, `category|meetup`
+  // (optionally comma-separated); the label is the leaf of the first one.
+  const leaf = String(raw).split(',')[0].trim().split(/[/:|]/).pop();
   return leaf
     .split('-')
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))

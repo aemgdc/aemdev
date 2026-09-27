@@ -363,8 +363,8 @@
     ]
   },
   "dnt-content-rules": {
-    "total": 34,
-    "limit": 34,
+    "total": 44,
+    "limit": 44,
     "offset": 0,
     "data": [
       {
@@ -468,6 +468,36 @@
       },
       {
         "content": "EDS"
+      },
+      {
+        "content": "AEM as a Cloud Service"
+      },
+      {
+        "content": "Sites Optimizer"
+      },
+      {
+        "content": "Edge Workers"
+      },
+      {
+        "content": "Rick Reich"
+      },
+      {
+        "content": "Better Digital"
+      },
+      {
+        "content": "Diane Eveler"
+      },
+      {
+        "content": "JAMStack"
+      },
+      {
+        "content": "Cognizant Netcentric"
+      },
+      {
+        "content": "Munich Central Tower"
+      },
+      {
+        "content": "Arbory Digital"
       }
     ],
     "_comment": [

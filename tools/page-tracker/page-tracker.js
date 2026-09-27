@@ -75,6 +75,16 @@ const CONFIG = {
 /** The `en` pseudo-mode: the `data` tab, with no locale picked. */
 const EN_MODE = 'en';
 
+/*
+ * What a cold open (no `?group=` / `?locale=`) lands on. Chosen for the adaptTo() 2026
+ * demo: the meetups group in German carries the most translation data, so clicking into
+ * the app mid-talk shows the most of it at once. An explicit parameter always wins,
+ * `?locale=en` included, and a default group that no longer exists falls back to the
+ * first group exactly as an unknown `?group=` does.
+ */
+export const DEFAULT_GROUP = 'meetups';
+export const DEFAULT_LOCALE = 'de';
+
 const state = {
   actor: 'unknown',
   readonly: false,
@@ -593,6 +603,9 @@ function readParams() {
   const code = (p.get(params.locale) || '').trim().toLowerCase();
   if (code === EN_MODE) state.mode = EN_MODE;
   else if (TARGET_LOCALES.includes(code)) state.mode = code;
+  else if (!p.has(params.locale) && TARGET_LOCALES.includes(DEFAULT_LOCALE)) {
+    state.mode = DEFAULT_LOCALE;
+  }
 
   const branch = (p.get(params.branch) || '').trim();
   if (branch) state.branch = branch;
@@ -621,7 +634,7 @@ function readParams() {
     }
   }
 
-  return (p.get(params.group) || '').trim();
+  return (p.get(params.group) || '').trim() || DEFAULT_GROUP;
 }
 
 /* ------------------------------------------------------------------------- boot */

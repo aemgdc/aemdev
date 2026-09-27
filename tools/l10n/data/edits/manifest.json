@@ -133,6 +133,16 @@
         "zh-cn": 1,
         "pl": 1
       }
+    },
+    "review-zhtw": {
+      "what": "first zh-tw review of rollout-1 docs: meetups champions-office-hours-sites-optimizer-agentic-ai, post-adaptto-2025-meetup, 20261001-aem-meetup-munich; 11 bios; fragments author-bio, cta-default, newsletter-signup. cta-banner, disclaimer, footer-disclaimer, global-cta and related-links were reviewed and needed no edits",
+      "agent": "Review zh-tw meetups, bios and fragments",
+      "applied": "2026-09-27T07:10Z..07:11Z, i.e. AFTER the rollout's link-heal and dict-r1 + dict-r2 term-heal; several `old` strings contain dict-r2 English terms (Edge Delivery, AEM Champion), so replay this set only after term-heal dict-r2",
+      "files": 17,
+      "edits": 51,
+      "perLocale": {
+        "zh-tw": 17
+      }
     }
   },
   "docs": {
@@ -906,6 +916,57 @@
     ],
     "/pl/index": [
       "chips/pl/index.json"
+    ],
+    "/zh-tw/meetups/20261001-aem-meetup-munich": [
+      "review-zhtw/zh-tw/meetups__20261001-aem-meetup-munich.json"
+    ],
+    "/zh-tw/meetups/champions-office-hours-sites-optimizer-agentic-ai": [
+      "review-zhtw/zh-tw/meetups__champions-office-hours-sites-optimizer-agentic-ai.json"
+    ],
+    "/zh-tw/meetups/post-adaptto-2025-meetup": [
+      "review-zhtw/zh-tw/meetups__post-adaptto-2025-meetup.json"
+    ],
+    "/zh-tw/fragments/bios/andreas-haller": [
+      "review-zhtw/zh-tw/fragments__bios__andreas-haller.json"
+    ],
+    "/zh-tw/fragments/bios/anian-weber": [
+      "review-zhtw/zh-tw/fragments__bios__anian-weber.json"
+    ],
+    "/zh-tw/fragments/bios/eric-van-geem": [
+      "review-zhtw/zh-tw/fragments__bios__eric-van-geem.json"
+    ],
+    "/zh-tw/fragments/bios/greg-dimeris": [
+      "review-zhtw/zh-tw/fragments__bios__greg-dimeris.json"
+    ],
+    "/zh-tw/fragments/bios/laurel-timko": [
+      "review-zhtw/zh-tw/fragments__bios__laurel-timko.json"
+    ],
+    "/zh-tw/fragments/bios/mackenzie-reeves": [
+      "review-zhtw/zh-tw/fragments__bios__mackenzie-reeves.json"
+    ],
+    "/zh-tw/fragments/bios/rick-reich": [
+      "review-zhtw/zh-tw/fragments__bios__rick-reich.json"
+    ],
+    "/zh-tw/fragments/bios/roman-mueller": [
+      "review-zhtw/zh-tw/fragments__bios__roman-mueller.json"
+    ],
+    "/zh-tw/fragments/bios/sagar-sane": [
+      "review-zhtw/zh-tw/fragments__bios__sagar-sane.json"
+    ],
+    "/zh-tw/fragments/bios/shashi-mulugu": [
+      "review-zhtw/zh-tw/fragments__bios__shashi-mulugu.json"
+    ],
+    "/zh-tw/fragments/bios/wilson-faure": [
+      "review-zhtw/zh-tw/fragments__bios__wilson-faure.json"
+    ],
+    "/zh-tw/fragments/author-bio": [
+      "review-zhtw/zh-tw/fragments__author-bio.json"
+    ],
+    "/zh-tw/fragments/cta-default": [
+      "review-zhtw/zh-tw/fragments__cta-default.json"
+    ],
+    "/zh-tw/fragments/newsletter-signup": [
+      "review-zhtw/zh-tw/fragments__newsletter-signup.json"
     ]
   }
 }

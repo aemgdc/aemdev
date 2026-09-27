@@ -560,6 +560,10 @@ function paintLocaleNav() {
 
 async function loadGroup(group) {
   state.group = group;
+  // The shell is built before the first group is chosen, so keep the picker in step
+  // with the group actually shown (a cold open lands on DEFAULT_GROUP, not option 1).
+  const picker = document.querySelector('.pt-group');
+  if (picker && picker.value !== group) picker.value = group;
   closeDrawer();
   const body = bodyEl();
   if (body) {

@@ -1,0 +1,27 @@
+[
+ {
+  "old": "CDN i pracownicy brzegowi",
+  "new": "CDN i Edge Workers",
+  "count": 1
+ },
+ {
+  "old": "— CDN i pracowników brzegowych, zaplecza AEM Cloud oraz bezpiecznych operacji na treściach zbiorczych w DA.",
+  "new": "— CDN i Edge Workers, zaplecza AEM Cloud oraz bezpiecznych zbiorczych operacji na treściach w DA.",
+  "count": 1
+ },
+ {
+  "old": "Dostarczanie na krawędź i tworzenie dokumentów od początku do końca",
+  "new": "Edge Delivery i Document Authoring od początku do końca",
+  "count": 1
+ },
+ {
+  "old": "Pracownicy CDN i krawędzi przed EDS — tam, gdzie są szwy",
+  "new": "CDN i Edge Workers przed EDS — gdzie są punkty styku",
+  "count": 1
+ },
+ {
+  "old": "Drugie badanie wykazało bezpieczne",
+  "new": "Druga sesja zademonstrowała bezpieczne",
+  "count": 1
+ }
+]

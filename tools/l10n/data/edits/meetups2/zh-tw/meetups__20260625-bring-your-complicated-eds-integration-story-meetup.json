@@ -1,0 +1,32 @@
+[
+ {
+  "old": "重點總結",
+  "new": "// 重點總結",
+  "count": 1
+ },
+ {
+  "old": "關於 AEM 開發者聯盟",
+  "new": "關於 AEM Developer Collective",
+  "count": 1
+ },
+ {
+  "old": "聚會中討論的內容和鏈接",
+  "new": "聚會中討論的內容和連結",
+  "count": 1
+ },
+ {
+  "old": "解決邊緣交付/DA",
+  "new": "解決 Edge Delivery/DA",
+  "count": 1
+ },
+ {
+  "old": "社區亮點",
+  "new": "社群亮點",
+  "count": 1
+ },
+ {
+  "old": "加入下一期課程",
+  "new": "參加下一場活動",
+  "count": 1
+ }
+]

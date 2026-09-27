@@ -1,0 +1,911 @@
+{
+  "_comment": [
+    "Reviewed MT fixes, recovered byte-for-byte from the 2026-09-26/27 session transcripts (the",
+    "scratchpad that held them was wiped). Every file listed here was applied to DA with",
+    "`edit-doc.mjs <doc> <file> --apply` and returned `write 200`.",
+    "docs: translated doc path -> ordered list of edit batches (paths relative to data/edits/).",
+    "Apply them in list order, after link-heal + term-heal dict-r1 and BEFORE term-heal dict-r2:",
+    "each `old` must occur exactly `count` times, which only holds on a doc in the state the",
+    "reviewer saw. edit-doc refuses (and writes nothing) otherwise. Driver: apply-edits.mjs."
+  ],
+  "sets": {
+    "chrome": {
+      "what": "canary-1 chrome: nav header/footer fragments, /<loc>/meetups listing, /zh-tw/index, tad-reeves bio",
+      "agent": "Apply chrome translation fixes",
+      "applied": "2026-09-27T00:57Z..00:59Z",
+      "files": 28,
+      "edits": 50,
+      "perLocale": {
+        "ja": 3,
+        "zh-cn": 3,
+        "zh-tw": 5,
+        "ko": 3,
+        "pt": 3,
+        "de": 3,
+        "es": 2,
+        "fr": 2,
+        "pl": 2,
+        "it": 2
+      }
+    },
+    "adaptto": {
+      "what": "canary-1: /<loc>/meetups/adaptto-2026-berlin (demo page)",
+      "agent": "Apply adaptTo page translation fixes",
+      "applied": "2026-09-27T01:01Z..01:05Z",
+      "files": 10,
+      "edits": 248,
+      "perLocale": {
+        "de": 1,
+        "fr": 1,
+        "es": 1,
+        "it": 1,
+        "pt": 1,
+        "pl": 1,
+        "ja": 1,
+        "ko": 1,
+        "zh-cn": 1,
+        "zh-tw": 1
+      }
+    },
+    "review-b": {
+      "what": "rollout-1 meetups: aemug-midwest-summit-2025-insights, champions-office-hours-2025-wrap-up, champions-office-hours-sites-optimizer-agentic-ai, post-adaptto-2025-meetup, 20261001-aem-meetup-munich",
+      "agent": "Review and fix meetup batch B",
+      "applied": "2026-09-27T01:02Z..01:06Z",
+      "files": 41,
+      "edits": 121,
+      "perLocale": {
+        "de": 5,
+        "es": 4,
+        "fr": 3,
+        "it": 5,
+        "ja": 4,
+        "ko": 5,
+        "pl": 4,
+        "pt": 4,
+        "zh-cn": 5,
+        "zh-tw": 2
+      }
+    },
+    "review-a": {
+      "what": "rollout-1 meetups: adobe-developers-live-san-jose-2026, aem-65-lts-vs-eds-vs-aemaacs-columbus, aem-gdc-june-2026-eds-cdn-recap, sites-optimizer-eds-localization-atlanta, aem-frontend-showdown-classic-jamstack-eds, aem-meetup-miami",
+      "agent": "Review and fix meetup batch A",
+      "applied": "2026-09-27T01:02Z..01:07Z",
+      "files": 51,
+      "edits": 170,
+      "perLocale": {
+        "de": 6,
+        "fr": 6,
+        "it": 6,
+        "ko": 6,
+        "zh-cn": 5,
+        "zh-tw": 5,
+        "es": 4,
+        "ja": 5,
+        "pl": 5,
+        "pt": 3
+      }
+    },
+    "meetups2": {
+      "what": "canary-1 meetups: 20260827-aem-meetup-washington-dc, 20260625-bring-your-complicated-eds-integration-story-meetup",
+      "agent": "Apply meetup page translation fixes",
+      "applied": "2026-09-27T01:02Z..01:05Z",
+      "files": 20,
+      "edits": 259,
+      "perLocale": {
+        "de": 2,
+        "fr": 2,
+        "es": 2,
+        "it": 2,
+        "pt": 2,
+        "pl": 2,
+        "ja": 2,
+        "ko": 2,
+        "zh-cn": 2,
+        "zh-tw": 2
+      }
+    },
+    "review-frag": {
+      "what": "rollout-1 fragments: 11 bios + author-bio, cta-banner, cta-default, disclaimer, footer-disclaimer, global-cta, newsletter-signup, related-links (no zh-tw copies existed)",
+      "agent": "Review and fix bios and fragments",
+      "applied": "2026-09-27T01:03Z..01:13Z",
+      "files": 104,
+      "edits": 207,
+      "perLocale": {
+        "de": 13,
+        "fr": 12,
+        "es": 12,
+        "it": 12,
+        "pt": 10,
+        "ja": 14,
+        "ko": 14,
+        "zh-cn": 12,
+        "pl": 5
+      }
+    },
+    "chips": {
+      "what": "home-page hero chip wording on /ja, /zh-cn, /pl index",
+      "agent": "main session (inline)",
+      "applied": "2026-09-27T01:28Z, i.e. AFTER the dict-r2 term-heal and link-heal sweep; it does not touch any dictionary rendering, so it is safe in the reviewed-edits step",
+      "files": 3,
+      "edits": 3,
+      "perLocale": {
+        "ja": 1,
+        "zh-cn": 1,
+        "pl": 1
+      }
+    }
+  },
+  "docs": {
+    "/ja/fragments/nav/header": [
+      "chrome/ja/fragments__nav__header.json"
+    ],
+    "/zh-cn/fragments/nav/header": [
+      "chrome/zh-cn/fragments__nav__header.json"
+    ],
+    "/zh-tw/fragments/nav/header": [
+      "chrome/zh-tw/fragments__nav__header.json"
+    ],
+    "/ko/fragments/nav/header": [
+      "chrome/ko/fragments__nav__header.json"
+    ],
+    "/pt/fragments/nav/header": [
+      "chrome/pt/fragments__nav__header.json"
+    ],
+    "/de/fragments/nav/footer": [
+      "chrome/de/fragments__nav__footer.json"
+    ],
+    "/es/fragments/nav/footer": [
+      "chrome/es/fragments__nav__footer.json"
+    ],
+    "/ko/fragments/nav/footer": [
+      "chrome/ko/fragments__nav__footer.json"
+    ],
+    "/ja/fragments/nav/footer": [
+      "chrome/ja/fragments__nav__footer.json"
+    ],
+    "/zh-cn/fragments/nav/footer": [
+      "chrome/zh-cn/fragments__nav__footer.json"
+    ],
+    "/zh-tw/fragments/nav/footer": [
+      "chrome/zh-tw/fragments__nav__footer.json"
+    ],
+    "/fr/fragments/nav/footer": [
+      "chrome/fr/fragments__nav__footer.json"
+    ],
+    "/pt/fragments/nav/footer": [
+      "chrome/pt/fragments__nav__footer.json"
+    ],
+    "/pl/fragments/nav/footer": [
+      "chrome/pl/fragments__nav__footer.json"
+    ],
+    "/de/meetups": [
+      "chrome/de/meetups.json"
+    ],
+    "/it/meetups": [
+      "chrome/it/meetups.json"
+    ],
+    "/zh-tw/meetups": [
+      "chrome/zh-tw/meetups.json"
+    ],
+    "/zh-tw/index": [
+      "chrome/zh-tw/index.json"
+    ],
+    "/de/fragments/bios/tad-reeves": [
+      "chrome/de/fragments__bios__tad-reeves.json"
+    ],
+    "/ja/fragments/bios/tad-reeves": [
+      "chrome/ja/fragments__bios__tad-reeves.json"
+    ],
+    "/ko/fragments/bios/tad-reeves": [
+      "chrome/ko/fragments__bios__tad-reeves.json"
+    ],
+    "/zh-cn/fragments/bios/tad-reeves": [
+      "chrome/zh-cn/fragments__bios__tad-reeves.json"
+    ],
+    "/zh-tw/fragments/bios/tad-reeves": [
+      "chrome/zh-tw/fragments__bios__tad-reeves.json"
+    ],
+    "/es/fragments/bios/tad-reeves": [
+      "chrome/es/fragments__bios__tad-reeves.json"
+    ],
+    "/pt/fragments/bios/tad-reeves": [
+      "chrome/pt/fragments__bios__tad-reeves.json"
+    ],
+    "/pl/fragments/bios/tad-reeves": [
+      "chrome/pl/fragments__bios__tad-reeves.json"
+    ],
+    "/fr/fragments/bios/tad-reeves": [
+      "chrome/fr/fragments__bios__tad-reeves.json"
+    ],
+    "/it/fragments/bios/tad-reeves": [
+      "chrome/it/fragments__bios__tad-reeves.json"
+    ],
+    "/de/meetups/adaptto-2026-berlin": [
+      "adaptto/de/meetups__adaptto-2026-berlin.json"
+    ],
+    "/fr/meetups/adaptto-2026-berlin": [
+      "adaptto/fr/meetups__adaptto-2026-berlin.json"
+    ],
+    "/es/meetups/adaptto-2026-berlin": [
+      "adaptto/es/meetups__adaptto-2026-berlin.json"
+    ],
+    "/it/meetups/adaptto-2026-berlin": [
+      "adaptto/it/meetups__adaptto-2026-berlin.json"
+    ],
+    "/pt/meetups/adaptto-2026-berlin": [
+      "adaptto/pt/meetups__adaptto-2026-berlin.json"
+    ],
+    "/pl/meetups/adaptto-2026-berlin": [
+      "adaptto/pl/meetups__adaptto-2026-berlin.json"
+    ],
+    "/ja/meetups/adaptto-2026-berlin": [
+      "adaptto/ja/meetups__adaptto-2026-berlin.json"
+    ],
+    "/ko/meetups/adaptto-2026-berlin": [
+      "adaptto/ko/meetups__adaptto-2026-berlin.json"
+    ],
+    "/zh-cn/meetups/adaptto-2026-berlin": [
+      "adaptto/zh-cn/meetups__adaptto-2026-berlin.json"
+    ],
+    "/zh-tw/meetups/adaptto-2026-berlin": [
+      "adaptto/zh-tw/meetups__adaptto-2026-berlin.json"
+    ],
+    "/de/meetups/20261001-aem-meetup-munich": [
+      "review-b/de/meetups__20261001-aem-meetup-munich.json"
+    ],
+    "/de/meetups/aemug-midwest-summit-2025-insights": [
+      "review-b/de/meetups__aemug-midwest-summit-2025-insights.json"
+    ],
+    "/de/meetups/champions-office-hours-2025-wrap-up": [
+      "review-b/de/meetups__champions-office-hours-2025-wrap-up.json"
+    ],
+    "/de/meetups/champions-office-hours-sites-optimizer-agentic-ai": [
+      "review-b/de/meetups__champions-office-hours-sites-optimizer-agentic-ai.json"
+    ],
+    "/de/meetups/post-adaptto-2025-meetup": [
+      "review-b/de/meetups__post-adaptto-2025-meetup.json"
+    ],
+    "/es/meetups/20261001-aem-meetup-munich": [
+      "review-b/es/meetups__20261001-aem-meetup-munich.json"
+    ],
+    "/fr/meetups/20261001-aem-meetup-munich": [
+      "review-b/fr/meetups__20261001-aem-meetup-munich.json"
+    ],
+    "/it/meetups/20261001-aem-meetup-munich": [
+      "review-b/it/meetups__20261001-aem-meetup-munich.json"
+    ],
+    "/ja/meetups/20261001-aem-meetup-munich": [
+      "review-b/ja/meetups__20261001-aem-meetup-munich.json"
+    ],
+    "/ko/meetups/20261001-aem-meetup-munich": [
+      "review-b/ko/meetups__20261001-aem-meetup-munich.json"
+    ],
+    "/pl/meetups/20261001-aem-meetup-munich": [
+      "review-b/pl/meetups__20261001-aem-meetup-munich.json"
+    ],
+    "/pt/meetups/20261001-aem-meetup-munich": [
+      "review-b/pt/meetups__20261001-aem-meetup-munich.json"
+    ],
+    "/zh-cn/meetups/20261001-aem-meetup-munich": [
+      "review-b/zh-cn/meetups__20261001-aem-meetup-munich.json"
+    ],
+    "/it/meetups/aemug-midwest-summit-2025-insights": [
+      "review-b/it/meetups__aemug-midwest-summit-2025-insights.json"
+    ],
+    "/ja/meetups/aemug-midwest-summit-2025-insights": [
+      "review-b/ja/meetups__aemug-midwest-summit-2025-insights.json"
+    ],
+    "/ko/meetups/aemug-midwest-summit-2025-insights": [
+      "review-b/ko/meetups__aemug-midwest-summit-2025-insights.json"
+    ],
+    "/pl/meetups/aemug-midwest-summit-2025-insights": [
+      "review-b/pl/meetups__aemug-midwest-summit-2025-insights.json"
+    ],
+    "/pt/meetups/aemug-midwest-summit-2025-insights": [
+      "review-b/pt/meetups__aemug-midwest-summit-2025-insights.json"
+    ],
+    "/zh-cn/meetups/aemug-midwest-summit-2025-insights": [
+      "review-b/zh-cn/meetups__aemug-midwest-summit-2025-insights.json"
+    ],
+    "/zh-tw/meetups/aemug-midwest-summit-2025-insights": [
+      "review-b/zh-tw/meetups__aemug-midwest-summit-2025-insights.json"
+    ],
+    "/es/meetups/champions-office-hours-2025-wrap-up": [
+      "review-b/es/meetups__champions-office-hours-2025-wrap-up.json"
+    ],
+    "/fr/meetups/champions-office-hours-2025-wrap-up": [
+      "review-b/fr/meetups__champions-office-hours-2025-wrap-up.json"
+    ],
+    "/it/meetups/champions-office-hours-2025-wrap-up": [
+      "review-b/it/meetups__champions-office-hours-2025-wrap-up.json"
+    ],
+    "/ja/meetups/champions-office-hours-2025-wrap-up": [
+      "review-b/ja/meetups__champions-office-hours-2025-wrap-up.json"
+    ],
+    "/ko/meetups/champions-office-hours-2025-wrap-up": [
+      "review-b/ko/meetups__champions-office-hours-2025-wrap-up.json"
+    ],
+    "/pl/meetups/champions-office-hours-2025-wrap-up": [
+      "review-b/pl/meetups__champions-office-hours-2025-wrap-up.json"
+    ],
+    "/pt/meetups/champions-office-hours-2025-wrap-up": [
+      "review-b/pt/meetups__champions-office-hours-2025-wrap-up.json"
+    ],
+    "/zh-cn/meetups/champions-office-hours-2025-wrap-up": [
+      "review-b/zh-cn/meetups__champions-office-hours-2025-wrap-up.json"
+    ],
+    "/zh-tw/meetups/champions-office-hours-2025-wrap-up": [
+      "review-b/zh-tw/meetups__champions-office-hours-2025-wrap-up.json"
+    ],
+    "/es/meetups/champions-office-hours-sites-optimizer-agentic-ai": [
+      "review-b/es/meetups__champions-office-hours-sites-optimizer-agentic-ai.json"
+    ],
+    "/fr/meetups/champions-office-hours-sites-optimizer-agentic-ai": [
+      "review-b/fr/meetups__champions-office-hours-sites-optimizer-agentic-ai.json"
+    ],
+    "/it/meetups/champions-office-hours-sites-optimizer-agentic-ai": [
+      "review-b/it/meetups__champions-office-hours-sites-optimizer-agentic-ai.json"
+    ],
+    "/ja/meetups/champions-office-hours-sites-optimizer-agentic-ai": [
+      "review-b/ja/meetups__champions-office-hours-sites-optimizer-agentic-ai.json"
+    ],
+    "/ko/meetups/champions-office-hours-sites-optimizer-agentic-ai": [
+      "review-b/ko/meetups__champions-office-hours-sites-optimizer-agentic-ai.json"
+    ],
+    "/pl/meetups/champions-office-hours-sites-optimizer-agentic-ai": [
+      "review-b/pl/meetups__champions-office-hours-sites-optimizer-agentic-ai.json"
+    ],
+    "/pt/meetups/champions-office-hours-sites-optimizer-agentic-ai": [
+      "review-b/pt/meetups__champions-office-hours-sites-optimizer-agentic-ai.json"
+    ],
+    "/zh-cn/meetups/champions-office-hours-sites-optimizer-agentic-ai": [
+      "review-b/zh-cn/meetups__champions-office-hours-sites-optimizer-agentic-ai.json"
+    ],
+    "/es/meetups/post-adaptto-2025-meetup": [
+      "review-b/es/meetups__post-adaptto-2025-meetup.json"
+    ],
+    "/it/meetups/post-adaptto-2025-meetup": [
+      "review-b/it/meetups__post-adaptto-2025-meetup.json"
+    ],
+    "/ko/meetups/post-adaptto-2025-meetup": [
+      "review-b/ko/meetups__post-adaptto-2025-meetup.json"
+    ],
+    "/zh-cn/meetups/post-adaptto-2025-meetup": [
+      "review-b/zh-cn/meetups__post-adaptto-2025-meetup.json"
+    ],
+    "/de/meetups/adobe-developers-live-san-jose-2026": [
+      "review-a/de/meetups__adobe-developers-live-san-jose-2026.json"
+    ],
+    "/fr/meetups/adobe-developers-live-san-jose-2026": [
+      "review-a/fr/meetups__adobe-developers-live-san-jose-2026.json"
+    ],
+    "/it/meetups/adobe-developers-live-san-jose-2026": [
+      "review-a/it/meetups__adobe-developers-live-san-jose-2026.json"
+    ],
+    "/ko/meetups/adobe-developers-live-san-jose-2026": [
+      "review-a/ko/meetups__adobe-developers-live-san-jose-2026.json"
+    ],
+    "/zh-cn/meetups/adobe-developers-live-san-jose-2026": [
+      "review-a/zh-cn/meetups__adobe-developers-live-san-jose-2026.json"
+    ],
+    "/zh-tw/meetups/adobe-developers-live-san-jose-2026": [
+      "review-a/zh-tw/meetups__adobe-developers-live-san-jose-2026.json"
+    ],
+    "/de/meetups/aem-65-lts-vs-eds-vs-aemaacs-columbus": [
+      "review-a/de/meetups__aem-65-lts-vs-eds-vs-aemaacs-columbus.json"
+    ],
+    "/es/meetups/aem-65-lts-vs-eds-vs-aemaacs-columbus": [
+      "review-a/es/meetups__aem-65-lts-vs-eds-vs-aemaacs-columbus.json"
+    ],
+    "/fr/meetups/aem-65-lts-vs-eds-vs-aemaacs-columbus": [
+      "review-a/fr/meetups__aem-65-lts-vs-eds-vs-aemaacs-columbus.json"
+    ],
+    "/it/meetups/aem-65-lts-vs-eds-vs-aemaacs-columbus": [
+      "review-a/it/meetups__aem-65-lts-vs-eds-vs-aemaacs-columbus.json"
+    ],
+    "/ja/meetups/aem-65-lts-vs-eds-vs-aemaacs-columbus": [
+      "review-a/ja/meetups__aem-65-lts-vs-eds-vs-aemaacs-columbus.json"
+    ],
+    "/ko/meetups/aem-65-lts-vs-eds-vs-aemaacs-columbus": [
+      "review-a/ko/meetups__aem-65-lts-vs-eds-vs-aemaacs-columbus.json"
+    ],
+    "/pl/meetups/aem-65-lts-vs-eds-vs-aemaacs-columbus": [
+      "review-a/pl/meetups__aem-65-lts-vs-eds-vs-aemaacs-columbus.json"
+    ],
+    "/pt/meetups/aem-65-lts-vs-eds-vs-aemaacs-columbus": [
+      "review-a/pt/meetups__aem-65-lts-vs-eds-vs-aemaacs-columbus.json"
+    ],
+    "/zh-cn/meetups/aem-65-lts-vs-eds-vs-aemaacs-columbus": [
+      "review-a/zh-cn/meetups__aem-65-lts-vs-eds-vs-aemaacs-columbus.json"
+    ],
+    "/zh-tw/meetups/aem-65-lts-vs-eds-vs-aemaacs-columbus": [
+      "review-a/zh-tw/meetups__aem-65-lts-vs-eds-vs-aemaacs-columbus.json"
+    ],
+    "/de/meetups/aem-frontend-showdown-classic-jamstack-eds": [
+      "review-a/de/meetups__aem-frontend-showdown-classic-jamstack-eds.json"
+    ],
+    "/es/meetups/aem-frontend-showdown-classic-jamstack-eds": [
+      "review-a/es/meetups__aem-frontend-showdown-classic-jamstack-eds.json"
+    ],
+    "/fr/meetups/aem-frontend-showdown-classic-jamstack-eds": [
+      "review-a/fr/meetups__aem-frontend-showdown-classic-jamstack-eds.json"
+    ],
+    "/it/meetups/aem-frontend-showdown-classic-jamstack-eds": [
+      "review-a/it/meetups__aem-frontend-showdown-classic-jamstack-eds.json"
+    ],
+    "/ja/meetups/aem-frontend-showdown-classic-jamstack-eds": [
+      "review-a/ja/meetups__aem-frontend-showdown-classic-jamstack-eds.json"
+    ],
+    "/ko/meetups/aem-frontend-showdown-classic-jamstack-eds": [
+      "review-a/ko/meetups__aem-frontend-showdown-classic-jamstack-eds.json"
+    ],
+    "/pl/meetups/aem-frontend-showdown-classic-jamstack-eds": [
+      "review-a/pl/meetups__aem-frontend-showdown-classic-jamstack-eds.json"
+    ],
+    "/de/meetups/aem-gdc-june-2026-eds-cdn-recap": [
+      "review-a/de/meetups__aem-gdc-june-2026-eds-cdn-recap.json"
+    ],
+    "/es/meetups/aem-gdc-june-2026-eds-cdn-recap": [
+      "review-a/es/meetups__aem-gdc-june-2026-eds-cdn-recap.json"
+    ],
+    "/fr/meetups/aem-gdc-june-2026-eds-cdn-recap": [
+      "review-a/fr/meetups__aem-gdc-june-2026-eds-cdn-recap.json"
+    ],
+    "/it/meetups/aem-gdc-june-2026-eds-cdn-recap": [
+      "review-a/it/meetups__aem-gdc-june-2026-eds-cdn-recap.json"
+    ],
+    "/ja/meetups/aem-gdc-june-2026-eds-cdn-recap": [
+      "review-a/ja/meetups__aem-gdc-june-2026-eds-cdn-recap.json"
+    ],
+    "/ko/meetups/aem-gdc-june-2026-eds-cdn-recap": [
+      "review-a/ko/meetups__aem-gdc-june-2026-eds-cdn-recap.json"
+    ],
+    "/pl/meetups/aem-gdc-june-2026-eds-cdn-recap": [
+      "review-a/pl/meetups__aem-gdc-june-2026-eds-cdn-recap.json"
+    ],
+    "/pt/meetups/aem-gdc-june-2026-eds-cdn-recap": [
+      "review-a/pt/meetups__aem-gdc-june-2026-eds-cdn-recap.json"
+    ],
+    "/zh-cn/meetups/aem-gdc-june-2026-eds-cdn-recap": [
+      "review-a/zh-cn/meetups__aem-gdc-june-2026-eds-cdn-recap.json"
+    ],
+    "/zh-tw/meetups/aem-gdc-june-2026-eds-cdn-recap": [
+      "review-a/zh-tw/meetups__aem-gdc-june-2026-eds-cdn-recap.json"
+    ],
+    "/de/meetups/aem-meetup-miami": [
+      "review-a/de/meetups__aem-meetup-miami.json"
+    ],
+    "/fr/meetups/aem-meetup-miami": [
+      "review-a/fr/meetups__aem-meetup-miami.json"
+    ],
+    "/it/meetups/aem-meetup-miami": [
+      "review-a/it/meetups__aem-meetup-miami.json"
+    ],
+    "/ja/meetups/aem-meetup-miami": [
+      "review-a/ja/meetups__aem-meetup-miami.json"
+    ],
+    "/ko/meetups/aem-meetup-miami": [
+      "review-a/ko/meetups__aem-meetup-miami.json"
+    ],
+    "/pl/meetups/aem-meetup-miami": [
+      "review-a/pl/meetups__aem-meetup-miami.json"
+    ],
+    "/zh-cn/meetups/aem-meetup-miami": [
+      "review-a/zh-cn/meetups__aem-meetup-miami.json"
+    ],
+    "/zh-tw/meetups/aem-meetup-miami": [
+      "review-a/zh-tw/meetups__aem-meetup-miami.json"
+    ],
+    "/de/meetups/sites-optimizer-eds-localization-atlanta": [
+      "review-a/de/meetups__sites-optimizer-eds-localization-atlanta.json"
+    ],
+    "/es/meetups/sites-optimizer-eds-localization-atlanta": [
+      "review-a/es/meetups__sites-optimizer-eds-localization-atlanta.json"
+    ],
+    "/fr/meetups/sites-optimizer-eds-localization-atlanta": [
+      "review-a/fr/meetups__sites-optimizer-eds-localization-atlanta.json"
+    ],
+    "/it/meetups/sites-optimizer-eds-localization-atlanta": [
+      "review-a/it/meetups__sites-optimizer-eds-localization-atlanta.json"
+    ],
+    "/ja/meetups/sites-optimizer-eds-localization-atlanta": [
+      "review-a/ja/meetups__sites-optimizer-eds-localization-atlanta.json"
+    ],
+    "/ko/meetups/sites-optimizer-eds-localization-atlanta": [
+      "review-a/ko/meetups__sites-optimizer-eds-localization-atlanta.json"
+    ],
+    "/pl/meetups/sites-optimizer-eds-localization-atlanta": [
+      "review-a/pl/meetups__sites-optimizer-eds-localization-atlanta.json"
+    ],
+    "/pt/meetups/sites-optimizer-eds-localization-atlanta": [
+      "review-a/pt/meetups__sites-optimizer-eds-localization-atlanta.json"
+    ],
+    "/zh-cn/meetups/sites-optimizer-eds-localization-atlanta": [
+      "review-a/zh-cn/meetups__sites-optimizer-eds-localization-atlanta.json"
+    ],
+    "/zh-tw/meetups/sites-optimizer-eds-localization-atlanta": [
+      "review-a/zh-tw/meetups__sites-optimizer-eds-localization-atlanta.json"
+    ],
+    "/de/meetups/20260827-aem-meetup-washington-dc": [
+      "meetups2/de/meetups__20260827-aem-meetup-washington-dc.json"
+    ],
+    "/fr/meetups/20260827-aem-meetup-washington-dc": [
+      "meetups2/fr/meetups__20260827-aem-meetup-washington-dc.json"
+    ],
+    "/es/meetups/20260827-aem-meetup-washington-dc": [
+      "meetups2/es/meetups__20260827-aem-meetup-washington-dc.json"
+    ],
+    "/it/meetups/20260827-aem-meetup-washington-dc": [
+      "meetups2/it/meetups__20260827-aem-meetup-washington-dc.json"
+    ],
+    "/pt/meetups/20260827-aem-meetup-washington-dc": [
+      "meetups2/pt/meetups__20260827-aem-meetup-washington-dc.json"
+    ],
+    "/pl/meetups/20260827-aem-meetup-washington-dc": [
+      "meetups2/pl/meetups__20260827-aem-meetup-washington-dc.json"
+    ],
+    "/ja/meetups/20260827-aem-meetup-washington-dc": [
+      "meetups2/ja/meetups__20260827-aem-meetup-washington-dc.json"
+    ],
+    "/ko/meetups/20260827-aem-meetup-washington-dc": [
+      "meetups2/ko/meetups__20260827-aem-meetup-washington-dc.json"
+    ],
+    "/zh-cn/meetups/20260827-aem-meetup-washington-dc": [
+      "meetups2/zh-cn/meetups__20260827-aem-meetup-washington-dc.json"
+    ],
+    "/zh-tw/meetups/20260827-aem-meetup-washington-dc": [
+      "meetups2/zh-tw/meetups__20260827-aem-meetup-washington-dc.json"
+    ],
+    "/de/meetups/20260625-bring-your-complicated-eds-integration-story-meetup": [
+      "meetups2/de/meetups__20260625-bring-your-complicated-eds-integration-story-meetup.json"
+    ],
+    "/fr/meetups/20260625-bring-your-complicated-eds-integration-story-meetup": [
+      "meetups2/fr/meetups__20260625-bring-your-complicated-eds-integration-story-meetup.json"
+    ],
+    "/es/meetups/20260625-bring-your-complicated-eds-integration-story-meetup": [
+      "meetups2/es/meetups__20260625-bring-your-complicated-eds-integration-story-meetup.json"
+    ],
+    "/it/meetups/20260625-bring-your-complicated-eds-integration-story-meetup": [
+      "meetups2/it/meetups__20260625-bring-your-complicated-eds-integration-story-meetup.json"
+    ],
+    "/pt/meetups/20260625-bring-your-complicated-eds-integration-story-meetup": [
+      "meetups2/pt/meetups__20260625-bring-your-complicated-eds-integration-story-meetup.json"
+    ],
+    "/pl/meetups/20260625-bring-your-complicated-eds-integration-story-meetup": [
+      "meetups2/pl/meetups__20260625-bring-your-complicated-eds-integration-story-meetup.json"
+    ],
+    "/ja/meetups/20260625-bring-your-complicated-eds-integration-story-meetup": [
+      "meetups2/ja/meetups__20260625-bring-your-complicated-eds-integration-story-meetup.json"
+    ],
+    "/ko/meetups/20260625-bring-your-complicated-eds-integration-story-meetup": [
+      "meetups2/ko/meetups__20260625-bring-your-complicated-eds-integration-story-meetup.json"
+    ],
+    "/zh-cn/meetups/20260625-bring-your-complicated-eds-integration-story-meetup": [
+      "meetups2/zh-cn/meetups__20260625-bring-your-complicated-eds-integration-story-meetup.json"
+    ],
+    "/zh-tw/meetups/20260625-bring-your-complicated-eds-integration-story-meetup": [
+      "meetups2/zh-tw/meetups__20260625-bring-your-complicated-eds-integration-story-meetup.json"
+    ],
+    "/de/fragments/bios/andreas-haller": [
+      "review-frag/de/fragments__bios__andreas-haller.json"
+    ],
+    "/fr/fragments/bios/andreas-haller": [
+      "review-frag/fr/fragments__bios__andreas-haller.json"
+    ],
+    "/es/fragments/bios/andreas-haller": [
+      "review-frag/es/fragments__bios__andreas-haller.json"
+    ],
+    "/it/fragments/bios/andreas-haller": [
+      "review-frag/it/fragments__bios__andreas-haller.json"
+    ],
+    "/pt/fragments/bios/andreas-haller": [
+      "review-frag/pt/fragments__bios__andreas-haller.json"
+    ],
+    "/ja/fragments/bios/andreas-haller": [
+      "review-frag/ja/fragments__bios__andreas-haller.json"
+    ],
+    "/ko/fragments/bios/andreas-haller": [
+      "review-frag/ko/fragments__bios__andreas-haller.json"
+    ],
+    "/zh-cn/fragments/bios/andreas-haller": [
+      "review-frag/zh-cn/fragments__bios__andreas-haller.json"
+    ],
+    "/de/fragments/bios/anian-weber": [
+      "review-frag/de/fragments__bios__anian-weber.json"
+    ],
+    "/fr/fragments/bios/anian-weber": [
+      "review-frag/fr/fragments__bios__anian-weber.json"
+    ],
+    "/es/fragments/bios/anian-weber": [
+      "review-frag/es/fragments__bios__anian-weber.json"
+    ],
+    "/it/fragments/bios/anian-weber": [
+      "review-frag/it/fragments__bios__anian-weber.json"
+    ],
+    "/pt/fragments/bios/anian-weber": [
+      "review-frag/pt/fragments__bios__anian-weber.json"
+    ],
+    "/pl/fragments/bios/anian-weber": [
+      "review-frag/pl/fragments__bios__anian-weber.json"
+    ],
+    "/ja/fragments/bios/anian-weber": [
+      "review-frag/ja/fragments__bios__anian-weber.json"
+    ],
+    "/ko/fragments/bios/anian-weber": [
+      "review-frag/ko/fragments__bios__anian-weber.json"
+    ],
+    "/zh-cn/fragments/bios/anian-weber": [
+      "review-frag/zh-cn/fragments__bios__anian-weber.json"
+    ],
+    "/de/fragments/bios/eric-van-geem": [
+      "review-frag/de/fragments__bios__eric-van-geem.json"
+    ],
+    "/fr/fragments/bios/eric-van-geem": [
+      "review-frag/fr/fragments__bios__eric-van-geem.json"
+    ],
+    "/es/fragments/bios/eric-van-geem": [
+      "review-frag/es/fragments__bios__eric-van-geem.json"
+    ],
+    "/it/fragments/bios/eric-van-geem": [
+      "review-frag/it/fragments__bios__eric-van-geem.json"
+    ],
+    "/pt/fragments/bios/eric-van-geem": [
+      "review-frag/pt/fragments__bios__eric-van-geem.json"
+    ],
+    "/pl/fragments/bios/eric-van-geem": [
+      "review-frag/pl/fragments__bios__eric-van-geem.json"
+    ],
+    "/ja/fragments/bios/eric-van-geem": [
+      "review-frag/ja/fragments__bios__eric-van-geem.json"
+    ],
+    "/ko/fragments/bios/eric-van-geem": [
+      "review-frag/ko/fragments__bios__eric-van-geem.json"
+    ],
+    "/zh-cn/fragments/bios/eric-van-geem": [
+      "review-frag/zh-cn/fragments__bios__eric-van-geem.json"
+    ],
+    "/de/fragments/bios/greg-dimeris": [
+      "review-frag/de/fragments__bios__greg-dimeris.json"
+    ],
+    "/fr/fragments/bios/greg-dimeris": [
+      "review-frag/fr/fragments__bios__greg-dimeris.json"
+    ],
+    "/es/fragments/bios/greg-dimeris": [
+      "review-frag/es/fragments__bios__greg-dimeris.json"
+    ],
+    "/it/fragments/bios/greg-dimeris": [
+      "review-frag/it/fragments__bios__greg-dimeris.json"
+    ],
+    "/pt/fragments/bios/greg-dimeris": [
+      "review-frag/pt/fragments__bios__greg-dimeris.json"
+    ],
+    "/pl/fragments/bios/greg-dimeris": [
+      "review-frag/pl/fragments__bios__greg-dimeris.json"
+    ],
+    "/ja/fragments/bios/greg-dimeris": [
+      "review-frag/ja/fragments__bios__greg-dimeris.json"
+    ],
+    "/ko/fragments/bios/greg-dimeris": [
+      "review-frag/ko/fragments__bios__greg-dimeris.json"
+    ],
+    "/zh-cn/fragments/bios/greg-dimeris": [
+      "review-frag/zh-cn/fragments__bios__greg-dimeris.json"
+    ],
+    "/de/fragments/bios/laurel-timko": [
+      "review-frag/de/fragments__bios__laurel-timko.json"
+    ],
+    "/fr/fragments/bios/laurel-timko": [
+      "review-frag/fr/fragments__bios__laurel-timko.json"
+    ],
+    "/es/fragments/bios/laurel-timko": [
+      "review-frag/es/fragments__bios__laurel-timko.json"
+    ],
+    "/it/fragments/bios/laurel-timko": [
+      "review-frag/it/fragments__bios__laurel-timko.json"
+    ],
+    "/pt/fragments/bios/laurel-timko": [
+      "review-frag/pt/fragments__bios__laurel-timko.json"
+    ],
+    "/ja/fragments/bios/laurel-timko": [
+      "review-frag/ja/fragments__bios__laurel-timko.json"
+    ],
+    "/ko/fragments/bios/laurel-timko": [
+      "review-frag/ko/fragments__bios__laurel-timko.json"
+    ],
+    "/zh-cn/fragments/bios/laurel-timko": [
+      "review-frag/zh-cn/fragments__bios__laurel-timko.json"
+    ],
+    "/de/fragments/bios/mackenzie-reeves": [
+      "review-frag/de/fragments__bios__mackenzie-reeves.json"
+    ],
+    "/fr/fragments/bios/mackenzie-reeves": [
+      "review-frag/fr/fragments__bios__mackenzie-reeves.json"
+    ],
+    "/ja/fragments/bios/mackenzie-reeves": [
+      "review-frag/ja/fragments__bios__mackenzie-reeves.json"
+    ],
+    "/ko/fragments/bios/mackenzie-reeves": [
+      "review-frag/ko/fragments__bios__mackenzie-reeves.json"
+    ],
+    "/zh-cn/fragments/bios/mackenzie-reeves": [
+      "review-frag/zh-cn/fragments__bios__mackenzie-reeves.json"
+    ],
+    "/de/fragments/bios/rick-reich": [
+      "review-frag/de/fragments__bios__rick-reich.json"
+    ],
+    "/fr/fragments/bios/rick-reich": [
+      "review-frag/fr/fragments__bios__rick-reich.json"
+    ],
+    "/es/fragments/bios/rick-reich": [
+      "review-frag/es/fragments__bios__rick-reich.json"
+    ],
+    "/it/fragments/bios/rick-reich": [
+      "review-frag/it/fragments__bios__rick-reich.json"
+    ],
+    "/pt/fragments/bios/rick-reich": [
+      "review-frag/pt/fragments__bios__rick-reich.json"
+    ],
+    "/ja/fragments/bios/rick-reich": [
+      "review-frag/ja/fragments__bios__rick-reich.json"
+    ],
+    "/ko/fragments/bios/rick-reich": [
+      "review-frag/ko/fragments__bios__rick-reich.json"
+    ],
+    "/zh-cn/fragments/bios/rick-reich": [
+      "review-frag/zh-cn/fragments__bios__rick-reich.json"
+    ],
+    "/de/fragments/bios/roman-mueller": [
+      "review-frag/de/fragments__bios__roman-mueller.json"
+    ],
+    "/fr/fragments/bios/roman-mueller": [
+      "review-frag/fr/fragments__bios__roman-mueller.json"
+    ],
+    "/es/fragments/bios/roman-mueller": [
+      "review-frag/es/fragments__bios__roman-mueller.json"
+    ],
+    "/it/fragments/bios/roman-mueller": [
+      "review-frag/it/fragments__bios__roman-mueller.json"
+    ],
+    "/pt/fragments/bios/roman-mueller": [
+      "review-frag/pt/fragments__bios__roman-mueller.json"
+    ],
+    "/pl/fragments/bios/roman-mueller": [
+      "review-frag/pl/fragments__bios__roman-mueller.json"
+    ],
+    "/ja/fragments/bios/roman-mueller": [
+      "review-frag/ja/fragments__bios__roman-mueller.json"
+    ],
+    "/ko/fragments/bios/roman-mueller": [
+      "review-frag/ko/fragments__bios__roman-mueller.json"
+    ],
+    "/zh-cn/fragments/bios/roman-mueller": [
+      "review-frag/zh-cn/fragments__bios__roman-mueller.json"
+    ],
+    "/de/fragments/bios/sagar-sane": [
+      "review-frag/de/fragments__bios__sagar-sane.json"
+    ],
+    "/it/fragments/bios/sagar-sane": [
+      "review-frag/it/fragments__bios__sagar-sane.json"
+    ],
+    "/ja/fragments/bios/sagar-sane": [
+      "review-frag/ja/fragments__bios__sagar-sane.json"
+    ],
+    "/ko/fragments/bios/sagar-sane": [
+      "review-frag/ko/fragments__bios__sagar-sane.json"
+    ],
+    "/zh-cn/fragments/bios/sagar-sane": [
+      "review-frag/zh-cn/fragments__bios__sagar-sane.json"
+    ],
+    "/es/fragments/bios/shashi-mulugu": [
+      "review-frag/es/fragments__bios__shashi-mulugu.json"
+    ],
+    "/ja/fragments/bios/shashi-mulugu": [
+      "review-frag/ja/fragments__bios__shashi-mulugu.json"
+    ],
+    "/ko/fragments/bios/shashi-mulugu": [
+      "review-frag/ko/fragments__bios__shashi-mulugu.json"
+    ],
+    "/zh-cn/fragments/bios/shashi-mulugu": [
+      "review-frag/zh-cn/fragments__bios__shashi-mulugu.json"
+    ],
+    "/fr/fragments/bios/wilson-faure": [
+      "review-frag/fr/fragments__bios__wilson-faure.json"
+    ],
+    "/es/fragments/bios/wilson-faure": [
+      "review-frag/es/fragments__bios__wilson-faure.json"
+    ],
+    "/it/fragments/bios/wilson-faure": [
+      "review-frag/it/fragments__bios__wilson-faure.json"
+    ],
+    "/ja/fragments/bios/wilson-faure": [
+      "review-frag/ja/fragments__bios__wilson-faure.json"
+    ],
+    "/ko/fragments/bios/wilson-faure": [
+      "review-frag/ko/fragments__bios__wilson-faure.json"
+    ],
+    "/zh-cn/fragments/bios/wilson-faure": [
+      "review-frag/zh-cn/fragments__bios__wilson-faure.json"
+    ],
+    "/de/fragments/author-bio": [
+      "review-frag/de/fragments__author-bio.json"
+    ],
+    "/es/fragments/author-bio": [
+      "review-frag/es/fragments__author-bio.json"
+    ],
+    "/de/fragments/cta-banner": [
+      "review-frag/de/fragments__cta-banner.json"
+    ],
+    "/pt/fragments/cta-banner": [
+      "review-frag/pt/fragments__cta-banner.json"
+    ],
+    "/ja/fragments/cta-banner": [
+      "review-frag/ja/fragments__cta-banner.json"
+    ],
+    "/de/fragments/cta-default": [
+      "review-frag/de/fragments__cta-default.json"
+    ],
+    "/fr/fragments/cta-default": [
+      "review-frag/fr/fragments__cta-default.json"
+    ],
+    "/es/fragments/cta-default": [
+      "review-frag/es/fragments__cta-default.json"
+    ],
+    "/it/fragments/cta-default": [
+      "review-frag/it/fragments__cta-default.json"
+    ],
+    "/pt/fragments/cta-default": [
+      "review-frag/pt/fragments__cta-default.json"
+    ],
+    "/pl/fragments/cta-default": [
+      "review-frag/pl/fragments__cta-default.json"
+    ],
+    "/ja/fragments/cta-default": [
+      "review-frag/ja/fragments__cta-default.json"
+    ],
+    "/ko/fragments/cta-default": [
+      "review-frag/ko/fragments__cta-default.json"
+    ],
+    "/zh-cn/fragments/cta-default": [
+      "review-frag/zh-cn/fragments__cta-default.json"
+    ],
+    "/de/fragments/global-cta": [
+      "review-frag/de/fragments__global-cta.json"
+    ],
+    "/fr/fragments/global-cta": [
+      "review-frag/fr/fragments__global-cta.json"
+    ],
+    "/it/fragments/global-cta": [
+      "review-frag/it/fragments__global-cta.json"
+    ],
+    "/pt/fragments/global-cta": [
+      "review-frag/pt/fragments__global-cta.json"
+    ],
+    "/ja/fragments/global-cta": [
+      "review-frag/ja/fragments__global-cta.json"
+    ],
+    "/ko/fragments/global-cta": [
+      "review-frag/ko/fragments__global-cta.json"
+    ],
+    "/fr/fragments/disclaimer": [
+      "review-frag/fr/fragments__disclaimer.json"
+    ],
+    "/es/fragments/disclaimer": [
+      "review-frag/es/fragments__disclaimer.json"
+    ],
+    "/it/fragments/disclaimer": [
+      "review-frag/it/fragments__disclaimer.json"
+    ],
+    "/ko/fragments/newsletter-signup": [
+      "review-frag/ko/fragments__newsletter-signup.json"
+    ],
+    "/ja/index": [
+      "chips/ja/index.json"
+    ],
+    "/zh-cn/index": [
+      "chips/zh-cn/index.json"
+    ],
+    "/pl/index": [
+      "chips/pl/index.json"
+    ]
+  }
+}

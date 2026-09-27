@@ -1,0 +1,306 @@
+{
+ "es": [
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "Colectivo Global de Desarrolladores de AEM"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "Colectivo Global de Desarrolladores AEM"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "Servicios de Entrega en Edge"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "Servicios de Entrega de Edge"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "Autoría de Documentos"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "Authoring de Documentos"
+  },
+  {
+   "term": "AEM GDC",
+   "rendering": "GDC de AEM"
+  }
+ ],
+ "ja": [
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "AEMグローバル開発者コレクティブ"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "AEMグローバル開発者コミュニティ"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "エッジデリバリーサービス"
+  },
+  {
+   "term": "Tad Reeves",
+   "rendering": "タッド・リーブス"
+  },
+  {
+   "term": "AEM GDC",
+   "rendering": "AEMのGDC"
+  }
+ ],
+ "de": [
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "AEM Globales Entwicklerkollektiv"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "Edge-Lieferdienste"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "Dokumenten-Authoring"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "Dokumentenschreiben"
+  },
+  {
+   "term": "adaptTo()",
+   "rendering": "AdaptTo()"
+  }
+ ],
+ "it": [
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "Collettivo Globale di Sviluppatori AEM"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "Servizi di Consegna Edge"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "Servizi di Erogazione Edge"
+  },
+  {
+   "term": "AEM GDC",
+   "rendering": "GDC dell'AEM"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "authoring documenti"
+  }
+ ],
+ "pl": [
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "Globalny kolektyw programistów AEM"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "Globalna społeczność programistów AEM"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "Usługi dostarczania brzegowego"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "tworzenia dokumentów"
+  }
+ ],
+ "zh-cn": [
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "AEM 全球开发者联盟"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "AEM全球开发者联盟"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "AEM 全球开发者大会"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "AEM 全球开发者集体"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "边缘交付服务"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "边缘配送服务"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "Edge 交付服务"
+  },
+  {
+   "term": "AEM 6.5 LTS",
+   "rendering": "AEM 6.5升"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "文档创作"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "文档编写"
+  },
+  {
+   "term": "Tad Reeves",
+   "rendering": "塔德·里夫斯"
+  }
+ ],
+ "pt": [
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "Coletivo Global de Desenvolvedores AEM"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "Coletivo Global de Desenvolvedores da AEM"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "Serviços de entrega Edge"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "Serviços de entrega de borda"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "serviços de entrega de conteúdo na borda (EDS)"
+  }
+ ],
+ "ko": [
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "AEM 글로벌 개발자 모임"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "AEM 글로벌 개발자 커뮤니티"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "AEM 글로벌 개발자 콜렉티브"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "엣지 딜리버리 서비스"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "엣지 전송 서비스"
+  },
+  {
+   "term": "AEM 6.5 LTS",
+   "rendering": "AEM 6.5리터"
+  },
+  {
+   "term": "Tad Reeves",
+   "rendering": "태드 리브스"
+  }
+ ],
+ "zh-tw": [
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "AEM 全球開發者聯盟"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "AEM全球開發者聯盟"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "AEM 全球開發者大會"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "AEM 全球開發者集體"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "邊緣交付服務"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "邊緣配送服務"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "Edge 交付服務"
+  },
+  {
+   "term": "AEM 6.5 LTS",
+   "rendering": "AEM 6.5升"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "文件創作"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "文檔編寫"
+  },
+  {
+   "term": "Tad Reeves",
+   "rendering": "塔德·里夫斯"
+  }
+ ],
+ "fr": [
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "Collectif mondial de développeurs AEM"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "collectif mondial de développeurs AEM"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "collectif mondial des développeurs AEM"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "Collectif Global des Développeurs de l’AEM"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "Collectif Global des Développeurs AEM"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "Collectif Global de Développeurs de l’AEM"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "Collectif Global de Développeurs AEM"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "Services de livraison en périphérie"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "services de livraison en périphérie"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "services de livraison Edge"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "services de prestation de Edge"
+  }
+ ]
+}

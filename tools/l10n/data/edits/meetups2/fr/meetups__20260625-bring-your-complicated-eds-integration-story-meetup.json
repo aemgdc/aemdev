@@ -1,0 +1,67 @@
+[
+ {
+  "old": "Points clés",
+  "new": "// Points clés",
+  "count": 1
+ },
+ {
+  "old": "des architectes les plus expérimentés des services de livraison en Edge",
+  "new": "des architectes Edge Delivery Services les plus expérimentés",
+  "count": 1
+ },
+ {
+  "old": "destiné à permettre à la communauté mondiale des développeurs AEM.",
+  "new": "destiné à soutenir la communauté mondiale des développeurs AEM.",
+  "count": 1
+ },
+ {
+  "old": "À propos du collectif des développeurs AEM",
+  "new": "À propos de l’AEM Developer Collective",
+  "count": 1
+ },
+ {
+  "old": "de votre réseau à rejoindre",
+  "new": "de votre réseau à nous rejoindre",
+  "count": 1
+ },
+ {
+  "old": "pour la livraison en périphérie/DA",
+  "new": "pour Edge Delivery/DA",
+  "count": 1
+ },
+ {
+  "old": "de la récupération de données côté arête via Workers",
+  "new": "de la récupération de données en edge via des Workers",
+  "count": 1
+ },
+ {
+  "old": "Tous les projets ne sont pas en développement.",
+  "new": "Tous les projets ne partent pas de zéro.",
+  "count": 1
+ },
+ {
+  "old": "Des schémas de repliment élégant",
+  "new": "Des modèles de repli élégant (graceful fallback)",
+  "count": 1
+ },
+ {
+  "old": "l’expérience de l’auteur en création de documents",
+  "new": "l’expérience de l’auteur dans Document Authoring",
+  "count": 1
+ },
+ {
+  "old": "une histoire compliquée de SED",
+  "new": "une histoire compliquée liée à EDS",
+  "count": 1
+ },
+ {
+  "old": "Lectures connexes",
+  "new": "// Lectures connexes",
+  "count": 1
+ },
+ {
+  "old": "l’authentisation",
+  "new": "l’authentification",
+  "count": 1
+ }
+]

@@ -1,0 +1,714 @@
+{
+ "de": [
+  {
+   "term": "AEM Champion",
+   "rendering": "AEM-Champion"
+  },
+  {
+   "term": "adaptTo()",
+   "rendering": "angepasst()"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "Dokumentenerstellung"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "Dokumentenautoring"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "Randzustellung"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "Edge-Delivery"
+  }
+ ],
+ "fr": [
+  {
+   "term": "AEM Champions",
+   "rendering": "champions de l’AEM"
+  },
+  {
+   "term": "AEM Champions",
+   "rendering": "Champions de l’AEM"
+  },
+  {
+   "term": "AEM Champion",
+   "rendering": "champion AEM"
+  },
+  {
+   "term": "AEM Champion",
+   "rendering": "championne AEM"
+  },
+  {
+   "term": "AEM Champions",
+   "rendering": "champions AEM"
+  },
+  {
+   "term": "Adobe AEM Champion",
+   "rendering": "champion Adobe AEM"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "collectif global de développeurs AEM"
+  },
+  {
+   "term": "AEM Developer Collective",
+   "rendering": "collectif des développeurs AEM"
+  },
+  {
+   "term": "Experience Modernization Agent",
+   "rendering": "agent de modernisation"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "services de livraison en bordure"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "services de livraison en Edge"
+  },
+  {
+   "term": "AEM Edge Delivery Services",
+   "rendering": "services de livraison AEM Edge"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "livraison en périphérie"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "livraison en bordure"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "livraison Edge"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "Livraison Edge"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "livraison des bords"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "Livraison en contour"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "authoring de documents"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "création de documents"
+  },
+  {
+   "term": "CX Co-Pilot",
+   "rendering": "copilote CX"
+  }
+ ],
+ "es": [
+  {
+   "term": "AEM Champion",
+   "rendering": "campeón de AEM"
+  },
+  {
+   "term": "AEM Champion",
+   "rendering": "campeona de AEM"
+  },
+  {
+   "term": "AEM Champion",
+   "rendering": "campeón AEM"
+  },
+  {
+   "term": "AEM Champions",
+   "rendering": "campeones de AEM"
+  },
+  {
+   "term": "AEM Champions",
+   "rendering": "Campeones AEM"
+  },
+  {
+   "term": "Adobe AEM Champion",
+   "rendering": "campeón de Adobe AEM"
+  },
+  {
+   "term": "3X AEM Champion",
+   "rendering": "campeón de 3X AEM"
+  },
+  {
+   "term": "3X Adobe AEM Champion",
+   "rendering": "campeón 3 veces de Adobe AEM"
+  },
+  {
+   "term": "AEM Developer Collective",
+   "rendering": "Colectivo de Desarrolladores AEM"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "Servicios de Entrega en el Borde"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "Servicios de Entrega en Borde"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "servicios de entrega en Edge"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "Entrega en Edge"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "Entrega en Bordes"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "Entrega de Bordes"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "Entrega de Edge"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "entrega en el borde"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "Creación de Documentos"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "creación de documentos"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "Redacción de Documentos"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "Redacción de documentos"
+  },
+  {
+   "term": "CX Co-Pilot",
+   "rendering": "copiloto CX"
+  }
+ ],
+ "it": [
+  {
+   "term": "AEM Champion",
+   "rendering": "campione AEM"
+  },
+  {
+   "term": "AEM Champion",
+   "rendering": "campionessa AEM"
+  },
+  {
+   "term": "AEM Champions",
+   "rendering": "campioni AEM"
+  },
+  {
+   "term": "AEM Champions",
+   "rendering": "Campioni AEM"
+  },
+  {
+   "term": "Adobe AEM Champion",
+   "rendering": "campione Adobe AEM"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "Collettivo Globale degli Sviluppatori AEM"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "Collettivo Globale degli Sviluppatori di AEM"
+  },
+  {
+   "term": "AEM Global Developer Collective",
+   "rendering": "Global Developer Collective di AEM"
+  },
+  {
+   "term": "AEM Developer Collective",
+   "rendering": "Collettivo degli Sviluppatori AEM"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "servizi di consegna edge"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "Consegna Edge"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "Authoring di Documenti"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "Redazione del Documento"
+  },
+  {
+   "term": "CX Co-Pilot",
+   "rendering": "co-pilota CX"
+  }
+ ],
+ "pt": [
+  {
+   "term": "AEM Champion",
+   "rendering": "Campeã do AEM"
+  },
+  {
+   "term": "AEM Champion",
+   "rendering": "campeão do AEM"
+  },
+  {
+   "term": "AEM Champion",
+   "rendering": "Campeão AEM"
+  },
+  {
+   "term": "3X Adobe AEM Champion",
+   "rendering": "tricampeão do Adobe AEM"
+  },
+  {
+   "term": "3X AEM Champion",
+   "rendering": "tricampeão do AEM"
+  },
+  {
+   "term": "AEM Champions",
+   "rendering": "Campeões do AEM"
+  },
+  {
+   "term": "AEM Champion",
+   "rendering": "campeã da AEM"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "Serviços de Entrega de Edge"
+  },
+  {
+   "term": "AEM Edge Delivery Services",
+   "rendering": "Serviços de Entrega AEM Edge"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "serviços de entrega de ponta"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "serviços de Edge Delivery"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "Entrega Edge"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "Entrega na Borda"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "Entrega na borda"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "entrega de dados na borda"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "entrega no Edge"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "entrega de borda"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "Autoria de Documentos"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "autoria de documentos"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "criação de documentos"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "Criação de Documentos"
+  },
+  {
+   "term": "Adobe Experience Modernization Agent",
+   "rendering": "Agente de Modernização da Experiência da Adobe"
+  },
+  {
+   "term": "EDS",
+   "rendering": "Síndrome de Ehlers-Danlos (SED)"
+  },
+  {
+   "term": "Experience Workspace",
+   "rendering": "Espaço de Trabalho de Experiência"
+  },
+  {
+   "term": "Experience Workspace",
+   "rendering": "Espaço de Trabalho da Experiência"
+  },
+  {
+   "term": "Experience Workspace",
+   "rendering": "Experimente o Workspace"
+  },
+  {
+   "term": "Dark Alley",
+   "rendering": "Beco Escuro"
+  }
+ ],
+ "pl": [
+  {
+   "term": "AEM Champion",
+   "rendering": "mistrzem AEM"
+  },
+  {
+   "term": "AEM Champion",
+   "rendering": "mistrz AEM"
+  },
+  {
+   "term": "Adobe AEM Champion",
+   "rendering": "mistrzem Adobe AEM"
+  },
+  {
+   "term": "AEM Champions",
+   "rendering": "Mistrzów AEM"
+  },
+  {
+   "term": "AEM Champions",
+   "rendering": "mistrzów AEM"
+  },
+  {
+   "term": "AEM Champions",
+   "rendering": "Mistrzowie AEM"
+  },
+  {
+   "term": "AEM Champion",
+   "rendering": "mistrzyni AEM"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "dostarczania brzegowego"
+  },
+  {
+   "term": "AEM Edge Delivery Services",
+   "rendering": "usługach dostarczania AEM Edge"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "usług dostarczania treści na krawędzi"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "dostarczanie Edge"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "Dostarczanie na krawędź"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "tworzenie dokumentów"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "tworzeniem dokumentów"
+  },
+  {
+   "term": "Adobe Experience Modernization Agent",
+   "rendering": "agenta modernizacji doświadczeń firmy Adobe"
+  },
+  {
+   "term": "Adobe Experience Modernization Agent",
+   "rendering": "agenta modernizacji Adobe Experience"
+  },
+  {
+   "term": "Adobe Experience Modernization Agent",
+   "rendering": "agencie modernizacji doświadczenia Adobe"
+  },
+  {
+   "term": "Experience Modernization Agent",
+   "rendering": "agentem ds. modernizacji doświadczeń"
+  },
+  {
+   "term": "Dark Alley",
+   "rendering": "ciemnej alejki"
+  },
+  {
+   "term": "CX Co-Pilot",
+   "rendering": "drugi pilot CX"
+  },
+  {
+   "term": "Experience Workspace",
+   "rendering": "Poznaj Workspace"
+  }
+ ],
+ "ja": [
+  {
+   "term": "AEM Champions",
+   "rendering": "AEMチャンピオンズ"
+  },
+  {
+   "term": "AEM Champion",
+   "rendering": "AEMチャンピオン"
+  },
+  {
+   "term": "AEM Developer Collective",
+   "rendering": "AEM開発者コレクティブ"
+  },
+  {
+   "term": "Author Bus",
+   "rendering": "著者バス"
+  },
+  {
+   "term": "Chris Millar",
+   "rendering": "クリス・ミラー"
+  },
+  {
+   "term": "Dark Alley",
+   "rendering": "ダーク・アレイ"
+  },
+  {
+   "term": "Markus Haack",
+   "rendering": "マルクス・ハック"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "ドキュメントオーサリング"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "ドキュメント作成"
+  },
+  {
+   "term": "Document Authoring",
+   "rendering": "文書作成"
+  },
+  {
+   "term": "Edge Delivery Services",
+   "rendering": "エッジ配信サービス"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "エッジ配信"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "エッジデリバリー"
+  },
+  {
+   "term": "Experience Workspace",
+   "rendering": "エクスペリエンスワークスペース"
+  },
+  {
+   "term": "Greg Dimeris",
+   "rendering": "グレッグ・ディメリス"
+  },
+  {
+   "term": "Kulturbrauerei",
+   "rendering": "クルトゥールブラウエライ"
+  },
+  {
+   "term": "Kulturbrauerei",
+   "rendering": "クルトゥアブラウエライ"
+  },
+  {
+   "term": "Kulturbrauerei",
+   "rendering": "文化劇場"
+  },
+  {
+   "term": "Laurel Timko",
+   "rendering": "ローレル・ティムコ"
+  },
+  {
+   "term": "Shashi Mulugu",
+   "rendering": "シャシ・ムルグ"
+  },
+  {
+   "term": "Wilson Faure",
+   "rendering": "ウィルソン・フォール"
+  },
+  {
+   "term": "CX Co-Pilot",
+   "rendering": "CXコパイロット"
+  },
+  {
+   "term": "Media Bus",
+   "rendering": "メディアバス"
+  }
+ ],
+ "ko": [
+  {
+   "term": "Adobe AUG",
+   "rendering": "어도비 AUG"
+  },
+  {
+   "term": "Adobe Developers Live",
+   "rendering": "어도비 개발자 라이브"
+  },
+  {
+   "term": "Adobe Experience Modernization Agent",
+   "rendering": "어도비 익스피리언스 현대화 에이전트"
+  },
+  {
+   "term": "AEM Champion",
+   "rendering": "AEM 챔피언"
+  },
+  {
+   "term": "AEM Developer Collective",
+   "rendering": "AEM 개발자 모임"
+  },
+  {
+   "term": "Chris Millar",
+   "rendering": "크리스 밀러"
+  },
+  {
+   "term": "Dark Alley",
+   "rendering": "다크 앨리"
+  },
+  {
+   "term": "Dark Alley",
+   "rendering": "어두운 골목"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "엣지 딜리버리"
+  },
+  {
+   "term": "Experience Workspace",
+   "rendering": "체험 워크스페이스"
+  },
+  {
+   "term": "Greg Dimeris",
+   "rendering": "그렉 디메리스"
+  },
+  {
+   "term": "Kulturbrauerei",
+   "rendering": "쿨투르브라우에라이"
+  },
+  {
+   "term": "Laurel Timko",
+   "rendering": "로렐 팀코"
+  },
+  {
+   "term": "Shashi Mulugu",
+   "rendering": "샤시 물루구"
+  },
+  {
+   "term": "Wilson Faure",
+   "rendering": "윌슨 포어"
+  },
+  {
+   "term": "CX Co-Pilot",
+   "rendering": "CX 코파일럿"
+  },
+  {
+   "term": "AEM Assets",
+   "rendering": "AEM 자산"
+  },
+  {
+   "term": "Media Bus",
+   "rendering": "미디어 버스"
+  }
+ ],
+ "zh-cn": [
+  {
+   "term": "adaptTo()",
+   "rendering": "AdaptTo()"
+  },
+  {
+   "term": "AEM Champion",
+   "rendering": "AEM 冠军"
+  },
+  {
+   "term": "AEM Developer Collective",
+   "rendering": "AEM 开发者联盟"
+  },
+  {
+   "term": "Dark Alley",
+   "rendering": "黑暗小巷"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "边缘交付"
+  },
+  {
+   "term": "Experience Modernization Agent",
+   "rendering": "体验现代化代理"
+  },
+  {
+   "term": "Experience Workspace",
+   "rendering": "体验工作区"
+  },
+  {
+   "term": "Greg Dimeris",
+   "rendering": "格雷格·迪梅里斯"
+  },
+  {
+   "term": "Kulturbrauerei",
+   "rendering": "文化酿酒厂"
+  },
+  {
+   "term": "Laurel Timko",
+   "rendering": "劳雷尔·蒂姆科"
+  },
+  {
+   "term": "Shashi Mulugu",
+   "rendering": "沙希·穆卢古"
+  },
+  {
+   "term": "Wilson Faure",
+   "rendering": "威尔逊·福尔"
+  },
+  {
+   "term": "Media Bus",
+   "rendering": "媒体总线"
+  }
+ ],
+ "zh-tw": [
+  {
+   "term": "AEM Champion",
+   "rendering": "AEM 冠軍"
+  },
+  {
+   "term": "AEM Developer Collective",
+   "rendering": "AEM 開發者聯盟"
+  },
+  {
+   "term": "Dark Alley",
+   "rendering": "黑暗小巷"
+  },
+  {
+   "term": "Edge Delivery",
+   "rendering": "邊緣交付"
+  },
+  {
+   "term": "Experience Modernization Agent",
+   "rendering": "體驗現代化代理"
+  },
+  {
+   "term": "Experience Workspace",
+   "rendering": "體驗工作區"
+  },
+  {
+   "term": "Kulturbrauerei",
+   "rendering": "文化釀酒廠"
+  },
+  {
+   "term": "Media Bus",
+   "rendering": "媒體匯流排"
+  }
+ ]
+}

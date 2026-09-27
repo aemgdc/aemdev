@@ -1,0 +1,47 @@
+[
+ {
+  "old": "Punti chiave",
+  "new": "// Punti chiave",
+  "count": 1
+ },
+ {
+  "old": "Questa fu la prima riunione del Collettivo Globale degli Sviluppatori AEM",
+  "new": "Questa è stata la prima riunione dell'AEM Global Developer Collective",
+  "count": 1
+ },
+ {
+  "old": "Riguardo al Collettivo degli Sviluppatori AEM",
+  "new": "Riguardo all'AEM Developer Collective",
+  "count": 1
+ },
+ {
+  "old": " averti parlare",
+  "new": " che intervenissi",
+  "count": 1
+ },
+ {
+  "old": "Diagrammi dell'architettura dei servizi di consegna edge",
+  "new": "Diagrammi dell'architettura di Edge Delivery Services",
+  "count": 1
+ },
+ {
+  "old": "emergendo dati specifici",
+  "new": "mostrando dati specifici",
+  "count": 1
+ },
+ {
+  "old": "sono stati schemi per un appback aggraziato",
+  "new": "ci sono stati schemi per un fallback elegante",
+  "count": 1
+ },
+ {
+  "old": "Letture correlate",
+  "new": "// Letture correlate",
+  "count": 1
+ },
+ {
+  "old": "del Global Developer Collective di AEM",
+  "new": "dell'AEM Global Developer Collective",
+  "count": 1
+ }
+]

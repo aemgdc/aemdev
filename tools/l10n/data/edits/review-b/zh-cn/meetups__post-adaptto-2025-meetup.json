@@ -1,0 +1,7 @@
+[
+ {
+  "old": "AdaptTo()",
+  "new": "adaptTo()",
+  "count": 1
+ }
+]

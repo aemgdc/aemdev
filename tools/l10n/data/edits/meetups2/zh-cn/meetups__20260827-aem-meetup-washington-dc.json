@@ -1,0 +1,82 @@
+[
+ {
+  "old": "要点总结",
+  "new": "// 要点总结",
+  "count": 1
+ },
+ {
+  "old": "首先介绍 Adobe 的体验现代化代理以及体验工作区。",
+  "new": "初探 Adobe 的 Experience Modernization Agent 以及 Experience Workspace。",
+  "count": 1
+ },
+ {
+  "old": "AEM Global Developer Collective在弗吉尼亚州麦克莱恩",
+  "new": "AEM Global Developer Collective 聚会在弗吉尼亚州麦克莱恩",
+  "count": 2
+ },
+ {
+  "old": "经验丰富的实践型现代化代理（又名“艾玛”）",
+  "new": "Experience Modernization Agent（又名“Emma”）实操演示",
+  "count": 1
+ },
+ {
+  "old": "隆重推出 Adobe Experience Workspace",
+  "new": "介绍 Adobe Experience Workspace",
+  "count": 1
+ },
+ {
+  "old": "在演讲中，塔德谈到了：",
+  "new": "在演讲中，Tad 谈到了：",
+  "count": 1
+ },
+ {
+  "old": "传统 AEM 与边缘交付",
+  "new": "传统 AEM 与 Edge Delivery",
+  "count": 1
+ },
+ {
+  "old": "体验工作区作为文档中心",
+  "new": "Experience Workspace 作为文档中心",
+  "count": 1
+ },
+ {
+  "old": "从黑暗小巷到Document Authoring",
+  "new": "从 Dark Alley 到 Document Authoring",
+  "count": 1
+ },
+ {
+  "old": "在体验工作区中进行创作",
+  "new": "在 Experience Workspace 中进行创作",
+  "count": 1
+ },
+ {
+  "old": "AEM Assets、媒体总线和图像优化",
+  "new": "AEM Assets、Media Bus 和图像优化",
+  "count": 1
+ },
+ {
+  "old": "1:12: 00",
+  "new": "1:12:00",
+  "count": 1
+ },
+ {
+  "old": "走廊轨道，食物之上。",
+  "new": "边吃边聊的场外交流。",
+  "count": 1
+ },
+ {
+  "old": "关于“黑暗小巷”项目（即后来的DA）的背景介绍",
+  "new": "关于 Project Dark Alley（即后来的 DA）的背景介绍",
+  "count": 1
+ },
+ {
+  "old": "（使用 Experience Modernization Agent AKA“EMA”）",
+  "new": "（使用 Experience Modernization Agent，又名“EMA”）",
+  "count": 1
+ },
+ {
+  "old": "AEM GDC 体验工作区和 EDS 迁移代理见面会",
+  "new": "AEM GDC Experience Workspace 和 EDS 迁移代理见面会",
+  "count": 1
+ }
+]

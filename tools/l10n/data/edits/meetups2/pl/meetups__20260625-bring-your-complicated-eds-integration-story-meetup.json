@@ -1,0 +1,27 @@
+[
+ {
+  "old": "I proszę wiedz:",
+  "new": "Pamiętaj też:",
+  "count": 1
+ },
+ {
+  "old": "do usług dostarczania treści na krawędzi dzięki nakładkom na treści",
+  "new": "do Edge Delivery Services dzięki nakładkom na treści",
+  "count": 1
+ },
+ {
+  "old": "Co zostało objęte",
+  "new": "Omówione tematy",
+  "count": 1
+ },
+ {
+  "old": "wzorce bezpiecznego powrotu do poprzedniej wersji",
+  "new": "wzorce łagodnego fallbacku (graceful fallback)",
+  "count": 1
+ },
+ {
+  "old": "chętnie ją opowiemy na przyszłej sesji",
+  "new": "chętnie jej wysłuchamy na jednej z kolejnych sesji",
+  "count": 1
+ }
+]

@@ -1,0 +1,52 @@
+[
+ {
+  "old": "ぜひさ",
+  "new": "ぜひ",
+  "count": 1
+ },
+ {
+  "old": "せてください。",
+  "new": "させてください。",
+  "count": 2
+ },
+ {
+  "old": "聞かさせてください。",
+  "new": "聞かせてください。",
+  "count": 1
+ },
+ {
+  "old": "AEM開発者コレクティブについて",
+  "new": "AEM Developer Collectiveについて",
+  "count": 1
+ },
+ {
+  "old": "エッジ配信サービス",
+  "new": "Edge Delivery Services",
+  "count": 3
+ },
+ {
+  "old": "エッジ配信/DA",
+  "new": "Edge Delivery/DA",
+  "count": 1
+ },
+ {
+  "old": "エリック・ヴァン・ギームによる",
+  "new": "Eric Van Geemによる",
+  "count": 1
+ },
+ {
+  "old": "著者を複雑さから守る",
+  "new": "コンテンツ作成者を複雑さから守る",
+  "count": 1
+ },
+ {
+  "old": "ドキュメント作成（またはSharePoint/Googleドキュメント）",
+  "new": "Document Authoring（またはSharePoint/Googleドキュメント）",
+  "count": 1
+ },
+ {
+  "old": "開発者が実際に必要とする調整項目だけを表面化させる",
+  "new": "作成者が実際に必要とする設定項目だけを表示する",
+  "count": 1
+ }
+]

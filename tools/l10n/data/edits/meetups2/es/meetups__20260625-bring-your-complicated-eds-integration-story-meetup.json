@@ -1,0 +1,42 @@
+[
+ {
+  "old": "Puntos clave",
+  "new": "// Puntos clave",
+  "count": 1
+ },
+ {
+  "old": "arquitectos de servicios de entrega en Edge con más experiencia",
+  "new": "arquitectos de Edge Delivery Services con más experiencia",
+  "count": 1
+ },
+ {
+  "old": "Sobre el Colectivo de Desarrolladores AEM",
+  "new": "Sobre el AEM Developer Collective",
+  "count": 1
+ },
+ {
+  "old": "Si tienes experiencias o innovaciones que compartir, ",
+  "new": "Si tienes experiencias o innovaciones que compartir, nos ",
+  "count": 1
+ },
+ {
+  "old": "obtención de datos en el lado de la arista mediante Workers",
+  "new": "obtención de datos en el edge mediante Workers",
+  "count": 1
+ },
+ {
+  "old": "un usuario iniciado sesión",
+  "new": "un usuario que ha iniciado sesión",
+  "count": 1
+ },
+ {
+  "old": "una API GraphQL sin cabeza",
+  "new": "una API GraphQL headless",
+  "count": 1
+ },
+ {
+  "old": "Lecturas relacionadas",
+  "new": "// Lecturas relacionadas",
+  "count": 1
+ }
+]

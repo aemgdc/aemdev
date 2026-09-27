@@ -1,0 +1,22 @@
+[
+ {
+  "old": "EDS & AEM Infrastructure、CDN & Edge Workers、およびDA上での安全な一括検索置換",
+  "new": "EDSとAEMのインフラ、CDNとEdge Workers、DA上での安全な一括検索置換",
+  "count": 1
+ },
+ {
+  "old": "最新のエッジ配信／ドキュメント作成サイトの構成要素",
+  "new": "最新のEdge Delivery／Document Authoringサイトの構成要素",
+  "count": 2
+ },
+ {
+  "old": "エッジ配信とドキュメント作成、エンドツーエンド",
+  "new": "Edge DeliveryとDocument Authoring、エンドツーエンド",
+  "count": 1
+ },
+ {
+  "old": "EDSの前にあるCDNとエッジワーカー - 継ぎ目は",
+  "new": "EDSの前段にあるCDNとエッジワーカー：継ぎ目はどこにあるのか",
+  "count": 1
+ }
+]

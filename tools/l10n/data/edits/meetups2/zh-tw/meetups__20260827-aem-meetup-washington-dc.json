@@ -1,0 +1,107 @@
+[
+ {
+  "old": "重點總結",
+  "new": "// 重點總結",
+  "count": 1
+ },
+ {
+  "old": "首先介紹 Adobe 的體驗現代化代理以及體驗工作區。",
+  "new": "初探 Adobe 的 Experience Modernization Agent 以及 Experience Workspace。",
+  "count": 1
+ },
+ {
+  "old": "弗吉尼亞州",
+  "new": "維吉尼亞州",
+  "count": 1
+ },
+ {
+  "old": "AEM Global Developer Collective在維吉尼亞州",
+  "new": "AEM Global Developer Collective 聚會在維吉尼亞州",
+  "count": 2
+ },
+ {
+  "old": "經驗豐富的實踐型現代化代理（又稱“艾瑪”）",
+  "new": "Experience Modernization Agent（又稱「Emma」）實作示範",
+  "count": 1
+ },
+ {
+  "old": "隆重介紹 Adobe Experience Workspace",
+  "new": "介紹 Adobe Experience Workspace",
+  "count": 1
+ },
+ {
+  "old": "Adobe 的全新代理商內容管理系統",
+  "new": "Adobe 的全新代理內容管理系統",
+  "count": 1
+ },
+ {
+  "old": "在演講中，塔德談到了：",
+  "new": "在演講中，Tad 談到了：",
+  "count": 1
+ },
+ {
+  "old": "傳統 AEM 與邊緣交付",
+  "new": "傳統 AEM 與 Edge Delivery",
+  "count": 1
+ },
+ {
+  "old": "體驗工作區作為文件中心",
+  "new": "Experience Workspace 作為文件中心",
+  "count": 1
+ },
+ {
+  "old": "從黑暗小巷到Document Authoring",
+  "new": "從 Dark Alley 到 Document Authoring",
+  "count": 1
+ },
+ {
+  "old": " MCP、代理商和 CX Co-Pilot",
+  "new": " MCP、AI 代理和 CX Co-Pilot",
+  "count": 1
+ },
+ {
+  "old": "在體驗工作區中進行創作",
+  "new": "在 Experience Workspace 中進行創作",
+  "count": 1
+ },
+ {
+  "old": "AEM Assets、媒體匯流排和影像優化",
+  "new": "AEM Assets、Media Bus 和影像優化",
+  "count": 1
+ },
+ {
+  "old": "1:12: 00",
+  "new": "1:12:00",
+  "count": 1
+ },
+ {
+  "old": "馬裡蘭",
+  "new": "馬里蘭",
+  "count": 1
+ },
+ {
+  "old": "走廊軌道，食物之上。",
+  "new": "邊吃邊聊的場外交流。",
+  "count": 1
+ },
+ {
+  "old": "聚會中討論的內容和鏈接",
+  "new": "聚會中討論的內容和連結",
+  "count": 1
+ },
+ {
+  "old": "關於「黑暗小巷」計畫（即後來的DA）的背景介紹",
+  "new": "關於 Project Dark Alley（即後來的 DA）的背景介紹",
+  "count": 1
+ },
+ {
+  "old": "（使用 Experience Modernization Agent AKA“EMA”）",
+  "new": "（使用 Experience Modernization Agent，又稱「EMA」）",
+  "count": 1
+ },
+ {
+  "old": "AEM GDC 體驗工作區和 EDS 遷移代理見面會",
+  "new": "AEM GDC Experience Workspace 和 EDS 遷移代理見面會",
+  "count": 1
+ }
+]

@@ -1,0 +1,171 @@
+[
+ {
+  "old": "Höhepunkt der Sitzung",
+  "new": "Session-Tipp",
+  "count": 5
+ },
+ {
+  "old": "EDS CDN Architektur Deep Dive",
+  "new": "EDS-CDN-Architektur im Detail"
+ },
+ {
+  "old": "In dieser Sitzung wird eine vollständige Produktions-CDN-Einrichtung für eine EDS-Bereitstellung durchgeführt. Der Moderator arbeitet von einer wirklich groß angelegten europäischen Einzelhandelsseite, was einen großen Unterschied macht. Erwarten Sie eine Abdeckung von Fastly-Edge-Konfiguration, Origin-Shield-Setup, benutzerdefiniertem VCL für A/B-Tests und Cache-Invalidierungsansätzen, die auch bei realem Datenverkehr bestehen. Die geteilten Zahlen (Cache-Treffer-Raten über 98 %, unter 50 ms TTFB am Rand) stammen aus tatsächlichen Produktionsdaten, nicht aus Benchmarks.",
+  "new": "Diese Session geht ein komplettes Produktions-CDN-Setup für ein EDS-Deployment durch. Die Beispiele des Referenten stammen von einer echten, großen europäischen Retail-Website, und das macht einen großen Unterschied. Behandelt werden die Fastly-Edge-Konfiguration, das Origin-Shield-Setup, individuelles VCL für A/B-Tests und Ansätze zur Cache-Invalidierung, die auch unter realem Traffic standhalten. Die gezeigten Zahlen (Cache-Hit-Raten über 98 %, TTFB unter 50 ms am Edge) stammen aus tatsächlichen Produktionsdaten, nicht aus Benchmarks."
+ },
+ {
+  "old": "Inhaltsmodellierung für Maßstab: Wenn Blöcke nicht ausreichen",
+  "new": "Content-Modellierung im großen Maßstab: Wenn Blöcke nicht ausreichen"
+ },
+ {
+  "old": "Diese Sitzung betrachtet den Punkt, an dem reines blockbasiertes Modellieren zu Problemen führt: Multi-Autoren-Umgebungen, Multi-Brand-Deployments, Inhalte, die über Kanäle hinweg transportiert werden müssen. Der gezeigte Ansatz verwendet den Abfrageindex als leichte Inhalts-API, wobei DA-strukturierte Inhalte die Autorenseite übernehmen. Es ist eine praktische Architektur für Teams, die an die Grenzen dessen gestoßen sind, was Blöcke allein leisten können.",
+  "new": "Diese Session beleuchtet den Punkt, an dem rein blockbasierte Modellierung zu Problemen führt: Umgebungen mit vielen Autoren, Multi-Brand-Deployments, Inhalte, die über mehrere Kanäle ausgespielt werden müssen. Der gezeigte Ansatz nutzt den Query Index als schlanke Content-API, während strukturierte Inhalte in DA die Authoring-Seite abdecken. Eine praxistaugliche Architektur für Teams, die an die Grenzen dessen gestoßen sind, was Blöcke allein leisten können."
+ },
+ {
+  "old": "Spirituell erfolgreiche AEM: Erweiterte Autorenanpassung in DA",
+  "new": "Spiritually Succeeding AEM: Advanced Author Customization in DA"
+ },
+ {
+  "old": "Diese Sitzung zeigt, wie weit du die Document Authoring-Schnittstelle mit der Plugin-API treiben kannst. Die Demo behandelt Tag-Picker, die mit einer Live-AEM-Taxonomie verbunden sind, Icon-Picker, die aus der genehmigten Asset-Bibliothek einer Marke ziehen, strukturiertes Bio-Management von Mitwirkenden und einen Preflight-Veröffentlichungs-Workflow, der Governance-Checks durchführt, bevor etwas live geht. Der Bulk Content Operations-Teil sieht besonders interessant aus: KI-unterstützte Inhaltsbewertung kombiniert mit Massenvorschau und Veröffentlichung innerhalb einer einzigen DA-Sitzung.",
+  "new": "Diese Session zeigt, wie weit du die Oberfläche von Document Authoring mit der Plugin-API ausreizen kannst. Die Demo umfasst Tag-Picker, die an eine Live-AEM-Taxonomie angebunden sind, Icon-Picker, die aus der freigegebenen Asset-Bibliothek einer Marke schöpfen, eine strukturierte Verwaltung der Bios von Mitwirkenden und einen Preflight-Publishing-Workflow, der Governance-Checks ausführt, bevor irgendetwas live geht. Besonders spannend klingt der Teil zu Bulk-Content-Operationen: KI-gestützte Inhaltsbewertung kombiniert mit Bulk-Preview und -Publishing aus einer einzigen DA-Session heraus."
+ },
+ {
+  "old": "Diese Sitzung behandelt ein Governance-Setup, das direkt auf dem EDS-Stack basiert. Der Kern ist eine Regel-Engine, die Seiteninhalte vor der Vorschau mit Markenrichtlinien abgleitet, kombiniert mit einer Claim-Guardrail-Datenbank für regulierte Branchen und einem Segment-Override-System für regionale Inhaltsvariationen. Der Moderator leitet dies in der Produktion und die Sitzung wird ehrlich darüber sprechen, was noch erarbeitet werden muss.",
+  "new": "Diese Session behandelt ein Governance-Setup, das direkt auf dem EDS-Stack aufsetzt. Kern ist eine Regel-Engine, die Seiteninhalte vor der Vorschau mit den Markenrichtlinien abgleicht, kombiniert mit einer Claim-Guardrail-Datenbank für regulierte Branchen und einem Segment-Override-System für regionale Inhaltsvarianten. Der Referent setzt das bereits produktiv ein, und die Session spricht offen darüber, was noch verbessert werden muss."
+ },
+ {
+  "old": "Diese Sitzung greift auf die laufende \"Bring Your Complicated Integration Story\"-Reihe der AEM GDC zurück. Drei Praktiker werden echte Integrationen teilen, die weit über den dokumentierten glücklichen Weg hinausgehen. Die Fälle umfassen eine Commerce-Integration mit einem alten SAP-Backend, der einen benutzerdefinierten Edge-Worker für die Datennormalisierung verwendet, einen Personalisierungsstack auf EDS, der die Antwortzeiten mit Live-Audience-Bewertung unter 100 ms hält, sowie eine Multi-Tenant-DA-Bereitstellung, die fünfzehn Markenseiten aus einer einzigen Autorenumgebung unterstützt. Jede Geschichte behandelt, was kaputt ging und was es brauchte, um es zu reparieren.",
+  "new": "Diese Session baut auf der laufenden Reihe „Bring Your Complicated Integration Story“ der AEM GDC auf. Drei Praktiker stellen echte Integrationen vor, die weit über den dokumentierten Happy Path hinausgingen. Dazu gehören eine Commerce-Integration mit einem Legacy-SAP-Backend, die einen eigenen Edge Worker zur Datennormalisierung nutzt, ein Personalisierungs-Stack auf EDS, der mit Live-Audience-Auswertung Antwortzeiten unter 100 ms hält, und ein Multi-Tenant-DA-Deployment, das fünfzehn Marken-Websites aus einer einzigen Authoring-Umgebung bedient. Jede Geschichte zeigt, was kaputtging und was nötig war, um es zu beheben."
+ },
+ {
+  "old": "Drei Tage mit AEM- und Edge Delivery Services-Sitzungen, der Fahrradtour vor der Konferenz sowie Sitzungen zu DA-Anpassung",
+  "new": "Drei Tage mit AEM- und Edge Delivery Services-Sessions, der Fahrradtour vor der Konferenz sowie Sessions zu DA-Anpassung"
+ },
+ {
+  "old": "Wichtige Erkenntnisse",
+  "new": "// Das Wichtigste in Kürze"
+ },
+ {
+  "old": "Plane auf jeden Fall, am Sonntag vor der Veranstaltung an der Vor-Konferenz-Fahrradtour um Berlin teilzunehmen",
+  "new": "Plane auf jeden Fall die Radtour durch Berlin am Sonntag vor der Konferenz ein"
+ },
+ {
+  "old": "Breakout-\"Meet-the-Experten\"-Sitzungen werden erneut ein Feature sein",
+  "new": "„Meet the Expert“-Breakout-Sessions gibt es auch dieses Jahr wieder"
+ },
+ {
+  "old": "adaptTo() läuft seit 2012 und ist immer noch der beste Ort, um ein wirklich technisches AEM-Gespräch mit einer großen Gruppe von Menschen zu führen, die sich für dieselben Dinge interessieren wie du.",
+  "new": "adaptTo() gibt es seit 2012, und die Konferenz ist nach wie vor der beste Ort für wirklich technische AEM-Gespräche mit vielen Leuten, denen dieselben Dinge wichtig sind wie dir."
+ },
+ {
+  "old": "Die Kulturbrauerei ist ein großartiger Veranstaltungsort für diese Art von Veranstaltung. Es handelt sich um eine umgebaute Brauerei aus dem 19. Jahrhundert, sodass die Räume Charakter haben, ohne dass sie zu großzügig sind. Der Innenhof eignet sich gut für Gespräche zwischen den Sitzungen, und der Hauptsaal ist groß genug, dass sich eine Keynote wie eine Keynote anfühlt. Es hat schon zuvor adaptTo() und die logistische Arbeit beherbergt.",
+  "new": "Die Kulturbrauerei ist ein großartiger Ort für diese Art von Veranstaltung. Die umgebaute Brauerei aus dem 19. Jahrhundert hat Räume mit Charakter, ohne dabei prätentiös zu wirken. Der Innenhof eignet sich gut für Gespräche zwischen den Sessions, und der Hauptsaal ist groß genug, dass sich eine Keynote wirklich wie eine Keynote anfühlt. adaptTo() war hier schon einmal zu Gast, die Abläufe sind also eingespielt."
+ },
+ {
+  "old": "Die derzeit geplante Strecke führt durch Mitte, entlang der Spree, durch Tiergarten und mit einem Umweg am Mauerpark vorbei zurück nach Prenzlauer Berg. Es sind je nach Zählweise etwa 25 bis 30 Kilometer lang.",
+  "new": "Die derzeit geplante Strecke führt durch Mitte, an der Spree entlang, durch den Tiergarten und mit einem Abstecher am Mauerpark vorbei zurück nach Prenzlauer Berg. Je nach Zählweise sind das etwa 25 bis 30 Kilometer."
+ },
+ {
+  "old": "Berlin ist eine großartige Stadt zum Fahren.",
+  "new": "Berlin ist eine großartige Stadt zum Radfahren."
+ },
+ {
+  "old": "Frühere Fahrten waren eine gute Mischung aus Leuten, die Berlin gut kennen, und Leuten, die es zum ersten Mal sehen.",
+  "new": "Bei früheren Touren kam immer eine gute Mischung zusammen: Leute, die Berlin gut kennen, und Leute, die die Stadt zum ersten Mal sehen."
+ },
+ {
+  "old": "Was bei diesen Fahrgeschäften oft passiert, ist, dass die Gespräche, die man normalerweise in einem Konferenzflur führen würde, viel früher und natürlicher stattfinden. Am Ende spricht man über zwei Kilometer Radweg Architekturprobleme auf eine Weise durch, die in einem Breakout-Raum einfach nicht vorkommt.",
+  "new": "Bei diesen Radtouren passiert oft Folgendes: Die Gespräche, die man sonst auf dem Konferenzflur führen würde, finden viel früher und ganz natürlich statt. Am Ende diskutiert man zwei Kilometer lang auf dem Radweg über Architekturprobleme, und zwar so, wie es in einem Breakout-Raum nie passieren würde."
+ },
+ {
+  "old": "Wenn Sie zur Konferenz nach Berlin kommen, lohnt es sich, einen Tag früher zu kommen. Die Fahrt ist informell und alle Ebenen sind willkommen!",
+  "new": "Wenn du zur Konferenz nach Berlin kommst, lohnt es sich, einen Tag früher anzureisen. Die Tour ist ganz locker, und jedes Leistungsniveau ist willkommen!"
+ },
+ {
+  "old": "Tag Eins: EDS-Architektur und Inhaltsmodellierung",
+  "new": "Tag 1: EDS-Architektur und Inhaltsmodellierung"
+ },
+ {
+  "old": "Basierend auf den vergangenen Jahren ist dies meist einer der offeneren Teile des Programms. Das Team ist in der Regel bereit, ehrlich darüber zu sprechen, was funktioniert, was noch schwierig ist und wohin die Dinge gehen. Das Roadmap-Gespräch bis 2027 sollte es wert sein, Aufmerksamkeit zu schenken.",
+  "new": "Erfahrungsgemäß ist das einer der offensten Teile des Programms. Das Team spricht in der Regel ehrlich darüber, was funktioniert, was noch hakt und wohin die Reise geht. Bei der Roadmap bis 2027 lohnt es sich, genau hinzuhören."
+ },
+ {
+  "old": "Der Nachmittag wechselt zu Inhaltsmodellierung, mit zwei Sitzungen, die gegensätzliche Positionen einnehmen. Man argumentiert, alles in Blöcken zu halten. Die andere argumentiert, dass strukturierte Daten über den Abfrageindex einige redaktionelle Workflows besser handhaben als Blöcke. Diese Debatte ist gerade in der Gemeinde aktuell, und wenn beide Seiten ordentlich und hintereinander argumentiert werden, sollte das für einen guten Nachmittag sorgen.",
+  "new": "Am Nachmittag geht es um Inhaltsmodellierung, mit zwei Sessions, die gegensätzliche Positionen vertreten. Die eine plädiert dafür, alles in Blöcken zu halten. Die andere argumentiert, dass strukturierte Daten über den Query Index manche redaktionellen Workflows besser abbilden als Blöcke. Diese Debatte wird in der Community gerade intensiv geführt, und beide Positionen direkt nacheinander gut begründet zu hören, dürfte für einen spannenden Nachmittag sorgen."
+ },
+ {
+  "old": "Der erste Tag endet mit einer Open-Space-Sitzung über EDS und den DAM. Die Frage, wie das Asset Management im EDS-Kontext zu handhaben ist, ist für viele Teams noch ungeklärt, und diese Sitzung sollte eine Reihe realer Ansätze aufzeigen, anstatt einen einheitlichen empfohlenen Weg.",
+  "new": "Der erste Tag endet mit einer Open-Space-Session zu EDS und DAM. Wie man Asset Management im EDS-Kontext handhabt, ist für viele Teams noch ungeklärt, und diese Session dürfte eine ganze Reihe realer Ansätze zutage fördern statt eines einzigen empfohlenen Wegs."
+ },
+ {
+  "old": "Tag Zwei: Dokumentenerstellung und Governance",
+  "new": "Tag 2: Document Authoring und Governance"
+ },
+ {
+  "old": "Der zweite Tag hat einen anderen Fokus als der erste Tag. Der Vormittag dreht sich um die Anpassung der Dokumentenerstellung, und der Nachmittag geht in Governance und Inhaltsabläufe über. Beide Themen haben sich im adaptTo()-Programm in den letzten Jahren stark entwickelt.",
+  "new": "Der zweite Tag setzt einen anderen Schwerpunkt als der erste. Am Vormittag dreht sich alles um die Anpassung von Document Authoring, am Nachmittag geht es um Governance und Content Operations. Beide Themen haben im adaptTo()-Programm in den letzten Jahren stark an Gewicht gewonnen."
+ },
+ {
+  "old": "Die Diskussion über Governance am Nachmittag ist dieses Jahr ernst zu nehmen. Vor ein paar Jahren bedeutete Governance bei adaptTo() hauptsächlich Komponentensperrung und Vorlagenbeschränkungen. Im Jahr 2026 bedeutet das Konsistenz der Markenstimme auf einer großen Seite, Claim-Compliance für regulierte Märkte und operative Tools, die es Autoren ermöglichen, schnell zu arbeiten, ohne Probleme für die Marke zu verursachen. Das sind schwierigere Probleme, und die Sitzungen dieses Jahres spiegeln das wider.",
+  "new": "Die Governance-Diskussion am Nachmittag verdient dieses Jahr besondere Aufmerksamkeit. Vor ein paar Jahren bedeutete Governance bei adaptTo() vor allem gesperrte Komponenten und Template-Einschränkungen. 2026 geht es um eine konsistente Markenstimme über eine große Website hinweg, Claim-Compliance für regulierte Märkte und operative Tools, mit denen Autoren schnell arbeiten können, ohne der Marke Probleme zu bereiten. Das sind schwierigere Probleme, und das spiegelt sich in den diesjährigen Sessions wider."
+ },
+ {
+  "old": "In den vergangenen Jahren gab es auch informelle Lightning-Talks, sobald es richtig läuft (fünf Minuten, eigene Folien mitbringen oder nicht). Es ist einer der besseren Teile des adaptTo()-Programms.",
+  "new": "In den vergangenen Jahren gab es außerdem spontane Lightning Talks, sobald die Stimmung stieg (fünf Minuten, eigene Folien mitbringen – oder eben nicht). Das ist einer der schönsten Teile des adaptTo()-Programms."
+ },
+ {
+  "old": "Tag Drei: Integrationen und Freiraum",
+  "new": "Tag 3: Integrationen und Open Space"
+ },
+ {
+  "old": "Der Vormittag umfasst zwei integrationsfokussierte Sitzungen, die jeden ansprechen sollten, der Zeit mit einem komplexen EDS-Projekt verbracht hat. Der Nachmittag öffnet sich zu offenen Sitzungen, in denen die Teilnehmer die Tagesordnung festlegen.",
+  "new": "Am Vormittag stehen zwei Sessions zu Integrationen auf dem Programm, die alle ansprechen dürften, die schon einmal Zeit in ein komplexes EDS-Projekt gesteckt haben. Am Nachmittag folgen Open-Space-Sessions, in denen die Teilnehmenden die Agenda selbst bestimmen."
+ },
+ {
+  "old": "Die Open-Space-Sitzungen werden am selben Tag von den Teilnehmern festgelegt. Basierend darauf, worüber die Leute vor der Konferenz sprechen, können Sie mit Sitzungen zu Blockbibliotheksversionierung, der Nutzung von DA als Inhaltsquelle für nicht-Web-Kanäle und Entwickler-Onboarding für Teams mit traditionellem AEM-Hintergrund rechnen.",
+  "new": "Die Themen der Open-Space-Sessions legen die Teilnehmenden vor Ort fest. Nach dem, worüber im Vorfeld der Konferenz gesprochen wird, kannst du mit Sessions zur Versionierung von Block-Bibliotheken, zu DA als Content-Quelle für Nicht-Web-Kanäle und zum Onboarding von Entwicklern aus Teams mit klassischem AEM-Hintergrund rechnen."
+ },
+ {
+  "old": "Die abschließende Keynote wird untersuchen, wo das AEM-Ökosystem im Hinblick auf 2027 steht. Angesichts der Tiefe des Programms in diesem Jahr und der Reife der Arbeit, die die Menschen einbringen, sollte es ein gutes Gespräch zum Abschluss sein.",
+  "new": "Die Abschluss-Keynote beleuchtet, wo das AEM-Ökosystem auf dem Weg ins Jahr 2027 steht. Angesichts der Tiefe des diesjährigen Programms und der Reife der Projekte, die die Leute mitbringen, dürfte das ein gelungener Abschluss werden."
+ },
+ {
+  "old": "Der Flurweg",
+  "new": "Gespräche am Rande"
+ },
+ {
+  "old": "adaptTo() lohnt sich für das Programm, aber ein großer Teil des Wertes kommt aus den Gesprächen, die nicht im Programm stehen. Die Konzentration der AEM-Erfahrung in einem Gebäude über drei Tage ist ungewöhnlich und zeigt sich in der Qualität der informellen Diskussionen.",
+  "new": "adaptTo() lohnt sich schon wegen des Programms, aber ein großer Teil des Mehrwerts entsteht in den Gesprächen, die in keinem Zeitplan stehen. So viel AEM-Erfahrung drei Tage lang unter einem Dach ist ungewöhnlich, und das merkt man an der Qualität der informellen Diskussionen."
+ },
+ {
+  "old": "Die Innenhof- und Cafébereiche füllen sich meist mit spontanen Arbeitssitzungen: Architektur-Reviews, Code-Walkthroughs, Blockbibliothekskritiken.",
+  "new": "Innenhof und Café füllen sich meist mit spontanen Arbeitsrunden: Architektur-Reviews, Code-Walkthroughs, Feedback zu Block-Bibliotheken."
+ },
+ {
+  "old": "Die Fragen, die die Leute zu der diesjährigen Veranstaltung bringen, fühlen sich anders an als vor ein paar Jahren. Die Diskussion hat sich von der Frage, ob EDS die richtige Richtung ist, hin zu der Möglichkeit, es gut umzusetzen, wenn die Einsätze hoch und die Komplexität real ist. Das ist ein gutes Zeichen für die Gemeinschaft, und die Sitzungen dieses Jahr reagieren darauf.",
+  "new": "Die Fragen, mit denen die Leute dieses Jahr kommen, fühlen sich anders an als noch vor ein paar Jahren. Die Diskussion hat sich verlagert: weg von der Frage, ob EDS die richtige Richtung ist, hin zu der Frage, wie man es gut umsetzt, wenn viel auf dem Spiel steht und die Komplexität real ist. Das ist ein gutes Zeichen für die Community, und die diesjährigen Sessions greifen genau das auf."
+ },
+ {
+  "old": "Begleiten Sie uns in Berlin",
+  "new": "Wir sehen uns in Berlin"
+ },
+ {
+  "old": "Wenn du mit AEM und EDS arbeitest und noch nicht registriert bist, lohnt es sich, das zu klären. Das Programm ist dieses Jahr stark und die Community, die sich anpasst, ist diejenige, die meist an den interessantesten Problemen arbeitet.",
+  "new": "Wenn du mit AEM und EDS arbeitest und dich noch nicht angemeldet hast, solltest du das nachholen. Das Programm ist dieses Jahr stark, und die Community, die zur adaptTo() kommt, arbeitet meist an den spannendsten Problemen."
+ },
+ {
+  "old": "Das AEM Global Developer Collective wird nach der Veranstaltung Sitzungsaufnahmen, Folienlinks und Zusammenfassungen teilen. Folgen Sie ",
+  "new": "Das AEM Global Developer Collective teilt nach der Veranstaltung Session-Aufzeichnungen, Links zu den Folien und Zusammenfassungen. Mehr dazu unter "
+ },
+ {
+  "old": "Verwandte Literatur",
+  "new": "// Weiterlesen"
+ },
+ {
+  "old": "Bringen Sie Ihre komplizierte AEM-EDS-Integrationsgeschichte mit – Meetup-Rückblick",
+  "new": "Bring deine komplizierte AEM-EDS-Integrationsgeschichte mit – Meetup-Rückblick"
+ },
+ {
+  "old": "AEM GDC Juni 2026 — EDS CDN-Architektur und erweiterte Suchzusammenfassung",
+  "new": "AEM GDC Juni 2026 — Rückblick: EDS-CDN-Architektur und erweiterte Suche"
+ }
+]

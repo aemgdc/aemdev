@@ -1,0 +1,37 @@
+[
+ {
+  "old": "Entrega en Edge vs",
+  "new": "Edge Delivery vs",
+  "count": 1
+ },
+ {
+  "old": "AEM como Servicio en la Nube",
+  "new": "AEM as a Cloud Service",
+  "count": 3
+ },
+ {
+  "old": "ofrendas",
+  "new": "ofertas",
+  "count": 1
+ },
+ {
+  "old": "Ventajas paralelas y desafíos de implementación",
+  "new": "Ventajas y desafíos de implementación, comparados lado a lado",
+  "count": 1
+ },
+ {
+  "old": "ruta migratoria",
+  "new": "ruta de migración",
+  "count": 1
+ },
+ {
+  "old": "Servicios de Entrega en el Borde",
+  "new": "Edge Delivery Services",
+  "count": 1
+ },
+ {
+  "old": "que cubre en qué es bueno cada uno, en qué cada uno resulta complicado,",
+  "new": "que cubre en qué destaca cada una, dónde resulta complicada cada una,",
+  "count": 1
+ }
+]

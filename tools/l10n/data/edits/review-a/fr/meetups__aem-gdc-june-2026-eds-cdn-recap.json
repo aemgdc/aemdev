@@ -1,0 +1,42 @@
+[
+ {
+  "old": "EDS & AEM Infrastructure, CDN & Edge Workers, et recherche de masse sécurisée – remplacement sur DA",
+  "new": "Infrastructure EDS et AEM, CDN et Edge Workers, et rechercher-remplacer en masse en toute sécurité sur DA",
+  "count": 1
+ },
+ {
+  "old": "d’un site moderne de livraison en périphérie / création de documents — CDN et travailleurs en périphérie, backends AEM Cloud, et opérations sécurisées de contenu en masse dans DA.",
+  "new": "d’un site moderne Edge Delivery / Document Authoring — CDN et Edge Workers, backends AEM Cloud, et opérations de contenu en masse sécurisées dans DA.",
+  "count": 1
+ },
+ {
+  "old": "Livraison en contour et création de documents, de bout en bout : ce que chaque pièce fait réellement",
+  "new": "Edge Delivery et Document Authoring, de bout en bout : ce que fait réellement chaque brique",
+  "count": 1
+ },
+ {
+  "old": "CDN et travailleurs en périphérie devant EDS — là où se trouvent les jointures",
+  "new": "CDN et Edge Workers devant EDS — là où se situent les points de jonction",
+  "count": 1
+ },
+ {
+  "old": "Authentification du DA et câblage vers GitHub",
+  "new": "Authentification de DA et connexion à GitHub",
+  "count": 1
+ },
+ {
+  "old": "Deux séances. Le premier a exploré les bases d’un site moderne de livraison en bordure / authoring de documents —",
+  "new": "Deux sessions. La première a exploré les bases d’un site moderne Edge Delivery / Document Authoring —",
+  "count": 1
+ },
+ {
+  "old": "Le second montrait",
+  "new": "La seconde montrait",
+  "count": 1
+ },
+ {
+  "old": "annuler un montage en masse",
+  "new": "annuler une modification en masse",
+  "count": 1
+ }
+]

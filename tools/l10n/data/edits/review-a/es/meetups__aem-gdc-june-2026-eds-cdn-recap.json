@@ -1,0 +1,42 @@
+[
+ {
+  "old": "Infraestructura EDS y AEM, trabajadores CDN y de borde, y búsqueda masiva segura y reemplazo en DA",
+  "new": "Infraestructura EDS y AEM, CDN y Edge Workers, y búsqueda y reemplazo masivos seguros en DA",
+  "count": 1
+ },
+ {
+  "old": "de un sitio moderno de Entrega en Bordes / Document Authoring — CDN y trabajadores de borde,",
+  "new": "de un sitio moderno de Edge Delivery / Document Authoring — CDN y Edge Workers,",
+  "count": 1
+ },
+ {
+  "old": "Entrega en Edge y Document Authoring",
+  "new": "Edge Delivery y Document Authoring",
+  "count": 1
+ },
+ {
+  "old": "CDN y trabajadores de borde delante de EDS — donde están las juntas",
+  "new": "CDN y Edge Workers delante de EDS — dónde están los puntos de unión",
+  "count": 1
+ },
+ {
+  "old": "Dos sesiones. El primero recorrió",
+  "new": "Dos sesiones. La primera recorrió",
+  "count": 1
+ },
+ {
+  "old": "de un sitio moderno de Entrega en Bordes / Creación de Documentos:",
+  "new": "de un sitio moderno de Edge Delivery / Document Authoring:",
+  "count": 1
+ },
+ {
+  "old": "qué personalizaciones merecen la pena hacer",
+  "new": "qué personalizaciones vale la pena hacer",
+  "count": 1
+ },
+ {
+  "old": "El segundo mostró",
+  "new": "La segunda mostró",
+  "count": 1
+ }
+]

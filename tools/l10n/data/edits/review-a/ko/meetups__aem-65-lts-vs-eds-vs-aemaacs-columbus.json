@@ -1,0 +1,17 @@
+[
+ {
+  "old": "AEM 6.5 LTS vs 엣지 딜리버리 vs 클라우드 서비스로서의 AEM",
+  "new": "AEM 6.5 LTS vs Edge Delivery vs AEM as a Cloud Service",
+  "count": 1
+ },
+ {
+  "old": "나란히 배치했을 때의 장점과 구현상의 어려움",
+  "new": "장점과 구현상의 어려움 비교",
+  "count": 1
+ },
+ {
+  "old": "AEM 클라우드 서비스",
+  "new": "AEM as a Cloud Service",
+  "count": 1
+ }
+]

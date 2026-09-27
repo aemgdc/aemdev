@@ -1,0 +1,22 @@
+[
+ {
+  "old": "de um site moderno de Entrega na Borda/Autoria de Documentos —",
+  "new": "de um site moderno de Edge Delivery/Document Authoring —",
+  "count": 1
+ },
+ {
+  "old": "Entrega na borda e autoria de documentos, de ponta a ponta",
+  "new": "Edge Delivery e Document Authoring, de ponta a ponta",
+  "count": 1
+ },
+ {
+  "old": "Trabalhadores de CDN e de ponta em frente à EDS — onde as junções estão",
+  "new": "CDN e Edge Workers na frente do EDS — onde ficam os pontos de integração",
+  "count": 1
+ },
+ {
+  "old": "Edge Delivery/Autoria de Documentos",
+  "new": "Edge Delivery/Document Authoring",
+  "count": 1
+ }
+]

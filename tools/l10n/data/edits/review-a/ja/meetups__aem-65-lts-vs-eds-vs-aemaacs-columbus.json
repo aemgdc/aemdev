@@ -1,0 +1,12 @@
+[
+ {
+  "old": "AEM 6.5 LTS、エッジ配信、クラウドサービスとしてのAEMの比較",
+  "new": "AEM 6.5 LTS、Edge Delivery、AEM as a Cloud Serviceの比較",
+  "count": 1
+ },
+ {
+  "old": "並列配置の利点と実装上の課題",
+  "new": "利点と実装上の課題の比較",
+  "count": 1
+ }
+]

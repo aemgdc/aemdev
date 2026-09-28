@@ -1,17 +1,17 @@
 {
-  "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
-  "number": 9,
   "testing": false,
-  "staging": false,
   "comment": "",
+  "active": true,
+  "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
+  "deployed": false,
+  "staging": false,
+  "number": 9,
+  "locked": true,
   "environments": [
     {
       "name": "production",
       "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
       "active_version": 9
     }
-  ],
-  "deployed": false,
-  "locked": true,
-  "active": true
+  ]
 }

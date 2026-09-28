@@ -1,0 +1,34 @@
+<div>
+  <h1>Strava embed test</h1>
+
+  <h2>1. Strava's embed code pasted on its own line (as DA delivers it: escaped text)</h2>
+  <p>&lt;div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="20356929370" data-style="standard" data-from-embed="false" data-token="jeSKtHky7WEtJNbfbbw7QPIBd3SbdTxBxB8hKs2Fc3c"&gt;&lt;/div&gt;&lt;script src="https://strava-embeds.com/embed.js"&gt;&lt;/script&gt;</p>
+
+  <h2>2. Same code, map style, with the script URL auto-linked</h2>
+  <p>&lt;div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="20356929370" data-style="map" data-from-embed="false" data-token="jeSKtHky7WEtJNbfbbw7QPIBd3SbdTxBxB8hKs2Fc3c"&gt;&lt;/div&gt;&lt;script src="<a href="https://strava-embeds.com/embed.js">https://strava-embeds.com/embed.js</a>"&gt;&lt;/script&gt;</p>
+
+  <h2>3. Smart quotes, script tag split onto the next line</h2>
+  <p>&lt;div class=“strava-embed-placeholder” data-embed-type=“activity” data-embed-id=“20356929370” data-style=“minimal” data-token=“jeSKtHky7WEtJNbfbbw7QPIBd3SbdTxBxB8hKs2Fc3c”&gt;&lt;/div&gt;</p>
+  <p>&lt;script src=“https://strava-embeds.com/embed.js”&gt;&lt;/script&gt;</p>
+
+  <h2>4. The iframe URL as a link on its own line</h2>
+  <p><a href="https://strava-embeds.com/activity/20356929370?style=standard&amp;token=jeSKtHky7WEtJNbfbbw7QPIBd3SbdTxBxB8hKs2Fc3c">https://strava-embeds.com/activity/20356929370?style=standard&amp;token=jeSKtHky7WEtJNbfbbw7QPIBd3SbdTxBxB8hKs2Fc3c</a></p>
+
+  <h2>5. Must stay as-is</h2>
+  <p>Inline mention: see <a href="https://strava-embeds.com/activity/20356929370?style=standard&amp;token=jeSKtHky7WEtJNbfbbw7QPIBd3SbdTxBxB8hKs2Fc3c">this ride</a> for the route.</p>
+  <p>Quoted in a sentence: paste &lt;div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="20356929370" data-token="x"&gt;&lt;/div&gt; on its own line.</p>
+  <p><a href="https://www.strava.com/activities/20356929370">https://www.strava.com/activities/20356929370</a></p>
+  <p>&lt;div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="20356929370" data-style="standard"&gt;&lt;/div&gt;&lt;script src="https://strava-embeds.com/embed.js"&gt;&lt;/script&gt;</p>
+  <p><a href="https://strava-embeds.com/activity/20356929370?style=standard">tokenless iframe link</a></p>
+  <p>Last paragraph of section one.</p>
+</div>
+<div>
+  <h2>6. The manually-authored embed block, with the code pasted into its cell</h2>
+  <div class="embed">
+    <div>
+      <div>&lt;div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="20356929370" data-style="standard" data-from-embed="false" data-token="jeSKtHky7WEtJNbfbbw7QPIBd3SbdTxBxB8hKs2Fc3c"&gt;&lt;/div&gt;&lt;script src="<a href="https://strava-embeds.com/embed.js">https://strava-embeds.com/embed.js</a>"&gt;&lt;/script&gt;</div>
+    </div>
+  </div>
+  <h2>7. YouTube still works (regression)</h2>
+  <p><a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ">https://www.youtube.com/watch?v=dQw4w9WgXcQ</a></p>
+</div>

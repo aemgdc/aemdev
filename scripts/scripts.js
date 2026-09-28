@@ -1,5 +1,6 @@
 import { loadArea, setConfig } from './ak.js';
 import decorateLinkTargets from './utils/link-target.js';
+import decorateEmbedCode from './utils/embed-code.js';
 import { siteLocalesConfig } from './tracker/locales.js';
 
 const hostnames = ['authorkit.dev'];
@@ -27,6 +28,8 @@ const linkBlocks = [
   { linkedin: 'linkedin.com/posts/' },
   { linkedin: 'linkedin.com/feed/update/' },
   { linkedin: 'linkedin.com/embed/feed/update/' },
+  // Strava's iframe URL, which pasted Strava embed code becomes (see decorateArea).
+  { strava: 'https://strava-embeds.com/' },
 ];
 
 // Blocks with self-managed styles
@@ -72,6 +75,9 @@ const decorateArea = ({ area = document }) => {
   // decorateArea over the whole area before decorateSections walks it, so this is the one
   // hook that also reaches fragments (header, footer, nav) and any anchor outside `main`.
   decorateLinkTargets(area);
+  // Pasted embed code (Strava's) becomes a link here, so the linkBlocks pass that runs
+  // next auto-blocks it like any other embed link.
+  decorateEmbedCode(area);
 };
 
 export async function loadPage() {

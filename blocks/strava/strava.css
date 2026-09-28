@@ -1,0 +1,24 @@
+/* Embedded Strava activity or route. The frame draws its own card — border, corners,
+   white ground — so the wrapper stays flat per DESIGN.md and only sizes and centres
+   it, at the width Strava's embed.js uses. The frame reports its own height, which
+   replaces --strava-embed-height; the default (embed.js's) just holds the space. */
+.strava-embed {
+  --strava-embed-height: 650px;
+
+  width: 100%;
+  max-width: 554px;
+  height: var(--strava-embed-height);
+  margin: 2.5rem auto;
+
+  & iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+}
+
+/* A route embed can ask for the full column (data-full-width="true" in its code). */
+.strava-embed[data-src*='/route/'][data-src*='fullWidth=true'] {
+  max-width: none;
+}

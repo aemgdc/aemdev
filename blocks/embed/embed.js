@@ -1,6 +1,8 @@
 import observe from '../../scripts/utils/observer.js';
 import { getConfig, loadStyle } from '../../scripts/ak.js';
+import { embedCodeLink } from '../../scripts/utils/embed-code.js';
 import { embedSrc as linkedinSrc, embedLinkedIn } from '../linkedin/linkedin.js';
+import { embedSrc as stravaSrc, embedStrava } from '../strava/strava.js';
 
 function youtubeSrc(url) {
   const params = new URLSearchParams(url.search);
@@ -34,11 +36,14 @@ function decorate(el) {
 
 /**
  * Manually-authored "embed" block. Wraps a single link and turns it into an
- * inline iframe. Recognizes YouTube, Spotify and LinkedIn posts; other links
- * are left as-is.
+ * inline iframe. Recognizes YouTube, Spotify, LinkedIn posts and Strava embed
+ * code; other links are left as-is.
  */
 export default function init(block) {
-  const a = block.querySelector('a[href]');
+  // Strava embed code pasted into a one-line cell arrives as bare cell text, not the <p>
+  // the page-wide pass in scripts/utils/embed-code.js converts, so read it here — and
+  // before looking for a link, since the script URL inside it may have been auto-linked.
+  const a = embedCodeLink(block.textContent) ?? block.querySelector('a[href]');
   if (!a) return;
 
   let url;
@@ -54,6 +59,13 @@ export default function init(block) {
     loadStyle(`${getConfig().codeBase}/blocks/linkedin/linkedin.css`);
     block.replaceChildren(a); // drop the authoring table's wrapper cells
     if (embedLinkedIn(a)) return;
+  }
+
+  // Strava's frame sizes itself to its card, so it goes to that block too.
+  if (stravaSrc(a.href)) {
+    loadStyle(`${getConfig().codeBase}/blocks/strava/strava.css`);
+    block.replaceChildren(a);
+    if (embedStrava(a)) return;
   }
 
   let src;

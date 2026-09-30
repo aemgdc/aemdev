@@ -204,7 +204,9 @@
   max-width: 600px;
 }
 
-.section.cta-band a {
+/* Every link on the band is a ghost button, bar the Signal button, which keeps its
+   size and goes carbon (sections.css). */
+.section.cta-band a:not(.btn-signal) {
   display: inline-block;
   flex-shrink: 0;
   font-family: var(--mono-font-family);
@@ -220,7 +222,7 @@
   transition: border-color 0.12s, background 0.12s;
 }
 
-.section.cta-band a:hover {
+.section.cta-band a:not(.btn-signal):hover {
   border-color: #f4f4f4;
   background: rgb(255 255 255 / 12%);
 }

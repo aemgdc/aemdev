@@ -154,9 +154,10 @@ Flat by default. Depth is signaled by color surface, not shadow. A carbon card o
 ### Shadow Vocabulary
 - **Hover lift** (`0 4px 16px rgba(0,0,0,0.18)`): Applied on card `:hover` and interactive tile `:hover` states only. Not present at rest.
 - **No ambient shadows.** Ambient box-shadow on non-interactive containers is prohibited. If a surface needs visual separation, use a border or a background-color step.
+- **Signal cast** (`0 1px 1px rgb(14 14 14 / 14%), 0 3px 6px -1px rgb(152 8 0 / 24%), 0 12px 24px -8px rgb(152 8 0 / 42%)`): The Signal button only, and the one shadow allowed at rest. A tight carbon contact shadow under a cast tinted with the red ramp's third step (`#980800`), so it reads as red light on the page, not a grey smudge. It deepens on hover and nearly disappears on press. On the red CTA band the cast turns carbon.
 
 ### Named Rules
-**The Flat-By-Default Rule.** Surfaces are flat at rest. Shadow appears only as interaction feedback. If you are reaching for a shadow to define a container's boundary, use a `1px solid` border instead.
+**The Flat-By-Default Rule.** Surfaces are flat at rest. Shadow appears only as interaction feedback. If you are reaching for a shadow to define a container's boundary, use a `1px solid` border instead. The single exception is the Signal button, whose shadow at rest is the point: it is the loudest thing on the page.
 
 ## 5. Components
 
@@ -167,6 +168,16 @@ Flat by default. Depth is signaled by color surface, not shadow. A carbon card o
 - **Secondary / Ghost:** Transparent background, 2px solid Adobe Red border, Adobe Red text. On hover: fills to Adobe Red, text flips to off-white.
 - **Dark-surface variant:** On carbon backgrounds, primary buttons remain Adobe Red. Ghost buttons use a white border and white text (no red — contrast against dark ground is handled by the border).
 - **Padding:** 12–14px vertical, 22–28px horizontal. Font via mono stack.
+
+### Signal Button (the loud one)
+The call to action a page is built around: RSVP for the meetup, register, watch the recording. Authors write it as a link on its own line inside double brackets, `[[RSVP for the Meetup]]` (`scripts/utils/signal-button.js`, `.btn-signal`).
+- **Shape:** Sharp-edged like every button. Exactly two of its own lines tall: line-height 1 with half a line of padding above and below, so a label that wraps grows by whole lines.
+- **Type:** Barlow Condensed 800, uppercase, `clamp(1.5rem, 1.15rem + 1.2vw, 2rem)`, tracking 0.01em. The display face, not the mono stack: this is the one button that speaks at headline volume.
+- **Color:** Adobe Red (`#eb1000`) with off-white text. The label is large text, so its 4.3:1 contrast clears the AA large-text bar; never set it below 1.5rem. Hover goes to Adobe Red Deep. On the red CTA band it turns carbon, since red on red is no signal.
+- **Arrow:** A trailing drawn arrow in the text color. It points along for a page on the site and up and out (rotated 45°) for a link that leaves it. It nudges in that direction on hover.
+- **Elevation:** The Signal cast at rest (see Elevation). Hover lifts it 2px and deepens the cast, press seats it 1px below rest. Transitions use ease-out-quart; `prefers-reduced-motion` keeps the color change and drops the movement.
+- **Narrow screens:** Below 600px it takes the full measure, label left and arrow right.
+- **Restraint:** One per screen. Two Signal buttons in one view are two shouts, and neither is heard.
 
 ### Cards / Feed Items
 - **Corner Style:** Square (border-radius: 0).

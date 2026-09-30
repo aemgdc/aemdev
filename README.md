@@ -338,6 +338,13 @@ da.live and adobe.com. It includes:
 - A **block** adds visual context inside a section.
 - An **auto block** is generated from matching content, usually a link.
 - **Default content** is anything outside a block.
+- A **Signal button** is the big red call to action. Put a link on a line of its own and
+  wrap it in double brackets: `[[RSVP for the Meetup]]`. It doesn't matter whether the
+  brackets end up inside the link or outside it. Bold and italic are ignored, and Shift+Enter
+  inside the label gives a two-line label. A `[[link]]` inside a sentence stays plain text.
+  Use one per screen. The code is
+  [`scripts/utils/signal-button.js`](scripts/utils/signal-button.js), and the design spec is
+  in [`DESIGN.md`](DESIGN.md).
 
 ### Popular articles (GA4)
 

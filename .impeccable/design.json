@@ -24,7 +24,8 @@
       "label":    { "displayName": "Label",    "purpose": "Tags, dates, bylines, eyebrows. Space Mono, uppercase." }
     },
     "shadows": [
-      { "name": "hover-lift", "value": "0 4px 16px rgba(0,0,0,0.18)", "purpose": "Interactive card/tile hover state only. Never at rest." }
+      { "name": "hover-lift", "value": "0 4px 16px rgba(0,0,0,0.18)", "purpose": "Interactive card/tile hover state only. Never at rest." },
+      { "name": "signal-cast", "value": "0 1px 1px rgb(14 14 14 / 14%), 0 3px 6px -1px rgb(152 8 0 / 24%), 0 12px 24px -8px rgb(152 8 0 / 42%)", "purpose": "Signal button only; the one shadow allowed at rest. Deepens on hover, near-flat on press." }
     ],
     "motion": [
       { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Default easing for state transitions (color, shadow, opacity)." },
@@ -53,6 +54,13 @@
       "description": "Outline button with Adobe Red border. Flips to filled on hover.",
       "html": "<button class=\"ds-btn-ghost\">Read More</button>",
       "css": ".ds-btn-ghost { display: inline-block; background: transparent; color: #eb1000; border: 2px solid #eb1000; border-radius: 0; padding: 11px 27px; font-family: 'Space Mono', menlo, monospace; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; text-decoration: none; line-height: 1; cursor: pointer; transition: background 0.15s ease, color 0.15s ease; } .ds-btn-ghost:hover, .ds-btn-ghost:focus-visible { background: #eb1000; color: #f9f9f9; }"
+    },
+    {
+      "name": "Signal Button",
+      "kind": "button",
+      "description": "The loud CTA, authored as [[link]] on its own line. Adobe Red, Barlow Condensed 800 uppercase, two of its own lines tall, a red-tinted cast at rest, and an arrow that points along (on the site) or up and out (off it).",
+      "html": "<a class=\"btn btn-signal btn-signal-external\" href=\"https://usergroups.adobe.com/e/mzbaqn/\"><span class=\"btn-signal-label\">RSVP for the Meetup</span></a>",
+      "css": "See a.btn-signal in styles/styles.css."
     },
     {
       "name": "Article Feed Card",

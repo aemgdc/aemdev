@@ -196,7 +196,7 @@
 }
 
 /* Auto-button: a paragraph containing only a link renders as a dark CTA button */
-.section.cta-band > .default-content > p:has(> a:only-child) > a {
+.section.cta-band > .default-content > p:has(> a:only-child) > a:not(.btn-signal) {
   display: inline-block;
   font-family: var(--mono-font-family);
   font-weight: 700;
@@ -212,10 +212,17 @@
   transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
-.section.cta-band > .default-content > p:has(> a:only-child) > a:hover {
+.section.cta-band > .default-content > p:has(> a:only-child) > a:not(.btn-signal):hover {
   background: var(--white);
   color: var(--ink);
   border-color: var(--white);
+}
+
+/* A Signal button on the red band keeps its size and shadow but turns carbon, since
+   red on red is no signal. The band's .btn rules above supply the colors; this makes
+   the cast carbon too, where a red one would vanish into the band. */
+.section.cta-band a.btn-signal {
+  --signal-cast: 14 14 14;
 }
 
 /* === EVENT INFO === the meetup manifest: red signal glyphs, mono labels, a

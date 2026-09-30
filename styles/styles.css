@@ -222,6 +222,122 @@ a.btn-secondary:hover {
   color: var(--ink);
 }
 
+/* === SIGNAL BUTTON === the loud one: `[[link]]` on its own line
+   (scripts/utils/signal-button.js). Adobe Red, set in the display face, and two of
+   its own lines tall: line-height 1 plus half a line of padding above and below.
+   It is the one element in the system that casts a shadow at rest, a tight carbon
+   contact shadow under a red-tinted cast, so it sits on the page rather than being
+   printed onto it. Hover lifts it, press seats it. One per screen is the intent. */
+a.btn-signal {
+  --signal-ease: cubic-bezier(0.25, 1, 0.5, 1); /* ease-out-quart */
+  --signal-cast: 152 8 0; /* the red ramp's third step, for a shadow that stays red */
+  --signal-shadow:
+    0 1px 1px rgb(14 14 14 / 14%),
+    0 3px 6px -1px rgb(var(--signal-cast) / 24%),
+    0 12px 24px -8px rgb(var(--signal-cast) / 42%);
+  --signal-shadow-lift:
+    0 2px 2px rgb(14 14 14 / 12%),
+    0 8px 14px -4px rgb(var(--signal-cast) / 28%),
+    0 20px 36px -12px rgb(var(--signal-cast) / 50%);
+  --signal-shadow-press:
+    0 1px 1px rgb(14 14 14 / 16%),
+    0 2px 4px -1px rgb(var(--signal-cast) / 30%);
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  box-sizing: border-box;
+  max-inline-size: 100%;
+  margin-block: 0.5rem 1rem;
+  padding: 0.5em 0.85em 0.5em 1em;
+  border: 0;
+  font-family: var(--display-font-family);
+  font-size: clamp(1.5rem, 1.15rem + 1.2vw, 2rem);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--white);
+  background: var(--aem-red);
+  box-shadow: var(--signal-shadow);
+  transition:
+    background-color 0.15s ease,
+    box-shadow 0.3s var(--signal-ease),
+    translate 0.3s var(--signal-ease);
+}
+
+.btn-signal-label {
+  min-inline-size: 0;
+  text-wrap: balance;
+}
+
+/* The arrow: along for a page on this site, up and out for one that leaves it. */
+a.btn-signal::after {
+  content: "";
+  flex: none;
+  inline-size: 0.8em;
+  aspect-ratio: 1;
+  background: currentcolor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3.25'%3E%3Cpath d='M2 12h18M12.5 4.5 20 12l-7.5 7.5'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: translate 0.3s var(--signal-ease);
+}
+
+a.btn-signal-external::after {
+  rotate: -45deg;
+}
+
+a.btn-signal:hover {
+  color: var(--white);
+  background: var(--aem-red-dk);
+  box-shadow: var(--signal-shadow-lift);
+  translate: 0 -2px;
+}
+
+a.btn-signal:hover::after {
+  translate: 0.14em 0;
+}
+
+a.btn-signal-external:hover::after {
+  translate: 0.1em -0.1em;
+}
+
+a.btn-signal:focus {
+  color: var(--white);
+}
+
+a.btn-signal:focus-visible {
+  outline: 3px solid var(--carbon);
+  outline-offset: 4px;
+}
+
+a.btn-signal:active {
+  box-shadow: var(--signal-shadow-press);
+  translate: 0 1px;
+  transition-duration: 0.05s;
+}
+
+/* Narrow screens: the full measure, label left and arrow right, an easy thumb target. */
+@media (width < 600px) {
+  a.btn-signal {
+    display: flex;
+    inline-size: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  a.btn-signal,
+  a.btn-signal::after {
+    transition: background-color 0.15s ease;
+  }
+
+  a.btn-signal:hover,
+  a.btn-signal:active,
+  a.btn-signal:hover::after {
+    translate: none;
+  }
+}
+
 /* === SECTIONS === */
 .section {
   display: block;

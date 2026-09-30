@@ -1,6 +1,7 @@
 import { loadArea, setConfig } from './ak.js';
 import decorateLinkTargets from './utils/link-target.js';
 import decorateEmbedCode from './utils/embed-code.js';
+import decorateSignalButtons from './utils/signal-button.js';
 import { siteLocalesConfig } from './tracker/locales.js';
 
 const hostnames = ['authorkit.dev'];
@@ -75,6 +76,9 @@ const decorateArea = ({ area = document }) => {
   // decorateArea over the whole area before decorateSections walks it, so this is the one
   // hook that also reaches fragments (header, footer, nav) and any anchor outside `main`.
   decorateLinkTargets(area);
+  // `[[link]]` on its own line becomes the big red Signal button. Has to beat ak.js's
+  // decorateButton, which would otherwise read the author's bold or italic as a small one.
+  decorateSignalButtons(area);
   // Pasted embed code (Strava's) becomes a link here, so the linkBlocks pass that runs
   // next auto-blocks it like any other embed link.
   decorateEmbedCode(area);

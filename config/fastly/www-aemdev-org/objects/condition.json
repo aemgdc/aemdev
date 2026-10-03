@@ -1,9 +1,9 @@
 [
   {
-    "comment": "",
+    "priority": "10",
     "name": "services path",
     "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
-    "priority": "10",
+    "comment": "",
     "type": "REQUEST",
     "statement": "req.url.path ~ \"^/(services|content/dam)/\""
   }

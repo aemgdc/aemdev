@@ -1,6 +1,6 @@
 {
-  "general.stale_if_error": false,
   "general.stale_if_error_ttl": 43200,
+  "general.stale_if_error": false,
   "general.default_ttl": 3600,
   "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
   "general.default_host": "",

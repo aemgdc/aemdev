@@ -1,5 +1,8 @@
 {
-  "deployed": false,
+  "testing": false,
+  "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
+  "locked": true,
+  "staging": false,
   "environments": [
     {
       "name": "production",
@@ -8,10 +11,7 @@
     }
   ],
   "comment": "",
-  "testing": false,
-  "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
-  "active": true,
+  "deployed": false,
   "number": 9,
-  "staging": false,
-  "locked": true
+  "active": true
 }

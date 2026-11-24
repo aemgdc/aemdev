@@ -2,9 +2,9 @@
   {
     "comment": "",
     "priority": "10",
-    "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
     "name": "services path",
-    "type": "REQUEST",
-    "statement": "req.url.path ~ \"^/(services|content/dam)/\""
+    "service_id": "tTSyFJgoN3lZqBOA0n3Rd7",
+    "statement": "req.url.path ~ \"^/(services|content/dam)/\"",
+    "type": "REQUEST"
   }
 ]
